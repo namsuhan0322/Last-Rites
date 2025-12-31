@@ -1,6 +1,7 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 
 [System.Serializable]
@@ -8,10 +9,10 @@ public class WaveEntry
 {
     public EnemyData enemy;
 
-    [Tooltip("ÀûÀÌ »ı¼ºµÇ´Â ¿şÀÌºê")]
+    [Tooltip("ì ì´ ìƒì„±ë˜ëŠ” ì›¨ì´ë¸Œ")]
     public int unlockWave = 1;
 
-    [Tooltip("°¡ÁßÄ¡")]
+    [Tooltip("ê°€ì¤‘ì¹˜")]
     public int weight = 1;
 }
 
@@ -23,8 +24,16 @@ public class WaveManager : MonoBehaviour
     [Header("Wave Settings")]
     public int baseEnemiesPerWave = 5;
     public float delayBeforeNextWave = 3f;
-    public float difficultyGrowth = 1.2f;  //³­ÀÌµµ Á¶Á¤ ¼öÄ¡
+    public float difficultyGrowth = 1.2f;  //ë‚œì´ë„ ì¡°ì • ìˆ˜ì¹˜
 
+    //ìƒì„±íš¨ê³¼ë“¤
+    public GameObject spawnIndicatorPrefab;
+    public float spawnDelay = 1.5f;
+
+    //UI
+    public TextMeshProUGUI countdownText;
+
+    //ë³€ìˆ˜ë“¤
     int waveIndex = 1;
     int aliveEnemies = 0;
     GameObject[] plans;
@@ -35,33 +44,43 @@ public class WaveManager : MonoBehaviour
         StartCoroutine(StartWaveLoop());
     }
 
-    #region ¿şÀÌºê ¹İº¹¹®
+    #region ì›¨ì´ë¸Œ ë°˜ë³µë¬¸
     IEnumerator StartWaveLoop()
     {
         while (true)
         {
+            yield return StartCoroutine(ShowCountdown());
+
             yield return StartCoroutine(StartWave());
+
             yield return new WaitForSeconds(delayBeforeNextWave);
             waveIndex++;
         }
     }
     #endregion
 
-    //¿şÀÌºê ½ÃÀÛ
+    //ì›¨ì´ë¸Œ ì‹œì‘
     IEnumerator StartWave()
     {
         int enemiesThisWave = Mathf.RoundToInt(baseEnemiesPerWave * Mathf.Pow(difficultyGrowth, waveIndex - 1));
 
+        List<Coroutine> coroutines = new List<Coroutine>();
+
         for (int i = 0; i < enemiesThisWave; i++)
         {
-            SpawnEnemy(PickEnemyForWave());
+            coroutines.Add(StartCoroutine(SpawnEnemyWithWarning(PickEnemyForWave())));
+        }
+
+        foreach (var co in coroutines)
+        {
+            yield return co;
         }
 
         while (aliveEnemies > 0)
             yield return null;
     }
 
-    #region ¿şÀÌºê¿¡¼­ Àû »Ì±â
+    #region ì›¨ì´ë¸Œì—ì„œ ì  ë½‘ê¸°
     EnemyData PickEnemyForWave()
     {
         List<WaveEntry> unlocked = enemyPool.FindAll(e => e.unlockWave <= waveIndex);
@@ -78,23 +97,76 @@ public class WaveManager : MonoBehaviour
         return unlocked[0].enemy;
     }
     #endregion
-    #region Àû ¼ÒÈ¯
-    void SpawnEnemy(EnemyData data)
+    public void OnEnemyDead() => aliveEnemies--;
+    #region ì  ì†Œí™˜
+    IEnumerator SpawnEnemyWithWarning(EnemyData data)
     {
         GameObject plan = plans[Random.Range(0, plans.Length)];
         Bounds b = plan.GetComponent<Renderer>().bounds;
 
         Vector3 pos = new Vector3(
             Random.Range(b.min.x, b.max.x),
-            b.max.y + 1f,
+            b.max.y + 0.05f,
             Random.Range(b.min.z, b.max.z)
         );
 
-        var go = Instantiate(data.prefab, pos, Quaternion.identity);
+        var indicator = Instantiate(
+            spawnIndicatorPrefab,
+            pos + Vector3.up * 0.02f,
+            Quaternion.Euler(90, 0, 0)
+        );
+
+        var effect = indicator.GetComponent<SpawnIndicator>();
+        if (effect != null)
+            StartCoroutine(effect.Play());
+
+        yield return new WaitForSeconds(spawnDelay);
+
+        var go = Instantiate(data.prefab, pos + Vector3.up, Quaternion.identity);
         go.GetComponent<Enemy>().Init(this, data);
+
         aliveEnemies++;
+
+        Destroy(indicator);
     }
     #endregion
+    #region ì¹´ìš´íŠ¸ë‹¤ìš´
+    IEnumerator ShowCountdown()
+    {
+        countdownText.gameObject.SetActive(true);
 
-    public void OnEnemyDead() => aliveEnemies--;
+        Color baseColor = countdownText.color;   
+        string[] numbers = { "3", "2", "1" };
+
+        foreach (var n in numbers)
+        {
+            countdownText.text = n;
+
+            countdownText.transform.localScale = Vector3.one * 0.3f;
+            countdownText.color = new Color(baseColor.r, baseColor.g, baseColor.b, 1f);
+
+            float duration = 1f;
+            float t = 0f;
+
+            while (t < duration)
+            {
+                t += Time.deltaTime;
+                float normalized = t / duration;
+
+                float scale = Mathf.Lerp(0.3f, 1.2f, normalized);
+                countdownText.transform.localScale = Vector3.one * scale;
+
+                float alpha = 1f - Mathf.Clamp01((normalized - 0.4f) / 0.6f);
+
+                countdownText.color = new Color(baseColor.r, baseColor.g, baseColor.b, alpha);
+
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        countdownText.gameObject.SetActive(false);
+    }
+    #endregion
 }

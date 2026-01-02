@@ -65,12 +65,19 @@ public class Enemy : MonoBehaviour
     {
         if (forcedTarget != null)
         {
-            forcedTimer -= Time.deltaTime;
-
-            if (forcedTimer > 0)
+            if (float.IsInfinity(forcedTimer))
+            {
                 currentTarget = forcedTarget;
+            }
             else
-                forcedTarget = null;
+            {
+                forcedTimer -= Time.deltaTime;
+
+                if (forcedTimer > 0)
+                    currentTarget = forcedTarget;
+                else
+                    forcedTarget = null;
+            }
         }
 
         HandleMovement();
@@ -85,31 +92,30 @@ public class Enemy : MonoBehaviour
         if (forcedTarget != null)
         {
             currentTarget = forcedTarget;
-
-            float dist = Vector3.Distance(transform.position, currentTarget.position);
-
-            if (dist <= detectRadius)
-                ChasePlayer(dist);
-            else
-                RandomPatrol();
-
-            return; 
+            ChasePlayer(Vector3.Distance(transform.position, currentTarget.position));
+            return;
         }
 
-        if (lockedTarget == null)
-            lockedTarget = GetBestTarget();
+        if (lockedTarget != null)
+        {
+            currentTarget = lockedTarget;
 
-        if (lockedTarget == null || Vector3.Distance(transform.position, lockedTarget.position) > detectRadius)
-            lockedTarget = GetBestTarget();
+            ChasePlayer(Vector3.Distance(transform.position, currentTarget.position));
+            return;
+        }
 
-        currentTarget = lockedTarget;
+        float distToPlayer = Vector3.Distance(transform.position, player.position);
 
-        float d = Vector3.Distance(transform.position, currentTarget.position);
-
-        if (d <= detectRadius)
-            ChasePlayer(d);
+        if (distToPlayer <= detectRadius)
+        {
+            lockedTarget = GetBestTarget();   
+            currentTarget = lockedTarget;
+            ChasePlayer(distToPlayer);
+        }
         else
+        {
             RandomPatrol();
+        }
     }
     //---------어떤것이 더 적합한 타겟인가?------------
     Transform GetBestTarget()

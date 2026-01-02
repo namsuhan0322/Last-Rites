@@ -26,7 +26,8 @@ public class AIBase : MonoBehaviour
 
     protected Transform player;
 
-    Transform targetEnemy;            // 현재 바라보는 적
+    Transform targetEnemy;
+    bool isChasingEnemy = false;
 
     void Awake()
     {
@@ -42,45 +43,74 @@ public class AIBase : MonoBehaviour
 
         DetectEnemy();
 
-        if (targetEnemy != null)
-            LookAtEnemy();
+        if (isChasingEnemy)
+            ChaseEnemy();
         else
             HandleFollow();
     }
-
     // --------- 적 탐지 ----------
     protected virtual void DetectEnemy()
     {
+        // 이미 전투 중이면 새로 찾지 않음
+        if (isChasingEnemy) return;
+
         Collider[] hits = Physics.OverlapSphere(
             transform.position,
             attackDetectRadius,
             enemyLayer
         );
 
-        if (hits.Length > 0)
+        if (hits.Length == 0) return;
+
+        float minDist = float.MaxValue;
+        Transform closest = null;
+
+        foreach (var h in hits)
         {
-            float minDist = float.MaxValue;
-            Transform closest = null;
-
-            foreach (var h in hits)
+            float d = Vector3.Distance(transform.position, h.transform.position);
+            if (d < minDist)
             {
-                float d = Vector3.Distance(transform.position, h.transform.position);
-                if (d < minDist)
-                {
-                    minDist = d;
-                    closest = h.transform;
-                }
+                minDist = d;
+                closest = h.transform;
             }
-
-            targetEnemy = closest;
-
-            agent.isStopped = true;
-            SetWalking(false);
         }
-        else
+
+        targetEnemy = closest;
+        isChasingEnemy = true;     
+    }
+
+    void ChaseEnemy()
+    {
+        if (targetEnemy == null)
+        {
+            isChasingEnemy = false;
+            agent.isStopped = true;
+            return;
+        }
+
+        float dist = Vector3.Distance(transform.position, targetEnemy.position);
+
+        // 적이 너무 멀어지거나 사라지면 포기
+        if (dist > attackDetectRadius * 1.5f)
         {
             targetEnemy = null;
+            isChasingEnemy = false;
+            return;
         }
+
+        agent.isStopped = false;
+        agent.SetDestination(targetEnemy.position);
+        SetWalking(true);
+
+        // 바라보기
+        Vector3 dir = targetEnemy.position - transform.position;
+        dir.y = 0;
+        if (dir != Vector3.zero)
+            transform.rotation = Quaternion.Lerp(
+                transform.rotation,
+                Quaternion.LookRotation(dir),
+                Time.deltaTime * 8f
+            );
     }
 
     // --------- 적 바라보기 ----------

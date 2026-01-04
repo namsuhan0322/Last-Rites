@@ -48,6 +48,8 @@ public class Knight : AIBase
             if (enemy != null)
             {
                 enemy.ForceTarget(transform, Mathf.Infinity);
+
+                enemy.ShowTauntMark(3f);   
             }
         }
         yield return new WaitForSeconds(tauntCooldown);

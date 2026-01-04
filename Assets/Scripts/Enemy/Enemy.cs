@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -38,6 +39,8 @@ public class Enemy : MonoBehaviour
     [Header("포위 설정")]
     public float surroundRadius = 2f;
 
+
+    public TextMeshPro tauntText;
 
     //변수들 선언
     Transform lockedTarget;
@@ -253,13 +256,29 @@ public class Enemy : MonoBehaviour
         return desiredPos;
     }
 
-    //----------타겟 고정-------------
+    //----------도발 타겟 고정-------------
     public void ForceTarget(Transform t, float duration)
     {
         forcedTarget = t;
         forcedTimer = duration;
     }
 
+    //-----------도발당함----------------
+    public void ShowTauntMark(float duration)
+    {
+        if (tauntText == null) return;
+
+        tauntText.gameObject.SetActive(true);
+        tauntText.text = "!";
+
+        StartCoroutine(HideTauntText(duration));
+    }
+
+    IEnumerator HideTauntText(float time)
+    {
+        yield return new WaitForSeconds(time);
+        tauntText.gameObject.SetActive(false);
+    }
     // ---------- 애니메이션 ----------
     void SetWalking(bool walking)
     {

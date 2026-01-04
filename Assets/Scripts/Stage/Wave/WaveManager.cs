@@ -157,7 +157,6 @@ public class WaveManager : MonoBehaviour
                 countdownText.transform.localScale = Vector3.one * scale;
 
                 float alpha = 1f - Mathf.Clamp01((normalized - 0.4f) / 0.6f);
-
                 countdownText.color = new Color(baseColor.r, baseColor.g, baseColor.b, alpha);
 
                 yield return null;

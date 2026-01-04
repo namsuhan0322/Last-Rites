@@ -19,6 +19,7 @@ public class Knight : AIBase
         TryTaunt();
     }
 
+    //------------도발이 가능한가?--------------
     void TryTaunt()
     {
         if (!canTaunt) return;
@@ -34,6 +35,7 @@ public class Knight : AIBase
         StartCoroutine(Taunt());
     }
 
+    // -------------도발--------------
     IEnumerator Taunt()
     {
         canTaunt = false;

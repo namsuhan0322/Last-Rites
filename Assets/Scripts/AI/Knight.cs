@@ -7,6 +7,9 @@ public class Knight : AIBase
     [Header("도발 스킬")]
     public float tauntRadius = 6f;
     public float tauntCooldown = 20f;
+    public GameObject speechBubblePrefab;   
+    Transform speechPoint;
+
 
     bool canTaunt = true;
 
@@ -35,6 +38,8 @@ public class Knight : AIBase
     {
         canTaunt = false;
 
+        ShowTauntSpeech("내 뒤로 숨게!\n이놈들은 내가 맡지!", 3f);
+
         Collider[] enemies = Physics.OverlapSphere(
             transform.position,
             tauntRadius,
@@ -48,12 +53,47 @@ public class Knight : AIBase
             if (enemy != null)
             {
                 enemy.ForceTarget(transform, Mathf.Infinity);
-
-                enemy.ShowTauntMark(3f);   
+                enemy.ShowTauntMark(3f);   // ← 아까 만들었던 느낌표
             }
         }
+
         yield return new WaitForSeconds(tauntCooldown);
         canTaunt = true;
+    }
+
+    //도발 메세지 생성 위치
+    public void ShowTauntSpeech(string message, float duration)
+    {
+        Vector3 pos = transform.position + Vector3.up * 2f;
+        GameObject bubble = Instantiate(speechBubblePrefab, pos, Quaternion.identity);
+
+        bubble.transform.SetParent(transform);
+
+        var tmp = bubble.GetComponentInChildren<TMPro.TextMeshPro>();
+
+        StartCoroutine(TypeText(tmp, message, 0.04f));
+
+        StartCoroutine(HideSpeech(bubble, duration));
+    }
+
+    //대화 숨기기
+    IEnumerator HideSpeech(GameObject bubble, float t)
+    {
+        yield return new WaitForSeconds(t);
+        Destroy(bubble);
+    }
+
+
+    //타이핑효과
+    IEnumerator TypeText(TMPro.TextMeshPro text, string message, float speed)
+    {
+        text.text = "";
+
+        foreach (char c in message)
+        {
+            text.text += c;
+            yield return new WaitForSeconds(speed);
+        }
     }
 
     protected override void SetWalking(bool walking) { }

@@ -13,7 +13,7 @@ public class EventSystemManager : SingletonMono<EventSystemManager>
         isEventPlaying = true;
         GameManager.Instance?.PauseGame();
 
-        Debug.Log("이벤트 시작 - 게임 일시정지");
+        Debug.Log("이벤트 시작");
     }
 
     // 이벤트 종료
@@ -24,7 +24,7 @@ public class EventSystemManager : SingletonMono<EventSystemManager>
         isEventPlaying = false;
         GameManager.Instance?.ResumeGame();
 
-        Debug.Log("이벤트 종료 - 게임 재개");
+        Debug.Log("이벤트 종료");
     }
 
     // 이벤트 연출 예제

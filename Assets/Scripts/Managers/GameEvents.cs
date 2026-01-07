@@ -22,6 +22,4 @@ public static class GameEvents
     public static void ResolutionChanged(int resolutionIndex) => OnResolutionChanged?.Invoke(resolutionIndex);
     public static void FullscreenChanged(bool isFullscreen) => OnFullscreenChanged?.Invoke(isFullscreen);
     public static void QualityChanged(int qualityLevel) => OnQualityChanged?.Invoke(qualityLevel);
-
-
 }

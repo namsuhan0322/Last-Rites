@@ -12,15 +12,373 @@ namespace DB_
 {
 
 	[Preserve]
+	public sealed partial class _Player : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ??= BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4977835758149540202UL,12783471644334729350UL), () => _metaDefault = null);
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.Int32 PlayerID
+		{
+			get => _PlayerID[Index];
+			set => _PlayerID.SetValue(this, value);
+		}
+		public System.String name
+		{
+			get => _name[Index];
+			set => _name[Index] = value;
+		}
+		public System.Int32 HP
+		{
+			get => _HP[Index];
+			set => _HP.SetValue(this, value);
+		}
+		public System.Single Move_Spd
+		{
+			get => _Move_Spd[Index];
+			set => _Move_Spd.SetValue(this, value);
+		}
+		public System.Single Dash_Spd
+		{
+			get => _Dash_Spd[Index];
+			set => _Dash_Spd.SetValue(this, value);
+		}
+		public System.Single Dash_Time
+		{
+			get => _Dash_Time[Index];
+			set => _Dash_Time.SetValue(this, value);
+		}
+		public System.Single Dash_Cool
+		{
+			get => _Dash_Cool[Index];
+			set => _Dash_Cool.SetValue(this, value);
+		}
+		public System.Single Max_Stamina
+		{
+			get => _Max_Stamina[Index];
+			set => _Max_Stamina.SetValue(this, value);
+		}
+		public System.Single Stamina_Regen
+		{
+			get => _Stamina_Regen[Index];
+			set => _Stamina_Regen.SetValue(this, value);
+		}
+		public System.Int32 Dash_Cost
+		{
+			get => _Dash_Cost[Index];
+			set => _Dash_Cost.SetValue(this, value);
+		}
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_PlayerID;
+		public static BansheeGz.BGDatabase.BGFieldInt _PlayerID => _ufle12jhs77_PlayerID ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4824685493029100730UL, 6794090722171209133UL), () => _ufle12jhs77_PlayerID = null);
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _name => _ufle12jhs77_name ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5730489979689498516UL, 6179625223568709809UL), () => _ufle12jhs77_name = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_HP;
+		public static BansheeGz.BGDatabase.BGFieldInt _HP => _ufle12jhs77_HP ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5376411102208442786UL, 4501862485854596541UL), () => _ufle12jhs77_HP = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_Move_Spd;
+		public static BansheeGz.BGDatabase.BGFieldFloat _Move_Spd => _ufle12jhs77_Move_Spd ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(5219557631903541888UL, 1357624160299003818UL), () => _ufle12jhs77_Move_Spd = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_Dash_Spd;
+		public static BansheeGz.BGDatabase.BGFieldFloat _Dash_Spd => _ufle12jhs77_Dash_Spd ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(5251920028706970924UL, 3201788593859635133UL), () => _ufle12jhs77_Dash_Spd = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_Dash_Time;
+		public static BansheeGz.BGDatabase.BGFieldFloat _Dash_Time => _ufle12jhs77_Dash_Time ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(4867377649004195293UL, 7441719272416310697UL), () => _ufle12jhs77_Dash_Time = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_Dash_Cool;
+		public static BansheeGz.BGDatabase.BGFieldFloat _Dash_Cool => _ufle12jhs77_Dash_Cool ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(5282367899697188565UL, 4282009600875557259UL), () => _ufle12jhs77_Dash_Cool = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_Max_Stamina;
+		public static BansheeGz.BGDatabase.BGFieldFloat _Max_Stamina => _ufle12jhs77_Max_Stamina ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(5720882729942967071UL, 2280562145240483247UL), () => _ufle12jhs77_Max_Stamina = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_Stamina_Regen;
+		public static BansheeGz.BGDatabase.BGFieldFloat _Stamina_Regen => _ufle12jhs77_Stamina_Regen ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(5208047442442809319UL, 10643412602261836959UL), () => _ufle12jhs77_Stamina_Regen = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Dash_Cost;
+		public static BansheeGz.BGDatabase.BGFieldInt _Dash_Cost => _ufle12jhs77_Dash_Cost ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4869740445822869219UL, 11660007707453614219UL), () => _ufle12jhs77_Dash_Cost = null);
+		private _Player() : base(MetaDefault) {}
+		private _Player(BGId id) : base(MetaDefault, id) {}
+		private _Player(BGMetaEntity meta) : base(meta) {}
+		private _Player(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static _Player FindEntity(Predicate<_Player> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<_Player> FindEntities(Predicate<_Player> filter, List<_Player> result=null, Comparison<_Player> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<_Player> action, Predicate<_Player> filter=null, Comparison<_Player> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static _Player GetEntity(BGId entityId) => (_Player) MetaDefault.GetEntity(entityId);
+		public static _Player GetEntity(int index) => (_Player) MetaDefault[index];
+		public static _Player GetEntity(string entityName) => (_Player) MetaDefault.GetEntity(entityName);
+		public static _Player NewEntity() => (_Player) MetaDefault.NewEntity();
+		public static _Player NewEntity(BGId entityId) => (_Player) MetaDefault.NewEntity(entityId);
+		public static _Player NewEntity(Action<_Player> callback) => (_Player) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((_Player)entity)));
+		public static void InitializeCodeGenRuntime()
+		{
+			_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4977835758149540202UL,12783471644334729350UL), ReleaseCodeGenRuntime);
+			_ufle12jhs77_PlayerID = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4824685493029100730UL, 6794090722171209133UL));
+			_ufle12jhs77_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(_metaDefault, new BGId(5730489979689498516UL, 6179625223568709809UL));
+			_ufle12jhs77_HP = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5376411102208442786UL, 4501862485854596541UL));
+			_ufle12jhs77_Move_Spd = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(5219557631903541888UL, 1357624160299003818UL));
+			_ufle12jhs77_Dash_Spd = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(5251920028706970924UL, 3201788593859635133UL));
+			_ufle12jhs77_Dash_Time = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(4867377649004195293UL, 7441719272416310697UL));
+			_ufle12jhs77_Dash_Cool = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(5282367899697188565UL, 4282009600875557259UL));
+			_ufle12jhs77_Max_Stamina = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(5720882729942967071UL, 2280562145240483247UL));
+			_ufle12jhs77_Stamina_Regen = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(5208047442442809319UL, 10643412602261836959UL));
+			_ufle12jhs77_Dash_Cost = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4869740445822869219UL, 11660007707453614219UL));
+		}
+		public static void ReleaseCodeGenRuntime()
+		{
+			_metaDefault = null;
+			_ufle12jhs77_PlayerID = null;
+			_ufle12jhs77_name = null;
+			_ufle12jhs77_HP = null;
+			_ufle12jhs77_Move_Spd = null;
+			_ufle12jhs77_Dash_Spd = null;
+			_ufle12jhs77_Dash_Time = null;
+			_ufle12jhs77_Dash_Cool = null;
+			_ufle12jhs77_Max_Stamina = null;
+			_ufle12jhs77_Stamina_Regen = null;
+			_ufle12jhs77_Dash_Cost = null;
+		}
+
+		[Preserve]
+		public sealed class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new _Player(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new _Player(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "Player";
+			public const string PlayerID = "PlayerID";
+			public const string name = "name";
+			public const string HP = "HP";
+			public const string Move_Spd = "Move_Spd";
+			public const string Dash_Spd = "Dash_Spd";
+			public const string Dash_Time = "Dash_Time";
+			public const string Dash_Cool = "Dash_Cool";
+			public const string Max_Stamina = "Max_Stamina";
+			public const string Stamina_Regen = "Stamina_Regen";
+			public const string Dash_Cost = "Dash_Cost";
+		}
+	}
+
+	[Preserve]
+	public sealed partial class _Weapon : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ??= BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(5076602343308284817UL,17993732746270205847UL), () => _metaDefault = null);
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.Int32 WeaponID
+		{
+			get => _WeaponID[Index];
+			set => _WeaponID.SetValue(this, value);
+		}
+		public System.String name
+		{
+			get => _name[Index];
+			set => _name[Index] = value;
+		}
+		public System.String Type
+		{
+			get => _Type[Index];
+			set => _Type[Index] = value;
+		}
+		public System.Single Atk_Spd
+		{
+			get => _Atk_Spd[Index];
+			set => _Atk_Spd.SetValue(this, value);
+		}
+		public System.Int32 Combo_1
+		{
+			get => _Combo_1[Index];
+			set => _Combo_1.SetValue(this, value);
+		}
+		public System.Int32 Combo_2
+		{
+			get => _Combo_2[Index];
+			set => _Combo_2.SetValue(this, value);
+		}
+		public System.Int32 Combo_3
+		{
+			get => _Combo_3[Index];
+			set => _Combo_3.SetValue(this, value);
+		}
+		public System.Int32 Q_Dmg
+		{
+			get => _Q_Dmg[Index];
+			set => _Q_Dmg.SetValue(this, value);
+		}
+		public System.Single Q_Cool
+		{
+			get => _Q_Cool[Index];
+			set => _Q_Cool.SetValue(this, value);
+		}
+		public System.Single W_Cool
+		{
+			get => _W_Cool[Index];
+			set => _W_Cool.SetValue(this, value);
+		}
+		public System.Int32 W_Dmg
+		{
+			get => _W_Dmg[Index];
+			set => _W_Dmg.SetValue(this, value);
+		}
+		public System.Int32 E_Dmg
+		{
+			get => _E_Dmg[Index];
+			set => _E_Dmg.SetValue(this, value);
+		}
+		public System.Single E_Cool
+		{
+			get => _E_Cool[Index];
+			set => _E_Cool.SetValue(this, value);
+		}
+		public System.Single R_Val
+		{
+			get => _R_Val[Index];
+			set => _R_Val.SetValue(this, value);
+		}
+		public System.Single R_Cool
+		{
+			get => _R_Cool[Index];
+			set => _R_Cool.SetValue(this, value);
+		}
+		public System.Int32 V_Dmg
+		{
+			get => _V_Dmg[Index];
+			set => _V_Dmg.SetValue(this, value);
+		}
+		public System.Single V_Cool
+		{
+			get => _V_Cool[Index];
+			set => _V_Cool.SetValue(this, value);
+		}
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_WeaponID;
+		public static BansheeGz.BGDatabase.BGFieldInt _WeaponID => _ufle12jhs77_WeaponID ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5003520979726610453UL, 12832440600610102701UL), () => _ufle12jhs77_WeaponID = null);
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _name => _ufle12jhs77_name ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5401281466915005659UL, 8006599936513893797UL), () => _ufle12jhs77_name = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Type;
+		public static BansheeGz.BGDatabase.BGFieldString _Type => _ufle12jhs77_Type ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5536188526946693471UL, 9772706052306078640UL), () => _ufle12jhs77_Type = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_Atk_Spd;
+		public static BansheeGz.BGDatabase.BGFieldFloat _Atk_Spd => _ufle12jhs77_Atk_Spd ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(5203860535504423022UL, 16361998153936041662UL), () => _ufle12jhs77_Atk_Spd = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Combo_1;
+		public static BansheeGz.BGDatabase.BGFieldInt _Combo_1 => _ufle12jhs77_Combo_1 ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5081617708996100709UL, 815320556813425025UL), () => _ufle12jhs77_Combo_1 = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Combo_2;
+		public static BansheeGz.BGDatabase.BGFieldInt _Combo_2 => _ufle12jhs77_Combo_2 ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5651062605047805540UL, 6473785158124389283UL), () => _ufle12jhs77_Combo_2 = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Combo_3;
+		public static BansheeGz.BGDatabase.BGFieldInt _Combo_3 => _ufle12jhs77_Combo_3 ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5376916052922256521UL, 8742139210703667081UL), () => _ufle12jhs77_Combo_3 = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Q_Dmg;
+		public static BansheeGz.BGDatabase.BGFieldInt _Q_Dmg => _ufle12jhs77_Q_Dmg ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5518615181484618948UL, 11450410899095146638UL), () => _ufle12jhs77_Q_Dmg = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_Q_Cool;
+		public static BansheeGz.BGDatabase.BGFieldFloat _Q_Cool => _ufle12jhs77_Q_Cool ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(5354939450246501847UL, 9502692707164841871UL), () => _ufle12jhs77_Q_Cool = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_W_Cool;
+		public static BansheeGz.BGDatabase.BGFieldFloat _W_Cool => _ufle12jhs77_W_Cool ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(4862452881745067461UL, 8263590712278786969UL), () => _ufle12jhs77_W_Cool = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_W_Dmg;
+		public static BansheeGz.BGDatabase.BGFieldInt _W_Dmg => _ufle12jhs77_W_Dmg ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4635861366568117229UL, 5077908843893346691UL), () => _ufle12jhs77_W_Dmg = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_E_Dmg;
+		public static BansheeGz.BGDatabase.BGFieldInt _E_Dmg => _ufle12jhs77_E_Dmg ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5682071115249154538UL, 2428921761149928608UL), () => _ufle12jhs77_E_Dmg = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_E_Cool;
+		public static BansheeGz.BGDatabase.BGFieldFloat _E_Cool => _ufle12jhs77_E_Cool ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(5498732314036529955UL, 16269432815179409323UL), () => _ufle12jhs77_E_Cool = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_R_Val;
+		public static BansheeGz.BGDatabase.BGFieldFloat _R_Val => _ufle12jhs77_R_Val ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(5397747292178050601UL, 15769391121571557807UL), () => _ufle12jhs77_R_Val = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_R_Cool;
+		public static BansheeGz.BGDatabase.BGFieldFloat _R_Cool => _ufle12jhs77_R_Cool ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(4654682086285919447UL, 4775859583847559863UL), () => _ufle12jhs77_R_Cool = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_V_Dmg;
+		public static BansheeGz.BGDatabase.BGFieldInt _V_Dmg => _ufle12jhs77_V_Dmg ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5511693802334939823UL, 2854288118216305562UL), () => _ufle12jhs77_V_Dmg = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_V_Cool;
+		public static BansheeGz.BGDatabase.BGFieldFloat _V_Cool => _ufle12jhs77_V_Cool ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(4659582901174182885UL, 13043068013137118904UL), () => _ufle12jhs77_V_Cool = null);
+		private _Weapon() : base(MetaDefault) {}
+		private _Weapon(BGId id) : base(MetaDefault, id) {}
+		private _Weapon(BGMetaEntity meta) : base(meta) {}
+		private _Weapon(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static _Weapon FindEntity(Predicate<_Weapon> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<_Weapon> FindEntities(Predicate<_Weapon> filter, List<_Weapon> result=null, Comparison<_Weapon> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<_Weapon> action, Predicate<_Weapon> filter=null, Comparison<_Weapon> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static _Weapon GetEntity(BGId entityId) => (_Weapon) MetaDefault.GetEntity(entityId);
+		public static _Weapon GetEntity(int index) => (_Weapon) MetaDefault[index];
+		public static _Weapon GetEntity(string entityName) => (_Weapon) MetaDefault.GetEntity(entityName);
+		public static _Weapon NewEntity() => (_Weapon) MetaDefault.NewEntity();
+		public static _Weapon NewEntity(BGId entityId) => (_Weapon) MetaDefault.NewEntity(entityId);
+		public static _Weapon NewEntity(Action<_Weapon> callback) => (_Weapon) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((_Weapon)entity)));
+		public static void InitializeCodeGenRuntime()
+		{
+			_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(5076602343308284817UL,17993732746270205847UL), ReleaseCodeGenRuntime);
+			_ufle12jhs77_WeaponID = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5003520979726610453UL, 12832440600610102701UL));
+			_ufle12jhs77_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(_metaDefault, new BGId(5401281466915005659UL, 8006599936513893797UL));
+			_ufle12jhs77_Type = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5536188526946693471UL, 9772706052306078640UL));
+			_ufle12jhs77_Atk_Spd = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(5203860535504423022UL, 16361998153936041662UL));
+			_ufle12jhs77_Combo_1 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5081617708996100709UL, 815320556813425025UL));
+			_ufle12jhs77_Combo_2 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5651062605047805540UL, 6473785158124389283UL));
+			_ufle12jhs77_Combo_3 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5376916052922256521UL, 8742139210703667081UL));
+			_ufle12jhs77_Q_Dmg = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5518615181484618948UL, 11450410899095146638UL));
+			_ufle12jhs77_Q_Cool = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(5354939450246501847UL, 9502692707164841871UL));
+			_ufle12jhs77_W_Cool = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(4862452881745067461UL, 8263590712278786969UL));
+			_ufle12jhs77_W_Dmg = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4635861366568117229UL, 5077908843893346691UL));
+			_ufle12jhs77_E_Dmg = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5682071115249154538UL, 2428921761149928608UL));
+			_ufle12jhs77_E_Cool = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(5498732314036529955UL, 16269432815179409323UL));
+			_ufle12jhs77_R_Val = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(5397747292178050601UL, 15769391121571557807UL));
+			_ufle12jhs77_R_Cool = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(4654682086285919447UL, 4775859583847559863UL));
+			_ufle12jhs77_V_Dmg = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5511693802334939823UL, 2854288118216305562UL));
+			_ufle12jhs77_V_Cool = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(4659582901174182885UL, 13043068013137118904UL));
+		}
+		public static void ReleaseCodeGenRuntime()
+		{
+			_metaDefault = null;
+			_ufle12jhs77_WeaponID = null;
+			_ufle12jhs77_name = null;
+			_ufle12jhs77_Type = null;
+			_ufle12jhs77_Atk_Spd = null;
+			_ufle12jhs77_Combo_1 = null;
+			_ufle12jhs77_Combo_2 = null;
+			_ufle12jhs77_Combo_3 = null;
+			_ufle12jhs77_Q_Dmg = null;
+			_ufle12jhs77_Q_Cool = null;
+			_ufle12jhs77_W_Cool = null;
+			_ufle12jhs77_W_Dmg = null;
+			_ufle12jhs77_E_Dmg = null;
+			_ufle12jhs77_E_Cool = null;
+			_ufle12jhs77_R_Val = null;
+			_ufle12jhs77_R_Cool = null;
+			_ufle12jhs77_V_Dmg = null;
+			_ufle12jhs77_V_Cool = null;
+		}
+
+		[Preserve]
+		public sealed class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new _Weapon(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new _Weapon(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "Weapon";
+			public const string WeaponID = "WeaponID";
+			public const string name = "name";
+			public const string Type = "Type";
+			public const string Atk_Spd = "Atk_Spd";
+			public const string Combo_1 = "Combo_1";
+			public const string Combo_2 = "Combo_2";
+			public const string Combo_3 = "Combo_3";
+			public const string Q_Dmg = "Q_Dmg";
+			public const string Q_Cool = "Q_Cool";
+			public const string W_Cool = "W_Cool";
+			public const string W_Dmg = "W_Dmg";
+			public const string E_Dmg = "E_Dmg";
+			public const string E_Cool = "E_Cool";
+			public const string R_Val = "R_Val";
+			public const string R_Cool = "R_Cool";
+			public const string V_Dmg = "V_Dmg";
+			public const string V_Cool = "V_Cool";
+		}
+	}
+
+	[Preserve]
 	public static class BGCodeGenRuntimeInitializer
 	{
 		[Preserve]
 		public static void InitializeCodeGenRuntime()
 		{
+			_Player.InitializeCodeGenRuntime();
+			_Weapon.InitializeCodeGenRuntime();
 		}
 		[Preserve]
 		public static void ReleaseCodeGenRuntime()
 		{
+			_Player.ReleaseCodeGenRuntime();
+			_Weapon.ReleaseCodeGenRuntime();
 		}
 	}
 }

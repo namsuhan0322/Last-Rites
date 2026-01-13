@@ -7,7 +7,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
 {
     [Header("Scene Settings")]
     public string mainMenuSceneName = "MainMenu";
-    public string gameSceneName = "GameScene";
+    public string tutorialSceneName = "TutorialScene";
     public string loadingSceneName = "Loading";
 
     [Header("Loading Settings")]
@@ -33,7 +33,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
         base.Awake();
 
         // 현재 씬 이름 저장
-        currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+        currentSceneName = SceneManager.GetActiveScene().name;
 
         // 페이드 UI 생성
         if (useFadeEffect)
@@ -47,19 +47,18 @@ public class ScenesManager : SingletonMono<ScenesManager>
     private void Start()
     {
         // 씬 로딩 이벤트 구독
-        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
-        UnityEngine.SceneManagement.SceneManager.sceneUnloaded += OnSceneUnloaded;
+        SceneManager.sceneLoaded += OnSceneLoaded;
+        SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
     private void OnDestroy()
     {
         // 이벤트 구독 해제
-        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
-        UnityEngine.SceneManagement.SceneManager.sceneUnloaded -= OnSceneUnloaded;
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+        SceneManager.sceneUnloaded -= OnSceneUnloaded;
     }
 
     #region Fade UI 생성
-
     private void CreateFadeUI()
     {
         // 페이드용 Canvas 생성
@@ -95,7 +94,6 @@ public class ScenesManager : SingletonMono<ScenesManager>
     #endregion
 
     #region Scene Loading Methods
-
     /// <summary>
     /// 기본 씬 로딩 (로딩 화면 없음)
     /// </summary>
@@ -171,7 +169,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
             float startTime = Time.time;
 
             // 실제 씬 로딩
-            AsyncOperation asyncLoad = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName);
+            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
             asyncLoad.allowSceneActivation = false;
 
             while (!asyncLoad.isDone)
@@ -207,7 +205,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
     /// </summary>
     private IEnumerator LoadSceneAsync(string sceneName)
     {
-        AsyncOperation asyncLoad = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(sceneName);
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
 
         while (!asyncLoad.isDone)
         {
@@ -221,7 +219,6 @@ public class ScenesManager : SingletonMono<ScenesManager>
     #endregion
 
     #region Fade Effects
-
     private IEnumerator FadeIn()
     {
         if (fadeCanvasGroup == null) yield break;
@@ -254,45 +251,40 @@ public class ScenesManager : SingletonMono<ScenesManager>
     #endregion
 
     #region Quick Load Methods
+    public void LoadMainMenu() => LoadScene(mainMenuSceneName);
 
-    public void LoadMainMenu()
-    {
-        LoadScene(mainMenuSceneName);
-    }
+    public void LoadGameScene() => LoadScene(tutorialSceneName);
 
-    public void LoadGameScene()
-    {
-        LoadScene(gameSceneName);
-    }
+    //public void LoadTheme1Scene() => LoadScene(theme1SceneName);
 
-    public void ReloadCurrentScene()
-    {
-        LoadScene(currentSceneName);
-    }
+    //public void LoadTheme2Scene() => LoadScene(theme2SceneName);
+
+    //public void LoadTheme3Scene() => LoadScene(theme3SceneName);
+
+    public void ReloadCurrentScene() => LoadScene(currentSceneName);
 
     public void LoadNextScene()
     {
-        int currentIndex = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
-        int nextIndex = (currentIndex + 1) % UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings;
+        int currentIndex = SceneManager.GetActiveScene().buildIndex;
+        int nextIndex = (currentIndex + 1) % SceneManager.sceneCountInBuildSettings;
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene(nextIndex);
+        SceneManager.LoadScene(nextIndex);
     }
 
     public void LoadPreviousScene()
     {
-        int currentIndex = UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex;
+        int currentIndex = SceneManager.GetActiveScene().buildIndex;
         int prevIndex = currentIndex - 1;
 
         if (prevIndex < 0)
-            prevIndex = UnityEngine.SceneManagement.SceneManager.sceneCountInBuildSettings - 1;
+            prevIndex = SceneManager.sceneCountInBuildSettings - 1;
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene(prevIndex);
+        SceneManager.LoadScene(prevIndex);
     }
 
     #endregion
 
     #region Scene Events
-
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         currentSceneName = scene.name;
@@ -312,7 +304,6 @@ public class ScenesManager : SingletonMono<ScenesManager>
     #endregion
 
     #region Utility Methods
-
     public string GetCurrentSceneName()
     {
         return currentSceneName;

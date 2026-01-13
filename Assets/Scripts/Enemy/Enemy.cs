@@ -30,7 +30,7 @@ public class Enemy : MonoBehaviour
 
     [Header("타겟 설정")]
     public LayerMask aiLayer;
-    Transform currentTarget;
+    public Transform currentTarget;
 
     [Header("분리(겹침 방지)")]
     public float separationRadius = 2f;
@@ -64,6 +64,8 @@ public class Enemy : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
     }
 
+
+    //업데이트 부분
     void Update()
     {
         if (forcedTarget != null)
@@ -84,6 +86,7 @@ public class Enemy : MonoBehaviour
         }
 
         HandleMovement();
+        TryAttack();  
     }
 
 
@@ -295,5 +298,9 @@ public class Enemy : MonoBehaviour
     {
         if (manager != null)
             manager.OnEnemyDead();
+    }
+    protected virtual void TryAttack()
+    {
+        // 기본 Enemy는 공격 안 함
     }
 }

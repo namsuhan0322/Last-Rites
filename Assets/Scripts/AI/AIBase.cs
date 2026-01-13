@@ -6,6 +6,11 @@ using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class AIBase : MonoBehaviour
 {
+    [Header("체력")]
+    public int maxHp = 100;
+    public int hp;
+    public bool isDead = false;
+
     [Header("이동")]
     public NavMeshAgent agent;
 
@@ -24,6 +29,8 @@ public class AIBase : MonoBehaviour
     public float separationRadius = 2f;
     public float separationForce = 2f;
 
+
+
     protected Transform player;
 
     Transform targetEnemy;
@@ -35,6 +42,8 @@ public class AIBase : MonoBehaviour
             agent = GetComponent<NavMeshAgent>();
 
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
+
+        hp = maxHp;
     }
 
     protected virtual void Update()
@@ -176,6 +185,35 @@ public class AIBase : MonoBehaviour
         desiredPos += push * separationForce;
 
         return desiredPos;
+    }
+
+
+    //공격 변수 (체력 담당)
+    public virtual void TakeDamage(int dmg)
+    {
+        if (isDead) return;
+
+        hp -= dmg;
+
+        if (hp <= 0)
+        {
+            Die();
+        }
+    }
+
+    //죽음 
+    protected virtual void Die()
+    {
+        isDead = true;
+
+        agent.isStopped = true;
+    
+        GetComponent<Animator>()?.SetTrigger("Die");
+
+        foreach (var c in GetComponents<Collider>())
+            c.enabled = false;
+
+        Destroy(gameObject, 3f);  //이건 죽는 애니메이션 초수에 따라 달라짐~
     }
 
 

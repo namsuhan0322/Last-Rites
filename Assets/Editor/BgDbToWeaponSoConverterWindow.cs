@@ -29,7 +29,6 @@ public class BgDbToWeaponSoConverterWindow : EditorWindow
         EditorGUILayout.LabelField("BG Database → WeaponSO 변환기", EditorStyles.boldLabel);
         EditorGUILayout.Space();
 
-        // 1. 폴더 선택
         EditorGUILayout.LabelField("출력 폴더 (Assets/...)", EditorStyles.label);
         EditorGUILayout.BeginHorizontal();
         m_outputFolder = EditorGUILayout.TextField(m_outputFolder);
@@ -48,17 +47,14 @@ public class BgDbToWeaponSoConverterWindow : EditorWindow
 
         EditorGUILayout.Space();
 
-        // 2. 타겟 DB SO 선택
         m_targetDatabaseSo = (WeaponDatabaseSO)EditorGUILayout.ObjectField("Target WeaponDatabaseSO", m_targetDatabaseSo, typeof(WeaponDatabaseSO), false);
 
-        // 3. 옵션
         m_addToDatabase = EditorGUILayout.ToggleLeft("생성된 SO를 Database 리스트에 자동 등록", m_addToDatabase);
         m_overwriteExisting = EditorGUILayout.ToggleLeft("기존 SO 덮어쓰기 (ID/이름 일치 시)", m_overwriteExisting);
         m_verboseLog = EditorGUILayout.ToggleLeft("상세 로그 출력", m_verboseLog);
 
         EditorGUILayout.Space();
 
-        // 4. 실행 버튼
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("변환 실행", GUILayout.Height(38)))
         {
@@ -84,7 +80,6 @@ public class BgDbToWeaponSoConverterWindow : EditorWindow
     {
         try
         {
-            // DB_._Weapon 엔티티 가져오기
             var entities = GatherAllWeaponEntities();
 
             if (entities.Count == 0)
@@ -113,11 +108,9 @@ public class BgDbToWeaponSoConverterWindow : EditorWindow
                 WeaponSO tempSo = ScriptableObject.CreateInstance<WeaponSO>();
                 PopulateWeaponSOFromEntity(tempSo, entity);
 
-                // 폴더 정리 (WeaponType별 분류)
                 string typeFolder = Path.Combine(m_outputFolder, tempSo.weaponType.ToString()).Replace("\\", "/");
                 if (!Directory.Exists(typeFolder)) AssetDatabase.CreateFolder(m_outputFolder, tempSo.weaponType.ToString());
 
-                // 파일명 (ID_이름.asset)
                 string fileName = SanitizeFileName($"{tempSo.WeaponID}_{tempSo.name}.asset");
                 string assetPath = Path.Combine(typeFolder, fileName).Replace("\\", "/");
 
@@ -127,7 +120,7 @@ public class BgDbToWeaponSoConverterWindow : EditorWindow
                 if (existing != null && m_overwriteExisting)
                 {
                     finalSo = existing;
-                    PopulateWeaponSOFromEntity(finalSo, entity); // 덮어쓰기
+                    PopulateWeaponSOFromEntity(finalSo, entity);
                 }
                 else if (existing != null && !m_overwriteExisting)
                 {
@@ -164,19 +157,13 @@ public class BgDbToWeaponSoConverterWindow : EditorWindow
         }
     }
 
-    /// <summary>
-    /// 실제 데이터 매핑 (DB_._Weapon -> WeaponSO)
-    /// </summary>
     private void PopulateWeaponSOFromEntity(WeaponSO so, DB_._Weapon entity)
     {
         if (so == null || entity == null) return;
 
-        // 1. 기본 정보
         so.WeaponID = entity.WeaponID;
         so.name = entity.name;
 
-        // 2. Enum 파싱 (DB의 Type 필드는 String임)
-        // entity.Type -> WeaponType Enum
         string typeStr = entity.Type;
         if (Enum.TryParse(typeStr, true, out WeaponType parsedType))
         {
@@ -188,7 +175,6 @@ public class BgDbToWeaponSoConverterWindow : EditorWindow
             so.weaponType = WeaponType.GreatSword;
         }
 
-        // 3. 전투 스탯 매핑
         so.Atk_Spd = entity.Atk_Spd;
 
         so.Combo_1 = entity.Combo_1;
@@ -211,15 +197,11 @@ public class BgDbToWeaponSoConverterWindow : EditorWindow
         so.V_Cool = entity.V_Cool;
     }
 
-    /// <summary>
-    /// BGDatabase의 _Weapon 엔티티 수집
-    /// </summary>
     private List<DB_._Weapon> GatherAllWeaponEntities()
     {
         var result = new List<DB_._Weapon>();
         try
         {
-            // Generated Code의 CountEntities와 GetEntity 사용
             int count = DB_._Weapon.CountEntities;
             for (int i = 0; i < count; i++)
             {

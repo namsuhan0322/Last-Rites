@@ -2,14 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
-public class AIBase : MonoBehaviour
+public class AIBase : Actor
 {
     [Header("체력")]
     public int maxHp = 100;
-    public int hp;
-    public bool isDead = false;
 
     [Header("이동")]
     public NavMeshAgent agent;
@@ -41,11 +38,12 @@ public class AIBase : MonoBehaviour
 
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
 
-        hp = maxHp;
+        InitActor(maxHp);
     }
 
     protected virtual void Update()
     {
+        if (_isDead) return;
         if (player == null) return;
 
         DetectEnemy();
@@ -55,6 +53,7 @@ public class AIBase : MonoBehaviour
         else
             HandleFollow();
     }
+
     // --------- 적 탐지 ----------
     protected virtual void DetectEnemy()
     {
@@ -156,9 +155,7 @@ public class AIBase : MonoBehaviour
         }
     }
 
-
     //----------서로 밀어내기------------
-
     Vector3 ApplySeparation(Vector3 desiredPos)
     {
         Collider[] allies = Physics.OverlapSphere(
@@ -185,27 +182,14 @@ public class AIBase : MonoBehaviour
         return desiredPos;
     }
 
-
-    //공격 변수 (체력 담당)
-    public virtual void TakeDamage(int dmg)
-    {
-        if (isDead) return;
-
-        hp -= dmg;
-
-        if (hp <= 0)
-        {
-            Die();
-        }
-    }
-
     //죽음 
     protected virtual void Die()
     {
-        isDead = true;
+        base.Die();
 
         agent.isStopped = true;
-    
+        agent.enabled = false;
+
         GetComponent<Animator>()?.SetTrigger("Die");
 
         foreach (var c in GetComponents<Collider>())
@@ -214,12 +198,8 @@ public class AIBase : MonoBehaviour
         Destroy(gameObject, 3f);  //이건 죽는 애니메이션 초수에 따라 달라짐~
     }
 
-
-
     // -------- 애니메이션 훅 ----------
-    protected virtual void SetWalking(bool walking)
-    {
-    }
+    protected virtual void SetWalking(bool walking) { }
 
     void OnDrawGizmosSelected()
     {

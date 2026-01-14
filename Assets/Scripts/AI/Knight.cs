@@ -10,7 +10,6 @@ public class Knight : AIBase
     public GameObject speechBubblePrefab;   
     Transform speechPoint;
 
-
     bool canTaunt = true;
 
     protected override void Update()

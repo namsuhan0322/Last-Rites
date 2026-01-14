@@ -5,7 +5,9 @@ public class Actor : MonoBehaviour
 {
     [SerializeField] protected int _currentHP;
     protected int _maxHP;
+
     protected bool _isDead = false;
+    public bool IsDead => _isDead;
 
     public event Action<int, int> OnHPChanged;
     public event Action OnDeath;
@@ -24,8 +26,6 @@ public class Actor : MonoBehaviour
         if (_isDead) return;
 
         _currentHP -= damage;
-        Debug.Log($"{gameObject.name} took {damage} damage. Current HP: {_currentHP}");
-
         OnHPChanged?.Invoke(_currentHP, _maxHP);
 
         if (_currentHP <= 0)

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "WeaponDatabaseSO", menuName = "WeaponDatabase")]
+[CreateAssetMenu(fileName = "WeaponSO", menuName = "WeaponDatabase")]
 public class WeaponDatabaseSO : ScriptableObject
 {
     public List<WeaponSO> weapons = new List<WeaponSO>();

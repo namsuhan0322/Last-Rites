@@ -5,3 +5,11 @@ public enum WeaponType
     DualBlade,
     Range
 }
+
+public enum RoleType
+{
+    Tanker,
+    Healer,
+    Dealer,
+    Ranger
+}

@@ -12,7 +12,6 @@ public class Wolf : Enemy
     float attackTimer = 0f;
     bool isAttacking = false;
 
-
     //부모 스크립트 덮어씌우기
     protected override void TryAttack()
     {
@@ -60,10 +59,10 @@ public class Wolf : Enemy
         }
 
         // 플레이어면 플레이어 체력
-        PlayerHealth p = currentTarget.GetComponent<PlayerHealth>();  //아직 몰라유
-        if (p != null)
+        Actor player = currentTarget.GetComponent<Actor>();
+        if (player != null)
         {
-            p.TakeDamage(attackDamage);
+            player.TakeDamage(attackDamage);
         }
     }
 

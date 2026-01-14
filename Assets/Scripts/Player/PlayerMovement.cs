@@ -6,9 +6,9 @@ public class PlayerMovement : MonoBehaviour
     #region 레퍼런스
     private NavMeshAgent agent;
     private CharacterController cc;
+    private PlayerStats stats;
 
     [Header("스탯")]
-    [SerializeField] private float _moveSpeed = 5f;
     [SerializeField] private float _rotateSpeed = 10f;
 
     private float _gravity = -9.81f;
@@ -21,10 +21,11 @@ public class PlayerMovement : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         cc = GetComponent<CharacterController>();
+        stats = GetComponent<PlayerStats>();
 
         agent.updatePosition = false;
         agent.updateRotation = false;
-        agent.speed = _moveSpeed;
+        agent.speed = stats.MoveSpeed;
     }
 
     #endregion

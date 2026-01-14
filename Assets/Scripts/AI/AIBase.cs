@@ -29,8 +29,6 @@ public class AIBase : MonoBehaviour
     public float separationRadius = 2f;
     public float separationForce = 2f;
 
-
-
     protected Transform player;
 
     Transform targetEnemy;

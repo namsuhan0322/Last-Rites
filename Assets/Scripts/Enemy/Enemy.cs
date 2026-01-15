@@ -35,10 +35,16 @@ public class Enemy : Actor
     [Header("포위 설정")]
     public float surroundRadius = 2f;
 
+
+    [SerializeField] float stunMarkDuration = 2f; 
+    public TextMeshPro stunText;
     public TextMeshPro tauntText;
 
+    //기절변수들
+    bool isStunned = false;
+    float stunTimer = 0f;
+
     //변수들 선언
-    Transform lockedTarget;
     public LayerMask enemyLayer;   
     Transform player;
     Transform forcedTarget;
@@ -50,6 +56,8 @@ public class Enemy : Actor
 
         InitActor(data.Enemyhp);   
     }
+
+    //어웨이크
 
     protected override void Awake()
     {
@@ -65,27 +73,39 @@ public class Enemy : Actor
     //업데이트 부분
     void Update()
     {
-        if (forcedTarget != null)
-        {
-            if (float.IsInfinity(forcedTimer))
-            {
-                currentTarget = forcedTarget;
-            }
-            else
-            {
-                forcedTimer -= Time.deltaTime;
+        if (_isDead) return;
 
-                if (forcedTimer > 0)
-                    currentTarget = forcedTarget;
-                else
-                    forcedTarget = null;
-            }
+        if (isStunned)
+        {
+            stunTimer -= Time.deltaTime;
+            if (stunTimer <= 0f)
+                EndStun();
+            return;
         }
 
+        // ⬇️ 이 아래부터 정상 AI
+        HandleForcedTarget();
         HandleMovement();
-        TryAttack();  
+        TryAttack();
     }
 
+    //도발 걸린 상태
+    void HandleForcedTarget()
+    {
+        if (forcedTarget == null) return;
+
+        if (float.IsInfinity(forcedTimer))
+        {
+            currentTarget = forcedTarget;
+            return;
+        }
+
+        forcedTimer -= Time.deltaTime;
+        if (forcedTimer > 0)
+            currentTarget = forcedTarget;
+        else
+            forcedTarget = null;
+    }
 
     //-----------누굴 따라갈것인가?-----------
     void HandleMovement()
@@ -99,24 +119,18 @@ public class Enemy : Actor
             return;
         }
 
-        if (lockedTarget != null)
+        Transform bestTarget = GetBestTarget();
+
+        float dist = Vector3.Distance(transform.position, bestTarget.position);
+
+        if (dist <= detectRadius)
         {
-            currentTarget = lockedTarget;
-
-            ChasePlayer(Vector3.Distance(transform.position, currentTarget.position));
-            return;
-        }
-
-        float distToPlayer = Vector3.Distance(transform.position, player.position);
-
-        if (distToPlayer <= detectRadius)
-        {
-            lockedTarget = GetBestTarget();   
-            currentTarget = lockedTarget;
-            ChasePlayer(distToPlayer);
+            currentTarget = bestTarget;
+            ChasePlayer(dist);
         }
         else
         {
+            currentTarget = null;
             RandomPatrol();
         }
     }
@@ -267,6 +281,7 @@ public class Enemy : Actor
     public void ShowTauntMark(float duration)
     {
         if (tauntText == null) return;
+        if (isStunned) return;   // ⭐ 핵심
 
         tauntText.gameObject.SetActive(true);
         tauntText.text = "!";
@@ -279,11 +294,57 @@ public class Enemy : Actor
         yield return new WaitForSeconds(time);
         tauntText.gameObject.SetActive(false);
     }
+
+    //스턴을 당했나?
+    public void ApplyStun(float duration)
+    {
+        if (isStunned) return;
+
+        isStunned = true;
+        stunTimer = duration;
+
+        ShowStunMark();
+    }
+
+    //스턴 마크 보여주기
+    void ShowStunMark()
+    {
+        if (stunText == null) return;
+
+        stunText.gameObject.SetActive(true);
+        stunText.text = "@";
+
+        StopCoroutine(nameof(HideStunMark));
+        StartCoroutine(HideStunMark());
+    }
+
+    //스턴 마크 숨기기
+    IEnumerator HideStunMark()
+    {
+        yield return new WaitForSeconds(stunMarkDuration);
+        stunText.gameObject.SetActive(false);
+    }
+
+    //스턴이 끝난 시점
+    void EndStun()
+    {
+        isStunned = false;
+
+        agent.isStopped = false;
+        animator?.SetBool("Stun", false);
+
+        stunText.gameObject.SetActive(false);
+
+        Debug.Log($"[Enemy] {name} STUN END");
+    }
+
     // ---------- 애니메이션 ----------
     void SetWalking(bool walking)
     {
     }
 
+
+    //적 죽음
     protected override void Die()
     {
         if (_isDead) return;
@@ -303,6 +364,7 @@ public class Enemy : Actor
 
         Destroy(gameObject);
     }
+    //공격
 
     protected virtual void TryAttack()
     {

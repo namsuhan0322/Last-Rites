@@ -12,7 +12,14 @@ public class Actor : MonoBehaviour
     public event Action<int, int> OnHPChanged;
     public event Action OnDeath;
 
+    protected Animator animator;
+
     protected virtual void Start() { }
+
+    protected virtual void Awake()
+    {
+        animator = GetComponent<Animator>();
+    }
 
     public virtual void InitActor(int maxHP)
     {

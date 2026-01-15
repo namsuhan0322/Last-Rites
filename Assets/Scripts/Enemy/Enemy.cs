@@ -4,14 +4,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour
+public class Enemy : Actor
 {
     WaveManager manager;
     EnemyData data;
-
-    [Header("스탯")]
-    public int maxHp = 10;
-    int hp;
 
     [Header("탐지")]
     public float detectRadius = 10f;
@@ -39,7 +35,6 @@ public class Enemy : MonoBehaviour
     [Header("포위 설정")]
     public float surroundRadius = 2f;
 
-
     public TextMeshPro tauntText;
 
     //변수들 선언
@@ -52,12 +47,14 @@ public class Enemy : MonoBehaviour
     public void Init(WaveManager manager, EnemyData data)
     {
         this.manager = manager;
-        maxHp = data.Enemyhp;
-        hp = maxHp;
+
+        InitActor(data.Enemyhp);   
     }
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake(); 
+
         if (agent == null)
             agent = GetComponent<NavMeshAgent>();
 
@@ -287,18 +284,26 @@ public class Enemy : MonoBehaviour
     {
     }
 
-    // ---------- 전투 ----------
-    public void TakeDamage(int dmg)
+    protected override void Die()
     {
-        hp -= dmg;
-        if (hp <= 0) Destroy(gameObject);
+        if (_isDead) return;
+
+        base.Die();
+
+        if (agent != null)
+        {
+            agent.isStopped = true;
+            agent.enabled = false;
+        }
+
+        if (animator != null)
+            animator.SetTrigger("Die");
+
+        manager?.OnEnemyDead();
+
+        Destroy(gameObject);
     }
 
-    void OnDestroy()
-    {
-        if (manager != null)
-            manager.OnEnemyDead();
-    }
     protected virtual void TryAttack()
     {
         // 기본 Enemy는 공격 안 함

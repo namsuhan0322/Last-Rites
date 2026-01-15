@@ -5,9 +5,6 @@ using UnityEngine.AI;
 
 public class AIBase : Actor
 {
-    [Header("체력")]
-    public int maxHp = 100;
-
     [Header("이동")]
     public NavMeshAgent agent;
 
@@ -28,17 +25,26 @@ public class AIBase : Actor
 
     protected Transform player;
 
+    protected AISO data;
+
     Transform targetEnemy;
     bool isChasingEnemy = false;
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
+
         if (agent == null)
             agent = GetComponent<NavMeshAgent>();
 
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
+    }
+    //Actor에서 가져오기
+    public virtual void Setup(AISO aiData)
+    {
+        data = aiData;
 
-        InitActor(maxHp);
+        InitActor(data.Hp);
     }
 
     protected virtual void Update()
@@ -183,19 +189,21 @@ public class AIBase : Actor
     }
 
     //죽음 
-    protected virtual void Die()
+    protected override void Die()
     {
+        if (_isDead) return;
+
         base.Die();
 
         agent.isStopped = true;
         agent.enabled = false;
 
-        GetComponent<Animator>()?.SetTrigger("Die");
+        animator?.SetTrigger("Die");
 
         foreach (var c in GetComponents<Collider>())
             c.enabled = false;
 
-        Destroy(gameObject, 3f);  //이건 죽는 애니메이션 초수에 따라 달라짐~
+        Destroy(gameObject, 3f);  //애니메이터 초수 따라서
     }
 
     // -------- 애니메이션 훅 ----------

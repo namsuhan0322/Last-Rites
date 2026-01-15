@@ -5,12 +5,20 @@ using UnityEngine;
 public class Knight : AIBase
 {
     [Header("도발 스킬")]
-    public float tauntRadius = 6f;
-    public float tauntCooldown = 20f;
+    float tauntRadius;
+    float tauntCooldown;
     public GameObject speechBubblePrefab;   
     Transform speechPoint;
 
     bool canTaunt = true;
+
+    public override void Setup(AISO aiData)
+    {
+        base.Setup(aiData);
+
+        tauntRadius = data.S1_Val;
+        tauntCooldown = data.S1_Cool;
+    }
 
     protected override void Update()
     {

@@ -44,7 +44,7 @@ public class PlayerController : MonoBehaviour
                 playerMovement.MoveTo(navMeshHit.position);
                 OnGroundTouch?.Invoke(navMeshHit.position);
 
-                //EffectManager.Instance.PlayEffect("ClickMousePoint", navMeshHit.position + Vector3.up * 0.1f, Quaternion.identity);
+                EffectManager.Instance.PlayEffect("ClickMousePoint", navMeshHit.position + Vector3.up * 0.1f, Quaternion.identity);
             }
         }
     }

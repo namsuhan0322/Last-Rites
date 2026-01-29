@@ -154,7 +154,7 @@ MonoBehaviour:
   database: {fileID: 11400000, guid: 5b4144cb3681ebe41a681084b1337649, type: 2}
   knightPrefab: {fileID: 9166788995872715907, guid: 2374efd8c504f87449d6e2f569e9c6d2,
     type: 3}
-  healerPrefab: {fileID: 9166788995872715907, guid: 2374efd8c504f87449d6e2f569e9c6d2,
+  healerPrefab: {fileID: 4820854469222667050, guid: 39bc506167c3b5e498fc52bee6642716,
     type: 3}
   dealerPrefab: {fileID: 9166788995872715907, guid: 2374efd8c504f87449d6e2f569e9c6d2,
     type: 3}
@@ -162,6 +162,8 @@ MonoBehaviour:
     type: 3}
   initialSpawnList:
   - aiId: 100
+    count: 1
+  - aiId: 101
     count: 1
   spawnRadius: 3
   minDistanceBetweenAI: 1.5
@@ -2134,6 +2136,12 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 8588853205922807745, guid: 9d6fbbdc95bbee5419a7d0836e2906d4,
         type: 3}
+    - target: {fileID: 5496386407310168169, guid: ec9a9658128a940408e8ff074777f28b,
+        type: 3}
+      propertyPath: enemyPool.Array.data[0].enemy
+      value: 
+      objectReference: {fileID: 11400000, guid: 7afd6d6749907e64ab37faa5b1735394,
+        type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -10,9 +10,8 @@ public class Wolf : Enemy
     public float attackCooldown = 1.5f;
 
     float attackTimer = 0f;
-    bool isAttacking = false;
 
-    //부모 스크립트 덮어씌우기
+    // 부모 공격 로직 덮어쓰기
     protected override void TryAttack()
     {
         if (currentTarget == null) return;
@@ -21,36 +20,27 @@ public class Wolf : Enemy
 
         attackTimer -= Time.deltaTime;
 
-        if (dist <= attackRange && attackTimer <= 0f && !isAttacking)
+        if (dist <= attackRange && attackTimer <= 0f)
         {
             Attack();
         }
     }
 
-    //공격 변수
+    //공격 변수 나중에 애니메이터 추가
     void Attack()
     {
-        isAttacking = true;
         attackTimer = attackCooldown;
 
-        // 애니메이션 트리거
-        GetComponent<Animator>().SetTrigger("Attack");
-    }
-
-    //늑대공격 애니메이션 시작 부분 ㄴ이벤트쪽
-    public void OnAttackHit()
-    {
-        if (currentTarget == null) return;
-
+        // 방향 체크 (뒤에 있으면 공격 안 함)
         Vector3 dirToTarget = (currentTarget.position - transform.position).normalized;
         float dot = Vector3.Dot(transform.forward, dirToTarget);
-
         if (dot < 0.5f) return;
 
+        // 사거리 체크
         float dist = Vector3.Distance(transform.position, currentTarget.position);
         if (dist > attackRange) return;
 
-        //AI쪽 데미지 주기
+        // AI 공격
         AIBase ai = currentTarget.GetComponent<AIBase>();
         if (ai != null)
         {
@@ -58,17 +48,11 @@ public class Wolf : Enemy
             return;
         }
 
-        // 플레이어면 플레이어 체력
+        // 플레이어 공격
         Actor player = currentTarget.GetComponent<Actor>();
         if (player != null)
         {
             player.TakeDamage(attackDamage);
         }
-    }
-
-    // 애니메이션 끝에서 호출
-    public void OnAttackEnd()
-    {
-        isAttacking = false;
     }
 }

@@ -20,6 +20,8 @@ public class Knight : AIBase
     bool canBash = true;
     bool canTaunt = true;
 
+    AISpeechController speech;
+
     //AISOs에서 가져오는 스킬 쿨, 수치
     public override void Setup(AISO aiData)
     {
@@ -33,6 +35,13 @@ public class Knight : AIBase
         bashStunTime = data.S2_Val;
         bashCooldown = data.S2_Cool;
     }
+
+    protected override void Awake()
+    {
+        base.Awake(); 
+
+        speech = GetComponent<AISpeechController>();
+    }   
 
     protected override void Update()
     {
@@ -68,7 +77,7 @@ public class Knight : AIBase
     {
         canTaunt = false;
 
-        ShowTauntSpeech("내 뒤로 숨게!\n이놈들은 내가 맡지!", 3f);
+        speech?.Speak("내 뒤로 숨게!\n이놈들은 내가 맡지!", 3f);
 
         Collider[] enemies = Physics.OverlapSphere(
             transform.position,
@@ -89,42 +98,6 @@ public class Knight : AIBase
         yield return new WaitForSeconds(tauntCooldown);
         canTaunt = true;
     }
-
-    //도발 메세지 생성 위치
-    public void ShowTauntSpeech(string message, float duration)
-    {
-        Vector3 pos = transform.position + Vector3.up * 2f;
-        GameObject bubble = Instantiate(speechBubblePrefab, pos, Quaternion.identity);
-
-        bubble.transform.SetParent(transform);
-
-        var tmp = bubble.GetComponentInChildren<TMPro.TextMeshPro>();
-
-        StartCoroutine(TypeText(tmp, message, 0.04f));
-
-        StartCoroutine(HideSpeech(bubble, duration));
-    }
-
-    //대화 숨기기
-    IEnumerator HideSpeech(GameObject bubble, float t)
-    {
-        yield return new WaitForSeconds(t);
-        Destroy(bubble);
-    }
-
-
-    //타이핑효과
-    IEnumerator TypeText(TMPro.TextMeshPro text, string message, float speed)
-    {
-        text.text = "";
-
-        foreach (char c in message)
-        {
-            text.text += c;
-            yield return new WaitForSeconds(speed);
-        }
-    }
-
     //방패치기
     void TryShieldBash()
     {

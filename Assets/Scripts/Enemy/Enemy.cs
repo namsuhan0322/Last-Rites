@@ -9,20 +9,8 @@ public class Enemy : Actor
     WaveManager manager;
     EnemyData data;
 
-    [Header("탐지")]
-    public float detectRadius = 10f;
-
-    [Header("순찰")]
-    public float patrolRadius = 8f;     // 랜덤 탐색 반경
-    public float patrolWaitTime = 1f;   // 도착 후 잠깐 대기
-    float waitTimer = 0f;
-
     [Header("이동")]
     public NavMeshAgent agent;
-
-    [Header("속도")]
-    public float patrolSpeed = 2f;   // 순찰 속도
-    public float chaseSpeed = 5f;    // 추적 속도
 
     [Header("타겟 설정")]
     public LayerMask aiLayer;
@@ -49,14 +37,30 @@ public class Enemy : Actor
     Transform player;
     Transform forcedTarget;
     float forcedTimer = 0f;
+    float detectRadius;
+    float patrolRadius;
+    float patrolWaitTime;
+    float patrolSpeed;
+    float chaseSpeed;
+    float waitTimer = 0f;
 
+
+
+    //EnemyData에서 가져온 수치
     public void Init(WaveManager manager, EnemyData data)
-    {
-        this.manager = manager;
+{
+    this.manager = manager;
+    this.data = data;
 
-        InitActor(data.Enemyhp);   
-    }
+    InitActor(data.enemyHp);
 
+    patrolSpeed = data.patrolSpeed;
+    chaseSpeed = data.chaseSpeed;
+    detectRadius = data.detectRadius;
+
+    if (agent != null)
+        agent.speed = patrolSpeed;
+}
     //어웨이크
 
     protected override void Awake()

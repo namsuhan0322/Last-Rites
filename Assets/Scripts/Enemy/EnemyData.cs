@@ -8,6 +8,10 @@ public class EnemyData : ScriptableObject
     public GameObject prefab;
 
     [Header("Stats")]
-    public int Enemyhp = 10;
-    public float moveSpeed = 3f;
+    public int enemyHp;
+    public float detectRadius;
+    public float patrolRadius;
+    public float patrolWaitTime;
+    public float patrolSpeed;
+    public float chaseSpeed;
 }

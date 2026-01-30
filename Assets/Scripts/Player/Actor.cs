@@ -28,6 +28,9 @@ public class Actor : MonoBehaviour
 
     public virtual void InitActor(int maxHP)
     {
+        Debug.Log($"[InitActor] {name} HP RESET to {maxHP}");
+
+
         _maxHP = maxHP;
         _currentHP = maxHP;
         _isDead = false;
@@ -38,6 +41,7 @@ public class Actor : MonoBehaviour
     public virtual void TakeDamage(int damage)
     {
         if (_isDead) return;
+        if (damage <= 0) return;  
 
         _currentHP -= damage;
         OnHPChanged?.Invoke(_currentHP, _maxHP);
@@ -46,6 +50,19 @@ public class Actor : MonoBehaviour
         {
             Die();
         }
+    }
+
+    public virtual void Heal(int amount)
+    {
+        if (_isDead) return;
+        if (amount <= 0) return;
+
+        int before = _currentHP;
+
+        _currentHP = Mathf.Clamp(_currentHP + amount, 0, _maxHP);
+
+        if (_currentHP != before)
+            OnHPChanged?.Invoke(_currentHP, _maxHP);
     }
 
     protected virtual void Die()

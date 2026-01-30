@@ -42,7 +42,6 @@ public class Healer : AIBase
     {
         if (_isDead) return;
 
-        // 🔹 캐스팅 중
         if (isCasting)
         {
             HandleCasting();
@@ -136,23 +135,9 @@ public class Healer : AIBase
 
     void HandleCasting()
     {
-        if (healTarget == null || healTarget.IsDead)
-        {
-            CancelCasting();
-            return;
-        }
-
-        // 대상이 사거리 벗어나면 취소
-        float dist = Vector3.Distance(transform.position, healTarget.transform.position);
-        if (dist > healRadius)
-        {
-            CancelCasting();
-            return;
-        }
-
         castTimer -= Time.deltaTime;
 
-        LookAtHealTarget();
+        LookAtHealTarget(); 
 
         if (castTimer <= 0f)
         {
@@ -163,11 +148,32 @@ public class Healer : AIBase
     // ---------------- 힐 완료 ----------------
     void CompleteHeal()
     {
-        healTarget.TakeDamage(-(int)healAmount);
+        if (player != null)
+        {
+            Actor p = player.GetComponent<Actor>();
+            if (p != null && !p.IsDead)
+                p.Heal((int)healAmount);
+        }
+
+        Collider[] allies = Physics.OverlapSphere(
+            transform.position,
+            healRadius,
+            aiLayer
+        );
+
+        foreach (var c in allies)
+        {
+            Actor ally = c.GetComponent<Actor>();
+            if (ally == null || ally.IsDead) continue;
+
+            ally.Heal((int)healAmount);
+        }
 
         healTimer = healCooldown;
         healTarget = null;
         isCasting = false;
+
+        agent.isStopped = false;
     }
 
 

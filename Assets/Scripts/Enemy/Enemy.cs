@@ -23,7 +23,6 @@ public class Enemy : Actor
     [Header("포위 설정")]
     public float surroundRadius = 2f;
 
-
     [SerializeField] float stunMarkDuration = 2f; 
     public TextMeshPro stunText;
     public TextMeshPro tauntText;
@@ -43,24 +42,34 @@ public class Enemy : Actor
     float patrolSpeed;
     float chaseSpeed;
     float waitTimer = 0f;
+    float attackRange;
+    float attackCooldown;
+    int attackDamage;
 
+    float attackTimer = 0f;
 
 
     //EnemyData에서 가져온 수치
     public void Init(WaveManager manager, EnemyData data)
-{
-    this.manager = manager;
-    this.data = data;
+    {
+        this.manager = manager;
+        this.data = data;
 
-    InitActor(data.enemyHp);
+        InitActor(data.enemyHp);
 
-    patrolSpeed = data.patrolSpeed;
-    chaseSpeed = data.chaseSpeed;
-    detectRadius = data.detectRadius;
+        patrolSpeed = data.patrolSpeed;
+        chaseSpeed = data.chaseSpeed;
+        detectRadius = data.detectRadius;
+        patrolRadius = data.patrolRadius;
+        attackDamage = data.attackDamage;
+        attackRange = data.attackRange;
+        attackCooldown = data.attackCooldown;
+        patrolWaitTime = data.patrolWaitTime;
+        if (agent != null)
+            agent.speed = patrolSpeed;
 
-    if (agent != null)
-        agent.speed = patrolSpeed;
-}
+        Debug.Log($"[Enemy] patrolRadius={patrolRadius}, detectRadius={detectRadius}");
+    }
     //어웨이크
 
     protected override void Awake()
@@ -87,7 +96,6 @@ public class Enemy : Actor
             return;
         }
 
-        // ⬇️ 이 아래부터 정상 AI
         HandleForcedTarget();
         HandleMovement();
         TryAttack();
@@ -370,8 +378,36 @@ public class Enemy : Actor
     }
     //공격
 
+    //데미지 받기
+    public override void TakeDamage(int damage)
+    {
+        base.TakeDamage(damage);
+
+        if (!_isDead)
+            animator?.SetTrigger("Hit");
+    }
     protected virtual void TryAttack()
     {
-        // 기본 Enemy는 공격 안 함
+        if (currentTarget == null) return;
+
+        attackTimer -= Time.deltaTime;
+        if (attackTimer > 0f) return;
+
+        float dist = Vector3.Distance(transform.position, currentTarget.position);
+        if (dist > attackRange) return;
+
+        Attack();
+    }
+
+    void Attack()
+    {
+        attackTimer = attackCooldown;
+
+        Actor target = currentTarget.GetComponent<Actor>();
+        if (target != null)
+        {
+            Debug.Log($"[Enemy Attack] {name} dmg={attackDamage}");
+            target.TakeDamage(attackDamage);
+        }
     }
 }

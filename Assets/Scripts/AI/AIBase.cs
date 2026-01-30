@@ -23,8 +23,13 @@ public class AIBase : Actor
     public float separationRadius = 2f;
     public float separationForce = 2f;
 
-    protected Transform player;
+    [Header("기본 공격")]
+    [SerializeField] protected float attackRange = 2f;
+    [SerializeField] protected float attackCooldown = 1.2f;
 
+    protected Transform player;
+    protected int atk;  // AISO에서 가져올 공격력
+    bool canAttack = true;  //공격할 수 있나?
     protected AISO data;
 
     Transform targetEnemy;
@@ -44,6 +49,7 @@ public class AIBase : Actor
     {
         data = aiData;
 
+        atk = data.Atk;         
         InitActor(data.Hp);
     }
 
@@ -55,9 +61,55 @@ public class AIBase : Actor
         DetectEnemy();
 
         if (isChasingEnemy)
+        {
             ChaseEnemy();
+            TryBasicAttack();   
+        }
         else
             HandleFollow();
+    }
+
+    //기본 공격
+    void TryBasicAttack()
+    {
+        if (!canAttack) return;
+        if (targetEnemy == null) return;
+
+        float dist = Vector3.Distance(transform.position, targetEnemy.position);
+        if (dist > attackRange) return;
+
+        StartCoroutine(BasicAttack());
+    }
+
+    IEnumerator BasicAttack()
+    {
+        canAttack = false;
+
+        agent.isStopped = true;
+        SetWalking(false);
+
+        LookAtEnemy();
+
+        // 공격 모션 타이밍
+        yield return new WaitForSeconds(0.3f);
+
+        if (targetEnemy != null)
+        {
+            Enemy enemy = targetEnemy.GetComponent<Enemy>();
+            if (enemy != null)
+            {
+                enemy.TakeDamage(atk);
+                OnAttackHit(enemy);   
+            }
+        }
+
+        yield return new WaitForSeconds(attackCooldown);
+        canAttack = true;
+    }
+
+    protected virtual void OnAttackHit(Enemy enemy) //직업별 확장성
+    {
+
     }
 
     // --------- 적 탐지 ----------
@@ -91,6 +143,7 @@ public class AIBase : Actor
         isChasingEnemy = true;     
     }
 
+    //적 쫒아가기
     void ChaseEnemy()
     {
         if (targetEnemy == null)
@@ -102,7 +155,6 @@ public class AIBase : Actor
 
         float dist = Vector3.Distance(transform.position, targetEnemy.position);
 
-        // 적이 너무 멀어지거나 사라지면 포기
         if (dist > attackDetectRadius * 1.5f)
         {
             targetEnemy = null;
@@ -110,19 +162,17 @@ public class AIBase : Actor
             return;
         }
 
+        if (dist <= attackRange)
+        {
+            agent.isStopped = true;
+            SetWalking(false);
+            LookAtEnemy();
+            return;
+        }
+
         agent.isStopped = false;
         agent.SetDestination(targetEnemy.position);
         SetWalking(true);
-
-        // 바라보기
-        Vector3 dir = targetEnemy.position - transform.position;
-        dir.y = 0;
-        if (dir != Vector3.zero)
-            transform.rotation = Quaternion.Lerp(
-                transform.rotation,
-                Quaternion.LookRotation(dir),
-                Time.deltaTime * 8f
-            );
     }
 
     // --------- 적 바라보기 ----------
@@ -209,9 +259,14 @@ public class AIBase : Actor
     // -------- 애니메이션 훅 ----------
     protected virtual void SetWalking(bool walking) { }
 
+
+    //기즈모 확인
     void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackDetectRadius);
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }

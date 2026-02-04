@@ -13,5 +13,12 @@ MonoBehaviour:
   m_Name: Wolf
   m_EditorClassIdentifier: 
   prefab: {fileID: 5266672195162645633, guid: 7d0903488ee8713478f73dcd132482cc, type: 3}
-  Enemyhp: 80
-  moveSpeed: 2
+  enemyHp: 80
+  patrolSpeed: 3
+  chaseSpeed: 2
+  detectRadius: 6
+  patrolRadius: 4
+  patrolWaitTime: 2
+  attackDamage: 5
+  attackRange: 2
+  attackCooldown: 1.5

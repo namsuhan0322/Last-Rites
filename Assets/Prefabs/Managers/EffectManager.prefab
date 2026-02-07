@@ -44,4 +44,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5749d286c3c59bd4dadbdcee64e72ef3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  effects: []
+  effects:
+  - _name: ClickMousePoint
+    _effectPrefab: {fileID: 2362566181824799988, guid: c5b5035cb6b74434bb35a7dcb09c2725,
+      type: 3}
+    _initialPoolSize: 1

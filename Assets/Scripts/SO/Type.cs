@@ -1,9 +1,9 @@
 public enum WeaponType
 {
     GreatSword,
-    Hammer,
+    SwordShield,
     DualBlade,
-    Range
+    Spear
 }
 
 public enum RoleType

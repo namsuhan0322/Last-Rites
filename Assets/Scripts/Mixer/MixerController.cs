@@ -1,63 +1,91 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using TMPro;
+using UnityEngine;
 using UnityEngine.Audio;
 
 public class MixerController : MonoBehaviour
 {
-    #region 레퍼런스
-    [Header("Mixer")]
-    [SerializeField] private AudioMixer _audioMixer;
+    [Header("Description UI")]
+    public TextMeshProUGUI descriptionTitle;
+    public TextMeshProUGUI descriptionContent;
 
-    [Header("Slider")]
-    [SerializeField] private Slider _musicMasterSlider;
-    [SerializeField] private Slider _musicBGMSlider;
-    [SerializeField] private Slider _musicSFXSlider;
+    [Header("Slider Items")]
+    public SliderOptionItem masterSlider;
+    public SliderOptionItem bgmSlider;
+    public SliderOptionItem sfxSlider;
 
-    #endregion
+    [Header("Audio Mixer")]
+    public AudioMixer audioMixer;
 
-    #region 초기화
-    private void Awake()
+    private void Start()
+    {
+        InitializeSettings();
+    }
+
+    private void InitializeSettings()
     {
         float masterVol = PlayerPrefs.GetFloat("Volume_Master", 1f);
         float bgmVol = PlayerPrefs.GetFloat("Volume_BGM", 1f);
         float sfxVol = PlayerPrefs.GetFloat("Volume_SFX", 1f);
 
-        _musicMasterSlider.value = masterVol;
-        _musicBGMSlider.value = bgmVol;
-        _musicSFXSlider.value = sfxVol;
+        masterSlider.Initialize(masterVol, SetMasterVolume);
+        masterSlider.onSelected = OnSliderSelected;
 
-        _musicMasterSlider.onValueChanged.AddListener(SetMasterVolume);
-        _musicBGMSlider.onValueChanged.AddListener(SetBGMVolume);
-        _musicSFXSlider.onValueChanged.AddListener(SetSFXVolume);
+        bgmSlider.Initialize(bgmVol, SetBGMVolume);
+        bgmSlider.onSelected = OnSliderSelected;
 
-        SetMasterVolume(masterVol);
-        SetBGMVolume(bgmVol);
-        SetSFXVolume(sfxVol);
+        sfxSlider.Initialize(sfxVol, SetSFXVolume);
+        sfxSlider.onSelected = OnSliderSelected;
+
+        UpdateMixer("Master", masterVol);
+        UpdateMixer("BGM", bgmVol);
+        UpdateMixer("SFX", sfxVol);
+
+        OnSliderSelected(masterSlider);
     }
-    #endregion
 
-    #region 볼륨 조절
+    private void OnSliderSelected(SliderOptionItem selectedItem)
+    {
+        masterSlider.SetSelectedState(masterSlider == selectedItem);
+        bgmSlider.SetSelectedState(bgmSlider == selectedItem);
+        sfxSlider.SetSelectedState(sfxSlider == selectedItem);
+
+        if (descriptionTitle != null) descriptionTitle.text = selectedItem.optionName;
+        if (descriptionContent != null) descriptionContent.text = selectedItem.optionDescription;
+    }
+
+    #region 볼륨 조절 로직
     private float GetDecibel(float volume)
     {
         return Mathf.Log10(Mathf.Max(0.0001f, volume)) * 20;
     }
 
+    private void UpdateMixer(string parameterName, float volume)
+    {
+        if (audioMixer != null)
+        {
+            audioMixer.SetFloat(parameterName, GetDecibel(volume));
+        }
+    }
+
     public void SetMasterVolume(float volume)
     {
-        _audioMixer.SetFloat("Master", GetDecibel(volume));
+        UpdateMixer("Master", volume);
         PlayerPrefs.SetFloat("Volume_Master", volume);
+        Debug.Log($"Master Volume: {volume * 100:F0}%");
     }
 
     public void SetBGMVolume(float volume)
     {
-        _audioMixer.SetFloat("BGM", GetDecibel(volume));
+        UpdateMixer("BGM", volume);
         PlayerPrefs.SetFloat("Volume_BGM", volume);
+        Debug.Log($"BGM Volume: {volume * 100:F0}%");
     }
 
     public void SetSFXVolume(float volume)
     {
-        _audioMixer.SetFloat("SFX", GetDecibel(volume));
+        UpdateMixer("SFX", volume);
         PlayerPrefs.SetFloat("Volume_SFX", volume);
+        Debug.Log($"SFX Volume: {volume * 100:F0}%");
     }
 
     #endregion

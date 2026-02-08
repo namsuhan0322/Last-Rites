@@ -60,14 +60,14 @@ public class GameManager : SingletonMono<GameManager>
         yield return new WaitForEndOfFrame();
 
         // 매니저들 초기화 순서 중요
-        //if (SceneManager.Instance != null)
-        //    Debug.Log("SceneManager 연결 확인");
-        //if (SoundManager.Instance != null)
-        //    Debug.Log("SoundManager 연결 확인");
-        //if (UIManager.Instance != null)
-        //    Debug.Log("UIManager 연결 확인");
-        //if (SaveManager.Instance != null)
-        //    Debug.Log("SaveManager 연결 확인");
+        if (ScenesManager.Instance != null)
+            Debug.Log("SceneManager 연결 확인");
+        if (SoundManager.Instance != null)
+            Debug.Log("SoundManager 연결 확인");
+        /*if (UIManager.Instance != null)
+            Debug.Log("UIManager 연결 확인");
+        if (SaveManager.Instance != null)
+            Debug.Log("SaveManager 연결 확인");*/
     }
 
     private void HandleInput()

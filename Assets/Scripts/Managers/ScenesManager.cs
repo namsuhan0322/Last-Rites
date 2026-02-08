@@ -1,224 +1,143 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
-using System.Collections.Generic;
 
 public class ScenesManager : SingletonMono<ScenesManager>
 {
     [Header("Scene Settings")]
-    public string mainMenuSceneName = "MainMenu";
+    public string mainMenuSceneName = "MainScene";
     public string tutorialSceneName = "TutorialScene";
-    public string loadingSceneName = "Loading";
+    public string loadingSceneName = "LoadingScene";
 
     [Header("Loading Settings")]
-    public float minimumLoadingTime = 2f;
+    [Tooltip("로딩을 최소 몇 초 동안 유지할지 설정합니다.")]
+    public float minimumLoadingTime = 5f;
     public bool useLoadingScreen = true;
     public bool useFadeEffect = true;
 
     [Header("Fade Settings")]
-    public float fadeSpeed = 1f;
+    public float fadeSpeed = 2f;
     public Color fadeColor = Color.black;
 
     private string currentSceneName;
-    private string targetSceneName;
     private bool isLoading = false;
     private CanvasGroup fadeCanvasGroup;
     private GameObject fadeObject;
 
-    // 씬 로딩 진행률 추적
     public float LoadingProgress { get; private set; }
 
     protected override void Awake()
     {
         base.Awake();
-
-        // 현재 씬 이름 저장
         currentSceneName = SceneManager.GetActiveScene().name;
-
-        // 페이드 UI 생성
-        if (useFadeEffect)
-        {
-            CreateFadeUI();
-        }
-
-        Debug.Log("SceneManager 초기화 완료");
+        if (useFadeEffect) CreateFadeUI();
     }
 
     private void Start()
     {
-        // 씬 로딩 이벤트 구독
         SceneManager.sceneLoaded += OnSceneLoaded;
         SceneManager.sceneUnloaded += OnSceneUnloaded;
     }
 
     private void OnDestroy()
     {
-        // 이벤트 구독 해제
         SceneManager.sceneLoaded -= OnSceneLoaded;
         SceneManager.sceneUnloaded -= OnSceneUnloaded;
     }
 
-    #region Fade UI 생성
-    private void CreateFadeUI()
-    {
-        // 페이드용 Canvas 생성
-        fadeObject = new GameObject("FadeCanvas");
-        //fadeObject.transform.SetParent(transform);
-
-        Canvas canvas = fadeObject.AddComponent<Canvas>();
-        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-        canvas.sortingOrder = 9999; // 가장 위에 렌더링
-
-        // CanvasGroup 추가
-        fadeCanvasGroup = fadeObject.AddComponent<CanvasGroup>();
-        fadeCanvasGroup.alpha = 0f;
-        fadeCanvasGroup.blocksRaycasts = false;
-
-        // 페이드 이미지 생성
-        GameObject fadeImage = new GameObject("FadeImage");
-        fadeImage.transform.SetParent(fadeObject.transform);
-
-        UnityEngine.UI.Image image = fadeImage.AddComponent<UnityEngine.UI.Image>();
-        image.color = fadeColor;
-
-        // 전체 화면 크기로 설정
-        RectTransform rect = fadeImage.GetComponent<RectTransform>();
-        rect.anchorMin = Vector2.zero;
-        rect.anchorMax = Vector2.one;
-        rect.offsetMin = Vector2.zero;
-        rect.offsetMax = Vector2.zero;
-
-        DontDestroyOnLoad(fadeObject);
-    }
-
-    #endregion
-
-    #region Scene Loading Methods
-    /// <summary>
-    /// 기본 씬 로딩 (로딩 화면 없음)
-    /// </summary>
     public void LoadScene(string sceneName)
     {
-        if (isLoading)
-        {
-            Debug.LogWarning("이미 씬 로딩 중입니다.");
-            return;
-        }
+        if (isLoading) return;
 
-        targetSceneName = sceneName;
-
-        if (useFadeEffect)
-        {
-            StartCoroutine(LoadSceneWithFade(sceneName));
-        }
+        if (useLoadingScreen)
+            StartCoroutine(LoadSceneWithLoading(sceneName));
         else
-        {
-            StartCoroutine(LoadSceneAsync(sceneName));
-        }
+            StartCoroutine(LoadSceneDirectly(sceneName));
     }
 
-    /// <summary>
-    /// 로딩 화면을 사용한 씬 로딩
-    /// </summary>
-    public void LoadSceneWithLoadingScreen(string sceneName)
-    {
-        if (isLoading)
-        {
-            Debug.LogWarning("이미 씬 로딩 중입니다.");
-            return;
-        }
-
-        targetSceneName = sceneName;
-        StartCoroutine(LoadSceneWithLoading(sceneName));
-    }
-
-    /// <summary>
-    /// 페이드 효과와 함께 씬 로딩
-    /// </summary>
-    private IEnumerator LoadSceneWithFade(string sceneName)
+    private IEnumerator LoadSceneWithLoading(string targetScene)
     {
         isLoading = true;
         GameManager.Instance?.ChangeGameState(GameState.Loading);
 
         // 페이드 인
-        yield return StartCoroutine(FadeIn());
+        if (useFadeEffect) yield return StartCoroutine(FadeIn());
 
-        // 씬 로딩
-        yield return StartCoroutine(LoadSceneAsync(sceneName));
+        // 로딩 씬 로드
+        SceneManager.LoadScene(loadingSceneName);
+        yield return null;
 
         // 페이드 아웃
-        yield return StartCoroutine(FadeOut());
+        if (useFadeEffect) yield return StartCoroutine(FadeOut());
 
-        isLoading = false;
-    }
+        // 비동기 로딩 시작 (활성화 막기)
+        AsyncOperation op = SceneManager.LoadSceneAsync(targetScene);
+        op.allowSceneActivation = false;
 
-    /// <summary>
-    /// 로딩 화면을 사용한 씬 로딩
-    /// </summary>
-    private IEnumerator LoadSceneWithLoading(string sceneName)
-    {
-        isLoading = true;
-        GameManager.Instance?.ChangeGameState(GameState.Loading);
+        float timer = 0.0f;
+        LoadingProgress = 0f;
 
-        // 로딩 화면 로드
-        if (useLoadingScreen && !string.IsNullOrEmpty(loadingSceneName))
+        // 로딩 루프
+        while (!op.isDone)
         {
-            yield return StartCoroutine(LoadSceneAsync(loadingSceneName));
+            yield return null;
+            timer += Time.deltaTime;
 
-            // 최소 로딩 시간 대기
-            float startTime = Time.time;
+            float opProgress = Mathf.Clamp01(op.progress / 0.9f);
+            float timeProgress = Mathf.Clamp01(timer / minimumLoadingTime);
 
-            // 실제 씬 로딩
-            AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-            asyncLoad.allowSceneActivation = false;
+            LoadingProgress = Mathf.Min(opProgress, timeProgress);
 
-            while (!asyncLoad.isDone)
+            if (opProgress >= 1f && timeProgress >= 1f)
             {
-                LoadingProgress = asyncLoad.progress;
+                LoadingProgress = 1f;
 
-                // 로딩이 90% 완료되면 대기
-                if (asyncLoad.progress >= 0.9f)
-                {
-                    LoadingProgress = 1f;
+                if (useFadeEffect) yield return StartCoroutine(FadeIn());
 
-                    // 최소 로딩 시간 체크
-                    if (Time.time - startTime >= minimumLoadingTime)
-                    {
-                        asyncLoad.allowSceneActivation = true;
-                    }
-                }
-
-                yield return null;
+                op.allowSceneActivation = true;
             }
         }
-        else
-        {
-            // 로딩 화면 없이 직접 로딩
-            yield return StartCoroutine(LoadSceneAsync(sceneName));
-        }
+
+        // 새 씬 로드 후 페이드 아웃
+        if (useFadeEffect) yield return StartCoroutine(FadeOut());
 
         isLoading = false;
     }
 
-    /// <summary>
-    /// 비동기 씬 로딩
-    /// </summary>
-    private IEnumerator LoadSceneAsync(string sceneName)
+    private IEnumerator LoadSceneDirectly(string targetScene)
     {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        isLoading = true;
+        if (useFadeEffect) yield return StartCoroutine(FadeIn());
 
-        while (!asyncLoad.isDone)
-        {
-            LoadingProgress = asyncLoad.progress;
-            yield return null;
-        }
+        AsyncOperation op = SceneManager.LoadSceneAsync(targetScene);
+        while (!op.isDone) yield return null;
 
-        LoadingProgress = 1f;
+        if (useFadeEffect) yield return StartCoroutine(FadeOut());
+        isLoading = false;
     }
 
-    #endregion
+    #region UI & Fade Logic
+    private void CreateFadeUI()
+    {
+        if (fadeObject != null) return;
+        fadeObject = new GameObject("FadeCanvas");
+        Canvas canvas = fadeObject.AddComponent<Canvas>();
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        canvas.sortingOrder = 30000;
+        fadeCanvasGroup = fadeObject.AddComponent<CanvasGroup>();
+        fadeCanvasGroup.alpha = 0f;
+        fadeCanvasGroup.blocksRaycasts = false;
+        GameObject imageObj = new GameObject("FadeImage");
+        imageObj.transform.SetParent(fadeObject.transform, false);
+        UnityEngine.UI.Image img = imageObj.AddComponent<UnityEngine.UI.Image>();
+        img.color = fadeColor;
+        RectTransform rect = img.GetComponent<RectTransform>();
+        rect.anchorMin = Vector2.zero;
+        rect.anchorMax = Vector2.one;
+        rect.sizeDelta = Vector2.zero;
+        DontDestroyOnLoad(fadeObject);
+    }
 
-    #region Fade Effects
     private IEnumerator FadeIn()
     {
         if (fadeCanvasGroup == null) yield break;
@@ -227,10 +146,9 @@ public class ScenesManager : SingletonMono<ScenesManager>
 
         while (fadeCanvasGroup.alpha < 1f)
         {
-            fadeCanvasGroup.alpha += fadeSpeed * Time.unscaledDeltaTime;
+            fadeCanvasGroup.alpha += Time.unscaledDeltaTime * fadeSpeed;
             yield return null;
         }
-
         fadeCanvasGroup.alpha = 1f;
     }
 
@@ -240,98 +158,33 @@ public class ScenesManager : SingletonMono<ScenesManager>
 
         while (fadeCanvasGroup.alpha > 0f)
         {
-            fadeCanvasGroup.alpha -= fadeSpeed * Time.unscaledDeltaTime;
+            fadeCanvasGroup.alpha -= Time.unscaledDeltaTime * fadeSpeed;
             yield return null;
         }
-
         fadeCanvasGroup.alpha = 0f;
         fadeCanvasGroup.blocksRaycasts = false;
     }
 
     #endregion
 
-    #region Quick Load Methods
-    public void LoadMainMenu() => LoadScene(mainMenuSceneName);
-
-    public void LoadGameScene() => LoadScene(tutorialSceneName);
-
-    //public void LoadTheme1Scene() => LoadScene(theme1SceneName);
-
-    //public void LoadTheme2Scene() => LoadScene(theme2SceneName);
-
-    //public void LoadTheme3Scene() => LoadScene(theme3SceneName);
-
-    public void ReloadCurrentScene() => LoadScene(currentSceneName);
-
-    public void LoadNextScene()
-    {
-        int currentIndex = SceneManager.GetActiveScene().buildIndex;
-        int nextIndex = (currentIndex + 1) % SceneManager.sceneCountInBuildSettings;
-
-        SceneManager.LoadScene(nextIndex);
-    }
-
-    public void LoadPreviousScene()
-    {
-        int currentIndex = SceneManager.GetActiveScene().buildIndex;
-        int prevIndex = currentIndex - 1;
-
-        if (prevIndex < 0)
-            prevIndex = SceneManager.sceneCountInBuildSettings - 1;
-
-        SceneManager.LoadScene(prevIndex);
-    }
-
-    #endregion
-
-    #region Scene Events
+    #region Scene Events & Utils
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         currentSceneName = scene.name;
-        LoadingProgress = 0f;
 
-        // SceneConfig가 GameState를 처리하도록 이벤트만 발생
-        GameEvents.SceneChanged(currentSceneName);
+        if (scene.name != loadingSceneName) GameEvents.SceneChanged(currentSceneName);
 
-        Debug.Log($"씬 로딩 완료: {scene.name}");
+        Debug.Log($"씬 로드 : {scene.name}");
     }
 
     private void OnSceneUnloaded(Scene scene)
     {
-        Debug.Log($"씬 언로드 완료: {scene.name}");
+        Debug.Log($"[Scene Unloaded] {scene.name}");
     }
 
-    #endregion
-
-    #region Utility Methods
-    public string GetCurrentSceneName()
-    {
-        return currentSceneName;
-    }
-
-    public bool IsLoading()
-    {
-        return isLoading;
-    }
-
-    public bool IsSceneLoaded(string sceneName)
-    {
-        return currentSceneName == sceneName;
-    }
-
-    public void SetFadeColor(Color color)
-    {
-        fadeColor = color;
-
-        if (fadeObject != null)
-        {
-            UnityEngine.UI.Image fadeImage = fadeObject.GetComponentInChildren<UnityEngine.UI.Image>();
-            if (fadeImage != null)
-            {
-                fadeImage.color = color;
-            }
-        }
-    }
+    public void LoadMainMenu() => LoadScene(mainMenuSceneName);
+    public void LoadGameScene() => LoadScene(tutorialSceneName);
+    public void ReloadCurrentScene() => LoadScene(currentSceneName);
 
     #endregion
 }

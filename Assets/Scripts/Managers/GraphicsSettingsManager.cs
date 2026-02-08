@@ -1,6 +1,7 @@
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using TMPro;
+using System.Collections.Generic;
+// using System.Linq; // 정렬/필터링이 필요 없어져서 삭제 가능
 
 public class GraphicsSettingsManager : MonoBehaviour
 {
@@ -19,35 +20,43 @@ public class GraphicsSettingsManager : MonoBehaviour
     public SliderOptionItem brightnessItem;
     public SliderOptionItem contrastItem;
 
-    private List<GraphicsOptionItem> arrowItems = new List<GraphicsOptionItem>();
-    private List<SliderOptionItem> sliderItems = new List<SliderOptionItem>();
+    private List<string> resolutionOptionStrings = new List<string>();
+    private List<Resolution> supportedResolutions = new List<Resolution>();
 
-    // 옵션 데이터 목록
-    private readonly List<string> resolutionOptions = new List<string> { "3840x2160", "2560x1440", "1920x1080", "1280x720" };
-    private readonly List<string> frameRateOptions = new List<string> { "45", "60", "120", "144" };
+    private readonly List<string> frameRateOptions = new List<string> { "60", "120", "144", "제한 없음" };
     private readonly List<string> displayModeOptions = new List<string> { "Full Screen", "Borderless", "Windowed" };
     private readonly List<string> motionBlurOptions = new List<string> { "ON", "OFF" };
 
     void Start()
     {
-        arrowItems.Add(resolutionItem);
-        arrowItems.Add(frameRateItem);
-        arrowItems.Add(displayModeItem);
-        arrowItems.Add(motionBlurItem);
-
-        sliderItems.Add(mouseSensItem);
-        sliderItems.Add(brightnessItem);
-        sliderItems.Add(contrastItem);
-
         InitializeSettings();
     }
 
     void InitializeSettings()
     {
-        resolutionItem.Initialize(resolutionOptions, 2, OnResolutionChanged);
+        InitResolutions();
+
+        // 현재 내 모니터 해상도와 일치하는 것이 있는지 찾기
+        // (없으면 FHD인 2번 인덱스를 기본값으로 설정)
+        int currentResIndex = 2;
+
+        for (int i = 0; i < supportedResolutions.Count; i++)
+        {
+            // 너비와 높이가 현재 화면과 일치하면 그 인덱스를 선택
+            if (supportedResolutions[i].width == Screen.width &&
+                supportedResolutions[i].height == Screen.height)
+            {
+                currentResIndex = i;
+                break;
+            }
+        }
+
+        // 해상도 아이템 초기화
+        resolutionItem.Initialize(resolutionOptionStrings, currentResIndex, OnResolutionChanged);
         resolutionItem.onSelected = OnArrowItemSelected;
 
-        frameRateItem.Initialize(frameRateOptions, 1, OnFrameRateChanged);
+        // --- 나머지 설정 초기화 ---
+        frameRateItem.Initialize(frameRateOptions, 0, OnFrameRateChanged);
         frameRateItem.onSelected = OnArrowItemSelected;
 
         displayModeItem.Initialize(displayModeOptions, 0, OnDisplayModeChanged);
@@ -56,6 +65,7 @@ public class GraphicsSettingsManager : MonoBehaviour
         motionBlurItem.Initialize(motionBlurOptions, 0, OnMotionBlurChanged);
         motionBlurItem.onSelected = OnArrowItemSelected;
 
+        // 슬라이더 초기화
         mouseSensItem.Initialize(0.5f, OnMouseSensChanged);
         mouseSensItem.onSelected = OnSliderItemSelected;
 
@@ -65,28 +75,93 @@ public class GraphicsSettingsManager : MonoBehaviour
         contrastItem.Initialize(0.5f, OnContrastChanged);
         contrastItem.onSelected = OnSliderItemSelected;
 
-        // 처음에 첫 번째 항목 선택
+        // 처음에 해상도 메뉴 선택
         OnArrowItemSelected(resolutionItem);
     }
 
-    // --- 선택 강조 로직 ---
+    void InitResolutions()
+    {
+        resolutionOptionStrings.Clear();
+        supportedResolutions.Clear();
+
+        var targets = new (int w, int h, string name)[] {
+            (3840, 2160, "4K"),
+            (2560, 1440, "QHD"),
+            (1920, 1080, "FHD"),
+            (1280, 720, "HD")
+        };
+
+        foreach (var t in targets)
+        {
+            Resolution res = new Resolution();
+            res.width = t.w;
+            res.height = t.h;
+            supportedResolutions.Add(res);
+
+            resolutionOptionStrings.Add($"{t.w} x {t.h} ({t.name})");
+        }
+    }
+
+    // --- 콜백 함수들 ---
+    void OnResolutionChanged(int index)
+    {
+        Resolution targetRes = supportedResolutions[index];
+        Screen.SetResolution(targetRes.width, targetRes.height, Screen.fullScreenMode);
+        Debug.Log($"해상도 변경: {targetRes.width} x {targetRes.height}");
+    }
+
+    void OnFrameRateChanged(int index)
+    {
+        int fps = -1;
+        switch (index)
+        {
+            case 0: fps = 60; break;
+            case 1: fps = 120; break;
+            case 2: fps = 144; break;
+            case 3: fps = -1; break;
+        }
+        Application.targetFrameRate = fps;
+        Debug.Log($"프레임 변경: {fps}");
+    }
+
+    void OnDisplayModeChanged(int index)
+    {
+        FullScreenMode mode = FullScreenMode.ExclusiveFullScreen;
+        switch (index)
+        {
+            case 0: mode = FullScreenMode.ExclusiveFullScreen; break;
+            case 1: mode = FullScreenMode.FullScreenWindow; break;
+            case 2: mode = FullScreenMode.Windowed; break;
+        }
+        Screen.fullScreenMode = mode;
+        Debug.Log($"화면 모드: {mode}");
+    }
+
+    // --- UI 선택 로직 (기존 유지) ---
     void OnArrowItemSelected(GraphicsOptionItem selectedItem)
     {
-        // 화살표 애들은 선택된 놈만 켜기
-        foreach (var item in arrowItems) item.SetSelectedState(item == selectedItem);
-        // 슬라이더 애들은 다 끄기
-        foreach (var item in sliderItems) item.SetSelectedState(false);
+        if (resolutionItem != null) resolutionItem.SetSelectedState(resolutionItem == selectedItem);
+        if (frameRateItem != null) frameRateItem.SetSelectedState(frameRateItem == selectedItem);
+        if (displayModeItem != null) displayModeItem.SetSelectedState(displayModeItem == selectedItem);
+        if (motionBlurItem != null) motionBlurItem.SetSelectedState(motionBlurItem == selectedItem);
+
+        if (mouseSensItem != null) mouseSensItem.SetSelectedState(false);
+        if (brightnessItem != null) brightnessItem.SetSelectedState(false);
+        if (contrastItem != null) contrastItem.SetSelectedState(false);
 
         UpdateDescription(selectedItem.optionName, selectedItem.optionDescription);
     }
 
-    // 슬라이더 아이템을 선택했을 때
     void OnSliderItemSelected(SliderOptionItem selectedItem)
     {
-        // 화살표 애들은 다 끄기
-        foreach (var item in arrowItems) item.SetSelectedState(false);
-        // 슬라이더 애들은 선택된 놈만 켜기
-        foreach (var item in sliderItems) item.SetSelectedState(item == selectedItem);
+        if (resolutionItem != null) resolutionItem.SetSelectedState(false);
+        if (frameRateItem != null) frameRateItem.SetSelectedState(false);
+        if (displayModeItem != null) displayModeItem.SetSelectedState(false);
+        if (motionBlurItem != null) motionBlurItem.SetSelectedState(false);
+
+        if (mouseSensItem != null) mouseSensItem.SetSelectedState(mouseSensItem == selectedItem);
+        if (brightnessItem != null) brightnessItem.SetSelectedState(brightnessItem == selectedItem);
+        if (contrastItem != null) contrastItem.SetSelectedState(contrastItem == selectedItem);
 
         UpdateDescription(selectedItem.optionName, selectedItem.optionDescription);
     }
@@ -97,76 +172,9 @@ public class GraphicsSettingsManager : MonoBehaviour
         if (descriptionContent != null) descriptionContent.text = content;
     }
 
-    // --- 슬라이더 값 변경 콜백 ---
-    void OnMouseSensChanged(float value)
-    {
-        Debug.Log($"마우스 감도: {value * 100}%");
-        // PlayerController나 Camera 스크립트에 값 전달
-    }
-
-    void OnBrightnessChanged(float value)
-    {
-        Debug.Log($"밝기: {value * 100}%");
-        // PostProcessing이나 RenderSettings 조절
-    }
-
-    void OnContrastChanged(float value)
-    {
-        Debug.Log($"대비: {value * 100}%");
-        // PostProcessing 조절
-    }
-
-    void OnResolutionChanged(int index)
-    {
-        int width = 1920;
-        int height = 1080;
-
-        switch (index)
-        {
-            case 0: width = 3840; height = 2160; break;
-            case 1: width = 2560; height = 1440; break; 
-            case 2: width = 1920; height = 1080; break; 
-            case 3: width = 1280; height = 720; break; 
-        }
-
-        Screen.SetResolution(width, height, Screen.fullScreenMode);
-        Debug.Log($"해상도 변경: {width}x{height}");
-    }
-
-    void OnFrameRateChanged(int index)
-    {
-        int fps = 60;
-        switch (index)
-        {
-            case 0: fps = 45; break;
-            case 1: fps = 60; break;
-            case 2: fps = 120; break;
-            case 3: fps = 144; break;
-        }
-
-        Application.targetFrameRate = fps;
-        Debug.Log($"프레임 제한 변경: {fps}");
-    }
-
-    void OnDisplayModeChanged(int index)
-    {
-        FullScreenMode mode = FullScreenMode.ExclusiveFullScreen;
-
-        switch (index)
-        {
-            case 0: mode = FullScreenMode.ExclusiveFullScreen; break; // Full Screen
-            case 1: mode = FullScreenMode.FullScreenWindow; break;    // Borderless
-            case 2: mode = FullScreenMode.Windowed; break;            // Windowed
-        }
-
-        Screen.fullScreenMode = mode;
-        Debug.Log($"화면 모드 변경: {mode}");
-    }
-
-    void OnMotionBlurChanged(int index)
-    {
-        bool isOn = (index == 0); // 0번이 ON
-
-        Debug.Log($"모션 블러 설정: {(isOn ? "ON" : "OFF")}");
-    }
+    // --- 슬라이더/기타 콜백 ---
+    void OnMotionBlurChanged(int index) { Debug.Log($"모션블러: {index}"); }
+    void OnMouseSensChanged(float value) { Debug.Log($"감도: {value}"); }
+    void OnBrightnessChanged(float value) { Debug.Log($"밝기: {value}"); }
+    void OnContrastChanged(float value) { Debug.Log($"대비: {value}"); }
 }

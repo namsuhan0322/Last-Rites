@@ -1,0 +1,42 @@
+using UnityEngine;
+
+[System.Serializable]
+public class SaveData
+{
+    // --- 그래픽 설정 ---
+    [Tooltip("해상도 (0: 4K, 1: QHD, 2: FHD, 3: HD)")]
+    public int resolutionIndex;
+    [Tooltip("프레임 (0: 60, 1: 120...)")]
+    public int frameRateIndex;
+    [Tooltip("화면 모드 (0: 전체, 1: 테두리없음...)")]
+    public int displayModeIndex;
+    [Tooltip("모션블러 (0: ON, 1: OFF)")]
+    public int motionBlurIndex;
+
+    // --- 슬라이더 설정 ---
+    public float mouseSensitivity;
+    public float brightness;
+    public float contrast;
+
+    // --- 사운드 설정 ---
+    public float masterVolume;
+    public float bgmVolume;
+    public float sfxVolume;
+
+    // 생성자 (초기화 시 기본값 설정)
+    public SaveData()
+    {
+        resolutionIndex = 2;    // FHD 기본
+        frameRateIndex = 0;     // 60FPS 기본
+        displayModeIndex = 0;   // 전체화면 기본
+        motionBlurIndex = 0;    // ON 기본
+
+        mouseSensitivity = 0.5f;
+        brightness = 1.0f;
+        contrast = 0.5f;
+
+        masterVolume = 1.0f;
+        bgmVolume = 0.8f;
+        sfxVolume = 1.0f;
+    }
+}

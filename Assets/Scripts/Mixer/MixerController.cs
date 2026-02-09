@@ -16,31 +16,32 @@ public class MixerController : MonoBehaviour
     [Header("Audio Mixer")]
     public AudioMixer audioMixer;
 
-    private void Start()
+    void Start()
     {
-        InitializeSettings();
+        InitUI();
     }
 
-    private void InitializeSettings()
+    public void InitUI()
     {
-        float masterVol = PlayerPrefs.GetFloat("Volume_Master", 1f);
-        float bgmVol = PlayerPrefs.GetFloat("Volume_BGM", 1f);
-        float sfxVol = PlayerPrefs.GetFloat("Volume_SFX", 1f);
+        SaveData data = SaveDataHolder.Instance.currentData;
 
-        masterSlider.Initialize(masterVol, SetMasterVolume);
+        // 저장된 값으로 초기화
+        masterSlider.Initialize(data.masterVolume, SetMasterVolume);
+        bgmSlider.Initialize(data.bgmVolume, SetBGMVolume);
+        sfxSlider.Initialize(data.sfxVolume, SetSFXVolume);
+
+        // 믹서에도 적용
+        UpdateMixer("Master", data.masterVolume);
+        UpdateMixer("BGM", data.bgmVolume);
+        UpdateMixer("SFX", data.sfxVolume);
+
+        // UI 선택 상태
         masterSlider.onSelected = OnSliderSelected;
-
-        bgmSlider.Initialize(bgmVol, SetBGMVolume);
         bgmSlider.onSelected = OnSliderSelected;
-
-        sfxSlider.Initialize(sfxVol, SetSFXVolume);
         sfxSlider.onSelected = OnSliderSelected;
-
-        UpdateMixer("Master", masterVol);
-        UpdateMixer("BGM", bgmVol);
-        UpdateMixer("SFX", sfxVol);
-
         OnSliderSelected(masterSlider);
+
+        SaveDataHolder.Instance.HasChanges = false;
     }
 
     private void OnSliderSelected(SliderOptionItem selectedItem)
@@ -54,38 +55,40 @@ public class MixerController : MonoBehaviour
     }
 
     #region 볼륨 조절 로직
-    private float GetDecibel(float volume)
-    {
-        return Mathf.Log10(Mathf.Max(0.0001f, volume)) * 20;
-    }
-
-    private void UpdateMixer(string parameterName, float volume)
-    {
-        if (audioMixer != null)
-        {
-            audioMixer.SetFloat(parameterName, GetDecibel(volume));
-        }
-    }
-
     public void SetMasterVolume(float volume)
     {
-        UpdateMixer("Master", volume);
-        PlayerPrefs.SetFloat("Volume_Master", volume);
-        Debug.Log($"Master Volume: {volume * 100:F0}%");
+        if (SaveDataHolder.Instance.currentData.masterVolume != volume)
+        {
+            SaveDataHolder.Instance.currentData.masterVolume = volume;
+            SaveDataHolder.Instance.HasChanges = true;
+            UpdateMixer("Master", volume);
+        }
     }
 
     public void SetBGMVolume(float volume)
     {
-        UpdateMixer("BGM", volume);
-        PlayerPrefs.SetFloat("Volume_BGM", volume);
-        Debug.Log($"BGM Volume: {volume * 100:F0}%");
+        if (SaveDataHolder.Instance.currentData.bgmVolume != volume)
+        {
+            SaveDataHolder.Instance.currentData.bgmVolume = volume;
+            SaveDataHolder.Instance.HasChanges = true;
+            UpdateMixer("BGM", volume);
+        }
     }
 
     public void SetSFXVolume(float volume)
     {
-        UpdateMixer("SFX", volume);
-        PlayerPrefs.SetFloat("Volume_SFX", volume);
-        Debug.Log($"SFX Volume: {volume * 100:F0}%");
+        if (SaveDataHolder.Instance.currentData.sfxVolume != volume)
+        {
+            SaveDataHolder.Instance.currentData.sfxVolume = volume;
+            SaveDataHolder.Instance.HasChanges = true;
+            UpdateMixer("SFX", volume);
+        }
+    }
+
+    private void UpdateMixer(string param, float volume)
+    {
+        if (audioMixer != null)
+            audioMixer.SetFloat(param, Mathf.Log10(Mathf.Max(0.0001f, volume)) * 20);
     }
 
     #endregion

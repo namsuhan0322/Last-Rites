@@ -7,9 +7,11 @@ public class PlayerMovement : MonoBehaviour
     private NavMeshAgent agent;
     private CharacterController cc;
     private PlayerStats stats;
+    private Animator animator;
 
     [Header("스탯")]
     [SerializeField] private float _rotateSpeed = 10f;
+    [SerializeField] private float _animationSmoothTime = 0.1f; // 애니메이션 부드럽게 전환하는 시간
 
     private float _gravity = -9.81f;
     private float _verticalVelocity;
@@ -22,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         cc = GetComponent<CharacterController>();
         stats = GetComponent<PlayerStats>();
+        animator = GetComponentInChildren<Animator>();
 
         agent.updatePosition = false;
         agent.updateRotation = false;
@@ -35,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
     {
         UpdateMovement();
         UpdateRotation();
+        UpdateAnimation();
     }
 
     #endregion
@@ -74,6 +78,29 @@ public class PlayerMovement : MonoBehaviour
                 transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * _rotateSpeed);
             }
         }
+    }
+
+    private void UpdateAnimation()
+    {
+        if (animator == null) return;
+
+        float speed = agent.desiredVelocity.magnitude;
+
+        if (agent.remainingDistance <= agent.stoppingDistance)
+        {
+            speed = 0f;
+        }
+
+        animator.SetFloat("Move", speed, _animationSmoothTime, Time.deltaTime);
+    }
+
+    public void StopForAttack()
+    {
+        agent.SetDestination(transform.position);
+        agent.velocity = Vector3.zero;
+
+        if (animator != null)
+            animator.SetFloat("Move", 0f);
     }
 
     #endregion

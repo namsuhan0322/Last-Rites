@@ -6,7 +6,8 @@ using UnityEngine.AI;
 public class PlayerController : MonoBehaviour
 {
     #region 레퍼런스
-    private PlayerMovement playerMovement;
+    private PlayerMovement _playerMovement;
+    private PlayerAttack _playerAttack;
 
     [Header("Input 세팅")]
     [SerializeField] private float _clickDistanceTolerance = 0.5f;
@@ -19,7 +20,8 @@ public class PlayerController : MonoBehaviour
     #region 초기화
     void Start()
     {
-        playerMovement = GetComponent<PlayerMovement>();
+        _playerMovement = GetComponent<PlayerMovement>();
+        _playerAttack = GetComponent<PlayerAttack>();
     }
 
     #endregion
@@ -28,6 +30,11 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (Input.GetMouseButtonDown(1)) HandleInput();
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            _playerAttack.OnAttackInput();
+        }
     }
 
     #endregion
@@ -41,7 +48,7 @@ public class PlayerController : MonoBehaviour
         {
             if (NavMesh.SamplePosition(hit.point, out NavMeshHit navMeshHit, _clickDistanceTolerance, NavMesh.AllAreas))
             {
-                playerMovement.MoveTo(navMeshHit.position);
+                _playerMovement.MoveTo(navMeshHit.position);
                 OnGroundTouch?.Invoke(navMeshHit.position);
 
                 EffectManager.Instance.PlayEffect("ClickMousePoint", navMeshHit.position + Vector3.up * 0.1f, Quaternion.identity);

@@ -13,6 +13,7 @@ public class PlayerAttack : MonoBehaviour
     private bool _isAttacking = false;
     private float _lastAttackTime;
     public float _comboResetTime = 2.0f; // 이 시간이 지나면 콤보 초기화
+    private float _attackSpd;
 
     // 전투 모드 유지를 위한 타이머
     private float _combatModeTimer = 0f;
@@ -23,12 +24,19 @@ public class PlayerAttack : MonoBehaviour
     {
         _animator = GetComponentInChildren<Animator>();
         _playerMovement = GetComponent<PlayerMovement>();
+
+        if (_weaponData != null)
+        {
+            _attackSpd = _weaponData.Atk_Spd;
+        }
     }
 
     void Update()
     {
         CheckComboReset();
         HandleCombatMode();
+
+        _animator.SetFloat("AttackSpd", _attackSpd);
     }
 
     public void OnAttackInput()

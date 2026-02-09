@@ -14,7 +14,6 @@ public class SaveData
     public int motionBlurIndex;
 
     // --- 슬라이더 설정 ---
-    public float mouseSensitivity;
     public float brightness;
     public float contrast;
 
@@ -26,12 +25,11 @@ public class SaveData
     // 생성자 (초기화 시 기본값 설정)
     public SaveData()
     {
-        resolutionIndex = 2;    // FHD 기본
+        resolutionIndex = -1;   // 각 PC의 모니터 해상도에 따라 디폴트 값이 달라짐
         frameRateIndex = 0;     // 60FPS 기본
         displayModeIndex = 0;   // 전체화면 기본
         motionBlurIndex = 0;    // ON 기본
 
-        mouseSensitivity = 0.5f;
         brightness = 1.0f;
         contrast = 0.5f;
 

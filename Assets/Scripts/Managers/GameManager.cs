@@ -59,15 +59,37 @@ public class GameManager : SingletonMono<GameManager>
     {
         yield return new WaitForEndOfFrame();
 
-        // 매니저들 초기화 순서 중요
-        if (ScenesManager.Instance != null)
-            Debug.Log("SceneManager 연결 확인");
-        if (SoundManager.Instance != null)
-            Debug.Log("SoundManager 연결 확인");
-        /*if (UIManager.Instance != null)
-            Debug.Log("UIManager 연결 확인");
-        if (SaveManager.Instance != null)
-            Debug.Log("SaveManager 연결 확인");*/
+        Debug.Log("=== 매니저 초기화 시작 ===");
+
+        if (SaveDataHolder.Instance != null)
+        {
+            // 혹시 데이터가 없다면 여기서 강제 로드
+            if (SaveDataHolder.Instance.currentData == null)
+                SaveDataHolder.Instance.Load();
+
+            Debug.Log("SaveDataHolder 준비 완료");
+        }
+        if (ScenesManager.Instance != null) Debug.Log("ScenesManager 준비 완료");
+        if (SoundManager.Instance != null) Debug.Log("SoundManager 준비 완료");
+        if (EffectManager.Instance != null) Debug.Log("EffectManager 준비 완료");
+
+        var graphicsManager = FindObjectOfType<GraphicsSettingsManager>();
+        if (graphicsManager != null)
+        {
+            graphicsManager.InitUI();
+            Debug.Log("GraphicsSettings 적용 완료");
+        }
+
+        var soundSettings = FindObjectOfType<MixerController>();
+        if (soundSettings != null)
+        {
+            soundSettings.InitUI();
+            Debug.Log("SoundSettings 적용 완료");
+        }
+
+        if (SaveManager.Instance != null) Debug.Log("SaveManager 준비 완료");
+
+        Debug.Log("=== 모든 매니저 초기화 완료 ===");
     }
 
     private void HandleInput()

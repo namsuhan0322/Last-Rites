@@ -39,6 +39,30 @@ public class GraphicsSettingsManager : MonoBehaviour
     {
         SaveData data = SaveDataHolder.Instance.currentData;
 
+        if (data.resolutionIndex == -1)
+        {
+            int autoIndex = 2;
+
+            // 현재 실행 중인 화면의 가로/세로 크기
+            int screenW = Screen.width;
+            int screenH = Screen.height;
+
+            // 우리가 지원하는 해상도 목록(resTargets)과 비교
+            for (int i = 0; i < resTargets.Length; i++)
+            {
+                // 가로, 세로가 정확히 일치하면 그 인덱스 선택
+                if (resTargets[i].w == screenW && resTargets[i].h == screenH)
+                {
+                    autoIndex = i;
+                    break;
+                }
+            }
+
+            // 찾은 인덱스를 데이터에 적용하고 즉시 저장
+            data.resolutionIndex = autoIndex;
+            SaveDataHolder.Instance.Save();
+        }
+
         // 1. 해상도 스트링 만들기
         resolutionOptionStrings.Clear();
         resolutionOptionStrings.Add("3840 x 2160 (4K)");

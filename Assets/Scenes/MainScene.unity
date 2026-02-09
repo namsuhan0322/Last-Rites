@@ -479,6 +479,7 @@ GameObject:
   - component: {fileID: 175641020}
   - component: {fileID: 175641019}
   - component: {fileID: 175641018}
+  - component: {fileID: 175641021}
   m_Layer: 0
   m_Name: Button_Cancel
   m_TagString: Untagged
@@ -570,7 +571,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f4f6c82619ed6a647b12877278ac3d97, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ed30968d8c3051f49a36faccc2bd9005, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -588,6 +589,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 175641016}
   m_CullTransparentMesh: 1
+--- !u!114 &175641021
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 175641016}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.8235294}
+  m_EffectDistance: {x: 19.7, y: -30}
+  m_UseGraphicAlpha: 1
 --- !u!1 &208993337
 GameObject:
   m_ObjectHideFlags: 0
@@ -3316,6 +3332,7 @@ GameObject:
   - component: {fileID: 1580134718}
   - component: {fileID: 1580134717}
   - component: {fileID: 1580134716}
+  - component: {fileID: 1580134719}
   m_Layer: 0
   m_Name: Button_Update
   m_TagString: Untagged
@@ -3407,7 +3424,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: d95c657e37980b246999734db3f2cbf3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 42ba1ecdbe584a34f90bee7706666c73, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -3425,6 +3442,21 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1580134714}
   m_CullTransparentMesh: 1
+--- !u!114 &1580134719
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1580134714}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfabb0440166ab443bba8876756fdfa9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_EffectColor: {r: 0, g: 0, b: 0, a: 0.8235294}
+  m_EffectDistance: {x: 19.7, y: -30}
+  m_UseGraphicAlpha: 1
 --- !u!224 &1616624262 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 486187344725680160, guid: 361e737586055164ba407683757f902d,
@@ -3607,6 +3639,7 @@ MonoBehaviour:
     masterVolume: 1
     bgmVolume: 0.8
     sfxVolume: 1
+  HasChanges: 0
 --- !u!1 &1988684727
 GameObject:
   m_ObjectHideFlags: 0

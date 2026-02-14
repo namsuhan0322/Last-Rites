@@ -14,6 +14,9 @@ public class Actor : MonoBehaviour
     public int MaxHP => _maxHP;
     public bool IsFullHP => _currentHP >= _maxHP;
 
+    int damageReduction = 0;
+    float damageReduceTimer = 0f;
+
     public event Action<int, int> OnHPChanged;
     public event Action OnDeath;
 
@@ -25,6 +28,20 @@ public class Actor : MonoBehaviour
     }
 
     protected virtual void Start() { }
+
+    protected virtual void Update()
+    {
+        if (damageReduceTimer > 0f)
+        {
+            damageReduceTimer -= Time.deltaTime;
+
+            if (damageReduceTimer <= 0f)
+            {
+                damageReduction = 0;
+                Debug.Log($"{name} 데미지 감소 끝");
+            }
+        }
+    }
 
     public virtual void InitActor(int maxHP)
     {
@@ -41,15 +58,17 @@ public class Actor : MonoBehaviour
     public virtual void TakeDamage(int damage)
     {
         if (_isDead) return;
-        if (damage <= 0) return;  
+        if (damage <= 0) return;
+
+        damage -= damageReduction;
+        if (damage < 0) damage = 0;
 
         _currentHP -= damage;
+
         OnHPChanged?.Invoke(_currentHP, _maxHP);
 
         if (_currentHP <= 0)
-        {
             Die();
-        }
     }
 
     public virtual void Heal(int amount)
@@ -70,5 +89,13 @@ public class Actor : MonoBehaviour
         _isDead = true;
         OnDeath?.Invoke();
         Debug.Log($"{gameObject.name} Died.");
+    }
+
+    public void AddDamageReduction(int amount, float duration)
+    {
+        damageReduction = amount;
+        damageReduceTimer = duration;
+
+        Debug.Log($"{name} Damage Reduction {amount} for {duration}s");
     }
 }

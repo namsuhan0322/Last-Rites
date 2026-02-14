@@ -11,31 +11,44 @@ public class AISpeechController : MonoBehaviour   // 이건 그냥 텍스트 채팅용 스�
     [SerializeField] float typingSpeed = 0.04f;
 
     GameObject currentBubble;
+    TextMeshPro tmp;
+
     Coroutine typingCoroutine;
     Coroutine hideCoroutine;
 
-    // 외부에서 호출
-    public void Speak(string message, float duration)
+    void EnsureBubble()
     {
-        Clear();
+        if (currentBubble != null) return;
 
         Vector3 pos = transform.position + offset;
         currentBubble = Instantiate(speechBubblePrefab, pos, Quaternion.identity);
         currentBubble.transform.SetParent(transform);
 
-        var tmp = currentBubble.GetComponentInChildren<TextMeshPro>();
-        typingCoroutine = StartCoroutine(TypeText(tmp, message));
+        tmp = currentBubble.GetComponentInChildren<TextMeshPro>();
+    }
 
+    // 외부 호출
+    public void Speak(string message, float duration)
+    {
+        EnsureBubble();
+
+        if (typingCoroutine != null)
+            StopCoroutine(typingCoroutine);
+
+        if (hideCoroutine != null)
+            StopCoroutine(hideCoroutine);
+
+        typingCoroutine = StartCoroutine(TypeText(message));
         hideCoroutine = StartCoroutine(HideAfter(duration));
     }
 
-    IEnumerator TypeText(TextMeshPro text, string message)
+    IEnumerator TypeText(string message)
     {
-        text.text = "";
+        tmp.text = "";
 
         foreach (char c in message)
         {
-            text.text += c;
+            tmp.text += c;
             yield return new WaitForSeconds(typingSpeed);
         }
     }
@@ -60,5 +73,6 @@ public class AISpeechController : MonoBehaviour   // 이건 그냥 텍스트 채팅용 스�
         typingCoroutine = null;
         hideCoroutine = null;
         currentBubble = null;
+        tmp = null;
     }
 }

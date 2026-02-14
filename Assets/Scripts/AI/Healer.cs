@@ -9,6 +9,12 @@ public class Healer : AIBase
     [SerializeField] float castDelay = 1f; // 힐 전 멈춤 시간
     AISpeechController speech;
 
+    [Header("버프 스킬")]
+    float reduceAmount;
+    float reduceDuration;
+    float reduceCooldown;
+    float reduceTimer;
+
 
     float healAmount;
     float healCooldown;
@@ -33,9 +39,16 @@ public class Healer : AIBase
     {
         base.Setup(aiData);
 
-        healAmount = data.S1_Val;     
-        healCooldown = data.S1_Cool;  
+        // S1 힐
+        healAmount = data.S1_Val;
+        healCooldown = data.S1_Cool;
         healTimer = healCooldown;
+
+        // S2 피해감소 버프
+        reduceAmount = data.S2_Val;
+        reduceDuration = 10f;        // 지속시간 고정 10초
+        reduceCooldown = data.S2_Cool;
+        reduceTimer = reduceCooldown;
     }
 
     protected override void Update()
@@ -51,6 +64,7 @@ public class Healer : AIBase
         base.Update(); // 기본 이동 / 추적
 
         healTimer -= Time.deltaTime;
+        reduceTimer -= Time.deltaTime;
 
         if (healTimer <= 0f)
         {
@@ -63,6 +77,11 @@ public class Healer : AIBase
             {
                 MoveOrCast();
             }
+        }
+
+        if (reduceTimer <= 0f)
+        {
+            TryCastBuff();
         }
     }
 
@@ -200,6 +219,46 @@ public class Healer : AIBase
             );
         }
     }
+
+
+    //데미지 감소 버프
+    void TryCastBuff()
+    {
+        Collider[] allies = Physics.OverlapSphere(
+            transform.position,
+            healRadius,
+            aiLayer
+        );
+
+        bool casted = false;
+
+        foreach (var c in allies)
+        {
+            Actor ally = c.GetComponent<Actor>();
+            if (ally == null || ally.IsDead) continue;
+
+            ally.AddDamageReduction((int)reduceAmount, reduceDuration);
+            casted = true;
+        }
+
+        // 플레이어도 포함
+        if (player != null)
+        {
+            Actor p = player.GetComponent<Actor>();
+            if (p != null && !p.IsDead)
+            {
+                p.AddDamageReduction((int)reduceAmount, reduceDuration);
+                casted = true;
+            }
+        }
+
+        if (casted)
+        {
+            speech?.Speak("보호 마법!", 1.2f);
+            reduceTimer = reduceCooldown;
+        }
+    }
+
 
     void OnDrawGizmosSelected()
     {

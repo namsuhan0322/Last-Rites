@@ -53,8 +53,10 @@ public class AIBase : Actor
         InitActor(data.Hp);
     }
 
-    protected virtual void Update()
+    protected override void Update()
     {
+        base.Update();
+
         if (_isDead) return;
         if (player == null) return;
 

@@ -486,7 +486,6 @@ GameObject:
   - component: {fileID: 569871934}
   - component: {fileID: 569871933}
   - component: {fileID: 569871932}
-  - component: {fileID: 569871936}
   m_Layer: 6
   m_Name: Enemy
   m_TagString: Untagged
@@ -582,33 +581,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &569871936
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 569871931}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 13adda99caab6fc4c8107106c1ea4e85, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _currentHP: 0
-  agent: {fileID: 0}
-  aiLayer:
-    serializedVersion: 2
-    m_Bits: 0
-  currentTarget: {fileID: 0}
-  separationRadius: 2
-  separationForce: 2
-  surroundRadius: 2
-  stunMarkDuration: 2
-  stunText: {fileID: 0}
-  tauntText: {fileID: 0}
-  enemyLayer:
-    serializedVersion: 2
-    m_Bits: 0
 --- !u!4 &656263651 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 5516336286503612208, guid: 0f9bab5272d9a794d923441e91c2427c,

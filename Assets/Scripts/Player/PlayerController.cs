@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
     public PlayerIdleState IdleState { get; private set; }
     public PlayerMoveState MoveState { get; private set; }
     public PlayerAttackState AttackState { get; private set; }
+    public PlayerRollState RollState { get; private set; }
     #endregion
 
     #region Components & Settings
@@ -50,6 +51,7 @@ public class PlayerController : MonoBehaviour
         IdleState = new PlayerIdleState(this, StateMachine);
         MoveState = new PlayerMoveState(this, StateMachine);
         AttackState = new PlayerAttackState(this, StateMachine);
+        RollState = new PlayerRollState(this, StateMachine);
 
         Agent = GetComponent<NavMeshAgent>();
         CC = GetComponent<CharacterController>();

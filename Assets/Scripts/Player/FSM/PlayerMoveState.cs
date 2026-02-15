@@ -14,6 +14,12 @@ public class PlayerMoveState : PlayerState
     {
         if (Input.GetMouseButton(1)) SetDestinationToMouse();
         if (Input.GetMouseButtonDown(0)) _stateMachine.ChangeState(_player.AttackState);
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            _stateMachine.ChangeState(_player.RollState);
+            return;
+        }
     }
 
     public override void LogicUpdate()

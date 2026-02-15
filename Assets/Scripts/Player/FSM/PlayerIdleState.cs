@@ -8,6 +8,12 @@ public class PlayerIdleState : PlayerState
     {
         _player.Anim.SetFloat("Move", 0f);
         _player.Agent.ResetPath();
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            _stateMachine.ChangeState(_player.RollState);
+            return;
+        }
     }
 
     public override void HandleInput()

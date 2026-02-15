@@ -6,7 +6,8 @@ public class PlayerStats : Actor
     [SerializeField] private PlayerSO _playerData;
 
     public float MoveSpeed => _playerData.Move_Spd;
-    public float DashSpeed => _playerData.Dash_Spd;
+    public float DashSpeed => _playerData.Dash_Spd; 
+    public int DashCost => _playerData.Dash_Cost;
     public int MaxStamina => _playerData.Max_Stamina;
 
     private float _currentStamina;

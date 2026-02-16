@@ -17,7 +17,7 @@ public class PlayerHitState : PlayerState
     {
         _player.Agent.ResetPath();
         _player.Agent.velocity = Vector3.zero;
-
+        _player.Anim.SetLayerWeight(1, 0f);
         _player.Anim.SetFloat("HitPower", _hitSeverity);
         _player.Anim.SetTrigger("IsHit");
 

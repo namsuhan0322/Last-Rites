@@ -8,13 +8,20 @@ public class PlayerMoveState : PlayerState
     {
         _player.Agent.stoppingDistance = 0f;
         SetDestinationToMouse();
+
+        _player.Anim.SetLayerWeight(1, 1f);
     }
 
     public override void HandleInput()
     {
         if (Input.GetMouseButton(1)) SetDestinationToMouse();
-        if (Input.GetMouseButtonDown(0)) _stateMachine.ChangeState(_player.AttackState);
-
+        if (Input.GetMouseButtonDown(0))
+        {
+            if (_player.InCombat)
+            {
+                _stateMachine.ChangeState(_player.AttackState);
+            }
+        }
         if (Input.GetKeyDown(KeyCode.Space))
         {
             _stateMachine.ChangeState(_player.RollState);
@@ -33,6 +40,15 @@ public class PlayerMoveState : PlayerState
             {
                 _stateMachine.ChangeState(_player.IdleState);
             }
+        }
+
+        if (_player.InCombat)
+        {
+            _player.Anim.SetLayerWeight(1, 1f); // 상체: 경계, 하체: 달리기
+        }
+        else
+        {
+            _player.Anim.SetLayerWeight(1, 0f); // 전신: 평소 달리기
         }
     }
 

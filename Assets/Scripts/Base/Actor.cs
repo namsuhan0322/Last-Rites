@@ -14,12 +14,17 @@ public class Actor : MonoBehaviour
     public int MaxHP => _maxHP;
     public bool IsFullHP => _currentHP >= _maxHP;
 
-    int damageReduction = 0;
-    float damageReduceTimer = 0f;
+    private int damageReduction = 0;
+    private float damageReduceTimer = 0f;
+
+    [SerializeField] protected float _maxPoise = 20f;               // 최대 강인도
+    [SerializeField] protected float _currentPoise;                 // 현재 강인도
+    [SerializeField] protected float _poiseRecoveryRate = 0f;       // 자동회복
 
     public event Action<int, int> OnHPChanged;
     public event Action OnDeath;
     public event Action<float> OnHit;
+    public event Action OnStun;
 
     protected Animator animator;
 
@@ -28,7 +33,10 @@ public class Actor : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    protected virtual void Start() { }
+    protected virtual void Start() 
+    {
+        _currentPoise = _maxPoise;
+    }
 
     protected virtual void Update()
     {
@@ -42,6 +50,12 @@ public class Actor : MonoBehaviour
                 Debug.Log($"{name} 데미지 감소 끝");
             }
         }
+
+        if (_poiseRecoveryRate > 0 && _currentPoise < _maxPoise)
+        {
+            _currentPoise += _poiseRecoveryRate * Time.deltaTime;
+            if (_currentPoise > _maxPoise) _currentPoise = _maxPoise;
+        }
     }
 
     public virtual void InitActor(int maxHP)
@@ -52,6 +66,7 @@ public class Actor : MonoBehaviour
         _maxHP = maxHP;
         _currentHP = maxHP;
         _isDead = false;
+        _currentPoise = _maxPoise;
 
         OnHPChanged?.Invoke(_currentHP, _maxHP);
     }
@@ -67,12 +82,18 @@ public class Actor : MonoBehaviour
         _currentHP -= damage;
         OnHPChanged?.Invoke(_currentHP, _maxHP);
 
+        float poiseDamage = damage * 0.5f;
+        TakePoiseDamage(poiseDamage);
+
         if (_currentHP <= 0)
             Die();
         else
         {
-            float hitSeverity = CalculateHitSeverity(damage);
-            OnHit?.Invoke(hitSeverity);
+            if (_currentPoise > 0)
+            {
+                float hitSeverity = CalculateHitSeverity(damage);
+                OnHit?.Invoke(hitSeverity);
+            }
         }
     }
 
@@ -109,5 +130,18 @@ public class Actor : MonoBehaviour
         if (damage >= 30) return 1.0f;      // 강한 데미지 (Critical)
         if (damage >= 10) return 0.5f;      // 중간 데미지
         return 0.0f;                        // 약한 데미지
+    }
+
+    public void TakePoiseDamage(float amount)
+    {
+        _currentPoise -= amount;
+        Debug.Log($"[강인도] {_currentPoise} / {_maxPoise}");
+
+        if (_currentPoise <= 0)
+        {
+            _currentPoise = 0;              // 혹은 -로 내려가게 해서 회복 오래 걸리게 하기도 함
+            OnStun?.Invoke();               // 스턴 발생!
+            _currentPoise = _maxPoise;      // 스턴 터지면 강인도 초기화 (바로 또 스턴 안 걸리게)
+        }
     }
 }

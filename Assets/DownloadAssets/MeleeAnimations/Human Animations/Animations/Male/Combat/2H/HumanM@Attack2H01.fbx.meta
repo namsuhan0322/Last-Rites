@@ -646,18 +646,18 @@ ModelImporter:
         length: 0
         modified: 0
     skeleton:
-    - name: Human_DummyModel_M(Clone)
+    - name: HumanM_Model(Clone)
       parentName: 
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: HumanM_BodyMesh
-      parentName: Human_DummyModel_M(Clone)
+      parentName: HumanM_Model(Clone)
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: Rig
-      parentName: Human_DummyModel_M(Clone)
+      parentName: HumanM_Model(Clone)
       position: {x: -0, y: 0, z: 0}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
@@ -966,10 +966,3 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 162341
-  packageName: Human Mega Animations Pack
-  packageVersion: 2.0
-  assetPath: Assets/Kevin Iglesias/Human Animations/Animations/Male/Combat/2H/HumanM@Attack2H01.fbx
-  uploadId: 821226

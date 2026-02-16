@@ -3,6 +3,7 @@ using UnityEngine;
 public class PlayerAttackState : PlayerState
 {
     private bool _nextComboBuffered;
+    private float _stateTimer;
 
     public PlayerAttackState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
 
@@ -11,6 +12,9 @@ public class PlayerAttackState : PlayerState
         _player.Agent.ResetPath();
         _player.Anim.SetFloat("Move", 0f);
 
+        // 상체 레이어 끄기 (공격은 전신이므로)
+        _player.Anim.SetLayerWeight(1, 0f);
+
         _nextComboBuffered = false;
 
         _player.Anim.ResetTrigger("Attack");
@@ -18,37 +22,44 @@ public class PlayerAttackState : PlayerState
 
         float atkSpd = _player.CurrentWeapon != null ? _player.CurrentWeapon.Atk_Spd : 1f;
         _player.Anim.SetFloat("AttackSpd", atkSpd);
+
+        _stateTimer = 0f;
     }
 
     public override void HandleInput()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            _nextComboBuffered = true;
-        }
-
+        if (Input.GetMouseButtonDown(0)) _nextComboBuffered = true;
         if (Input.GetMouseButtonDown(1))
         {
             _player.Anim.ResetTrigger("Attack");
             _stateMachine.ChangeState(_player.MoveState);
         }
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            _stateMachine.ChangeState(_player.RollState);
-            return;
-        }
+        if (Input.GetKeyDown(KeyCode.Space)) _stateMachine.ChangeState(_player.RollState);
     }
 
     public override void LogicUpdate()
     {
         _player.StopAndApplyGravity();
+        _stateTimer += Time.deltaTime;
 
-        AnimatorStateInfo stateInfo = _player.Anim.GetCurrentAnimatorStateInfo(1);
+        AnimatorStateInfo stateInfo = _player.Anim.GetCurrentAnimatorStateInfo(0);
 
         if (stateInfo.IsTag("Attack"))
         {
-            if (stateInfo.normalizedTime >= 0.95f)
+            float normalizedTime = stateInfo.normalizedTime;
+
+            // [공격 중] 후딜레이 캔슬 (60% 이상 진행 시 이동 허용)
+            if (normalizedTime >= 0.6f)
+            {
+                if (Input.GetMouseButtonDown(1) || Input.GetMouseButton(1))
+                {
+                    _stateMachine.ChangeState(_player.MoveState);
+                    return;
+                }
+            }
+
+            // [공격 중] 콤보 연결 또는 종료 (95% 이상 진행 시)
+            if (normalizedTime >= 0.95f)
             {
                 if (_nextComboBuffered)
                 {
@@ -60,9 +71,12 @@ public class PlayerAttackState : PlayerState
                 }
             }
         }
-        else if (_player.StateMachine.CurrentState == this && stateInfo.normalizedTime > 1.0f)
+        else
         {
-            _stateMachine.ChangeState(_player.IdleState);
+            if (_stateTimer > 0.5f)
+            {
+                _stateMachine.ChangeState(_player.IdleState);
+            }
         }
     }
 

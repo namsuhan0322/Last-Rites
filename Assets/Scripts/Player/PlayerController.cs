@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     public PlayerRollState RollState { get; private set; }
     public PlayerHitState HitState { get; private set; }
     public PlayerDeadState DeadState { get; private set; }
+    public PlayerStunState StunState { get; private set; }
 
     #endregion
 
@@ -57,6 +58,7 @@ public class PlayerController : MonoBehaviour
         RollState = new PlayerRollState(this, StateMachine);
         HitState = new PlayerHitState(this, StateMachine);
         DeadState = new PlayerDeadState(this, StateMachine);
+        StunState = new PlayerStunState(this, StateMachine);
 
         Agent = GetComponent<NavMeshAgent>();
         CC = GetComponent<CharacterController>();
@@ -65,6 +67,7 @@ public class PlayerController : MonoBehaviour
 
         Stats.OnHit += HandleHit;
         Stats.OnDeath += HandleDeath;
+        Stats.OnStun += HandleStun;
     }
 
     private void Start()
@@ -95,6 +98,7 @@ public class PlayerController : MonoBehaviour
         {
             Stats.OnHit -= HandleHit;
             Stats.OnDeath -= HandleDeath;
+            Stats.OnStun -= HandleStun;
         }
     }
 
@@ -172,6 +176,8 @@ public class PlayerController : MonoBehaviour
 
     private void HandleHit(float severity)
     {
+        if (StateMachine.CurrentState == StunState || StateMachine.CurrentState == DeadState) return;
+
         HitState.SetSeverity(severity);
         StateMachine.ChangeState(HitState);
     }
@@ -183,6 +189,15 @@ public class PlayerController : MonoBehaviour
 
         // 상태 강제 전환
         StateMachine.ChangeState(DeadState);
+    }
+
+    private void HandleStun()
+    {
+        // 이미 죽었거나 이미 스턴 상태면 무시
+        if (StateMachine.CurrentState == DeadState || StateMachine.CurrentState == StunState) return;
+
+        Debug.Log("플레이어가 스턴에 걸림!");
+        StateMachine.ChangeState(StunState);
     }
 
     #region 적 탐지

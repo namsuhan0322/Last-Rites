@@ -56,7 +56,7 @@ public class PlayerController : MonoBehaviour
         Agent = GetComponent<NavMeshAgent>();
         CC = GetComponent<CharacterController>();
         Stats = GetComponent<PlayerStats>();
-        Anim = GetComponentInChildren<Animator>();
+        Anim = GetComponent<Animator>();
     }
 
     private void Start()
@@ -137,6 +137,20 @@ public class PlayerController : MonoBehaviour
         }
 
         Anim.SetFloat("Move", speed, AnimationSmoothTime, Time.deltaTime);
+    }
+
+    private void OnAnimatorMove()
+    {
+        if (StateMachine.CurrentState is PlayerRollState)
+        {
+            Vector3 velocity = Anim.deltaPosition;
+            velocity.y = _verticalVelocity * Time.deltaTime;
+
+            CC.Move(velocity);
+
+            transform.rotation = Anim.rootRotation;
+            Agent.nextPosition = transform.position;
+        }
     }
 
     #region Àû Å½Áö

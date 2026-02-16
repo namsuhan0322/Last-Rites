@@ -9,6 +9,8 @@ public class PlayerController : MonoBehaviour
     public PlayerMoveState MoveState { get; private set; }
     public PlayerAttackState AttackState { get; private set; }
     public PlayerRollState RollState { get; private set; }
+    public PlayerHitState HitState { get; private set; }
+
     #endregion
 
     #region Components & Settings
@@ -52,11 +54,14 @@ public class PlayerController : MonoBehaviour
         MoveState = new PlayerMoveState(this, StateMachine);
         AttackState = new PlayerAttackState(this, StateMachine);
         RollState = new PlayerRollState(this, StateMachine);
+        HitState = new PlayerHitState(this, StateMachine);
 
         Agent = GetComponent<NavMeshAgent>();
         CC = GetComponent<CharacterController>();
         Stats = GetComponent<PlayerStats>();
         Anim = GetComponent<Animator>();
+
+        Stats.OnHit += HandleHit;
     }
 
     private void Start()
@@ -79,6 +84,14 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         StateMachine.CurrentState.PhysicsUpdate();
+    }
+
+    private void OnDestroy()
+    {
+        if (Stats != null)
+        {
+            Stats.OnHit -= HandleHit;
+        }
     }
 
     public void MoveWithNavMesh()
@@ -151,6 +164,12 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Anim.rootRotation;
             Agent.nextPosition = transform.position;
         }
+    }
+
+    private void HandleHit(float severity)
+    {
+        HitState.SetSeverity(severity);
+        StateMachine.ChangeState(HitState);
     }
 
     #region Àû Å½Áö

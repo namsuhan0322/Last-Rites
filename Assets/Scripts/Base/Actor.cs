@@ -19,6 +19,7 @@ public class Actor : MonoBehaviour
 
     public event Action<int, int> OnHPChanged;
     public event Action OnDeath;
+    public event Action<float> OnHit;
 
     protected Animator animator;
 
@@ -64,11 +65,15 @@ public class Actor : MonoBehaviour
         if (damage < 0) damage = 0;
 
         _currentHP -= damage;
-
         OnHPChanged?.Invoke(_currentHP, _maxHP);
 
         if (_currentHP <= 0)
             Die();
+        else
+        {
+            float hitSeverity = CalculateHitSeverity(damage);
+            OnHit?.Invoke(hitSeverity);
+        }
     }
 
     public virtual void Heal(int amount)
@@ -97,5 +102,12 @@ public class Actor : MonoBehaviour
         damageReduceTimer = duration;
 
         Debug.Log($"{name} Damage Reduction {amount} for {duration}s");
+    }
+
+    protected virtual float CalculateHitSeverity(int damage)
+    {
+        if (damage >= 30) return 1.0f;      // 강한 데미지 (Critical)
+        if (damage >= 10) return 0.5f;      // 중간 데미지
+        return 0.0f;                        // 약한 데미지
     }
 }

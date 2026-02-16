@@ -29,8 +29,8 @@ public class PlayerController : MonoBehaviour
     private float _verticalVelocity;
 
     public WeaponSO CurrentWeapon;
+    public WeaponHitbox Hitbox;
     [HideInInspector] public int CurrentComboStep = 0;
-    [HideInInspector] public float LastAttackTime = 0;
 
     [Header("Input")]
     public LayerMask GroundLayer;
@@ -199,6 +199,43 @@ public class PlayerController : MonoBehaviour
         Debug.Log("플레이어가 스턴에 걸림!");
         StateMachine.ChangeState(StunState);
     }
+
+    #region 공격 판정
+    public void EnableWeaponCollider()
+    {
+        if (Hitbox == null || CurrentWeapon == null) return;
+
+        int damageToDeal = CurrentWeapon.Combo_1;
+
+        AnimatorStateInfo stateInfo = Anim.GetCurrentAnimatorStateInfo(0);
+
+        if (stateInfo.IsName("Attack1"))
+        {
+            damageToDeal = CurrentWeapon.Combo_1;
+        }
+        else if (stateInfo.IsName("Attack2"))
+        {
+            damageToDeal = CurrentWeapon.Combo_2;
+        }
+        else if (stateInfo.IsName("Attack3"))
+        {
+            damageToDeal = CurrentWeapon.Combo_3;
+        }
+
+        // 히트박스 켜면서 결정된 데미지 전달
+        Hitbox.EnableHitbox(damageToDeal);
+    }
+
+    // 공격 종료 시 호출
+    public void DisableWeaponCollider()
+    {
+        if (Hitbox != null)
+        {
+            Hitbox.DisableHitbox();
+        }
+    }
+
+    #endregion
 
     #region 적 탐지
     private void CheckEnemyInSight()

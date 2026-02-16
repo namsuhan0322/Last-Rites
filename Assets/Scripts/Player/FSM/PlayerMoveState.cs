@@ -9,7 +9,8 @@ public class PlayerMoveState : PlayerState
         _player.Agent.stoppingDistance = 0f;
         SetDestinationToMouse();
 
-        _player.Anim.SetLayerWeight(1, 1f);
+        if (_player.InCombat) _player.Anim.SetLayerWeight(1, 1f);
+        else _player.Anim.SetLayerWeight(1, 0f);
     }
 
     public override void HandleInput()

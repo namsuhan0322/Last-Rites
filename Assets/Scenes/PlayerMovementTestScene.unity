@@ -241,7 +241,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0.43515247, y: 0, z: 0, w: 0.9003568}
-  m_LocalPosition: {x: 0.00000029802322, y: 8.975849, z: -6.212846}
+  m_LocalPosition: {x: 0, y: 8.83585, z: -6.212846}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -307,7 +307,7 @@ MonoBehaviour:
   m_ShowCameraFrustum: 1
   m_IgnoreTimeScale: 0
   m_WorldUpOverride: {fileID: 0}
-  m_UpdateMethod: 0
+  m_UpdateMethod: 2
   m_BlendUpdateMethod: 1
   m_DefaultBlend:
     m_Style: 1
@@ -6025,12 +6025,12 @@ PrefabInstance:
     - target: {fileID: 3832678238795407257, guid: 4932d56612fcfc447982dfe079e36585,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.00000029802322
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3832678238795407257, guid: 4932d56612fcfc447982dfe079e36585,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8.975849
+      value: 8.83585
       objectReference: {fileID: 0}
     - target: {fileID: 3832678238795407257, guid: 4932d56612fcfc447982dfe079e36585,
         type: 3}
@@ -6074,18 +6074,38 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4462552275386645114, guid: 4932d56612fcfc447982dfe079e36585,
         type: 3}
+      propertyPath: m_XDamping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462552275386645114, guid: 4932d56612fcfc447982dfe079e36585,
+        type: 3}
+      propertyPath: m_YDamping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462552275386645114, guid: 4932d56612fcfc447982dfe079e36585,
+        type: 3}
+      propertyPath: m_ZDamping
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462552275386645114, guid: 4932d56612fcfc447982dfe079e36585,
+        type: 3}
       propertyPath: m_DeadZoneWidth
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4462552275386645114, guid: 4932d56612fcfc447982dfe079e36585,
         type: 3}
       propertyPath: m_SoftZoneWidth
-      value: 0.04
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4462552275386645114, guid: 4932d56612fcfc447982dfe079e36585,
         type: 3}
       propertyPath: m_SoftZoneHeight
-      value: 0.118
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462552275386645114, guid: 4932d56612fcfc447982dfe079e36585,
+        type: 3}
+      propertyPath: m_TrackedObjectOffset.y
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5015710115605815180, guid: 4932d56612fcfc447982dfe079e36585,
         type: 3}

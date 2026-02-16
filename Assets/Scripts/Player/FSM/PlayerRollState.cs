@@ -12,6 +12,9 @@ public class PlayerRollState : PlayerState
         _stateTimer = 0f;
         _player.Anim.SetLayerWeight(1, 0f);
         _player.Anim.applyRootMotion = true;
+
+        RotateToMouseImmediate();
+
         _player.Anim.SetTrigger("Roll");
         _player.Agent.ResetPath();
         _rollDuration = 1.0f;
@@ -34,7 +37,27 @@ public class PlayerRollState : PlayerState
 
         if (_stateTimer >= _rollDuration)
         {
-            _stateMachine.ChangeState(_player.IdleState);
+            if (Input.GetMouseButton(1)) _stateMachine.ChangeState(_player.MoveState);
+            else _stateMachine.ChangeState(_player.IdleState);
+        }
+    }
+
+    private void RotateToMouseImmediate()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 100f, _player.GroundLayer))
+        {
+            Vector3 targetPoint = hit.point;
+            targetPoint.y = _player.transform.position.y;
+
+            Vector3 dir = (targetPoint - _player.transform.position).normalized;
+
+            if (dir != Vector3.zero)
+            {
+                _player.transform.rotation = Quaternion.LookRotation(dir);
+            }
         }
     }
 

@@ -3627,7 +3627,6 @@ MonoBehaviour:
     frameRateIndex: 0
     displayModeIndex: 0
     motionBlurIndex: 0
-    mouseSensitivity: 0.5
     brightness: 1
     contrast: 0.5
     masterVolume: 1
@@ -4416,6 +4415,11 @@ PrefabInstance:
         type: 3}
       propertyPath: fadeSpeed
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3629529507149797829, guid: 4910d74fab7d40846a92cf7059238c79,
+        type: 3}
+      propertyPath: tutorialSceneName
+      value: TutorialScene
       objectReference: {fileID: 0}
     - target: {fileID: 3629529507149797829, guid: 4910d74fab7d40846a92cf7059238c79,
         type: 3}

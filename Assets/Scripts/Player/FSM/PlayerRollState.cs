@@ -32,7 +32,6 @@ public class PlayerRollState : PlayerState
             }
         }
 
-        // 시간 종료 체크
         if (_stateTimer >= _rollDuration)
         {
             _stateMachine.ChangeState(_player.IdleState);

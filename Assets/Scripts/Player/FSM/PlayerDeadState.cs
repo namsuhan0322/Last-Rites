@@ -1,0 +1,17 @@
+using UnityEngine;
+
+public class PlayerDeadState : PlayerState
+{
+    public PlayerDeadState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
+
+    public override void Enter()
+    {
+        _player.Anim.SetTrigger("IsDead");
+        _player.Agent.ResetPath();
+        _player.Agent.velocity = Vector3.zero;
+        _player.Agent.isStopped = true;
+
+        if (_player.CC != null) 
+            _player.CC.enabled = false;
+    }
+}

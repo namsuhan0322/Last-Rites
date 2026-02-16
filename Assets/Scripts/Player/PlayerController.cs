@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     public PlayerAttackState AttackState { get; private set; }
     public PlayerRollState RollState { get; private set; }
     public PlayerHitState HitState { get; private set; }
+    public PlayerDeadState DeadState { get; private set; }
 
     #endregion
 
@@ -55,6 +56,7 @@ public class PlayerController : MonoBehaviour
         AttackState = new PlayerAttackState(this, StateMachine);
         RollState = new PlayerRollState(this, StateMachine);
         HitState = new PlayerHitState(this, StateMachine);
+        DeadState = new PlayerDeadState(this, StateMachine);
 
         Agent = GetComponent<NavMeshAgent>();
         CC = GetComponent<CharacterController>();
@@ -62,6 +64,7 @@ public class PlayerController : MonoBehaviour
         Anim = GetComponent<Animator>();
 
         Stats.OnHit += HandleHit;
+        Stats.OnDeath += HandleDeath;
     }
 
     private void Start()
@@ -91,6 +94,7 @@ public class PlayerController : MonoBehaviour
         if (Stats != null)
         {
             Stats.OnHit -= HandleHit;
+            Stats.OnDeath -= HandleDeath;
         }
     }
 
@@ -170,6 +174,15 @@ public class PlayerController : MonoBehaviour
     {
         HitState.SetSeverity(severity);
         StateMachine.ChangeState(HitState);
+    }
+
+    private void HandleDeath()
+    {
+        // 이미 죽은 상태라면 무시
+        if (StateMachine.CurrentState == DeadState) return;
+
+        // 상태 강제 전환
+        StateMachine.ChangeState(DeadState);
     }
 
     #region 적 탐지

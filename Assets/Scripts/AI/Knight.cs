@@ -77,6 +77,7 @@ public class Knight : AIBase
     // -------------도발--------------
     IEnumerator Taunt()
     {
+        isUsingSkill = true;
         canTaunt = false;
 
         speech?.Speak("내 뒤로 숨게!\n이놈들은 내가 맡지!", 3f);
@@ -99,10 +100,12 @@ public class Knight : AIBase
 
         yield return new WaitForSeconds(tauntCooldown);
         canTaunt = true;
+        isUsingSkill = false;
     }
     //방패치기
     void TryShieldBash()
     {
+
         if (!canBash) return;
 
         Collider[] hits = Physics.OverlapSphere(
@@ -126,6 +129,8 @@ public class Knight : AIBase
     //방패치기 
     IEnumerator ShieldBash(Enemy target)
     {
+        isUsingSkill = true;
+
         Debug.Log("[Knight] Shield Bash START");
 
         yield return new WaitForSeconds(0.4f);
@@ -136,6 +141,8 @@ public class Knight : AIBase
         canBash = true;
 
         Debug.Log("[Knight] Shield Bash Cooldown END");
+
+        isUsingSkill = false;
     }
 
 

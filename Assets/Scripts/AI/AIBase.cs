@@ -27,16 +27,20 @@ public class AIBase : Actor
     [SerializeField] protected float attackRange = 2f;
     [SerializeField] protected float attackDelay = 1.2f;
 
+
+    /// <summary>
+    /// 변수들
+    /// </summary>
     protected Transform player;
     protected int atk;  // AISO에서 가져올 공격력
     protected AISO data;
-
     float nextAttackTime = 0f;
     float attackTimer = 0f;
     bool isAttacking = false;
 
     Transform targetEnemy;
     bool isChasingEnemy = false;
+    protected bool isUsingSkill;
 
     protected override void Awake()
     {
@@ -78,6 +82,7 @@ public class AIBase : Actor
     //기본 공격
     void TryBasicAttack()
     {
+        if (isUsingSkill) return;
         if (targetEnemy == null) return;
         if (Time.time < nextAttackTime) return;
 

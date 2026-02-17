@@ -22,6 +22,8 @@ public class Knight : AIBase
 
     AISpeechController speech;
 
+
+
     //AISOs에서 가져오는 스킬 쿨, 수치
     public override void Setup(AISO aiData)
     {

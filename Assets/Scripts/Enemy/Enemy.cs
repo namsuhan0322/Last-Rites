@@ -84,8 +84,10 @@ public class Enemy : Actor
 
 
     //업데이트 부분
-    void Update()
+    protected override void Update()
     {
+        base.Update();
+
         if (_isDead) return;
 
         if (isStunned)
@@ -359,6 +361,7 @@ public class Enemy : Actor
     //적 죽음
     protected override void Die()
     {
+        Debug.Log("Enemy Die Called");
         if (_isDead) return;
 
         base.Die();

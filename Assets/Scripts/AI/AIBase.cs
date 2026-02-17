@@ -25,12 +25,15 @@ public class AIBase : Actor
 
     [Header("기본 공격")]
     [SerializeField] protected float attackRange = 2f;
-    [SerializeField] protected float attackCooldown = 1.2f;
+    [SerializeField] protected float attackDelay = 1.2f;
 
     protected Transform player;
     protected int atk;  // AISO에서 가져올 공격력
-    bool canAttack = true;  //공격할 수 있나?
     protected AISO data;
+
+    float nextAttackTime = 0f;
+    float attackTimer = 0f;
+    bool isAttacking = false;
 
     Transform targetEnemy;
     bool isChasingEnemy = false;
@@ -69,44 +72,48 @@ public class AIBase : Actor
         }
         else
             HandleFollow();
+        HandleAttackTimer();
     }
 
     //기본 공격
     void TryBasicAttack()
     {
-        if (!canAttack) return;
         if (targetEnemy == null) return;
+        if (Time.time < nextAttackTime) return;
 
         float dist = Vector3.Distance(transform.position, targetEnemy.position);
         if (dist > attackRange) return;
 
-        StartCoroutine(BasicAttack());
+        StartAttack();
     }
 
-    IEnumerator BasicAttack()
+    void StartAttack()
     {
-        canAttack = false;
+        nextAttackTime = Time.time + attackDelay;
 
         agent.isStopped = true;
-        SetWalking(false);
-
         LookAtEnemy();
 
-        // 공격 모션 타이밍
-        yield return new WaitForSeconds(0.3f);
+        isAttacking = true;
+        attackTimer = attackDelay;
+    }
 
-        if (targetEnemy != null)
-        {
-            Enemy enemy = targetEnemy.GetComponent<Enemy>();
-            if (enemy != null)
-            {
-                enemy.TakeDamage(atk);
-                OnAttackHit(enemy);   
-            }
-        }
+    void HandleAttackTimer()
+    {
+        if (!isAttacking) return;
 
-        yield return new WaitForSeconds(attackCooldown);
-        canAttack = true;
+        attackTimer -= Time.deltaTime;
+        if (attackTimer > 0f) return;
+
+        isAttacking = false;
+
+        if (targetEnemy == null) return;
+
+        Actor a = targetEnemy.GetComponent<Actor>();
+        if (a != null && !a.IsDead)
+            a.TakeDamage(atk);
+
+        agent.isStopped = false;
     }
 
     protected virtual void OnAttackHit(Enemy enemy) //직업별 확장성
@@ -118,7 +125,8 @@ public class AIBase : Actor
     protected virtual void DetectEnemy()
     {
         // 이미 전투 중이면 새로 찾지 않음
-        if (isChasingEnemy) return;
+        if (targetEnemy != null && !targetEnemy.GetComponent<Actor>().IsDead)
+            return;
 
         Collider[] hits = Physics.OverlapSphere(
             transform.position,
@@ -148,10 +156,10 @@ public class AIBase : Actor
     //적 쫒아가기
     void ChaseEnemy()
     {
-        if (targetEnemy == null)
+        if (targetEnemy == null || targetEnemy.GetComponent<Actor>().IsDead)
         {
+            targetEnemy = null;
             isChasingEnemy = false;
-            agent.isStopped = true;
             return;
         }
 

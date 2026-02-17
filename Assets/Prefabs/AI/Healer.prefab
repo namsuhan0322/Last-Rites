@@ -161,6 +161,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _currentHP: 150
+  _maxPoise: 20
+  _currentPoise: 0
+  _poiseRecoveryRate: 0
   agent: {fileID: 5495119052380949252}
   followRange: 6
   followTolerance: 4
@@ -173,5 +176,7 @@ MonoBehaviour:
     m_Bits: 128
   separationRadius: 4
   separationForce: 4
+  attackRange: 5
+  attackCooldown: 1.2
   healRadius: 8
   castDelay: 1.5

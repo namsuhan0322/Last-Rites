@@ -114,7 +114,11 @@ public class Actor : MonoBehaviour
     {
         _isDead = true;
         OnDeath?.Invoke();
-        Debug.Log($"{gameObject.name} Died.");
+
+        if (animator != null)
+            animator.SetTrigger("Die");
+
+        Destroy(gameObject, 2f); 
     }
 
     public void AddDamageReduction(int amount, float duration)

@@ -195,18 +195,11 @@ public class Healer : AIBase
         agent.isStopped = false;
     }
 
-
-    //캐스팅 취소
-    void CancelCasting()
-    {
-        isCasting = false;
-        speech?.Clear();
-    }
-
-
     //힐하는 사람 바라보기
     void LookAtHealTarget()
     {
+        if (healTarget == null) return;
+
         Vector3 dir = healTarget.transform.position - transform.position;
         dir.y = 0;
 

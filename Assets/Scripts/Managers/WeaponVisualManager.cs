@@ -7,17 +7,20 @@ public class WeaponVisualManager : MonoBehaviour
     [SerializeField] private GameObject _spearModel;
     [SerializeField] private GameObject _swordModel;
     [SerializeField] private GameObject _dualBladeModel;
-    [SerializeField] private GameObject _shieldModel;
 
     [Header("손에 든 무기 스킨")]
     [SerializeField] private GameObject _greatSwordSkin;
     [SerializeField] private GameObject _LdualBladeSkin;
     [SerializeField] private GameObject _RdualBladeSkin;
+    [SerializeField] private GameObject _swordSkin;
+    [SerializeField] private GameObject _shieldSkin;
 
     [Header("칼집/등에 맨 스킨")]
     [SerializeField] private GameObject _greatSwordSheathed;
     [SerializeField] private GameObject _daggerScabbard_L;
     [SerializeField] private GameObject _daggerScabbard_R;
+    [SerializeField] private GameObject _swordScabbard;
+    [SerializeField] private GameObject _swordScabbardEmpty;
 
     private WeaponType _currentWeaponType;
 
@@ -44,7 +47,7 @@ public class WeaponVisualManager : MonoBehaviour
 
             case WeaponType.SwordShield:
                 if (_swordModel) _swordModel.SetActive(true);
-                if (_shieldModel) _shieldModel.SetActive(true);
+                if (_shieldSkin) _shieldSkin.SetActive(true);
                 break;
         }
     }
@@ -55,14 +58,17 @@ public class WeaponVisualManager : MonoBehaviour
         if (_spearModel) _spearModel.SetActive(false);
         if (_swordModel) _swordModel.SetActive(false);
         if (_dualBladeModel) _dualBladeModel.SetActive(false);
-        if (_shieldModel) _shieldModel.SetActive(false);
   
         if (_greatSwordSkin) _greatSwordSkin.SetActive(false);
         if (_LdualBladeSkin) _LdualBladeSkin.SetActive(false);
         if (_RdualBladeSkin) _RdualBladeSkin.SetActive(false);
+        if (_swordSkin) _swordSkin.SetActive(false);
+        if (_shieldSkin) _shieldSkin.SetActive(false);
         if (_greatSwordSheathed) _greatSwordSheathed.SetActive(false);
         if (_daggerScabbard_L) _daggerScabbard_L.SetActive(false);
         if (_daggerScabbard_R) _daggerScabbard_R.SetActive(false);
+        if (_swordScabbard) _swordScabbard.SetActive(false);
+        if (_swordScabbardEmpty) _swordScabbardEmpty.SetActive(false);
     }
 
     // [애니메이션 이벤트] 칼을 뽑는 순간 호출
@@ -79,6 +85,11 @@ public class WeaponVisualManager : MonoBehaviour
                 if (_daggerScabbard_R) _daggerScabbard_R.SetActive(false); 
                 if (_LdualBladeSkin) _LdualBladeSkin.SetActive(true);        
                 if (_RdualBladeSkin) _RdualBladeSkin.SetActive(true);         
+                break;
+            case WeaponType.SwordShield:
+                if (_swordScabbard) _swordScabbard.SetActive(false);
+                if (_swordScabbardEmpty) _swordScabbardEmpty.SetActive(true);
+                if (_swordSkin) _swordSkin.SetActive(true);
                 break;
         }
     }
@@ -97,6 +108,11 @@ public class WeaponVisualManager : MonoBehaviour
                 if (_daggerScabbard_R) _daggerScabbard_R.SetActive(true);
                 if (_LdualBladeSkin) _LdualBladeSkin.SetActive(false);
                 if (_RdualBladeSkin) _RdualBladeSkin.SetActive(false);
+                break;
+            case WeaponType.SwordShield:
+                if (_swordSkin) _swordSkin.SetActive(false);
+                if (_swordScabbard) _swordScabbard.SetActive(true);
+                if (_swordScabbardEmpty) _swordScabbardEmpty.SetActive(false);
                 break;
         }
     }

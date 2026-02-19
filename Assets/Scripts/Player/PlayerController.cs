@@ -246,6 +246,25 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void RotateToMouseImmediate()
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, 100f, GroundLayer))
+        {
+            Vector3 targetPoint = hit.point;
+            targetPoint.y = transform.position.y; // 캐릭터가 위아래로 기울어지는 것 방지
+
+            Vector3 dir = (targetPoint - transform.position).normalized;
+
+            if (dir != Vector3.zero)
+            {
+                transform.rotation = Quaternion.LookRotation(dir);
+            }
+        }
+    }
+
     #region 공격 판정
     public void EnableWeaponCollider()
     {

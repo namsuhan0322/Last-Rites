@@ -9,13 +9,19 @@ public class PlayerAttackState : PlayerState
 
     public override void Enter()
     {
+        // 칼 뽑는 애니메이션 이벤트가 스킵되었을 때를 대비한 강제 동기화
+        if (_player.VisualManager != null) 
+            _player.VisualManager.DrawWeapon();
+
         _player.Agent.ResetPath();
         _player.Anim.SetFloat("Move", 0f);
 
         // 상체 레이어 끄기 (공격은 전신이므로)
         _player.Anim.SetLayerWeight(1, 0f);
 
-        _nextComboBuffered = false;
+        _nextComboBuffered = false; 
+        
+        _player.RotateToMouseImmediate();
 
         _player.Anim.ResetTrigger("Attack");
         _player.Anim.SetTrigger("Attack");

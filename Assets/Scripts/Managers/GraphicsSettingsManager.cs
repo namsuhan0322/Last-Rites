@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using static UnityEngine.Rendering.DebugUI;
-// using System.Linq; // 정렬/필터링이 필요 없어져서 삭제 가능
 
 public class GraphicsSettingsManager : MonoBehaviour
 {
@@ -21,7 +19,6 @@ public class GraphicsSettingsManager : MonoBehaviour
     public SliderOptionItem contrastItem;
 
     private List<string> resolutionOptionStrings = new List<string>();
-    private List<Resolution> supportedResolutions = new List<Resolution>();
 
     private readonly List<string> frameRateOptions = new List<string> { "60", "120", "144", "제한 없음" };
     private readonly List<string> displayModeOptions = new List<string> { "Full Screen", "Borderless", "Windowed" };
@@ -120,6 +117,8 @@ public class GraphicsSettingsManager : MonoBehaviour
 
             var t = resTargets[index];
             Screen.SetResolution(t.w, t.h, Screen.fullScreenMode);
+
+            GameEvents.ResolutionChanged(index);
         }
     }
 
@@ -148,6 +147,8 @@ public class GraphicsSettingsManager : MonoBehaviour
         else if (index == 2) mode = FullScreenMode.Windowed;
 
         Screen.fullScreenMode = mode;
+
+        GameEvents.FullscreenChanged(index == 0);
     }
 
     // --- UI 선택 로직 ---

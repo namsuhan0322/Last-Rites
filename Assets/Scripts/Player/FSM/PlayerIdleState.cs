@@ -14,8 +14,6 @@ public class PlayerIdleState : PlayerState
             _stateMachine.ChangeState(_player.RollState);
             return;
         }
-
-        _player.Anim.SetLayerWeight(1, 1f);
     }
 
     public override void HandleInput()
@@ -36,14 +34,7 @@ public class PlayerIdleState : PlayerState
 
     public override void LogicUpdate()
     {
-        if (_player.InCombat)
-        {
-            _player.Anim.SetLayerWeight(1, 1f);
-        }
-        else
-        {
-            _player.Anim.SetLayerWeight(1, 0f);
-        }
+
     }
 
     public override void PhysicsUpdate()

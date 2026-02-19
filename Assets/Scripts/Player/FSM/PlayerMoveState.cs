@@ -8,9 +8,6 @@ public class PlayerMoveState : PlayerState
     {
         _player.Agent.stoppingDistance = 0f;
         SetDestinationToMouse();
-
-        if (_player.InCombat) _player.Anim.SetLayerWeight(1, 1f);
-        else _player.Anim.SetLayerWeight(1, 0f);
     }
 
     public override void HandleInput()
@@ -41,15 +38,6 @@ public class PlayerMoveState : PlayerState
             {
                 _stateMachine.ChangeState(_player.IdleState);
             }
-        }
-
-        if (_player.InCombat)
-        {
-            _player.Anim.SetLayerWeight(1, 1f); // 상체: 경계, 하체: 달리기
-        }
-        else
-        {
-            _player.Anim.SetLayerWeight(1, 0f); // 전신: 평소 달리기
         }
     }
 

@@ -7447,6 +7447,7 @@ GameObject:
   - component: {fileID: 6078991296296674633}
   - component: {fileID: 475020715049840863}
   - component: {fileID: 3114906001766314662}
+  - component: {fileID: 4474019055967740777}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -7606,9 +7607,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RotateSpeed: 10
   AnimationSmoothTime: 0.1
-  CurrentWeapon: {fileID: 11400000, guid: 6cb1811f8116e0d4b9de4da0c76206b3, type: 2}
+  CurrentWeapon: {fileID: 11400000, guid: ba6fba7b65ee8a24eb638b2fd717bf27, type: 2}
   Hitbox: {fileID: 3114906001766314662}
   CurrentComboStep: 0
+  VisualManager: {fileID: 4474019055967740777}
   GroundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -7636,6 +7638,25 @@ MonoBehaviour:
   _dualBladeRCol: {fileID: 3377640454614084553}
   _dualBladeLCol: {fileID: 9189806502748844275}
   _shieldCol: {fileID: 0}
+--- !u!114 &4474019055967740777
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1070490428555067037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9274748d2147b47a7dca108c25d638, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _greatSwordModel: {fileID: 7122491690191983880}
+  _spearModel: {fileID: 0}
+  _swordModel: {fileID: 0}
+  _dualBladeModel: {fileID: 2534043079299570299}
+  _shieldModel: {fileID: 0}
+  _greatSwordSkin: {fileID: 403856645014305737}
+  _greatSwordSheathed: {fileID: 2612580868370198570}
 --- !u!1 &1099378407359500529
 GameObject:
   m_ObjectHideFlags: 0

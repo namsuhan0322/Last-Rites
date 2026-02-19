@@ -10,7 +10,6 @@ public class PlayerRollState : PlayerState
     public override void Enter()
     {
         _stateTimer = 0f;
-        _player.Anim.SetLayerWeight(1, 0f);
         _player.Anim.applyRootMotion = true;
 
         RotateToMouseImmediate();
@@ -23,8 +22,6 @@ public class PlayerRollState : PlayerState
     public override void LogicUpdate()
     {
         _stateTimer += Time.deltaTime;
-
-        _player.Anim.SetLayerWeight(1, 0f);
 
         AnimatorStateInfo stateInfo = _player.Anim.GetCurrentAnimatorStateInfo(0);
         if (stateInfo.IsName("Roll") || stateInfo.IsTag("Roll"))
@@ -65,7 +62,6 @@ public class PlayerRollState : PlayerState
 
     public override void Exit()
     {
-        _player.Anim.SetLayerWeight(1, 1f);
         _player.Anim.applyRootMotion = false;
         _player.Agent.velocity = Vector3.zero;
     }

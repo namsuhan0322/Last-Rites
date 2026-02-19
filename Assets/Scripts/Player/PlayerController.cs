@@ -94,6 +94,7 @@ public class PlayerController : MonoBehaviour
         StateMachine.CurrentState.LogicUpdate();
 
         CheckEnemyInSight();
+        ManageUpperBodyWeight();
     }
 
     private void FixedUpdate()
@@ -209,6 +210,42 @@ public class PlayerController : MonoBehaviour
         StateMachine.ChangeState(StunState);
     }
 
+    private void ManageUpperBodyWeight()
+    {
+        // 전신을 써야 하는 상태(공격, 회피 등)에서는 상체 레이어를 즉시 끕니다.
+        if (StateMachine.CurrentState == AttackState || StateMachine.CurrentState == RollState)
+        {
+            Anim.SetLayerWeight(1, 0f);
+            return;
+        }
+
+        AnimatorStateInfo upperState = Anim.GetCurrentAnimatorStateInfo(1);
+
+        bool isEmpty = upperState.IsName("Empty");
+        bool isDrawing = upperState.IsName("SheatheHips");
+        bool isStowing = upperState.IsName("UnsheatheHips");
+
+        // 이벤트 캔슬 대비용 안전장치
+        if (isEmpty && !_inCombat)
+        {
+            OnWeaponStowed();
+        }
+        else if (upperState.IsName("Combat (1)") && _inCombat)
+        {
+            OnWeaponDrawn();
+        }
+
+        // 전투 중이거나, 칼 뽑기/넣기 중이면 레이어 켜기
+        if (_inCombat || isDrawing || isStowing)
+        {
+            Anim.SetLayerWeight(1, Mathf.Lerp(Anim.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
+        }
+        else
+        {
+            Anim.SetLayerWeight(1, Mathf.Lerp(Anim.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
+        }
+    }
+
     #region 공격 판정
     public void EnableWeaponCollider()
     {
@@ -244,6 +281,26 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region 무기 장착, 해제 이벤트 
+    // 칼집에서 칼을 뽑는 애니메이션 도중 손이 자루에 닿을 때 호출
+    public void OnWeaponDrawn()
+    {
+        if (VisualManager != null)
+        {
+            VisualManager.DrawWeapon();
+        }
+    }
+
+    // 칼을 칼집에 넣는 애니메이션 도중 손에서 자루를 놓을 때 호출
+    public void OnWeaponStowed()
+    {
+        if (VisualManager != null)
+        {
+            VisualManager.StowWeapon();
+        }
+    }
     #endregion
 
     #region 적 탐지

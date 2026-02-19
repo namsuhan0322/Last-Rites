@@ -17,7 +17,10 @@ public class WeaponVisualManager : MonoBehaviour
 
     [Header("칼집/등에 맨 스킨")]
     [SerializeField] private GameObject _greatSwordSheathed;
+    [SerializeField] private GameObject _greatSwordSheathedEmpty;
+    [SerializeField] private GameObject _daggerScabbard_L_Empty;
     [SerializeField] private GameObject _daggerScabbard_L;
+    [SerializeField] private GameObject _daggerScabbard_R_Empty;
     [SerializeField] private GameObject _daggerScabbard_R;
     [SerializeField] private GameObject _swordScabbard;
     [SerializeField] private GameObject _swordScabbardEmpty;
@@ -65,8 +68,11 @@ public class WeaponVisualManager : MonoBehaviour
         if (_swordSkin) _swordSkin.SetActive(false);
         if (_shieldSkin) _shieldSkin.SetActive(false);
         if (_greatSwordSheathed) _greatSwordSheathed.SetActive(false);
-        if (_daggerScabbard_L) _daggerScabbard_L.SetActive(false);
-        if (_daggerScabbard_R) _daggerScabbard_R.SetActive(false);
+        if (_greatSwordSheathedEmpty) _greatSwordSheathedEmpty.SetActive(false);
+        if (_daggerScabbard_L_Empty) _daggerScabbard_L_Empty.SetActive(false);
+        if (_daggerScabbard_L_Empty) _daggerScabbard_L.SetActive(false);
+        if (_daggerScabbard_R_Empty) _daggerScabbard_R_Empty.SetActive(false);
+        if (_daggerScabbard_R_Empty) _daggerScabbard_R.SetActive(false);
         if (_swordScabbard) _swordScabbard.SetActive(false);
         if (_swordScabbardEmpty) _swordScabbardEmpty.SetActive(false);
     }
@@ -78,11 +84,14 @@ public class WeaponVisualManager : MonoBehaviour
         {
             case WeaponType.GreatSword:
                 if (_greatSwordSheathed) _greatSwordSheathed.SetActive(false);
+                if (_greatSwordSheathedEmpty) _greatSwordSheathedEmpty.SetActive(true);
                 if (_greatSwordSkin) _greatSwordSkin.SetActive(true);
                 break;
             case WeaponType.DualBlade:
-                if (_daggerScabbard_L) _daggerScabbard_L.SetActive(false); 
-                if (_daggerScabbard_R) _daggerScabbard_R.SetActive(false); 
+                if (_daggerScabbard_L_Empty) _daggerScabbard_L_Empty.SetActive(true); 
+                if (_daggerScabbard_L_Empty) _daggerScabbard_L.SetActive(false); 
+                if (_daggerScabbard_R_Empty) _daggerScabbard_R_Empty.SetActive(true); 
+                if (_daggerScabbard_R_Empty) _daggerScabbard_R.SetActive(false); 
                 if (_LdualBladeSkin) _LdualBladeSkin.SetActive(true);        
                 if (_RdualBladeSkin) _RdualBladeSkin.SetActive(true);         
                 break;
@@ -102,10 +111,13 @@ public class WeaponVisualManager : MonoBehaviour
             case WeaponType.GreatSword:
                 if (_greatSwordSkin) _greatSwordSkin.SetActive(false);         // 손에 있는거 끄기
                 if (_greatSwordSheathed) _greatSwordSheathed.SetActive(true);  // 등에 있는거 켜기
+                if (_greatSwordSheathedEmpty) _greatSwordSheathedEmpty.SetActive(false);  // 등에 있는거 켜기
                 break;
             case WeaponType.DualBlade:
-                if (_daggerScabbard_L) _daggerScabbard_L.SetActive(true);
-                if (_daggerScabbard_R) _daggerScabbard_R.SetActive(true);
+                if (_daggerScabbard_L_Empty) _daggerScabbard_L_Empty.SetActive(false);
+                if (_daggerScabbard_L_Empty) _daggerScabbard_L.SetActive(true);
+                if (_daggerScabbard_R_Empty) _daggerScabbard_R_Empty.SetActive(false);
+                if (_daggerScabbard_R_Empty) _daggerScabbard_R.SetActive(true);
                 if (_LdualBladeSkin) _LdualBladeSkin.SetActive(false);
                 if (_RdualBladeSkin) _RdualBladeSkin.SetActive(false);
                 break;

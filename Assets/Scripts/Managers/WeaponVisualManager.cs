@@ -14,6 +14,7 @@ public class WeaponVisualManager : MonoBehaviour
     [SerializeField] private GameObject _RdualBladeSkin;
     [SerializeField] private GameObject _swordSkin;
     [SerializeField] private GameObject _shieldSkin;
+    [SerializeField] private GameObject _spearSkin;
 
     [Header("칼집/등에 맨 스킨")]
     [SerializeField] private GameObject _greatSwordSheathed;
@@ -24,6 +25,7 @@ public class WeaponVisualManager : MonoBehaviour
     [SerializeField] private GameObject _daggerScabbard_R;
     [SerializeField] private GameObject _swordScabbard;
     [SerializeField] private GameObject _swordScabbardEmpty;
+    [SerializeField] private GameObject _spearScabbard;
 
     private WeaponType _currentWeaponType;
 
@@ -67,6 +69,7 @@ public class WeaponVisualManager : MonoBehaviour
         if (_RdualBladeSkin) _RdualBladeSkin.SetActive(false);
         if (_swordSkin) _swordSkin.SetActive(false);
         if (_shieldSkin) _shieldSkin.SetActive(false);
+        if (_spearSkin) _spearSkin.SetActive(false);
         if (_greatSwordSheathed) _greatSwordSheathed.SetActive(false);
         if (_greatSwordSheathedEmpty) _greatSwordSheathedEmpty.SetActive(false);
         if (_daggerScabbard_L_Empty) _daggerScabbard_L_Empty.SetActive(false);
@@ -75,6 +78,7 @@ public class WeaponVisualManager : MonoBehaviour
         if (_daggerScabbard_R_Empty) _daggerScabbard_R.SetActive(false);
         if (_swordScabbard) _swordScabbard.SetActive(false);
         if (_swordScabbardEmpty) _swordScabbardEmpty.SetActive(false);
+        if (_spearScabbard) _spearScabbard.SetActive(false);
     }
 
     // [애니메이션 이벤트] 칼을 뽑는 순간 호출
@@ -100,6 +104,10 @@ public class WeaponVisualManager : MonoBehaviour
                 if (_swordScabbardEmpty) _swordScabbardEmpty.SetActive(true);
                 if (_swordSkin) _swordSkin.SetActive(true);
                 break;
+            case WeaponType.Spear:
+                if (_spearScabbard) _spearScabbard.SetActive(false);
+                if (_spearSkin) _spearSkin.SetActive(true);
+                    break;
         }
     }
 
@@ -125,6 +133,10 @@ public class WeaponVisualManager : MonoBehaviour
                 if (_swordSkin) _swordSkin.SetActive(false);
                 if (_swordScabbard) _swordScabbard.SetActive(true);
                 if (_swordScabbardEmpty) _swordScabbardEmpty.SetActive(false);
+                break;
+            case WeaponType.Spear:
+                if (_spearSkin) _spearSkin.SetActive(false);
+                if (_spearScabbard) _spearScabbard.SetActive(true);
                 break;
         }
     }

@@ -20,4 +20,6 @@ public class WeaponSO : ScriptableObject
     public float R_Cool;
     public int V_Dmg;
     public float V_Cool;
+
+    public AnimatorOverrideController weaponAnimator;
 }

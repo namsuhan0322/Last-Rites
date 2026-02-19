@@ -524,7 +524,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Player
+  m_Name: PlayerBase
   serializedVersion: 5
   m_AnimatorParameters:
   - m_Name: Move
@@ -790,7 +790,7 @@ AnimatorStateMachine:
     m_Position: {x: -90, y: -270, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 609248760719752158}
-    m_Position: {x: -300, y: -240, z: 0}
+    m_Position: {x: -340, y: -170, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4329840368254420455}
     m_Position: {x: 180, y: -170, z: 0}

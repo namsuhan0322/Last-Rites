@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.4465806, g: 0.49641454, b: 0.5748179, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -983,6 +982,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1832297079}
     m_Modifications:
+    - target: {fileID: 4358870526585949211, guid: 962c2f9569fead040a5d2d913a266725,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5450808757610092124, guid: 962c2f9569fead040a5d2d913a266725,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5930797124733245646, guid: 962c2f9569fead040a5d2d913a266725,
         type: 3}
       propertyPath: m_Name
@@ -1273,12 +1282,12 @@ MonoBehaviour:
   m_RequiresColorTexture: 0
   m_Version: 2
   m_TaaSettings:
-    quality: 3
-    frameInfluence: 0.1
-    jitterScale: 1
-    mipBias: 0
-    varianceClampScale: 0.9
-    contrastAdaptiveSharpening: 0
+    m_Quality: 3
+    m_FrameInfluence: 0.1
+    m_JitterScale: 1
+    m_MipBias: 0
+    m_VarianceClampScale: 0.9
+    m_ContrastAdaptiveSharpening: 0
 --- !u!81 &1890816567
 AudioListener:
   m_ObjectHideFlags: 0

@@ -32,6 +32,8 @@ public class PlayerController : MonoBehaviour
     public WeaponHitbox Hitbox;
     [HideInInspector] public int CurrentComboStep = 0;
 
+    public WeaponVisualManager VisualManager;
+
     [Header("Input")]
     public LayerMask GroundLayer;
 
@@ -75,6 +77,13 @@ public class PlayerController : MonoBehaviour
         Agent.updatePosition = false;
         Agent.updateRotation = false;
         Agent.speed = Stats.MoveSpeed;
+
+        if (CurrentWeapon != null && Hitbox != null)
+        {
+            if (Hitbox != null) Hitbox.SetupColliders(CurrentWeapon.weaponType);
+            if (VisualManager != null) VisualManager.SetupVisuals(CurrentWeapon.weaponType);
+            if (CurrentWeapon.weaponAnimator != null) Anim.runtimeAnimatorController = CurrentWeapon.weaponAnimator;
+        }
 
         StateMachine.Initialize(IdleState);
     }

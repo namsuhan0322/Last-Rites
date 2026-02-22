@@ -341,7 +341,7 @@ public class Enemy : Actor
 
         Destroy(gameObject);
     }
-    //공격
+ 
 
     //데미지 받기
     public override void TakeDamage(int damage)

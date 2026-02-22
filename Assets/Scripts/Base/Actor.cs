@@ -21,6 +21,10 @@ public class Actor : MonoBehaviour
     [SerializeField] protected float _currentPoise;                 // 현재 강인도
     [SerializeField] protected float _poiseRecoveryRate = 0f;       // 자동회복
 
+    [Header("무적 타이머")]
+    [SerializeField] protected bool _isInvincible = false;
+    [SerializeField] protected float _invincibleTimer = 0f;
+
     public event Action<int, int> OnHPChanged;
     public event Action OnDeath;
     public event Action<float> OnHit;
@@ -56,6 +60,16 @@ public class Actor : MonoBehaviour
             _currentPoise += _poiseRecoveryRate * Time.deltaTime;
             if (_currentPoise > _maxPoise) _currentPoise = _maxPoise;
         }
+
+        if (_invincibleTimer > 0f)
+        {
+            _invincibleTimer -= Time.deltaTime;
+            if (_invincibleTimer <= 0f)
+            {
+                _isInvincible = false;
+                _invincibleTimer = 0f;
+            }
+        }
     }
 
     public virtual void InitActor(int maxHP)
@@ -74,6 +88,11 @@ public class Actor : MonoBehaviour
     public virtual void TakeDamage(int damage)
     {
         if (_isDead) return;
+        if (_isInvincible)
+        {
+            Debug.Log($"{name} : 무적 상태 회피 성공!");
+            return;
+        }
         if (damage <= 0) return;
 
         damage -= damageReduction;
@@ -147,5 +166,18 @@ public class Actor : MonoBehaviour
             OnStun?.Invoke();               // 스턴 발생!
             _currentPoise = _maxPoise;      // 스턴 터지면 강인도 초기화 (바로 또 스턴 안 걸리게)
         }
+    }
+
+    public void SetInvincible(bool value)
+    {
+        _isInvincible = value;
+        if (!value) _invincibleTimer = 0f; // 끌 때는 타이머도 초기화
+    }
+
+    // 일정 시간(예: 0.5초) 동안만 무적을 유지하는 함수
+    public void SetInvincibleForSeconds(float seconds)
+    {
+        _isInvincible = true;
+        _invincibleTimer = seconds;
     }
 }

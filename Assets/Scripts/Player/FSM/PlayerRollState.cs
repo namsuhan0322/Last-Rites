@@ -10,7 +10,7 @@ public class PlayerRollState : PlayerState
     public override void Enter()
     {
         _player.Stats.UseStamina(_player.Stats.DashCost);
-
+        _player.Stats.SetInvincible(true);
         _stateTimer = 0f;
         _player.Anim.applyRootMotion = true;
 
@@ -36,8 +36,19 @@ public class PlayerRollState : PlayerState
 
         if (_stateTimer >= _rollDuration)
         {
-            if (Input.GetMouseButton(1)) _stateMachine.ChangeState(_player.MoveState);
-            else _stateMachine.ChangeState(_player.IdleState);
+            // 구르기가 끝났을 때의 행동에 따른 무적 처리
+            if (Input.GetMouseButton(1))
+            {
+                // 바로 이동하려 한다면 0.5초 보너스 없이 무적 즉시 해제
+                _player.Stats.SetInvincible(false);
+                _stateMachine.ChangeState(_player.MoveState);
+            }
+            else
+            {
+                // 가만히 대기 상태로 간다면 0.5초 보너스 무적 부여
+                _player.Stats.SetInvincibleForSeconds(0.5f);
+                _stateMachine.ChangeState(_player.IdleState);
+            }
         }
     }
 

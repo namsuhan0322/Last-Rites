@@ -9,6 +9,8 @@ public class PlayerAttackState : PlayerState
 
     public override void Enter()
     {
+        _player.Stats.SetInvincible(false);
+
         // 칼 뽑는 애니메이션 이벤트가 스킵되었을 때를 대비한 강제 동기화
         if (_player.VisualManager != null) 
             _player.VisualManager.DrawWeapon();
@@ -49,10 +51,14 @@ public class PlayerAttackState : PlayerState
         _player.StopAndApplyGravity();
         _stateTimer += Time.deltaTime;
 
+        if (_player.Anim.IsInTransition(0)) return;
+
         AnimatorStateInfo stateInfo = _player.Anim.GetCurrentAnimatorStateInfo(0);
 
         if (stateInfo.IsTag("Attack"))
         {
+            if (_stateTimer < 0.1f) return;
+
             float normalizedTime = stateInfo.normalizedTime;
 
             // [공격 중] 후딜레이 캔슬 (60% 이상 진행 시 이동 허용)

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -42,11 +43,11 @@ public class Enemy : Actor
     float patrolSpeed;
     float chaseSpeed;
     float waitTimer = 0f;
-    float attackRange;
-    float attackCooldown;
-    int attackDamage;
-
-    float attackTimer = 0f;
+    bool isHit = false;
+    public float attackRange;
+    public float attackCooldown;
+    public int attackDamage;
+    public float attackTimer = 0f;
 
 
     //EnemyData에서 가져온 수치
@@ -78,7 +79,7 @@ public class Enemy : Actor
 
         if (agent == null)
             agent = GetComponent<NavMeshAgent>();
-
+       
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
     }
 
@@ -88,7 +89,7 @@ public class Enemy : Actor
     {
         base.Update();
 
-        if (_isDead) return;
+        if (_isDead || isHit) return;
 
         if (isStunned)
         {
@@ -101,6 +102,12 @@ public class Enemy : Actor
         HandleForcedTarget();
         HandleMovement();
         TryAttack();
+
+        if (agent.velocity.magnitude < 0.1f)
+        {
+            animator?.SetBool("Walk", false);
+            animator?.SetBool("Run", false);
+        }
     }
 
     //도발 걸린 상태
@@ -174,16 +181,17 @@ public class Enemy : Actor
     // ---------- 추적 ----------
     void ChasePlayer(float dist)
     {
+        if (dist <= attackRange)
+        {
+            agent.isStopped = true;
+            return;
+        }
+
         agent.isStopped = false;
         agent.speed = chaseSpeed;
+        agent.SetDestination(currentTarget.position);
 
-        Vector3 surroundPos = GetSurroundPosition(currentTarget);
-
-        // 겹침 방지 적용
-        surroundPos = ApplySeparation(surroundPos);
-
-        agent.SetDestination(surroundPos);
-
+        RotateToTarget();
         SetWalking(true);
     }
 
@@ -231,59 +239,6 @@ public class Enemy : Actor
         return false;
     }
 
-    //--------원형으로 둥글게 공격---------
-    Vector3 GetSurroundPosition(Transform target)
-    {
-        Collider[] others = Physics.OverlapSphere(
-            target.position,
-            5f,
-            enemyLayer
-        );
-
-        int myIndex = 0;
-        for (int i = 0; i < others.Length; i++)
-        {
-            if (others[i].transform == transform)
-                myIndex = i;
-        }
-
-        float angle = (360f / Mathf.Max(1, others.Length)) * myIndex;
-
-        Vector3 dir = new Vector3(
-            Mathf.Cos(angle * Mathf.Deg2Rad),
-            0,
-            Mathf.Sin(angle * Mathf.Deg2Rad)
-        );
-
-        return target.position + dir * surroundRadius;
-    }
-
-    //----------안 겹치게-----------
-    Vector3 ApplySeparation(Vector3 desiredPos)
-    {
-        Collider[] allies = Physics.OverlapSphere(
-            transform.position,
-            separationRadius,
-            enemyLayer
-        );
-
-        Vector3 push = Vector3.zero;
-
-        foreach (var a in allies)
-        {
-            if (a.transform == transform) continue;
-
-            Vector3 dir = transform.position - a.transform.position;
-            float dist = dir.magnitude;
-
-            if (dist > 0.01f)
-                push += dir.normalized / dist;   // 가까우면 더 많이 밀어냄
-        }
-
-        desiredPos += push * separationForce;
-        return desiredPos;
-    }
-
     //----------도발 타겟 고정-------------
     public void ForceTarget(Transform t, float duration)
     {
@@ -316,7 +271,7 @@ public class Enemy : Actor
 
         isStunned = true;
         stunTimer = duration;
-
+        animator?.SetBool("Stun", true);
         ShowStunMark();
     }
 
@@ -352,16 +307,18 @@ public class Enemy : Actor
         Debug.Log($"[Enemy] {name} STUN END");
     }
 
-    // ---------- 애니메이션 ----------
     void SetWalking(bool walking)
     {
+        if (animator == null) return;
+
+        animator.SetBool("Walk", walking && agent.speed == patrolSpeed);
+        animator.SetBool("Run", walking && agent.speed == chaseSpeed);
     }
 
 
     //적 죽음
     protected override void Die()
     {
-        Debug.Log("Enemy Die Called");
         if (_isDead) return;
 
         base.Die();
@@ -372,10 +329,15 @@ public class Enemy : Actor
             agent.enabled = false;
         }
 
-        if (animator != null)
-            animator.SetTrigger("Die");
-
         manager?.OnEnemyDead();
+
+        StartCoroutine(DieRoutine());
+    }
+
+    IEnumerator DieRoutine()
+    {
+        AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+        yield return new WaitForSeconds(state.length);
 
         Destroy(gameObject);
     }
@@ -384,11 +346,17 @@ public class Enemy : Actor
     //데미지 받기
     public override void TakeDamage(int damage)
     {
+        if (isHit || _isDead) return;
+
         base.TakeDamage(damage);
 
-        if (!_isDead)
-            animator?.SetTrigger("Hit");
+        isHit = true;
+        agent.isStopped = true;
+
+        animator?.SetTrigger("Hit");
     }
+
+    //공격 시도
     protected virtual void TryAttack()
     {
         if (currentTarget == null) return;
@@ -402,15 +370,42 @@ public class Enemy : Actor
         Attack();
     }
 
+    //공격 변수
     void Attack()
     {
+        RotateToTarget();
         attackTimer = attackCooldown;
+
+    }
+
+    //데미지 이벤트 함수
+    public void DealDamage()
+    {
+        if (currentTarget == null) return;
 
         Actor target = currentTarget.GetComponent<Actor>();
         if (target != null)
-        {
-            Debug.Log($"[Enemy Attack] {name} dmg={attackDamage}");
             target.TakeDamage(attackDamage);
-        }
+    }
+
+    //타겟 쳐다보기
+    public void RotateToTarget()
+    {
+        if (currentTarget == null) return;
+
+        Vector3 dir = currentTarget.position - transform.position;
+        dir.y = 0f;
+
+        if (dir.sqrMagnitude < 0.001f) return;
+
+        Quaternion rot = Quaternion.LookRotation(dir);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 10f);
+    }
+
+    //피격 끝 시점
+    public void EndHit()
+    {
+        isHit = false;
+        agent.isStopped = false;
     }
 }

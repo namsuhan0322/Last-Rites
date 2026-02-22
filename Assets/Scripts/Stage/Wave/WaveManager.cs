@@ -40,6 +40,7 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
+
         plans = GameObject.FindGameObjectsWithTag("Plan");
         StartCoroutine(StartWaveLoop());
     }

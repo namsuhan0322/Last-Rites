@@ -136,8 +136,6 @@ public class Actor : MonoBehaviour
 
         if (animator != null)
             animator.SetTrigger("Die");
-
-        Destroy(gameObject, 2f); 
     }
 
     public void AddDamageReduction(int amount, float duration)

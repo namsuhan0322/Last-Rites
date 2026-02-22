@@ -21,10 +21,7 @@ public class PlayerMoveState : PlayerState
             }
         }
         if (Input.GetKeyDown(KeyCode.Space))
-        {
-            _stateMachine.ChangeState(_player.RollState);
-            return;
-        }
+            if (_player.Stats.CurrentStamina >= _player.Stats.DashCost) _stateMachine.ChangeState(_player.RollState);
     }
 
     public override void LogicUpdate()

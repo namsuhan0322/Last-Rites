@@ -8,12 +8,6 @@ public class PlayerIdleState : PlayerState
     {
         _player.Anim.SetFloat("Move", 0f);
         _player.Agent.ResetPath();
-
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            _stateMachine.ChangeState(_player.RollState);
-            return;
-        }
     }
 
     public override void HandleInput()
@@ -22,7 +16,6 @@ public class PlayerIdleState : PlayerState
         {
             _stateMachine.ChangeState(_player.MoveState);
         }
-
         if (Input.GetMouseButtonDown(0)) // ÁÂÅ¬¸¯ -> °ø°Ý
         {
             if (_player.InCombat)
@@ -30,6 +23,8 @@ public class PlayerIdleState : PlayerState
                 _stateMachine.ChangeState(_player.AttackState);
             }
         }
+        if (Input.GetKeyDown(KeyCode.Space))
+            if (_player.Stats.CurrentStamina >= _player.Stats.DashCost) _stateMachine.ChangeState(_player.RollState);
     }
 
     public override void LogicUpdate()

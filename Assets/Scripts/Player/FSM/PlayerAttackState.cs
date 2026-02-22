@@ -40,7 +40,8 @@ public class PlayerAttackState : PlayerState
             _player.Anim.ResetTrigger("Attack");
             _stateMachine.ChangeState(_player.MoveState);
         }
-        if (Input.GetKeyDown(KeyCode.Space)) _stateMachine.ChangeState(_player.RollState);
+        if (Input.GetKeyDown(KeyCode.Space))
+            if (_player.Stats.CurrentStamina >= _player.Stats.DashCost) _stateMachine.ChangeState(_player.RollState);
     }
 
     public override void LogicUpdate()

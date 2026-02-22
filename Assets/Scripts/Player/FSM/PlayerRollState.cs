@@ -9,10 +9,12 @@ public class PlayerRollState : PlayerState
 
     public override void Enter()
     {
+        _player.Stats.UseStamina(_player.Stats.DashCost);
+
         _stateTimer = 0f;
         _player.Anim.applyRootMotion = true;
 
-        RotateToMouseImmediate();
+        _player.RotateToMouseImmediate();
 
         _player.Anim.SetTrigger("Roll");
         _player.Agent.ResetPath();
@@ -36,25 +38,6 @@ public class PlayerRollState : PlayerState
         {
             if (Input.GetMouseButton(1)) _stateMachine.ChangeState(_player.MoveState);
             else _stateMachine.ChangeState(_player.IdleState);
-        }
-    }
-
-    private void RotateToMouseImmediate()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-
-        if (Physics.Raycast(ray, out hit, 100f, _player.GroundLayer))
-        {
-            Vector3 targetPoint = hit.point;
-            targetPoint.y = _player.transform.position.y;
-
-            Vector3 dir = (targetPoint - _player.transform.position).normalized;
-
-            if (dir != Vector3.zero)
-            {
-                _player.transform.rotation = Quaternion.LookRotation(dir);
-            }
         }
     }
 

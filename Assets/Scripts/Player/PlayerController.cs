@@ -12,6 +12,7 @@ public class PlayerController : MonoBehaviour
     public PlayerHitState HitState { get; private set; }
     public PlayerDeadState DeadState { get; private set; }
     public PlayerStunState StunState { get; private set; }
+    public PlayerSkillState SkillState { get; private set; }
 
     #endregion
 
@@ -49,6 +50,15 @@ public class PlayerController : MonoBehaviour
 
     public bool InCombat => _inCombat;
 
+    [Header("스킬 관리")]
+    [HideInInspector] public string CurrentSkillAnim;   // 어떤 스킬 애니메이션을 틀지
+    [HideInInspector] public int CurrentSkillDamage;    // 현재 스킬 데미지가 얼마인지
+
+    public float Q_Timer { get; private set; }
+    public float W_Timer { get; private set; }
+    public float E_Timer { get; private set; }
+    public float V_Timer { get; private set; }
+
     #endregion
 
     private void Awake()
@@ -61,6 +71,7 @@ public class PlayerController : MonoBehaviour
         HitState = new PlayerHitState(this, StateMachine);
         DeadState = new PlayerDeadState(this, StateMachine);
         StunState = new PlayerStunState(this, StateMachine);
+        SkillState = new PlayerSkillState(this, StateMachine);
 
         Agent = GetComponent<NavMeshAgent>();
         CC = GetComponent<CharacterController>();
@@ -95,6 +106,7 @@ public class PlayerController : MonoBehaviour
 
         CheckEnemyInSight();
         ManageUpperBodyWeight();
+        UpdateSkillCooldowns();
     }
 
     private void FixedUpdate()
@@ -213,7 +225,9 @@ public class PlayerController : MonoBehaviour
     private void ManageUpperBodyWeight()
     {
         // 전신을 써야 하는 상태(공격, 회피 등)에서는 상체 레이어를 즉시 끕니다.
-        if (StateMachine.CurrentState == AttackState || StateMachine.CurrentState == RollState)
+        if (StateMachine.CurrentState == AttackState ||
+            StateMachine.CurrentState == RollState ||
+            StateMachine.CurrentState == SkillState)
         {
             Anim.SetLayerWeight(1, 0f);
             return;
@@ -286,6 +300,10 @@ public class PlayerController : MonoBehaviour
         {
             damageToDeal = CurrentWeapon.Combo_3;
         }
+        else if (stateInfo.IsTag("Skill"))
+        {
+            damageToDeal = CurrentSkillDamage;
+        }
 
         // 히트박스 켜면서 결정된 데미지 전달
         Hitbox.EnableHitbox(damageToDeal);
@@ -298,6 +316,54 @@ public class PlayerController : MonoBehaviour
         {
             Hitbox.DisableHitbox();
         }
+    }
+
+    #endregion
+
+    #region 스킬 관련
+    private void UpdateSkillCooldowns()
+    {
+        if (Q_Timer > 0)
+        {
+            Q_Timer -= Time.deltaTime;
+            if (Q_Timer <= 0) Debug.Log("Q 스킬 쿨타임이 끝났습니다!");
+        }
+
+        if (W_Timer > 0)
+        {
+            W_Timer -= Time.deltaTime;
+            if (W_Timer <= 0) Debug.Log("W 스킬 쿨타임이 끝났습니다!");
+        }
+
+        if (E_Timer > 0)
+        {
+            E_Timer -= Time.deltaTime;
+            if (E_Timer <= 0) Debug.Log("E 스킬 쿨타임이 끝났습니다!");
+        }
+
+        if (V_Timer > 0)
+        {
+            V_Timer -= Time.deltaTime;
+            if (V_Timer <= 0) Debug.Log("V 스킬 쿨타임이 끝났습니다!");
+        }
+    }
+
+    public bool TryUseSkill(KeyCode key, string animName, int damage, float maxCool)
+    {
+        CurrentSkillAnim = animName;
+        CurrentSkillDamage = damage;
+
+        // 쿨타임이 다 돌았다면(0 이하라면) 스킬 사용 승인 및 쿨타임 초기화
+        switch (key)
+        {
+            case KeyCode.Q: if (Q_Timer <= 0) { Q_Timer = maxCool; return true; } break;
+            case KeyCode.W: if (W_Timer <= 0) { W_Timer = maxCool; return true; } break;
+            case KeyCode.E: if (E_Timer <= 0) { E_Timer = maxCool; return true; } break;
+            case KeyCode.V: if (V_Timer <= 0) { V_Timer = maxCool; return true; } break;
+        }
+
+        Debug.Log($"{key} 스킬 쿨타임 중입니다!");
+        return false;
     }
 
     #endregion

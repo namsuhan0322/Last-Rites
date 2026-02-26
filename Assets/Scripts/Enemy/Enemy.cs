@@ -43,11 +43,13 @@ public class Enemy : Actor
     float patrolSpeed;
     float chaseSpeed;
     float waitTimer = 0f;
-    bool isHit = false;
+    public bool isHit = false;
     public float attackRange;
     public float attackCooldown;
     public int attackDamage;
     public float attackTimer = 0f;
+    protected float actionLockTimer = 0f;
+    protected bool isAttacking = false;
 
 
     //EnemyData에서 가져온 수치
@@ -58,6 +60,8 @@ public class Enemy : Actor
 
         InitActor(data.enemyHp);
 
+
+
         patrolSpeed = data.patrolSpeed;
         chaseSpeed = data.chaseSpeed;
         detectRadius = data.detectRadius;
@@ -66,6 +70,7 @@ public class Enemy : Actor
         attackRange = data.attackRange;
         attackCooldown = data.attackCooldown;
         patrolWaitTime = data.patrolWaitTime;
+        agent.stoppingDistance = attackRange;
         if (agent != null)
             agent.speed = patrolSpeed;
 
@@ -75,7 +80,7 @@ public class Enemy : Actor
 
     protected override void Awake()
     {
-        base.Awake(); 
+        base.Awake();
 
         if (agent == null)
             agent = GetComponent<NavMeshAgent>();
@@ -99,6 +104,8 @@ public class Enemy : Actor
             return;
         }
 
+        if (isAttacking) return;   
+
         HandleForcedTarget();
         HandleMovement();
         TryAttack();
@@ -108,6 +115,13 @@ public class Enemy : Actor
             animator?.SetBool("Walk", false);
             animator?.SetBool("Run", false);
         }
+
+        if (actionLockTimer > 0f)
+        {
+            actionLockTimer -= Time.deltaTime;
+            return;
+        }
+
     }
 
     //도발 걸린 상태
@@ -181,25 +195,21 @@ public class Enemy : Actor
     // ---------- 추적 ----------
     void ChasePlayer(float dist)
     {
-        if (dist <= attackRange)
-        {
-            agent.isStopped = true;
-            return;
-        }
-
-        agent.isStopped = false;
         agent.speed = chaseSpeed;
+        agent.isStopped = false;
         agent.SetDestination(currentTarget.position);
 
         RotateToTarget();
-        SetWalking(true);
+
+        animator.SetBool("Walk", false);
+        animator.SetBool("Run", true);
     }
 
     // ---------- 랜덤 순찰 ----------
     void RandomPatrol()
     {
         agent.isStopped = false;
-        agent.speed = patrolSpeed;  
+        agent.speed = patrolSpeed;
 
         if (!agent.pathPending && agent.remainingDistance <= agent.stoppingDistance)
         {
@@ -216,8 +226,8 @@ public class Enemy : Actor
                 waitTimer = 0f;
             }
         }
-
-        SetWalking(true);
+        animator.SetBool("Walk", true);
+        animator.SetBool("Run", false);
     }
     
     //----------랜덤좌표값---------
@@ -307,26 +317,22 @@ public class Enemy : Actor
         Debug.Log($"[Enemy] {name} STUN END");
     }
 
-    void SetWalking(bool walking)
-    {
-        if (animator == null) return;
-
-        animator.SetBool("Walk", walking && agent.speed == patrolSpeed);
-        animator.SetBool("Run", walking && agent.speed == chaseSpeed);
-    }
-
-
     //적 죽음
     protected override void Die()
     {
         if (_isDead) return;
 
-        base.Die();
+        _isDead = true;
 
-        if (agent != null)
+        isHit = false;
+        animator.ResetTrigger("Hit");
+
+        base.Die(); 
+
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
         {
             agent.isStopped = true;
-            agent.enabled = false;
+            agent.velocity = Vector3.zero;
         }
 
         manager?.OnEnemyDead();
@@ -336,22 +342,27 @@ public class Enemy : Actor
 
     IEnumerator DieRoutine()
     {
-        AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
-        yield return new WaitForSeconds(state.length);
+        yield return new WaitForSeconds(2f);
+
+        if (agent != null)
+            agent.enabled = false;
 
         Destroy(gameObject);
     }
- 
 
     //데미지 받기
     public override void TakeDamage(int damage)
     {
-        if (isHit || _isDead) return;
+        if (_isDead) return;
 
         base.TakeDamage(damage);
 
+        if (_isDead) return; 
+
         isHit = true;
-        agent.isStopped = true;
+
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
+            agent.isStopped = true;
 
         animator?.SetTrigger("Hit");
     }
@@ -405,7 +416,11 @@ public class Enemy : Actor
     //피격 끝 시점
     public void EndHit()
     {
+        if (_isDead) return;
+
         isHit = false;
-        agent.isStopped = false;
+
+        if (agent != null && agent.enabled && agent.isOnNavMesh)
+            agent.isStopped = false;
     }
 }

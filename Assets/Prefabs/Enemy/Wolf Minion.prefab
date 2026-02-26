@@ -2178,6 +2178,10 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
+  attackRange: 0
+  attackCooldown: 0
+  attackDamage: 0
+  attackTimer: 1
 --- !u!195 &74192205223576448
 NavMeshAgent:
   m_ObjectHideFlags: 0

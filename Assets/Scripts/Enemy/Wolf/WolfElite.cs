@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,14 +11,14 @@ public enum ElitePhase
 
 public class WolfElite : Enemy
 {
-    [Header("ÆäÀÌÁî ¼³Á¤")]
+    [Header("í˜ì´ì¦ˆ ì„¤ì •")]
     public ElitePhase currentPhase = ElitePhase.Phase1;
 
-    public float phase2HpPercent = 0.6f;   //ÆäÀÌÁî º¯È¯ ÆÛ¼¾Æ®
+    public float phase2HpPercent = 0.6f;   //í˜ì´ì¦ˆ ë³€í™˜ í¼ì„¼íŠ¸
 
     bool isPhaseChanging = false;
 
-    [Header("½ºÅ³ ÄğÅ¸ÀÓ")]
+    [Header("ìŠ¤í‚¬ ì¿¨íƒ€ì„")]
     public float stompCooldown = 5f;
     public float doubleStompCooldown = 8f;
 
@@ -27,91 +27,94 @@ public class WolfElite : Enemy
 
     bool isSkillAttacking = false;
 
+    protected override void Awake()
+    {
+        base.Awake();
+
+        animator.SetBool("Phase1Idle", true);
+        animator.SetBool("Phase2Idle", false);
+    }
+
+    //ì—…ë°ì´íŠ¸
     protected override void Update()
     {
         base.Update();
 
         if (_isDead) return;
 
+        attackTimer -= Time.deltaTime;  
+
         UpdatePhase();
         UpdateSkillCooldowns();
+        UpdateIdleState();
     }
 
+    //í˜ì´ì¦ˆë³€í™˜ì—…ë°ì´íŠ¸
     void UpdatePhase()
     {
-        if (currentPhase == ElitePhase.Phase1)
-        {
-            float hpPercent = (float)_currentHP / _maxHP;
+        if (currentPhase != ElitePhase.Phase1) return;
+        if (isPhaseChanging) return;
 
-            if (hpPercent <= phase2HpPercent)
-            {
-                StartCoroutine(ChangeToPhase2());
-            }
+        float hpPercent = (float)_currentHP / _maxHP;
+
+        if (hpPercent <= phase2HpPercent)
+        {
+            StartCoroutine(ChangeToPhase2());
         }
     }
 
-    //ÆäÀÌÁî2 º¯È¯
+    //í˜ì´ì¦ˆ2 ë³€í™˜
     IEnumerator ChangeToPhase2()
     {
+        isAttacking = true;
         isPhaseChanging = true;
         agent.isStopped = true;
 
-        currentPhase = ElitePhase.Phase2;
-
         animator.SetTrigger("PhaseRoar");
 
-        yield return new WaitForSeconds(2f); // Æ÷È¿ ¾Ö´Ï ±æÀÌ
+        yield return null;
+        AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+        yield return new WaitForSeconds(state.length);
 
+        currentPhase = ElitePhase.Phase2;
+
+        animator.SetBool("Phase1Idle", false);
+        animator.SetBool("Phase2Idle", true);
+
+        isAttacking = false;
         agent.isStopped = false;
         isPhaseChanging = false;
     }
 
 
-    //½ºÅ³ ³l¶óÀÓ
+    //ìŠ¤í‚¬ ì¿¹ë¼ì„
     void UpdateSkillCooldowns()
     {
         stompTimer -= Time.deltaTime;
         doubleStompTimer -= Time.deltaTime;
     }
 
-    //°øºÈ÷µµ
+    //ê³µê²«íˆë„
     protected override void TryAttack()
     {
         if (currentTarget == null) return;
-        if (isSkillAttacking || isPhaseChanging) return;
+        if (isAttacking || isSkillAttacking || isPhaseChanging) return;
 
         float dist = Vector3.Distance(transform.position, currentTarget.position);
         if (dist > attackRange) return;
 
-        switch (currentPhase)
+        if (currentPhase == ElitePhase.Phase2)
         {
-            case ElitePhase.Phase1:
-                TryBasicAttack();
-                break;
-
-            case ElitePhase.Phase2:
-                TryPhase2Attack();
-                break;
-        }
-    }
-
-    //±âº» °ø°İ
-    void TryBasicAttack()
-    {
-        attackTimer -= Time.deltaTime;
-        if (attackTimer > 0f)
-        {
-            SetPhaseIdle();
+            TryPhase2Attack();
             return;
         }
 
-        RotateToTarget();
-        animator.SetTrigger("BasicAttack");
-
-        attackTimer = attackCooldown;
+        if (attackTimer <= 0f)
+        {
+            StartCoroutine(EliteBasicAttack());
+        }
     }
-
-    //ÆäÀÌÁî2 °ø°İ
+    //í˜ì´ì¦ˆ2 ê³µê²©
     void TryPhase2Attack()
     {
         if (stompTimer <= 0f)
@@ -125,30 +128,31 @@ public class WolfElite : Enemy
             StartCoroutine(DoubleStomp());
             return;
         }
-
-        TryBasicAttack();
+        base.TryAttack();
     }
 
-    //¿À¸¥¹ß ³»·ÁÂï±â
+    //ì˜¤ë¥¸ë°œ ë‚´ë ¤ì°ê¸°
     IEnumerator Stomp()
     {
+        isAttacking = true;
         isSkillAttacking = true;
         agent.isStopped = true;
 
         RotateToTarget();
         animator.SetTrigger("Stomp");
 
-        stompTimer = stompCooldown;
-
         yield return new WaitForSeconds(1.5f);
 
-        agent.isStopped = false;
+        yield return new WaitForSeconds(2f); // í›„ë”œ
+
+        isAttacking = false;
         isSkillAttacking = false;
     }
 
-    //¾ç¹ß ³»·ÁÂï±â
+    //ì–‘ë°œ ë‚´ë ¤ì°ê¸°
     IEnumerator DoubleStomp()
     {
+        isAttacking = true;
         isSkillAttacking = true;
         agent.isStopped = true;
 
@@ -159,23 +163,69 @@ public class WolfElite : Enemy
 
         yield return new WaitForSeconds(2f);
 
+        actionLockTimer = 2f;
+
+        isAttacking = false;
         agent.isStopped = false;
         isSkillAttacking = false;
     }
 
-
-    //ÆäÀÌÁî º¯È¯
-    void SetPhaseIdle()
+    //Idle ë³€í™˜ ìŠ¤í…Œì´íŠ¸
+    void UpdateIdleState()
     {
-        if (currentPhase == ElitePhase.Phase1)
+        if (agent == null) return;
+        if (isAttacking || isSkillAttacking || isPhaseChanging) return; 
+
+        bool isMoving = agent.velocity.magnitude > 0.1f;
+
+        if (!isMoving && !agent.pathPending)
         {
-            animator.SetBool("Phase1Idle", true);
-            animator.SetBool("Phase2Idle", false);
+            animator.SetBool("Walk", false);
+            animator.SetBool("Run", false);
+
+            if (currentPhase == ElitePhase.Phase1)
+            {
+                animator.SetBool("Phase1Idle", true);
+                animator.SetBool("Phase2Idle", false);
+            }
+            else if (currentPhase == ElitePhase.Phase2)
+            {
+                animator.SetBool("Phase1Idle", false);
+                animator.SetBool("Phase2Idle", true);
+            }
         }
-        else if (currentPhase == ElitePhase.Phase2)
+        else
         {
             animator.SetBool("Phase1Idle", false);
-            animator.SetBool("Phase2Idle", true);
+            animator.SetBool("Phase2Idle", false);
         }
+    }
+
+
+    //ê¸°ë³¸ê³µê²©
+    IEnumerator EliteBasicAttack()
+    {
+        isAttacking = true;
+        agent.isStopped = true;
+
+        attackTimer = attackCooldown;
+
+        RotateToTarget();
+        animator.SetTrigger("Attack");
+
+        yield return new WaitForSeconds(1.24f); // ê³µê²© ì• ë‹ˆ ê¸¸ì´
+
+        attackTimer = attackCooldown;
+        agent.isStopped = false;
+        isAttacking = false;
+    }
+
+    //ë°ë¯¸ì§€ ë°›ê¸°
+    public override void TakeDamage(int damage)
+    {
+        if (isHit || _isDead) return;
+        base.TakeDamage(damage);
+
+        EndHit();
     }
 }

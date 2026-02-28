@@ -32,6 +32,8 @@ public class PlayerHitState : PlayerState
         else
             _stunDuration = 0.5f;
 
+        // 다구리 방지용
+        _player.Stats.SetInvincibleForSeconds(_stunDuration + 0.2f);
         _stateTimer = 0f;
     }
 

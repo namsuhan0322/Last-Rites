@@ -76,7 +76,6 @@ public class Actor : MonoBehaviour
     {
         Debug.Log($"[InitActor] {name} HP RESET to {maxHP}");
 
-
         _maxHP = maxHP;
         _currentHP = maxHP;
         _isDead = false;

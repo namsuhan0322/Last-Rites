@@ -53,10 +53,13 @@ public class PlayerController : MonoBehaviour
     [Header("스킬 관리")]
     [HideInInspector] public string CurrentSkillAnim;   // 어떤 스킬 애니메이션을 틀지
     [HideInInspector] public int CurrentSkillDamage;    // 현재 스킬 데미지가 얼마인지
+    [HideInInspector] public float CurrentSkillVal;
+    [HideInInspector] public bool HasRBuff = false;
 
     public float Q_Timer { get; private set; }
     public float W_Timer { get; private set; }
     public float E_Timer { get; private set; }
+    public float R_Timer { get; private set; }
     public float V_Timer { get; private set; }
 
     #endregion
@@ -199,6 +202,7 @@ public class PlayerController : MonoBehaviour
     private void HandleHit(float severity)
     {
         if (StateMachine.CurrentState == StunState || StateMachine.CurrentState == DeadState) return;
+        if (HasRBuff) return;
 
         HitState.SetSeverity(severity);
         StateMachine.ChangeState(HitState);
@@ -217,6 +221,7 @@ public class PlayerController : MonoBehaviour
     {
         // 이미 죽었거나 이미 스턴 상태면 무시
         if (StateMachine.CurrentState == DeadState || StateMachine.CurrentState == StunState) return;
+        if (HasRBuff) return;
 
         Debug.Log("플레이어가 스턴에 걸림!");
         StateMachine.ChangeState(StunState);
@@ -279,6 +284,46 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public bool CheckSkillAndDashInput()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            if (Stats.CurrentStamina >= Stats.DashCost)
+            {
+                StateMachine.ChangeState(RollState);
+                return true;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            if (TryUseSkill(KeyCode.Q, "Skill_Q", CurrentWeapon.Q_Dmg, CurrentWeapon.Q_Cool))
+            { StateMachine.ChangeState(SkillState); return true; }
+        }
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            if (TryUseSkill(KeyCode.W, "Skill_W", CurrentWeapon.W_Dmg, CurrentWeapon.W_Cool))
+            { StateMachine.ChangeState(SkillState); return true; }
+        }
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            if (TryUseSkill(KeyCode.E, "Skill_E", CurrentWeapon.E_Dmg, CurrentWeapon.E_Cool))
+            { StateMachine.ChangeState(SkillState); return true; }
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            if (TryUse_RSkill(KeyCode.R, "Skill_R", CurrentWeapon.R_Val, CurrentWeapon.R_Cool))
+            { StateMachine.ChangeState(SkillState); return true; }
+        }
+        if (Input.GetKeyDown(KeyCode.V))
+        {
+            if (TryUseSkill(KeyCode.V, "Skill_V", CurrentWeapon.V_Dmg, CurrentWeapon.V_Cool))
+            { StateMachine.ChangeState(SkillState); return true; }
+        }
+
+        return false;
+    }
+
     #region 공격 판정
     public void EnableWeaponCollider()
     {
@@ -303,6 +348,17 @@ public class PlayerController : MonoBehaviour
         else if (stateInfo.IsTag("Skill"))
         {
             damageToDeal = CurrentSkillDamage;
+        }
+
+        if (HasRBuff)
+        {
+            // 데미지를 CurrentSkillVal(R_Val) 배율만큼 곱해줍니다.
+            damageToDeal = Mathf.RoundToInt(damageToDeal * CurrentSkillVal);
+
+            // 공격을 시작했으므로 버프를 끕니다! (허공에 쳐도 날아감)
+            HasRBuff = false;
+
+            Debug.Log($"[R 스킬 효과 적용!] 데미지 {damageToDeal}로 뻥튀기 됨! 슈퍼아머 해제.");
         }
 
         // 히트박스 켜면서 결정된 데미지 전달
@@ -341,6 +397,12 @@ public class PlayerController : MonoBehaviour
             if (E_Timer <= 0) Debug.Log("E 스킬 쿨타임이 끝났습니다!");
         }
 
+        if (R_Timer > 0)
+        {
+            R_Timer -= Time.deltaTime;
+            if (R_Timer <= 0) Debug.Log("R 스킬 쿨타임이 끝났습니다!");
+        }
+
         if (V_Timer > 0)
         {
             V_Timer -= Time.deltaTime;
@@ -360,6 +422,29 @@ public class PlayerController : MonoBehaviour
             case KeyCode.W: if (W_Timer <= 0) { W_Timer = maxCool; return true; } break;
             case KeyCode.E: if (E_Timer <= 0) { E_Timer = maxCool; return true; } break;
             case KeyCode.V: if (V_Timer <= 0) { V_Timer = maxCool; return true; } break;
+        }
+
+        Debug.Log($"{key} 스킬 쿨타임 중입니다!");
+        return false;
+    }
+
+    public bool TryUse_RSkill(KeyCode key, string animName, float val, float maxCool)
+    {
+        CurrentSkillAnim = animName;
+        CurrentSkillVal = val;
+
+        switch (key)
+        {
+            case KeyCode.R:
+                if (R_Timer <= 0)
+                {
+                    R_Timer = maxCool;
+                    HasRBuff = true;
+                    Debug.Log($"[R 스킬 발동] 슈퍼아머 활성화! 다음 타격 데미지 {val}배!");
+
+                    return true;
+                }
+                break;
         }
 
         Debug.Log($"{key} 스킬 쿨타임 중입니다!");

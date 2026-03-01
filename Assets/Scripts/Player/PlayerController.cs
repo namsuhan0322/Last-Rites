@@ -540,4 +540,19 @@ public class PlayerController : MonoBehaviour
     }
 
     #endregion
+
+    #region 아웃라인 제어
+    public void TogglePlayerOutline(bool isOn)
+    {
+        int targetLayer = isOn ? LayerMask.NameToLayer("Player") : LayerMask.NameToLayer("Default");
+
+        Renderer[] renderers = GetComponentsInChildren<Renderer>();
+        foreach (Renderer r in renderers)
+        {
+            if (r is ParticleSystemRenderer) continue;
+            r.gameObject.layer = targetLayer;
+        }
+    }
+
+    #endregion
 }

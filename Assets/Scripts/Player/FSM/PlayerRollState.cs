@@ -11,6 +11,7 @@ public class PlayerRollState : PlayerState
     {
         _player.Stats.UseStamina(_player.Stats.DashCost);
         _player.Stats.SetInvincible(true);
+        _player.TogglePlayerOutline(false);
         _stateTimer = 0f;
         _player.Anim.applyRootMotion = true;
 
@@ -58,5 +59,6 @@ public class PlayerRollState : PlayerState
     {
         _player.Anim.applyRootMotion = false;
         _player.Agent.velocity = Vector3.zero;
+        _player.TogglePlayerOutline(true);
     }
 }

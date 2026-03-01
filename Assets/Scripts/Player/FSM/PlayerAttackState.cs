@@ -10,6 +10,7 @@ public class PlayerAttackState : PlayerState
     public override void Enter()
     {
         _player.Stats.SetInvincible(false);
+        _player.TogglePlayerOutline(false);
 
         // 칼 뽑는 애니메이션 이벤트가 스킵되었을 때를 대비한 강제 동기화
         if (_player.VisualManager != null) 
@@ -96,5 +97,6 @@ public class PlayerAttackState : PlayerState
     public override void Exit()
     {
         _player.Anim.ResetTrigger("Attack");
+        _player.TogglePlayerOutline(true);
     }
 }

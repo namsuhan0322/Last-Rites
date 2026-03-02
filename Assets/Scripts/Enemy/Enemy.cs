@@ -312,7 +312,11 @@ public class Enemy : Actor
     public void ShowTauntMark(float duration)
     {
         if (tauntText == null) return;
-        if (isStunned) return;   // ⭐ 핵심
+        if (isStunned) return;
+
+        StopCoroutine(nameof(HideStunMark));
+        if (stunText != null)
+            stunText.gameObject.SetActive(false);
 
         tauntText.gameObject.SetActive(true);
         tauntText.text = "!";
@@ -341,6 +345,10 @@ public class Enemy : Actor
     void ShowStunMark()
     {
         if (stunText == null) return;
+
+        StopCoroutine(nameof(HideTauntText));
+        if (tauntText != null)
+            tauntText.gameObject.SetActive(false);
 
         stunText.gameObject.SetActive(true);
         stunText.text = "@";

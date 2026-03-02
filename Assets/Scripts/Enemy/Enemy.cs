@@ -159,6 +159,9 @@ public class Enemy : Actor
         if (forcedTarget != null)
         {
             currentTarget = forcedTarget;
+
+            if (currentTarget == null) return; 
+
             ChasePlayer(Vector3.Distance(transform.position, currentTarget.position));
             return;
         }
@@ -167,6 +170,12 @@ public class Enemy : Actor
         {
             currentTarget = GetBestTargetExcept(null);
             aggroTimer = aggroLockDuration;
+
+            if (currentTarget == null)  
+            {
+                RandomPatrol();
+                return;
+            }
         }
         else
         {
@@ -174,19 +183,21 @@ public class Enemy : Actor
 
             if (aggroTimer <= 0f)
             {
-                // ⭐ 현재 타겟을 lastTarget에 저장
                 lastTarget = currentTarget;
 
-                // ⭐ 다른 대상 찾기 (현재 타겟 제외)
                 Transform newTarget = GetBestTargetExcept(currentTarget);
 
                 if (newTarget != null)
-                {
                     currentTarget = newTarget;
-                }
 
                 aggroTimer = aggroLockDuration;
             }
+        }
+
+        if (currentTarget == null)
+        {
+            RandomPatrol();
+            return;
         }
 
         float dist = Vector3.Distance(transform.position, currentTarget.position);

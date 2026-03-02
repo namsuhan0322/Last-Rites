@@ -13,26 +13,29 @@ public class WolfElite : Enemy
 {
     [Header("페이즈 설정")]
     public ElitePhase currentPhase = ElitePhase.Phase1;
-
     public float phase2HpPercent = 0.6f;   //페이즈 변환 퍼센트
 
-    bool isPhaseChanging = false;
 
-    [Header("스킬 쿨타임")]
+    [Header("스킬")]
     public float stompCooldown = 5f;
     public float doubleStompCooldown = 8f;
-
+    public GameObject stompIndicatorPrefab;
+  
     float stompTimer = 0f;
     float doubleStompTimer = 0f;
 
     bool isSkillAttacking = false;
-
+    bool isPhaseChanging = false;
+    GameObject stompIndicator;
     protected override void Awake()
     {
         base.Awake();
 
         animator.SetBool("Phase1Idle", true);
         animator.SetBool("Phase2Idle", false);
+
+        stompIndicator = Instantiate(stompIndicatorPrefab, transform);
+        stompIndicator.SetActive(false);   
     }
 
     //업데이트
@@ -117,20 +120,33 @@ public class WolfElite : Enemy
     //페이즈2 공격
     void TryPhase2Attack()
     {
-        if (stompTimer <= 0f)
-        {
-            StartCoroutine(Stomp());
-            return;
-        }
+        bool canStomp = stompTimer <= 0f;
+        bool canDouble = doubleStompTimer <= 0f;
+        bool canBasic = attackTimer <= 0f;
 
-        if (doubleStompTimer <= 0f)
+        if (canStomp || canDouble || canBasic)
         {
-            StartCoroutine(DoubleStomp());
-            return;
+            float rand = Random.value;
+
+            if (canDouble && rand < 0.33f)
+            {
+                StartCoroutine(DoubleStomp());
+                return;
+            }
+
+            if (canStomp && rand < 0.66f)
+            {
+                StartCoroutine(Stomp());
+                return;
+            }
+
+            if (canBasic)
+            {
+                StartCoroutine(EliteBasicAttack());
+                return;
+            }
         }
-        base.TryAttack();
     }
-
     //오른발 내려찍기
     IEnumerator Stomp()
     {
@@ -138,38 +154,60 @@ public class WolfElite : Enemy
         isSkillAttacking = true;
         agent.isStopped = true;
 
+        stompTimer = stompCooldown;  
+
         RotateToTarget();
         animator.SetTrigger("Stomp");
 
         yield return new WaitForSeconds(1.5f);
 
-        yield return new WaitForSeconds(2f); // 후딜
+        yield return new WaitForSeconds(2f);
+
+        attackTimer = 1.5f;
 
         isAttacking = false;
         isSkillAttacking = false;
+        agent.isStopped = false;
     }
 
     //양발 내려찍기
-    IEnumerator DoubleStomp()
+   IEnumerator DoubleStomp()
+{
+    isAttacking = true;
+    isSkillAttacking = true;
+    agent.isStopped = true;
+
+    RotateToTarget();
+
+    stompIndicator.SetActive(true);  
+    stompIndicator.transform.localPosition = Vector3.zero;
+    stompIndicator.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+
+    float telegraphTime = 0.8f;
+    float t = 0f;
+
+    while (t < telegraphTime)
     {
-        isAttacking = true;
-        isSkillAttacking = true;
-        agent.isStopped = true;
+        t += Time.deltaTime;
 
-        RotateToTarget();
-        animator.SetTrigger("DoubleStomp");
+            float scale = Mathf.Lerp(0.1f, attackRange * 2f, t / telegraphTime);
+            stompIndicator.transform.localScale = Vector3.one * scale;
 
-        doubleStompTimer = doubleStompCooldown;
-
-        yield return new WaitForSeconds(2f);
-
-        actionLockTimer = 2f;
-
-        isAttacking = false;
-        agent.isStopped = false;
-        isSkillAttacking = false;
+            yield return null;
     }
 
+    stompIndicator.SetActive(false);   
+
+    animator.SetTrigger("DoubleStomp");
+    doubleStompTimer = doubleStompCooldown;
+
+    yield return new WaitForSeconds(2f);
+
+    attackTimer = 2.0f;
+    isAttacking = false;
+    isSkillAttacking = false;
+    agent.isStopped = false;
+}
     //Idle 변환 스테이트
     void UpdateIdleState()
     {

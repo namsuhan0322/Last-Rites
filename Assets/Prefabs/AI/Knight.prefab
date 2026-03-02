@@ -148,6 +148,8 @@ MonoBehaviour:
   _maxPoise: 20
   _currentPoise: 0
   _poiseRecoveryRate: 0
+  _isInvincible: 0
+  _invincibleTimer: 0
   agent: {fileID: 6968075212162091214}
   followRange: 6
   followTolerance: 3
@@ -160,8 +162,8 @@ MonoBehaviour:
     m_Bits: 128
   separationRadius: 1.5
   separationForce: 1.5
-  attackRange: 3
-  attackCooldown: 1.2
+  attackRange: 2.5
+  attackDelay: 2.5
   tauntRadius: 6
   speechBubblePrefab: {fileID: 6736442371049709552, guid: a9491373bfc0dcf43bf5bfa4fa3976ad,
     type: 3}

@@ -24,6 +24,13 @@ public class Enemy : Actor
     [Header("포위 설정")]
     public float surroundRadius = 2f;
 
+    [Header("어그로락")]
+    public float aggroLockDuration = 3f;
+
+    float targetLockTimer = 0f;
+
+    float aggroTimer = 0f;
+
     [SerializeField] float stunMarkDuration = 2f; 
     public TextMeshPro stunText;
     public TextMeshPro tauntText;
@@ -50,6 +57,7 @@ public class Enemy : Actor
     public float attackTimer = 0f;
     protected float actionLockTimer = 0f;
     protected bool isAttacking = false;
+    Transform lastTarget;
 
 
     //EnemyData에서 가져온 수치
@@ -93,6 +101,7 @@ public class Enemy : Actor
     protected override void Update()
     {
         base.Update();
+        aggroTimer -= Time.deltaTime;
 
         if (_isDead || isHit) return;
 
@@ -154,15 +163,36 @@ public class Enemy : Actor
             return;
         }
 
-        Transform bestTarget = GetBestTarget();
+        if (currentTarget == null)
+        {
+            currentTarget = GetBestTargetExcept(null);
+            aggroTimer = aggroLockDuration;
+        }
+        else
+        {
+            aggroTimer -= Time.deltaTime;
 
-        float dist = Vector3.Distance(transform.position, bestTarget.position);
+            if (aggroTimer <= 0f)
+            {
+                // ⭐ 현재 타겟을 lastTarget에 저장
+                lastTarget = currentTarget;
+
+                // ⭐ 다른 대상 찾기 (현재 타겟 제외)
+                Transform newTarget = GetBestTargetExcept(currentTarget);
+
+                if (newTarget != null)
+                {
+                    currentTarget = newTarget;
+                }
+
+                aggroTimer = aggroLockDuration;
+            }
+        }
+
+        float dist = Vector3.Distance(transform.position, currentTarget.position);
 
         if (dist <= detectRadius)
-        {
-            currentTarget = bestTarget;
             ChasePlayer(dist);
-        }
         else
         {
             currentTarget = null;
@@ -170,16 +200,27 @@ public class Enemy : Actor
         }
     }
     //---------어떤것이 더 적합한 타겟인가?------------
-    Transform GetBestTarget()
+    Transform GetBestTargetExcept(Transform except)
     {
-        Transform best = player;
-        float bestDist = Vector3.Distance(transform.position, player.position);
+        Transform best = null;
+        float bestDist = float.MaxValue;
 
-        // 주변 AI 검색
+        if (player != null && player != except)
+        {
+            float d = Vector3.Distance(transform.position, player.position);
+            if (d < detectRadius)
+            {
+                best = player;
+                bestDist = d;
+            }
+        }
+
         Collider[] allies = Physics.OverlapSphere(transform.position, detectRadius, aiLayer);
 
         foreach (var a in allies)
         {
+            if (a.transform == except) continue;
+
             float d = Vector3.Distance(transform.position, a.transform.position);
 
             if (d < bestDist)

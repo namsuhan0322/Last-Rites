@@ -6310,6 +6310,8 @@ MonoBehaviour:
   _maxPoise: 20
   _currentPoise: 0
   _poiseRecoveryRate: 0
+  _isInvincible: 0
+  _invincibleTimer: 0
   _playerData: {fileID: 11400000, guid: b2447c10293b069438fcff5259536cf8, type: 2}
 --- !u!114 &475020715049840863
 MonoBehaviour:
@@ -6325,7 +6327,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   RotateSpeed: 10
   AnimationSmoothTime: 0.1
-  CurrentWeapon: {fileID: 11400000, guid: 3415b4a6263562f4e81e694ffe2f5e8a, type: 2}
+  CurrentWeapon: {fileID: 11400000, guid: ba6fba7b65ee8a24eb638b2fd717bf27, type: 2}
   Hitbox: {fileID: 3114906001766314662}
   CurrentComboStep: 0
   VisualManager: {fileID: 4474019055967740777}
@@ -6338,6 +6340,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   CombatCooldown: 5
+  CurrentSkillAnim: 
+  CurrentSkillDamage: 0
+  CurrentSkillVal: 0
+  HasRBuff: 0
 --- !u!114 &3114906001766314662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16618,7 +16624,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &9071000218252534009
 Transform:
   m_ObjectHideFlags: 0
@@ -41431,7 +41437,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &3249193758539475612
 Transform:
   m_ObjectHideFlags: 0
@@ -43746,7 +43752,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3711653175709330666
 Transform:
   m_ObjectHideFlags: 0
@@ -57892,6 +57898,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 8040616917774696026}
     m_Modifications:
+    - target: {fileID: 5811983091145691718, guid: 8f46726ed3eeca24fa8e1e2512ccb532,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 7414733054132540947, guid: 8f46726ed3eeca24fa8e1e2512ccb532,
         type: 3}
       propertyPath: m_Name
@@ -57899,8 +57910,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7414733054132540947, guid: 8f46726ed3eeca24fa8e1e2512ccb532,
         type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7414733054132540947, guid: 8f46726ed3eeca24fa8e1e2512ccb532,
+        type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7453184775730124878, guid: 8f46726ed3eeca24fa8e1e2512ccb532,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7903180458645163177, guid: 8f46726ed3eeca24fa8e1e2512ccb532,
         type: 3}
@@ -58032,10 +58053,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: GreatswordBasic
       objectReference: {fileID: 0}
+    - target: {fileID: 5271985790413412575, guid: efb27cb38e6753444832cdb5885f82a3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6221278757148031194, guid: efb27cb38e6753444832cdb5885f82a3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 7870709536378788680, guid: efb27cb38e6753444832cdb5885f82a3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 7870709536378788680, guid: efb27cb38e6753444832cdb5885f82a3,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -58062,10 +58098,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3136044614674603491}
     m_Modifications:
+    - target: {fileID: 207710919270526116, guid: a39749cacb69f4747b086ad4fc818c65,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2817372013522160373, guid: a39749cacb69f4747b086ad4fc818c65,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5887350190756038878, guid: a39749cacb69f4747b086ad4fc818c65,
         type: 3}
       propertyPath: m_Name
       value: L_DaggerBasic
+      objectReference: {fileID: 0}
+    - target: {fileID: 5887350190756038878, guid: a39749cacb69f4747b086ad4fc818c65,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5887350190756038878, guid: a39749cacb69f4747b086ad4fc818c65,
         type: 3}
@@ -58275,7 +58326,7 @@ PrefabInstance:
     - target: {fileID: 1296372529389002256, guid: 70e0ccbe3643bd040888da7b8666ba1c,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1924852742413485226, guid: 70e0ccbe3643bd040888da7b8666ba1c,
         type: 3}
@@ -58384,6 +58435,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1296372529389002256, guid: 70e0ccbe3643bd040888da7b8666ba1c,
         type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 1296372529389002256, guid: 70e0ccbe3643bd040888da7b8666ba1c,
+        type: 3}
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
@@ -58462,10 +58518,25 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 3776231494898954257}
     m_Modifications:
+    - target: {fileID: 207710919270526116, guid: a39749cacb69f4747b086ad4fc818c65,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2817372013522160373, guid: a39749cacb69f4747b086ad4fc818c65,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
+      objectReference: {fileID: 0}
     - target: {fileID: 5887350190756038878, guid: a39749cacb69f4747b086ad4fc818c65,
         type: 3}
       propertyPath: m_Name
       value: R_DaggerBasic
+      objectReference: {fileID: 0}
+    - target: {fileID: 5887350190756038878, guid: a39749cacb69f4747b086ad4fc818c65,
+        type: 3}
+      propertyPath: m_Layer
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 5887350190756038878, guid: a39749cacb69f4747b086ad4fc818c65,
         type: 3}

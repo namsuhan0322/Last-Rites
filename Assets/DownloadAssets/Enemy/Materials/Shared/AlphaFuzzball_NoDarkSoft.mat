@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  version: 7
+  version: 10
 --- !u!21 &2100000
 Material:
   serializedVersion: 8
@@ -65,6 +65,7 @@ Material:
     - _BlendMode: 0
     - _DistortionIntensity: 2
     - _DstBlend: 10
+    - _DstBlendAlpha: 10
     - _QueueControl: 1
     - _ReceivesSSR: 1
     - _SoftFadeFactor: 0.5
@@ -79,6 +80,7 @@ Material:
     - _DetailNoisePanning: {r: 0.2, g: 0, b: 0, a: 0}
     - _MidColor: {r: 1, g: 0.4447915, b: 0, a: 0}
   m_BuildTextureStacks: []
+  m_AllowLocking: 1
 --- !u!114 &5529089495541673174
 MonoBehaviour:
   m_ObjectHideFlags: 11

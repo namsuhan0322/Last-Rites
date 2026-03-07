@@ -2,10 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum EnemyRank
+{
+    Minion,
+    Elite,
+    Boss
+}
+
 [CreateAssetMenu(menuName = "Wave/Enemy Data")]
 public class EnemyData : ScriptableObject
 {
     public GameObject prefab;
+
+    [Header("Rank")]
+    public EnemyRank rank;
 
     [Header("Stats")]
     public int enemyHp = 10;

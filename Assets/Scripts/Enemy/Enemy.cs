@@ -17,10 +17,6 @@ public class Enemy : Actor
     public LayerMask aiLayer;
     public Transform currentTarget;
 
-    [Header("분리(겹침 방지)")]
-    public float separationRadius = 2f;
-    public float separationForce = 2f;
-
     [Header("포위 설정")]
     public float surroundRadius = 2f;
 
@@ -59,6 +55,16 @@ public class Enemy : Actor
     protected bool isAttacking = false;
     Transform lastTarget;
 
+    //랭크표시 편하게
+    public EnemyRank Rank => data.rank;
+
+
+    //엘리트나 보스인가?
+    bool IsEliteOrBoss()
+    {
+        if (data == null) return false;
+        return data.rank == EnemyRank.Elite || data.rank == EnemyRank.Boss;
+    }
 
     //EnemyData에서 가져온 수치
     public void Init(WaveManager manager, EnemyData data)
@@ -92,16 +98,16 @@ public class Enemy : Actor
 
         if (agent == null)
             agent = GetComponent<NavMeshAgent>();
-       
+
+        agent.updateRotation = true; 
+
         player = GameObject.FindGameObjectWithTag("Player")?.transform;
     }
-
 
     //업데이트 부분
     protected override void Update()
     {
         base.Update();
-        aggroTimer -= Time.deltaTime;
 
         if (_isDead || isHit) return;
 
@@ -131,6 +137,14 @@ public class Enemy : Actor
             return;
         }
 
+        if (forcedTimer > 0)
+        {
+            forcedTimer -= Time.deltaTime;
+
+            if (forcedTimer <= 0)
+                forcedTarget = null;
+        }
+
     }
 
     //도발 걸린 상태
@@ -146,9 +160,14 @@ public class Enemy : Actor
 
         forcedTimer -= Time.deltaTime;
         if (forcedTimer > 0)
+        {
             currentTarget = forcedTarget;
+        }
         else
+        {
             forcedTarget = null;
+            currentTarget = null; 
+        }
     }
 
     //-----------누굴 따라갈것인가?-----------
@@ -216,17 +235,44 @@ public class Enemy : Actor
         Transform best = null;
         float bestDist = float.MaxValue;
 
+        Collider[] allies = Physics.OverlapSphere(transform.position, detectRadius, aiLayer);
+
+        if (IsEliteOrBoss())
+        {
+            if (player != null)
+            {
+                float d = Vector3.Distance(transform.position, player.position);
+
+                if (d < detectRadius)
+                    return player;
+            }
+
+            foreach (var a in allies)
+            {
+                if (a.transform == except) continue;
+
+                float d = Vector3.Distance(transform.position, a.transform.position);
+
+                if (d < bestDist)
+                {
+                    best = a.transform;
+                    bestDist = d;
+                }
+            }
+
+            return best;
+        }
+
         if (player != null && player != except)
         {
             float d = Vector3.Distance(transform.position, player.position);
+
             if (d < detectRadius)
             {
                 best = player;
                 bestDist = d;
             }
         }
-
-        Collider[] allies = Physics.OverlapSphere(transform.position, detectRadius, aiLayer);
 
         foreach (var a in allies)
         {
@@ -247,9 +293,12 @@ public class Enemy : Actor
     // ---------- 추적 ----------
     void ChasePlayer(float dist)
     {
+        agent.updateRotation = false; 
+
         agent.speed = chaseSpeed;
         agent.isStopped = false;
-        agent.SetDestination(currentTarget.position);
+        if (agent.destination != currentTarget.position)
+            agent.SetDestination(currentTarget.position);
 
         RotateToTarget();
 
@@ -260,6 +309,8 @@ public class Enemy : Actor
     // ---------- 랜덤 순찰 ----------
     void RandomPatrol()
     {
+        agent.updateRotation = true; 
+
         agent.isStopped = false;
         agent.speed = patrolSpeed;
 
@@ -278,10 +329,11 @@ public class Enemy : Actor
                 waitTimer = 0f;
             }
         }
+
         animator.SetBool("Walk", true);
         animator.SetBool("Run", false);
     }
-    
+
     //----------랜덤좌표값---------
     bool GetRandomPoint(Vector3 center, float radius, out Vector3 result)
     {
@@ -333,6 +385,10 @@ public class Enemy : Actor
     //스턴을 당했나?
     public void ApplyStun(float duration)
     {
+        // Elite 또는 Boss면 스턴 무시
+        if (data != null && (data.rank == EnemyRank.Elite || data.rank == EnemyRank.Boss))
+            return;
+
         if (isStunned) return;
 
         isStunned = true;
@@ -444,9 +500,10 @@ public class Enemy : Actor
     //공격 변수
     void Attack()
     {
+        agent.updateRotation = false; 
         RotateToTarget();
-        attackTimer = attackCooldown;
 
+        attackTimer = attackCooldown;
     }
 
     //데미지 이벤트 함수
@@ -470,7 +527,7 @@ public class Enemy : Actor
         if (dir.sqrMagnitude < 0.001f) return;
 
         Quaternion rot = Quaternion.LookRotation(dir);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 10f);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 15f);
     }
 
     //피격 끝 시점

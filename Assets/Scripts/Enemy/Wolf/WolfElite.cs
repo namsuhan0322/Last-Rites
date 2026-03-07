@@ -27,6 +27,20 @@ public class WolfElite : Enemy
     bool isSkillAttacking = false;
     bool isPhaseChanging = false;
     GameObject stompIndicator;
+
+
+    //플레이어를 바라보고 있나?
+    bool IsFacingTarget()
+    {
+        if (currentTarget == null) return false;
+
+        Vector3 dir = (currentTarget.position - transform.position).normalized;
+
+        float dot = Vector3.Dot(transform.forward, dir);
+
+        return dot > 0.6f;
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -106,6 +120,12 @@ public class WolfElite : Enemy
         float dist = Vector3.Distance(transform.position, currentTarget.position);
         if (dist > attackRange) return;
 
+        if (!IsFacingTarget())
+        {
+            RotateToTarget();
+            return;
+        }
+
         if (currentPhase == ElitePhase.Phase2)
         {
             TryPhase2Attack();
@@ -114,7 +134,7 @@ public class WolfElite : Enemy
 
         if (attackTimer <= 0f)
         {
-            StartCoroutine(EliteBasicAttack());
+            Attack();
         }
     }
     //페이즈2 공격
@@ -142,7 +162,7 @@ public class WolfElite : Enemy
 
             if (canBasic)
             {
-                StartCoroutine(EliteBasicAttack());
+                Attack();
                 return;
             }
         }
@@ -171,43 +191,34 @@ public class WolfElite : Enemy
     }
 
     //양발 내려찍기
-   IEnumerator DoubleStomp()
-{
-    isAttacking = true;
-    isSkillAttacking = true;
-    agent.isStopped = true;
-
-    RotateToTarget();
-
-    stompIndicator.SetActive(true);  
-    stompIndicator.transform.localPosition = Vector3.zero;
-    stompIndicator.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
-
-    float telegraphTime = 0.8f;
-    float t = 0f;
-
-    while (t < telegraphTime)
+    IEnumerator DoubleStomp()
     {
-        t += Time.deltaTime;
+        isAttacking = true;
+        isSkillAttacking = true;
+        agent.isStopped = true;
 
-            float scale = Mathf.Lerp(0.1f, attackRange * 2f, t / telegraphTime);
-            stompIndicator.transform.localScale = Vector3.one * scale;
+        RotateToTarget();
 
-            yield return null;
+        stompIndicator.SetActive(true);
+        stompIndicator.transform.localPosition = Vector3.zero;
+        stompIndicator.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
+
+        stompIndicator.transform.localScale = Vector3.one * attackRange * 2f;
+
+        yield return new WaitForSeconds(0.8f);
+
+        stompIndicator.SetActive(false);
+
+        animator.SetTrigger("DoubleStomp");
+        doubleStompTimer = doubleStompCooldown;
+
+        yield return new WaitForSeconds(2f);
+
+        attackTimer = 2.0f;
+        isAttacking = false;
+        isSkillAttacking = false;
+        agent.isStopped = false;
     }
-
-    stompIndicator.SetActive(false);   
-
-    animator.SetTrigger("DoubleStomp");
-    doubleStompTimer = doubleStompCooldown;
-
-    yield return new WaitForSeconds(2f);
-
-    attackTimer = 2.0f;
-    isAttacking = false;
-    isSkillAttacking = false;
-    agent.isStopped = false;
-}
     //Idle 변환 스테이트
     void UpdateIdleState()
     {
@@ -241,21 +252,18 @@ public class WolfElite : Enemy
 
 
     //기본공격
-    IEnumerator EliteBasicAttack()
+    protected override void Attack()
     {
         isAttacking = true;
-        agent.isStopped = true;
 
-        attackTimer = attackCooldown;
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
 
         RotateToTarget();
-        animator.SetTrigger("Attack");
 
-        yield return new WaitForSeconds(1.24f); // 공격 애니 길이
+        animator.SetTrigger("Attack"); // 엘리트 공격 애니메이션
 
         attackTimer = attackCooldown;
-        agent.isStopped = false;
-        isAttacking = false;
     }
 
     //데미지 받기

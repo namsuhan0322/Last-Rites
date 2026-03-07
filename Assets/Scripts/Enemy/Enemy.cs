@@ -8,7 +8,7 @@ using UnityEngine.AI;
 public class Enemy : Actor
 {
     WaveManager manager;
-    EnemyData data;
+   public EnemyData data;
 
     [Header("이동")]
     public NavMeshAgent agent;
@@ -30,6 +30,7 @@ public class Enemy : Actor
     [SerializeField] float stunMarkDuration = 2f; 
     public TextMeshPro stunText;
     public TextMeshPro tauntText;
+
 
     //기절변수들
     bool isStunned = false;
@@ -57,7 +58,6 @@ public class Enemy : Actor
 
     //랭크표시 편하게
     public EnemyRank Rank => data.rank;
-
 
     //엘리트나 보스인가?
     bool IsEliteOrBoss()
@@ -139,8 +139,6 @@ public class Enemy : Actor
 
         if (forcedTimer > 0)
         {
-            forcedTimer -= Time.deltaTime;
-
             if (forcedTimer <= 0)
                 forcedTarget = null;
         }
@@ -166,7 +164,16 @@ public class Enemy : Actor
         else
         {
             forcedTarget = null;
-            currentTarget = null; 
+
+            if (IsEliteOrBoss() && player != null)
+            {
+                currentTarget = player;
+                agent.SetDestination(player.position); 
+            }
+            else
+            {
+                currentTarget = null;
+            }
         }
     }
 
@@ -293,10 +300,18 @@ public class Enemy : Actor
     // ---------- 추적 ----------
     void ChasePlayer(float dist)
     {
-        agent.updateRotation = false; 
+        agent.updateRotation = false;
+
+        if (dist <= attackRange)
+        {
+            agent.isStopped = true;
+            RotateToTarget();
+            return;
+        }
 
         agent.speed = chaseSpeed;
         agent.isStopped = false;
+
         if (agent.destination != currentTarget.position)
             agent.SetDestination(currentTarget.position);
 
@@ -487,6 +502,7 @@ public class Enemy : Actor
     protected virtual void TryAttack()
     {
         if (currentTarget == null) return;
+        if (isAttacking) return;
 
         attackTimer -= Time.deltaTime;
         if (attackTimer > 0f) return;
@@ -498,12 +514,24 @@ public class Enemy : Actor
     }
 
     //공격 변수
-    void Attack()
+    protected virtual void Attack()
     {
-        agent.updateRotation = false; 
+        isAttacking = true;
+
+        agent.isStopped = true;   
+        agent.velocity = Vector3.zero;
+
         RotateToTarget();
 
         attackTimer = attackCooldown;
+    }
+    //공격 끝남
+    public void EndAttack()
+    {
+        isAttacking = false;
+
+        if (!_isDead && !isStunned)
+            agent.isStopped = false;
     }
 
     //데미지 이벤트 함수

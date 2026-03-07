@@ -63,7 +63,7 @@ public class Knight : AIBase
         canTaunt = false;            
         StartCoroutine(Taunt());
     }
-       bool IsTauntConditionMet()
+    bool IsTauntConditionMet()
     {
         Collider[] aroundPlayer = Physics.OverlapSphere(
             player.position,
@@ -71,7 +71,13 @@ public class Knight : AIBase
             enemyLayer
         );
 
-        return aroundPlayer.Length >= 3;
+        if (aroundPlayer.Length >= 3)
+            return true;
+
+        if (IsEliteOrBossTargetingPlayer())
+            return true;
+
+        return false;
     }
 
     // -------------도발--------------
@@ -116,12 +122,14 @@ public class Knight : AIBase
 
         if (hits.Length == 0) return;
 
-        Enemy target = hits[0].GetComponent<Enemy>();
-        if (target != null)
+        foreach (var h in hits)
         {
-            canBash = false; 
-            Debug.Log($"[Knight] Shield Bash HIT → {target.name}");
-            StartCoroutine(ShieldBash(target));
+            Enemy target = h.GetComponent<Enemy>();
+            if (target != null)
+            {
+                StartCoroutine(ShieldBash(target));
+                break;
+            }
         }
     }
 
@@ -154,6 +162,31 @@ public class Knight : AIBase
 
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, bashRadius);
+    }
+
+    bool IsEliteOrBossTargetingPlayer()
+    {
+        Collider[] enemies = Physics.OverlapSphere(
+            player.position,
+            attackDetectRadius,
+            enemyLayer
+        );
+
+        foreach (var e in enemies)
+        {
+            Enemy enemy = e.GetComponent<Enemy>();
+            if (enemy == null) continue;
+
+            if (enemy.data == null) continue;
+
+            if (enemy.data.rank == EnemyRank.Elite || enemy.data.rank == EnemyRank.Boss)
+            {
+                if (enemy.currentTarget == player)
+                    return true;
+            }
+        }
+
+        return false;
     }
 
     protected override void SetWalking(bool walking) { }

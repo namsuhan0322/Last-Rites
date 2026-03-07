@@ -35,6 +35,9 @@ public class PlayerController : MonoBehaviour
 
     public WeaponVisualManager VisualManager;
 
+    [Tooltip("R스킬 쓰면 무기 강화 관련 이펙트")]
+    public GameObject weaponEffect;
+
     [Header("Input")]
     public LayerMask GroundLayer;
 
@@ -295,30 +298,41 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (InCombat)
         {
-            if (TryUseSkill(KeyCode.Q, "Skill_Q", CurrentWeapon.Q_Dmg, CurrentWeapon.Q_Cool))
-            { StateMachine.ChangeState(SkillState); return true; }
+            if (Input.GetKeyDown(KeyCode.Q))
+            {
+                if (TryUseSkill(KeyCode.Q, "Skill_Q", CurrentWeapon.Q_Dmg, CurrentWeapon.Q_Cool))
+                { StateMachine.ChangeState(SkillState); return true; }
+            }
+            if (Input.GetKeyDown(KeyCode.W))
+            {
+                if (TryUseSkill(KeyCode.W, "Skill_W", CurrentWeapon.W_Dmg, CurrentWeapon.W_Cool))
+                { StateMachine.ChangeState(SkillState); return true; }
+            }
+            if (Input.GetKeyDown(KeyCode.E))
+            {
+                if (TryUseSkill(KeyCode.E, "Skill_E", CurrentWeapon.E_Dmg, CurrentWeapon.E_Cool))
+                { StateMachine.ChangeState(SkillState); return true; }
+            }
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                if (TryUse_RSkill(KeyCode.R, "Skill_R", CurrentWeapon.R_Val, CurrentWeapon.R_Cool))
+                { StateMachine.ChangeState(SkillState); return true; }
+            }
+            if (Input.GetKeyDown(KeyCode.V))
+            {
+                if (TryUseSkill(KeyCode.V, "Skill_V", CurrentWeapon.V_Dmg, CurrentWeapon.V_Cool))
+                { StateMachine.ChangeState(SkillState); return true; }
+            }
         }
-        if (Input.GetKeyDown(KeyCode.W))
+        else
         {
-            if (TryUseSkill(KeyCode.W, "Skill_W", CurrentWeapon.W_Dmg, CurrentWeapon.W_Cool))
-            { StateMachine.ChangeState(SkillState); return true; }
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            if (TryUseSkill(KeyCode.E, "Skill_E", CurrentWeapon.E_Dmg, CurrentWeapon.E_Cool))
-            { StateMachine.ChangeState(SkillState); return true; }
-        }
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            if (TryUse_RSkill(KeyCode.R, "Skill_R", CurrentWeapon.R_Val, CurrentWeapon.R_Cool))
-            { StateMachine.ChangeState(SkillState); return true; }
-        }
-        if (Input.GetKeyDown(KeyCode.V))
-        {
-            if (TryUseSkill(KeyCode.V, "Skill_V", CurrentWeapon.V_Dmg, CurrentWeapon.V_Cool))
-            { StateMachine.ChangeState(SkillState); return true; }
+            if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.W) ||
+                Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.V))
+            {
+                Debug.Log("주변에 적이 없어 스킬을 사용할 수 없습니다!");
+            }
         }
 
         return false;
@@ -374,6 +388,11 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    // 특정 공격 모션에서 이펙트 끄기
+    public void DisableREffect()
+    {
+        if (weaponEffect != null) weaponEffect.SetActive(false);
+    }
     #endregion
 
     #region 스킬 관련
@@ -441,6 +460,9 @@ public class PlayerController : MonoBehaviour
                     R_Timer = maxCool;
                     HasRBuff = true;
                     Debug.Log($"[R 스킬 발동] 슈퍼아머 활성화! 다음 타격 데미지 {val}배!");
+
+                    if (weaponEffect != null) 
+                        weaponEffect.SetActive(true);
 
                     return true;
                 }

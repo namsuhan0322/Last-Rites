@@ -4268,6 +4268,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2154840630506544114, guid: ce9b332fa9d0a054c95fc7bd30528cdb,
+        type: 3}
+      propertyPath: BreakableOutlineLayerName
+      value: Outline_Breakable
+      objectReference: {fileID: 0}
     - target: {fileID: 6388961886165066257, guid: ce9b332fa9d0a054c95fc7bd30528cdb,
         type: 3}
       propertyPath: m_LocalPosition.x

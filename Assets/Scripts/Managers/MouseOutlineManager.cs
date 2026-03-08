@@ -3,15 +3,16 @@ using System.Collections.Generic;
 
 public class MouseOutlineManager : MonoBehaviour
 {
-    [Header("감지 설정")]
-    [Tooltip("마우스가 감지할 레이어")]
-    public LayerMask TargetLayer;
+    [Header("적 아웃라인 설정")]
+    public LayerMask EnemyLayer;
+    public string EnemyOutlineLayerName = "Outline";
 
-    [Header("아웃라인 에셋 설정")]
-    [Tooltip("에셋 설정에 맞춰둔 아웃라인 전용 레이어 이름")]
-    public string OutlineLayerName = "Outline";
+    [Header("파괴 기믹 아웃라인 설정")]
+    public LayerMask BreakableLayer;
+    public string BreakableOutlineLayerName = "Outline_Breakable";
 
-    private int _outlineLayerIndex;
+    private int _enemyOutlineIndex;
+    private int _breakableOutlineIndex;
     private int _combinedLayerMask;
 
     private GameObject _currentTarget;
@@ -19,15 +20,16 @@ public class MouseOutlineManager : MonoBehaviour
 
     private void Start()
     {
-        _outlineLayerIndex = LayerMask.NameToLayer(OutlineLayerName);
+        _enemyOutlineIndex = LayerMask.NameToLayer(EnemyOutlineLayerName);
+        _breakableOutlineIndex = LayerMask.NameToLayer(BreakableOutlineLayerName);
 
-        if (_outlineLayerIndex == -1)
+        if (_enemyOutlineIndex == -1 || _breakableOutlineIndex == -1)
         {
-            Debug.LogError($"[경고] '{OutlineLayerName}' 이라는 레이어가 없습니다!");
+            Debug.LogError("[경고] 아웃라인 전용 레이어 이름이 정확한지 확인해주세요!");
             return;
         }
 
-        _combinedLayerMask = TargetLayer | (1 << _outlineLayerIndex);
+        _combinedLayerMask = EnemyLayer | BreakableLayer | (1 << _enemyOutlineIndex) | (1 << _breakableOutlineIndex);
     }
 
     void Update()
@@ -56,16 +58,23 @@ public class MouseOutlineManager : MonoBehaviour
         _originalLayers.Clear();
         Renderer[] renderers = target.GetComponentsInChildren<Renderer>();
 
+        // 현재 마우스가 올라간 타겟이 적군인지, 파괴물인지 판단해서 알맞은 아웃라인 레이어를 고릅니다.
+        int targetOutlineIndex = _enemyOutlineIndex; // 기본값은 적군 아웃라인
+
+        // 대상의 원래 레이어가 파괴물 레이어에 포함되어 있거나, 이미 파괴물 아웃라인 상태라면
+        if ((BreakableLayer.value & (1 << target.layer)) > 0 || target.layer == _breakableOutlineIndex)
+        {
+            targetOutlineIndex = _breakableOutlineIndex;
+        }
+
         foreach (Renderer r in renderers)
         {
             if (r is ParticleSystemRenderer) continue;
-
-            // 이미 아웃라인 레이어라면 무시
-            if (r.gameObject.layer == _outlineLayerIndex) continue;
+            if (r.gameObject.layer == targetOutlineIndex) continue;
 
             // 원래 레이어 번호 저장 후 아웃라인 레이어로 변경
             _originalLayers.Add(r.gameObject, r.gameObject.layer);
-            r.gameObject.layer = _outlineLayerIndex;
+            r.gameObject.layer = targetOutlineIndex;
         }
     }
 
@@ -77,7 +86,7 @@ public class MouseOutlineManager : MonoBehaviour
         {
             if (kvp.Key != null)
             {
-                kvp.Key.layer = kvp.Value; // 원래 레이어로 되돌림
+                kvp.Key.layer = kvp.Value;
             }
         }
 

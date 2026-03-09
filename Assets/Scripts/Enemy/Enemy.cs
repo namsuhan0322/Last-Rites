@@ -92,6 +92,13 @@ public class Enemy : Actor
     }
     //어웨이크
 
+    protected override void Start()
+    {
+        base.Start();
+
+        OnStun += HandleStun;
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -400,7 +407,6 @@ public class Enemy : Actor
     //스턴을 당했나?
     public void ApplyStun(float duration)
     {
-        // Elite 또는 Boss면 스턴 무시
         if (data != null && (data.rank == EnemyRank.Elite || data.rank == EnemyRank.Boss))
             return;
 
@@ -408,6 +414,9 @@ public class Enemy : Actor
 
         isStunned = true;
         stunTimer = duration;
+
+        agent.isStopped = true; 
+
         animator?.SetBool("Stun", true);
         ShowStunMark();
     }
@@ -488,7 +497,9 @@ public class Enemy : Actor
 
         base.TakeDamage(damage);
 
-        if (_isDead) return; 
+        if (_isDead) return;
+
+        if (isStunned) return;
 
         isHit = true;
 
@@ -565,7 +576,12 @@ public class Enemy : Actor
 
         isHit = false;
 
-        if (agent != null && agent.enabled && agent.isOnNavMesh)
+        if (!isStunned && agent != null && agent.enabled && agent.isOnNavMesh)
             agent.isStopped = false;
+    }
+
+    void HandleStun()
+    {
+        ApplyStun(2f); 
     }
 }

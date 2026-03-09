@@ -1,22 +1,43 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using TMPro;
+using Cinemachine;
 
 public class TutorialSystem : MonoBehaviour
 {
-    [Header("½ÃÀÛ ÆÇ³Ú")]
+    [Header("ì‹œì‘ íŒë„¬")]
     public GameObject startPanel;
     public TMP_Text startText;
-    public TMP_Text closeText;
+    public GameObject rightClickUI;   // ë§ˆìš°ìŠ¤ ìš°í´ë¦­ ì•„ì´ì½˜
+    public CanvasGroup rightClickGroup;
+    public GameObject leftClickUI;
+    public CanvasGroup leftClickGroup;
 
-    [Header("¹Ì¼ÇUI")]
+    [Header("ë¯¸ì…˜UI")]
     public TMP_Text missionText;
+
+    [Header("ì „íˆ¬ íŠœí† ë¦¬ì–¼")]
+    public GameObject battlePanel;
+    public TMP_Text battleText;
+    public CinemachineVirtualCamera playerCam;
+    public CinemachineVirtualCamera tutorialCam;
+
+    public Transform[] spawnPoints;    // ëŠ‘ëŒ€ 3ë§ˆë¦¬ ìœ„ì¹˜
+
+
+    public PlayerController playerController; // ì¶”ê°€
+    public GameObject wolfPrefab;
+
+    public Camera mainCamera;
+
+    bool waitingForBattleStart = false;
+
 
     public float typingSpeed = 0.05f;
     public float blinkSpeed = 2f;
 
-    string startMessage = "¿ìÅ¬¸¯ ½Ã ÀÌµ¿";
-    string goalMessage = "¸ñÇ¥ ÁöÁ¡À¸·Î ÀÌµ¿ÇÏ¼¼¿ä";
+    string startMessage = "ë§ˆìš°ìŠ¤ ìš°í´ë¦­ìœ¼ë¡œ ì´ë™í•˜ì‹­ì‹œì˜¤";
+    string goalMessage = "ëª©í‘œ ì§€ì ìœ¼ë¡œ ì´ë™í•˜ì„¸ìš”";
 
     bool waitingForEnter = false;
     public GameObject directionArrow;
@@ -26,26 +47,33 @@ public class TutorialSystem : MonoBehaviour
 
         startPanel.SetActive(true);
         missionText.gameObject.SetActive(false);
-        closeText.gameObject.SetActive(false);
-
+        rightClickUI.SetActive(false);
+        leftClickUI.SetActive(false);   
         StartCoroutine(TypeStartText());
     }
 
     void Update()
     {
-        if (!waitingForEnter) return;
-
-        Color color = closeText.color;
-        color.a = Mathf.Lerp(0.3f, 1f, Mathf.PingPong(Time.unscaledTime * blinkSpeed, 1));
-        closeText.color = color;
-
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (waitingForEnter)
         {
-            CloseStartTutorial();
+            rightClickGroup.alpha =
+                Mathf.Lerp(0.3f, 1f, Mathf.PingPong(Time.unscaledTime * blinkSpeed, 1));
+
+            if (Input.GetMouseButtonDown(1))
+                CloseStartTutorial();
+        }
+
+        if (waitingForBattleStart)
+        {
+            leftClickGroup.alpha =
+                Mathf.Lerp(0.3f, 1f, Mathf.PingPong(Time.unscaledTime * blinkSpeed, 1));
+
+            if (Input.GetMouseButtonDown(0))
+                StartBattle();
         }
     }
 
-    //ÅØ½ºÆ®½ÃÀÛ
+    //í…ìŠ¤íŠ¸ì‹œì‘
     IEnumerator TypeStartText()
     {
         startText.text = "";
@@ -57,15 +85,17 @@ public class TutorialSystem : MonoBehaviour
         }
 
         waitingForEnter = true;
-        closeText.gameObject.SetActive(true);
+        rightClickUI.SetActive(true);
     }
 
-    //½ÃÀÛ Æ©Åä¸®¾ó ´İ±â
+    //ì‹œì‘ íŠœí† ë¦¬ì–¼ ë‹«ê¸°
     void CloseStartTutorial()
     {
         waitingForEnter = false;
 
         startPanel.SetActive(false);
+        rightClickUI.SetActive(false);
+
         Time.timeScale = 1f;
 
         missionText.gameObject.SetActive(true);
@@ -76,7 +106,7 @@ public class TutorialSystem : MonoBehaviour
     }
 
 
-    //¹Ì¼Ç ÅØ½ºÆ® 
+    //ë¯¸ì…˜ í…ìŠ¤íŠ¸ 
     IEnumerator TypeMissionText()
     {
         missionText.text = "";
@@ -89,15 +119,70 @@ public class TutorialSystem : MonoBehaviour
     }
 
 
-    //°ñ µµÂø
+    //ê³¨ ë„ì°©
     public void ReachGoal()
     {
+        if (waitingForBattleStart) return;
         directionArrow.SetActive(false);
 
         StartCoroutine(FadeOutMission());
+
+        StartCoroutine(StartBattleTutorial());
     }
 
-    //¹Ì¼Ç »ç¶óÁö°Ô ÇÏ±â
+    IEnumerator StartBattleTutorial()
+    {
+        playerController.Agent.ResetPath();
+        playerController.Agent.velocity = Vector3.zero;
+        playerController.enabled = false;
+        playerController.Anim.SetFloat("Move", 0f);
+
+        playerCam.Priority = 5;
+        tutorialCam.Priority = 20;
+
+        yield return new WaitForSeconds(2f);
+
+        yield return StartCoroutine(SpawnWolves());
+
+        yield return new WaitForSeconds(1f);
+
+        tutorialCam.Priority = 5;
+        playerCam.Priority = 20;
+
+        yield return new WaitForSeconds(2f);
+
+        battlePanel.SetActive(true);
+
+        yield return StartCoroutine(TypeBattleText());
+
+        yield return new WaitForSecondsRealtime(0.3f);
+
+        leftClickUI.SetActive(true);
+        waitingForBattleStart = true;
+    }
+
+    IEnumerator SpawnWolves()
+    {
+        for (int i = 0; i < spawnPoints.Length; i++)
+        {
+            Instantiate(wolfPrefab, spawnPoints[i].position, spawnPoints[i].rotation);
+            yield return new WaitForSeconds(0.4f);
+        }
+    }
+
+    IEnumerator TypeBattleText()
+    {
+        battleText.text = "";
+        string msg = "ì´ ë²„íŠ¼ì„ ëˆŒëŸ¬ ì „íˆ¬ë¥¼ ì‹œì‘í•˜ì‹­ì‹œì˜¤";
+
+        foreach (char c in msg)
+        {
+            battleText.text += c;
+            yield return new WaitForSecondsRealtime(typingSpeed);
+        }
+    }
+
+    //ë¯¸ì…˜ ì‚¬ë¼ì§€ê²Œ í•˜ê¸°
     IEnumerator FadeOutMission()
     {
         float time = 0f;
@@ -113,4 +198,18 @@ public class TutorialSystem : MonoBehaviour
 
         missionText.gameObject.SetActive(false);
     }
+
+    void StartBattle()
+    {
+        waitingForBattleStart = false;
+
+        battlePanel.SetActive(false);
+        leftClickUI.SetActive(false);
+
+        tutorialCam.Priority = 5;
+        playerCam.Priority = 20;
+
+        playerController.enabled = true;
+    }
+
 }

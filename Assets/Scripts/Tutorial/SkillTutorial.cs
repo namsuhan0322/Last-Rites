@@ -22,7 +22,8 @@ public class SkillTutorial : MonoBehaviour
     bool playing = false;
     bool alreadyTriggered = false;
     public Cinemachine.CinemachineVirtualCamera playerCam;
-
+    bool firstQUsed = false;
+    bool stunTutorialShown = false;
     void Awake()
     {
         if (tutorialSystem == null)
@@ -31,13 +32,14 @@ public class SkillTutorial : MonoBehaviour
 
     void Update()
     {
-        if (!playing) return;
+        if (!playing && !stunTutorialPlaying) return;
 
         float scale = 1 + Mathf.Sin(Time.unscaledTime * 4f) * 0.1f;
         qHighlight.localScale = Vector3.one * scale;
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (!firstQUsed && Input.GetKeyDown(KeyCode.Q))
         {
+            firstQUsed = true;
             EndTutorial();
         }
 
@@ -185,9 +187,10 @@ public class SkillTutorial : MonoBehaviour
 
     public void OnEnemyStunned()
     {
-        if (stunTutorialPlaying) return;
+        if (stunTutorialPlaying || stunTutorialShown) return;
 
         stunTutorialPlaying = true;
+        playing = true;   
 
         StartCoroutine(StunTutorial());
     }
@@ -202,21 +205,25 @@ public class SkillTutorial : MonoBehaviour
         StartCoroutine(ZoomCamera());
 
         battlePanel.SetActive(true);
-        battleText.text = "강력한 일격으로 적이 균형을 잃었습니다.";
+        battleText.text = "일정 피해를 누적시키면 기절합니다.";
 
-        tutorialSystem.leftClickUI.SetActive(true);
+        tutorialSystem.rightClickUI.SetActive(true);
         tutorialSystem.waitingForRightClick = true;
     }
 
     void EndStunTutorial()
     {
         stunTutorialPlaying = false;
+        playing = false;  
 
         Time.timeScale = 1f;
 
         battlePanel.SetActive(false);
-        tutorialSystem.leftClickUI.SetActive(false);
+        tutorialSystem.rightClickUI.SetActive(false);
+
         StartCoroutine(FadeOutGray());
         StartCoroutine(ResetCamera());
+
+        stunTutorialShown = true;
     }
 }

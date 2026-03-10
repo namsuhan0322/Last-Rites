@@ -10,8 +10,6 @@ public class TutorialSystem : MonoBehaviour
     public TMP_Text startText;
     public GameObject rightClickUI;   // 마우스 우클릭 아이콘
     public CanvasGroup rightClickGroup;
-    public GameObject leftClickUI;
-    public CanvasGroup leftClickGroup;
 
     [Header("미션UI")]
     public TMP_Text missionText;
@@ -55,7 +53,6 @@ public class TutorialSystem : MonoBehaviour
         startPanel.SetActive(true);
         missionText.gameObject.SetActive(false);
         rightClickUI.SetActive(false);
-        leftClickUI.SetActive(false);
         StartCoroutine(TypeStartText());
     }
 
@@ -72,7 +69,7 @@ public class TutorialSystem : MonoBehaviour
 
         if (waitingForBattleStart)
         {
-            leftClickGroup.alpha =
+            rightClickGroup.alpha =
                 Mathf.Lerp(0.3f, 1f, Mathf.PingPong(Time.unscaledTime * blinkSpeed, 1));
 
             if (Input.GetMouseButtonDown(1))
@@ -187,7 +184,7 @@ public class TutorialSystem : MonoBehaviour
     {
         battleText.text = "";
 
-        string msg = "이 버튼을 눌러 전투를 시작하십시오";
+        string msg = "<sprite=0> 버튼을 눌러 전투를 시작하십시오";
 
         foreach (char c in msg)
         {
@@ -218,7 +215,7 @@ public class TutorialSystem : MonoBehaviour
         waitingForBattleStart = false;
 
         battlePanel.SetActive(false);
-        leftClickUI.SetActive(false);
+        rightClickUI.SetActive(false);
 
         tutorialPlaying = false; // 입력 허용
     }
@@ -245,8 +242,7 @@ public class TutorialSystem : MonoBehaviour
         yield return StartCoroutine(TypeBattleText());
 
         yield return new WaitForSecondsRealtime(0.3f);
-
-        leftClickUI.SetActive(true);
+        rightClickUI.SetActive(true);
         waitingForBattleStart = true;
     }
 

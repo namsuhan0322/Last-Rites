@@ -1,0 +1,90 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2074358309499025858
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8777986120210876509}
+  - component: {fileID: 769055947868920689}
+  - component: {fileID: 3304240045747951958}
+  m_Layer: 0
+  m_Name: TutorialManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8777986120210876509
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074358309499025858}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 854.6103, y: 0, z: -20.67977}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &769055947868920689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074358309499025858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 712940a562c29354db56fef1e742b3cf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StartTutorial
+  startPanel: {fileID: 0}
+  startText: {fileID: 0}
+  rightClickUI: {fileID: 0}
+  rightClickGroup: {fileID: 0}
+  leftClickUI: {fileID: 0}
+  leftClickGroup: {fileID: 0}
+  missionText: {fileID: 0}
+  battlePanel: {fileID: 0}
+  battleText: {fileID: 0}
+  playerCam: {fileID: 0}
+  tutorialCam: {fileID: 0}
+  spawnPoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  playerController: {fileID: 0}
+  wolfPrefab: {fileID: 4077847239182567473, guid: d5b4dae048b0bc646a04a3d83f5217fa,
+    type: 3}
+  mainCamera: {fileID: 0}
+  typingSpeed: 0.13
+  blinkSpeed: 1
+  directionArrow: {fileID: 0}
+  tutorialPlaying: 0
+--- !u!114 &3304240045747951958
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074358309499025858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd376eb39f77f30429d368cb4dee1cbc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SkillTutorial
+  QSkill: {fileID: 0}
+  WSkill: {fileID: 0}
+  ESkill: {fileID: 0}
+  RSkill: {fileID: 0}
+  VSkill: {fileID: 0}
+  qHighlight: {fileID: 0}
+  normalColor: {r: 1, g: 1, b: 1, a: 1}
+  grayColor: {r: 0.3, g: 0.3, b: 0.3, a: 1}

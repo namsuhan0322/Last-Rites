@@ -48,9 +48,10 @@ public class PlayerController : MonoBehaviour
     public LayerMask EnemyLayer;           
     public float CombatCooldown = 5.0f;    
 
+
     private float _combatTimer;
     private bool _inCombat;
-
+    public TutorialSystem tutorialSystem;
     public bool InCombat => _inCombat;
 
     [Header("스킬 관리")]
@@ -107,6 +108,12 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (tutorialSystem != null && tutorialSystem.tutorialPlaying)
+        {
+            Agent.ResetPath();
+            Anim.SetFloat("Move", 0f);
+            return;
+        }
         StateMachine.CurrentState.HandleInput();
         StateMachine.CurrentState.LogicUpdate();
 
@@ -480,9 +487,9 @@ public class PlayerController : MonoBehaviour
     public void OnWeaponDrawn()
     {
         if (VisualManager != null)
-        {
             VisualManager.DrawWeapon();
-        }
+
+        tutorialSystem.OnPlayerWeaponDraw(); // 여기 연결
     }
 
     // 칼을 칼집에 넣는 애니메이션 도중 손에서 자루를 놓을 때 호출

@@ -36,19 +36,26 @@ public class TutorialSystem : MonoBehaviour
     public float typingSpeed = 0.05f;
     public float blinkSpeed = 2f;
 
+    public bool waitingForRightClick = false;
+
     string startMessage = "마우스 우클릭으로 이동하십시오";
     string goalMessage = "목표 지점으로 이동하세요";
 
     bool waitingForEnter = false;
     public GameObject directionArrow;
+
+
+    bool battleTutorialShown = false;
+    public bool tutorialPlaying = false;
+
     void Start()
     {
-        Time.timeScale = 0f;
+        tutorialPlaying = true; 
 
         startPanel.SetActive(true);
         missionText.gameObject.SetActive(false);
         rightClickUI.SetActive(false);
-        leftClickUI.SetActive(false);   
+        leftClickUI.SetActive(false);
         StartCoroutine(TypeStartText());
     }
 
@@ -68,8 +75,21 @@ public class TutorialSystem : MonoBehaviour
             leftClickGroup.alpha =
                 Mathf.Lerp(0.3f, 1f, Mathf.PingPong(Time.unscaledTime * blinkSpeed, 1));
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(1))
                 StartBattle();
+        }
+
+        if (waitingForRightClick)
+        {
+            rightClickGroup.alpha =
+                Mathf.Lerp(0.3f, 1f, Mathf.PingPong(Time.unscaledTime * blinkSpeed, 1));
+
+            if (Input.GetMouseButtonDown(1))
+            {
+                rightClickUI.SetActive(false);
+                waitingForRightClick = false;
+                Time.timeScale = 1f;
+            }
         }
     }
 
@@ -96,7 +116,7 @@ public class TutorialSystem : MonoBehaviour
         startPanel.SetActive(false);
         rightClickUI.SetActive(false);
 
-        Time.timeScale = 1f;
+        tutorialPlaying = false; 
 
         missionText.gameObject.SetActive(true);
 
@@ -151,14 +171,7 @@ public class TutorialSystem : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        battlePanel.SetActive(true);
-
-        yield return StartCoroutine(TypeBattleText());
-
-        yield return new WaitForSecondsRealtime(0.3f);
-
-        leftClickUI.SetActive(true);
-        waitingForBattleStart = true;
+        playerController.enabled = true;
     }
 
     IEnumerator SpawnWolves()
@@ -173,6 +186,7 @@ public class TutorialSystem : MonoBehaviour
     IEnumerator TypeBattleText()
     {
         battleText.text = "";
+
         string msg = "이 버튼을 눌러 전투를 시작하십시오";
 
         foreach (char c in msg)
@@ -206,10 +220,34 @@ public class TutorialSystem : MonoBehaviour
         battlePanel.SetActive(false);
         leftClickUI.SetActive(false);
 
-        tutorialCam.Priority = 5;
-        playerCam.Priority = 20;
+        tutorialPlaying = false; // 입력 허용
+    }
 
-        playerController.enabled = true;
+    public void OnPlayerWeaponDraw()
+    {
+        if (battleTutorialShown) return; 
+
+        battleTutorialShown = true;
+
+        StartCoroutine(ShowBattleMission());
+    }
+
+    IEnumerator ShowBattleMission()
+    {
+        tutorialPlaying = true;   
+
+        playerController.Agent.ResetPath();
+        playerController.Agent.velocity = Vector3.zero;
+        playerController.Anim.SetFloat("Move", 0f);
+
+        battlePanel.SetActive(true);
+
+        yield return StartCoroutine(TypeBattleText());
+
+        yield return new WaitForSecondsRealtime(0.3f);
+
+        leftClickUI.SetActive(true);
+        waitingForBattleStart = true;
     }
 
 }

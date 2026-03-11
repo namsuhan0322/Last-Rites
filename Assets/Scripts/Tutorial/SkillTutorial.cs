@@ -24,6 +24,15 @@ public class SkillTutorial : MonoBehaviour
     public Cinemachine.CinemachineVirtualCamera playerCam;
     bool firstQUsed = false;
     bool stunTutorialShown = false;
+    float defaultFOV;
+    bool dodgeTutorialPlaying = false;
+    bool dodgeTutorialShown = false;
+
+    void Start()
+    {
+        defaultFOV = playerCam.m_Lens.FieldOfView;
+    }
+
     void Awake()
     {
         if (tutorialSystem == null)
@@ -32,20 +41,19 @@ public class SkillTutorial : MonoBehaviour
 
     void Update()
     {
-        if (!playing && !stunTutorialPlaying) return;
+        if (!playing && !stunTutorialPlaying && !dodgeTutorialPlaying) return;
 
         float scale = 1 + Mathf.Sin(Time.unscaledTime * 4f) * 0.1f;
         qHighlight.localScale = Vector3.one * scale;
 
-        if (!firstQUsed && Input.GetKeyDown(KeyCode.Q))
-        {
-            firstQUsed = true;
-            EndTutorial();
-        }
-
         if (stunTutorialPlaying && Input.GetMouseButtonDown(1))
         {
             EndStunTutorial();
+        }
+
+        if (dodgeTutorialPlaying && Input.GetKeyDown(KeyCode.Space))
+        {
+            EndBossDodgeTutorial();
         }
     }
 
@@ -60,6 +68,9 @@ public class SkillTutorial : MonoBehaviour
 
         battlePanel.SetActive(true);
         battleText.text = "Q를 눌러 스킬을 쓰시오";
+
+        tutorialSystem.rightClickUI.SetActive(true);
+        tutorialSystem.waitingForRightClick = true;
 
         WSkill.color = grayColor;
         ESkill.color = grayColor;
@@ -80,6 +91,9 @@ public class SkillTutorial : MonoBehaviour
         Time.timeScale = 1f;
 
         battlePanel.SetActive(false);
+
+        tutorialSystem.rightClickUI.SetActive(false);
+        tutorialSystem.waitingForRightClick = false;
 
         StartCoroutine(FadeOutGray());
         StartCoroutine(ResetCamera());
@@ -158,7 +172,7 @@ public class SkillTutorial : MonoBehaviour
     IEnumerator ZoomCamera()
     {
         float start = playerCam.m_Lens.FieldOfView;
-        float target = start - 10f;
+        float target = defaultFOV - 10f;
 
         float t = 0;
 
@@ -173,7 +187,7 @@ public class SkillTutorial : MonoBehaviour
     IEnumerator ResetCamera()
     {
         float start = playerCam.m_Lens.FieldOfView;
-        float target = start + 10f;
+        float target = defaultFOV;
 
         float t = 0;
 
@@ -225,5 +239,62 @@ public class SkillTutorial : MonoBehaviour
         StartCoroutine(ResetCamera());
 
         stunTutorialShown = true;
+
+        tutorialSystem.ShowMission("스킬을 사용해 피해량을\n누적시키시오");
+    }
+
+    public void OnPlayerUsedQSkill()
+    {
+        if (!playing) return;
+
+        if (firstQUsed) return;
+
+        firstQUsed = true;
+
+        EndTutorial();
+    }
+
+    //오버레이
+    public void ShowTutorialCompleteOverlay()
+    {
+        StartCoroutine(FadeGray());
+    }
+
+
+    //회피 스킬 튜토리얼
+    public void StartBossDodgeTutorial()
+    {
+        if (dodgeTutorialShown) return;
+        dodgeTutorialShown = true;
+
+        if (dodgeTutorialPlaying) return;
+
+        dodgeTutorialPlaying = true;
+
+        Time.timeScale = 0f;
+
+        StartCoroutine(FadeGray());
+        StartCoroutine(ZoomCamera());
+
+        battlePanel.SetActive(true);
+        battleText.text = "보스가 강력한 일격을 준비합니다\nSpace를 이용해 피하십시오";
+
+        tutorialSystem.rightClickUI.SetActive(false);
+    }
+
+    void EndBossDodgeTutorial()
+    {
+        dodgeTutorialPlaying = false;
+
+        Time.timeScale = 1f;
+
+        battlePanel.SetActive(false);
+
+        StartCoroutine(FadeOutGray());
+        StartCoroutine(ResetCamera());
+
+        TutorialBoss boss = FindFirstObjectByType<TutorialBoss>();
+        if (boss != null)
+            boss.HideStompIndicator();
     }
 }

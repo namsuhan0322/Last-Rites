@@ -1,18 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public enum ElitePhase
-{
-    Phase1,
-    Phase2,
-    Phase3
-}
+using static BossPhase;
 
 public class WolfElite : Enemy
 {
     [Header("페이즈 설정")]
-    public ElitePhase currentPhase = ElitePhase.Phase1;
+    public BossPhase currentPhase = BossPhase.Phase1;
     public float phase2HpPercent = 0.6f;   //페이즈 변환 퍼센트
 
 
@@ -69,7 +63,7 @@ public class WolfElite : Enemy
     //페이즈변환업데이트
     void UpdatePhase()
     {
-        if (currentPhase != ElitePhase.Phase1) return;
+        if (currentPhase != BossPhase.Phase1) return;
         if (isPhaseChanging) return;
 
         float hpPercent = (float)_currentHP / _maxHP;
@@ -93,7 +87,7 @@ public class WolfElite : Enemy
         AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
         yield return new WaitForSeconds(state.length);
 
-        currentPhase = ElitePhase.Phase2;
+        currentPhase = BossPhase.Phase2;
 
         animator.SetBool("Phase1Idle", false);
         animator.SetBool("Phase2Idle", true);
@@ -126,7 +120,7 @@ public class WolfElite : Enemy
             return;
         }
 
-        if (currentPhase == ElitePhase.Phase2)
+        if (currentPhase == BossPhase.Phase2)
         {
             TryPhase2Attack();
             return;
@@ -232,12 +226,12 @@ public class WolfElite : Enemy
             animator.SetBool("Walk", false);
             animator.SetBool("Run", false);
 
-            if (currentPhase == ElitePhase.Phase1)
+            if (currentPhase == BossPhase.Phase1)
             {
                 animator.SetBool("Phase1Idle", true);
                 animator.SetBool("Phase2Idle", false);
             }
-            else if (currentPhase == ElitePhase.Phase2)
+            else if (currentPhase == BossPhase.Phase2)
             {
                 animator.SetBool("Phase1Idle", false);
                 animator.SetBool("Phase2Idle", true);

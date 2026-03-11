@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.AI;
 
 public class PlayerController : MonoBehaviour
@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
     public PlayerStats Stats { get; private set; }
     public Animator Anim { get; private set; }
 
-    [Header("½ºÅÈ")]
+    [Header("ìŠ¤íƒ¯")]
     [SerializeField] public float RotateSpeed = 10f;
     [SerializeField] public float AnimationSmoothTime = 0.1f;
 
@@ -35,13 +35,13 @@ public class PlayerController : MonoBehaviour
 
     public WeaponVisualManager VisualManager;
 
-    [Tooltip("R½ºÅ³ ¾²¸é ¹«±â °­È­ °ü·Ã ÀÌÆåÆ®")]
+    [Tooltip("RìŠ¤í‚¬ ì“°ë©´ ë¬´ê¸° ê°•í™” ê´€ë ¨ ì´í™íŠ¸")]
     public GameObject weaponEffect;
 
     [Header("Input")]
     public LayerMask GroundLayer;
 
-    [Header("ÀüÅõ °¨Áö ¼¾¼­")]
+    [Header("ì „íˆ¬ ê°ì§€ ì„¼ì„œ")]
     public float DetectionRadius = 8.0f;   
     [Range(0, 360)]
     public float ViewAngle = 120.0f;     
@@ -52,11 +52,12 @@ public class PlayerController : MonoBehaviour
     private float _combatTimer;
     private bool _inCombat;
     public TutorialSystem tutorialSystem;
+    SkillTutorial skillTutorial;
     public bool InCombat => _inCombat;
 
-    [Header("½ºÅ³ °ü¸®")]
-    [HideInInspector] public string CurrentSkillAnim;   // ¾î¶² ½ºÅ³ ¾Ö´Ï¸ŞÀÌ¼ÇÀ» Æ²Áö
-    [HideInInspector] public int CurrentSkillDamage;    // ÇöÀç ½ºÅ³ µ¥¹ÌÁö°¡ ¾ó¸¶ÀÎÁö
+    [Header("ìŠ¤í‚¬ ê´€ë¦¬")]
+    [HideInInspector] public string CurrentSkillAnim;   // ì–´ë–¤ ìŠ¤í‚¬ ì• ë‹ˆë©”ì´ì…˜ì„ í‹€ì§€
+    [HideInInspector] public int CurrentSkillDamage;    // í˜„ì¬ ìŠ¤í‚¬ ë°ë¯¸ì§€ê°€ ì–¼ë§ˆì¸ì§€
     [HideInInspector] public float CurrentSkillVal;
     [HideInInspector] public bool HasRBuff = false;
 
@@ -84,6 +85,7 @@ public class PlayerController : MonoBehaviour
         CC = GetComponent<CharacterController>();
         Stats = GetComponent<PlayerStats>();
         Anim = GetComponent<Animator>();
+        skillTutorial = FindFirstObjectByType<SkillTutorial>();
 
         Stats.OnHit += HandleHit;
         Stats.OnDeath += HandleDeath;
@@ -220,26 +222,26 @@ public class PlayerController : MonoBehaviour
 
     private void HandleDeath()
     {
-        // ÀÌ¹Ì Á×Àº »óÅÂ¶ó¸é ¹«½Ã
+        // ì´ë¯¸ ì£½ì€ ìƒíƒœë¼ë©´ ë¬´ì‹œ
         if (StateMachine.CurrentState == DeadState) return;
 
-        // »óÅÂ °­Á¦ ÀüÈ¯
+        // ìƒíƒœ ê°•ì œ ì „í™˜
         StateMachine.ChangeState(DeadState);
     }
 
     private void HandleStun()
     {
-        // ÀÌ¹Ì Á×¾ú°Å³ª ÀÌ¹Ì ½ºÅÏ »óÅÂ¸é ¹«½Ã
+        // ì´ë¯¸ ì£½ì—ˆê±°ë‚˜ ì´ë¯¸ ìŠ¤í„´ ìƒíƒœë©´ ë¬´ì‹œ
         if (StateMachine.CurrentState == DeadState || StateMachine.CurrentState == StunState) return;
         if (HasRBuff) return;
 
-        Debug.Log("ÇÃ·¹ÀÌ¾î°¡ ½ºÅÏ¿¡ °É¸²!");
+        Debug.Log("í”Œë ˆì´ì–´ê°€ ìŠ¤í„´ì— ê±¸ë¦¼!");
         StateMachine.ChangeState(StunState);
     }
 
     private void ManageUpperBodyWeight()
     {
-        // Àü½ÅÀ» ½á¾ß ÇÏ´Â »óÅÂ(°ø°İ, È¸ÇÇ µî)¿¡¼­´Â »óÃ¼ ·¹ÀÌ¾î¸¦ Áï½Ã ²ü´Ï´Ù.
+        // ì „ì‹ ì„ ì¨ì•¼ í•˜ëŠ” ìƒíƒœ(ê³µê²©, íšŒí”¼ ë“±)ì—ì„œëŠ” ìƒì²´ ë ˆì´ì–´ë¥¼ ì¦‰ì‹œ ë•ë‹ˆë‹¤.
         if (StateMachine.CurrentState == AttackState ||
             StateMachine.CurrentState == RollState ||
             StateMachine.CurrentState == SkillState)
@@ -254,7 +256,7 @@ public class PlayerController : MonoBehaviour
         bool isDrawing = upperState.IsName("SheatheHips");
         bool isStowing = upperState.IsName("UnsheatheHips");
 
-        // ÀÌº¥Æ® Äµ½½ ´ëºñ¿ë ¾ÈÀüÀåÄ¡
+        // ì´ë²¤íŠ¸ ìº”ìŠ¬ ëŒ€ë¹„ìš© ì•ˆì „ì¥ì¹˜
         if (isEmpty && !_inCombat)
         {
             OnWeaponStowed();
@@ -264,7 +266,7 @@ public class PlayerController : MonoBehaviour
             OnWeaponDrawn();
         }
 
-        // ÀüÅõ ÁßÀÌ°Å³ª, Ä® »Ì±â/³Ö±â ÁßÀÌ¸é ·¹ÀÌ¾î ÄÑ±â
+        // ì „íˆ¬ ì¤‘ì´ê±°ë‚˜, ì¹¼ ë½‘ê¸°/ë„£ê¸° ì¤‘ì´ë©´ ë ˆì´ì–´ ì¼œê¸°
         if (_inCombat || isDrawing || isStowing)
         {
             Anim.SetLayerWeight(1, Mathf.Lerp(Anim.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
@@ -283,7 +285,7 @@ public class PlayerController : MonoBehaviour
         if (Physics.Raycast(ray, out hit, 100f, GroundLayer))
         {
             Vector3 targetPoint = hit.point;
-            targetPoint.y = transform.position.y; // Ä³¸¯ÅÍ°¡ À§¾Æ·¡·Î ±â¿ï¾îÁö´Â °Í ¹æÁö
+            targetPoint.y = transform.position.y; // ìºë¦­í„°ê°€ ìœ„ì•„ë˜ë¡œ ê¸°ìš¸ì–´ì§€ëŠ” ê²ƒ ë°©ì§€
 
             Vector3 dir = (targetPoint - transform.position).normalized;
 
@@ -310,7 +312,13 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 if (TryUseSkill(KeyCode.Q, "Skill_Q", CurrentWeapon.Q_Dmg, CurrentWeapon.Q_Cool))
-                { StateMachine.ChangeState(SkillState); return true; }
+                {
+                    StateMachine.ChangeState(SkillState);
+
+                    skillTutorial?.OnPlayerUsedQSkill();  
+
+                    return true;
+                }
             }
             if (Input.GetKeyDown(KeyCode.W))
             {
@@ -338,14 +346,14 @@ public class PlayerController : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.W) ||
                 Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.V))
             {
-                Debug.Log("ÁÖº¯¿¡ ÀûÀÌ ¾ø¾î ½ºÅ³À» »ç¿ëÇÒ ¼ö ¾ø½À´Ï´Ù!");
+                Debug.Log("ì£¼ë³€ì— ì ì´ ì—†ì–´ ìŠ¤í‚¬ì„ ì‚¬ìš©í•  ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
             }
         }
 
         return false;
     }
 
-    #region °ø°İ ÆÇÁ¤
+    #region ê³µê²© íŒì •
     public void EnableWeaponCollider()
     {
         if (Hitbox == null || CurrentWeapon == null) return;
@@ -373,20 +381,20 @@ public class PlayerController : MonoBehaviour
 
         if (HasRBuff)
         {
-            // µ¥¹ÌÁö¸¦ CurrentSkillVal(R_Val) ¹èÀ²¸¸Å­ °öÇØÁİ´Ï´Ù.
+            // ë°ë¯¸ì§€ë¥¼ CurrentSkillVal(R_Val) ë°°ìœ¨ë§Œí¼ ê³±í•´ì¤ë‹ˆë‹¤.
             damageToDeal = Mathf.RoundToInt(damageToDeal * CurrentSkillVal);
 
-            // °ø°İÀ» ½ÃÀÛÇßÀ¸¹Ç·Î ¹öÇÁ¸¦ ²ü´Ï´Ù! (Çã°ø¿¡ ÃÄµµ ³¯¾Æ°¨)
+            // ê³µê²©ì„ ì‹œì‘í–ˆìœ¼ë¯€ë¡œ ë²„í”„ë¥¼ ë•ë‹ˆë‹¤! (í—ˆê³µì— ì³ë„ ë‚ ì•„ê°)
             HasRBuff = false;
 
-            Debug.Log($"[R ½ºÅ³ È¿°ú Àû¿ë!] µ¥¹ÌÁö {damageToDeal}·Î »½Æ¢±â µÊ! ½´ÆÛ¾Æ¸Ó ÇØÁ¦.");
+            Debug.Log($"[R ìŠ¤í‚¬ íš¨ê³¼ ì ìš©!] ë°ë¯¸ì§€ {damageToDeal}ë¡œ ë»¥íŠ€ê¸° ë¨! ìŠˆí¼ì•„ë¨¸ í•´ì œ.");
         }
 
-        // È÷Æ®¹Ú½º ÄÑ¸é¼­ °áÁ¤µÈ µ¥¹ÌÁö Àü´Ş
+        // íˆíŠ¸ë°•ìŠ¤ ì¼œë©´ì„œ ê²°ì •ëœ ë°ë¯¸ì§€ ì „ë‹¬
         Hitbox.EnableHitbox(damageToDeal);
     }
 
-    // °ø°İ Á¾·á ½Ã È£Ãâ
+    // ê³µê²© ì¢…ë£Œ ì‹œ í˜¸ì¶œ
     public void DisableWeaponCollider()
     {
         if (Hitbox != null)
@@ -395,44 +403,44 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Æ¯Á¤ °ø°İ ¸ğ¼Ç¿¡¼­ ÀÌÆåÆ® ²ô±â
+    // íŠ¹ì • ê³µê²© ëª¨ì…˜ì—ì„œ ì´í™íŠ¸ ë„ê¸°
     public void DisableREffect()
     {
         if (weaponEffect != null) weaponEffect.SetActive(false);
     }
     #endregion
 
-    #region ½ºÅ³ °ü·Ã
+    #region ìŠ¤í‚¬ ê´€ë ¨
     private void UpdateSkillCooldowns()
     {
         if (Q_Timer > 0)
         {
             Q_Timer -= Time.deltaTime;
-            if (Q_Timer <= 0) Debug.Log("Q ½ºÅ³ ÄğÅ¸ÀÓÀÌ ³¡³µ½À´Ï´Ù!");
+            if (Q_Timer <= 0) Debug.Log("Q ìŠ¤í‚¬ ì¿¨íƒ€ì„ì´ ëë‚¬ìŠµë‹ˆë‹¤!");
         }
 
         if (W_Timer > 0)
         {
             W_Timer -= Time.deltaTime;
-            if (W_Timer <= 0) Debug.Log("W ½ºÅ³ ÄğÅ¸ÀÓÀÌ ³¡³µ½À´Ï´Ù!");
+            if (W_Timer <= 0) Debug.Log("W ìŠ¤í‚¬ ì¿¨íƒ€ì„ì´ ëë‚¬ìŠµë‹ˆë‹¤!");
         }
 
         if (E_Timer > 0)
         {
             E_Timer -= Time.deltaTime;
-            if (E_Timer <= 0) Debug.Log("E ½ºÅ³ ÄğÅ¸ÀÓÀÌ ³¡³µ½À´Ï´Ù!");
+            if (E_Timer <= 0) Debug.Log("E ìŠ¤í‚¬ ì¿¨íƒ€ì„ì´ ëë‚¬ìŠµë‹ˆë‹¤!");
         }
 
         if (R_Timer > 0)
         {
             R_Timer -= Time.deltaTime;
-            if (R_Timer <= 0) Debug.Log("R ½ºÅ³ ÄğÅ¸ÀÓÀÌ ³¡³µ½À´Ï´Ù!");
+            if (R_Timer <= 0) Debug.Log("R ìŠ¤í‚¬ ì¿¨íƒ€ì„ì´ ëë‚¬ìŠµë‹ˆë‹¤!");
         }
 
         if (V_Timer > 0)
         {
             V_Timer -= Time.deltaTime;
-            if (V_Timer <= 0) Debug.Log("V ½ºÅ³ ÄğÅ¸ÀÓÀÌ ³¡³µ½À´Ï´Ù!");
+            if (V_Timer <= 0) Debug.Log("V ìŠ¤í‚¬ ì¿¨íƒ€ì„ì´ ëë‚¬ìŠµë‹ˆë‹¤!");
         }
     }
 
@@ -441,7 +449,7 @@ public class PlayerController : MonoBehaviour
         CurrentSkillAnim = animName;
         CurrentSkillDamage = damage;
 
-        // ÄğÅ¸ÀÓÀÌ ´Ù µ¹¾Ò´Ù¸é(0 ÀÌÇÏ¶ó¸é) ½ºÅ³ »ç¿ë ½ÂÀÎ ¹× ÄğÅ¸ÀÓ ÃÊ±âÈ­
+        // ì¿¨íƒ€ì„ì´ ë‹¤ ëŒì•˜ë‹¤ë©´(0 ì´í•˜ë¼ë©´) ìŠ¤í‚¬ ì‚¬ìš© ìŠ¹ì¸ ë° ì¿¨íƒ€ì„ ì´ˆê¸°í™”
         switch (key)
         {
             case KeyCode.Q: if (Q_Timer <= 0) { Q_Timer = maxCool; return true; } break;
@@ -450,7 +458,7 @@ public class PlayerController : MonoBehaviour
             case KeyCode.V: if (V_Timer <= 0) { V_Timer = maxCool; return true; } break;
         }
 
-        Debug.Log($"{key} ½ºÅ³ ÄğÅ¸ÀÓ ÁßÀÔ´Ï´Ù!");
+        Debug.Log($"{key} ìŠ¤í‚¬ ì¿¨íƒ€ì„ ì¤‘ì…ë‹ˆë‹¤!");
         return false;
     }
 
@@ -466,7 +474,7 @@ public class PlayerController : MonoBehaviour
                 {
                     R_Timer = maxCool;
                     HasRBuff = true;
-                    Debug.Log($"[R ½ºÅ³ ¹ßµ¿] ½´ÆÛ¾Æ¸Ó È°¼ºÈ­! ´ÙÀ½ Å¸°İ µ¥¹ÌÁö {val}¹è!");
+                    Debug.Log($"[R ìŠ¤í‚¬ ë°œë™] ìŠˆí¼ì•„ë¨¸ í™œì„±í™”! ë‹¤ìŒ íƒ€ê²© ë°ë¯¸ì§€ {val}ë°°!");
 
                     if (weaponEffect != null) 
                         weaponEffect.SetActive(true);
@@ -476,23 +484,23 @@ public class PlayerController : MonoBehaviour
                 break;
         }
 
-        Debug.Log($"{key} ½ºÅ³ ÄğÅ¸ÀÓ ÁßÀÔ´Ï´Ù!");
+        Debug.Log($"{key} ìŠ¤í‚¬ ì¿¨íƒ€ì„ ì¤‘ì…ë‹ˆë‹¤!");
         return false;
     }
 
     #endregion
 
-    #region ¹«±â ÀåÂø, ÇØÁ¦ ÀÌº¥Æ® 
-    // Ä®Áı¿¡¼­ Ä®À» »Ì´Â ¾Ö´Ï¸ŞÀÌ¼Ç µµÁß ¼ÕÀÌ ÀÚ·ç¿¡ ´êÀ» ¶§ È£Ãâ
+    #region ë¬´ê¸° ì¥ì°©, í•´ì œ ì´ë²¤íŠ¸ 
+    // ì¹¼ì§‘ì—ì„œ ì¹¼ì„ ë½‘ëŠ” ì• ë‹ˆë©”ì´ì…˜ ë„ì¤‘ ì†ì´ ìë£¨ì— ë‹¿ì„ ë•Œ í˜¸ì¶œ
     public void OnWeaponDrawn()
     {
         if (VisualManager != null)
             VisualManager.DrawWeapon();
 
-        tutorialSystem.OnPlayerWeaponDraw(); // ¿©±â ¿¬°á
+        tutorialSystem.OnPlayerWeaponDraw(); // ì—¬ê¸° ì—°ê²°
     }
 
-    // Ä®À» Ä®Áı¿¡ ³Ö´Â ¾Ö´Ï¸ŞÀÌ¼Ç µµÁß ¼Õ¿¡¼­ ÀÚ·ç¸¦ ³õÀ» ¶§ È£Ãâ
+    // ì¹¼ì„ ì¹¼ì§‘ì— ë„£ëŠ” ì• ë‹ˆë©”ì´ì…˜ ë„ì¤‘ ì†ì—ì„œ ìë£¨ë¥¼ ë†“ì„ ë•Œ í˜¸ì¶œ
     public void OnWeaponStowed()
     {
         if (VisualManager != null)
@@ -502,10 +510,10 @@ public class PlayerController : MonoBehaviour
     }
     #endregion
 
-    #region Àû Å½Áö
+    #region ì  íƒì§€
     private void CheckEnemyInSight()
     {
-        // ÁÖº¯ÀÇ Àû(Collider)µéÀ» ¸ğµÎ Ã£À½
+        // ì£¼ë³€ì˜ ì (Collider)ë“¤ì„ ëª¨ë‘ ì°¾ìŒ
         Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, DetectionRadius, EnemyLayer);
 
         bool enemyFound = false;
@@ -570,7 +578,7 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
-    #region ¾Æ¿ô¶óÀÎ Á¦¾î
+    #region ì•„ì›ƒë¼ì¸ ì œì–´
     public void TogglePlayerOutline(bool isOn)
     {
         int targetLayer = isOn ? LayerMask.NameToLayer("Player") : LayerMask.NameToLayer("Default");

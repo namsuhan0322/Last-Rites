@@ -1554,11 +1554,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1902295235}
   - {fileID: 1338765179}
   - {fileID: 1433114636}
   - {fileID: 658890394}
   - {fileID: 532680058}
-  - {fileID: 1902295235}
   - {fileID: 2081783107}
   - {fileID: 48328961}
   - {fileID: 1634836737}
@@ -2564,11 +2564,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 695483030}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 552, y: 461}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 552, y: -225}
   m_SizeDelta: {x: 45, y: 65}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!225 &1338765180
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -4051,6 +4051,12 @@ PrefabInstance:
       propertyPath: playerController
       value: 
       objectReference: {fileID: 6414740103678731310}
+    - target: {fileID: 769055947868920689, guid: fa6e758c52e594748acc3ab621f2436b,
+        type: 3}
+      propertyPath: tutorialBossPrefab
+      value: 
+      objectReference: {fileID: 6686470288692599356, guid: db639394867802549a2169d3c1218642,
+        type: 3}
     - target: {fileID: 769055947868920689, guid: fa6e758c52e594748acc3ab621f2436b,
         type: 3}
       propertyPath: 'spawnPoints.Array.data[0]'

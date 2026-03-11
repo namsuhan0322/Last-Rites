@@ -556,6 +556,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wolf Minion 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4077847239182567473, guid: 92c3373339992a448bedb53ea3cbd85f,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4222871011250541854, guid: 92c3373339992a448bedb53ea3cbd85f,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -2346,6 +2351,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Wolf Elite
       objectReference: {fileID: 0}
+    - target: {fileID: 6686470288692599356, guid: 9a34197936e622e48a64ac2d33cadaa1,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6843969078188657001, guid: 9a34197936e622e48a64ac2d33cadaa1,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -3473,7 +3483,7 @@ PrefabInstance:
     - target: {fileID: 5411316648045163227, guid: ec9a9658128a940408e8ff074777f28b,
         type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5496386407310168169, guid: ec9a9658128a940408e8ff074777f28b,
         type: 3}

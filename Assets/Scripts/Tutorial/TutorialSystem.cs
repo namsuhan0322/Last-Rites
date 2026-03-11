@@ -3,6 +3,8 @@ using UnityEngine;
 using TMPro;
 using Cinemachine;
 
+
+
 public class TutorialSystem : MonoBehaviour
 {
     [Header("시작 판넬")]
@@ -20,7 +22,13 @@ public class TutorialSystem : MonoBehaviour
     public CinemachineVirtualCamera playerCam;
     public CinemachineVirtualCamera tutorialCam;
 
+    [Header("튜토리얼 보스")]
+    public GameObject tutorialBossPrefab;
+
     public Transform[] spawnPoints;    // 늑대 3마리 위치
+
+    [Header("튜토리얼 완료 UI")]
+    public TMP_Text tutorialCompleteText;
 
 
     public PlayerController playerController; // 추가
@@ -45,6 +53,11 @@ public class TutorialSystem : MonoBehaviour
 
     bool battleTutorialShown = false;
     public bool tutorialPlaying = false;
+    Coroutine missionRoutine;
+    bool bossPhaseStarted = false;
+    SkillTutorial skillTutorial;
+
+
 
     void Start()
     {
@@ -54,6 +67,7 @@ public class TutorialSystem : MonoBehaviour
         missionText.gameObject.SetActive(false);
         rightClickUI.SetActive(false);
         StartCoroutine(TypeStartText());
+        skillTutorial = FindFirstObjectByType<SkillTutorial>();
     }
 
     void Update()
@@ -194,7 +208,7 @@ public class TutorialSystem : MonoBehaviour
     }
 
     //미션 사라지게 하기
-    IEnumerator FadeOutMission()
+    public IEnumerator FadeOutMission()
     {
         float time = 0f;
         Color color = missionText.color;
@@ -244,6 +258,136 @@ public class TutorialSystem : MonoBehaviour
         yield return new WaitForSecondsRealtime(0.3f);
         rightClickUI.SetActive(true);
         waitingForBattleStart = true;
+    }
+
+    public void ShowMission(string msg)
+    {
+        missionText.gameObject.SetActive(true);
+
+        Color c = missionText.color;
+        c.a = 1f;
+        missionText.color = c;
+
+        if (missionRoutine != null)
+            StopCoroutine(missionRoutine);
+
+        missionRoutine = StartCoroutine(TypeMission(msg));
+    }
+
+    IEnumerator TypeMission(string message)
+    {
+        missionText.text = "";
+
+        foreach (char c in message)
+        {
+            missionText.text += c;
+            yield return new WaitForSecondsRealtime(typingSpeed);
+        }
+    }
+
+    //보스 스타트
+    public void StartBossPhase()
+    {
+        if (bossPhaseStarted) return;
+
+        bossPhaseStarted = true;
+
+        StartCoroutine(BossPhaseRoutine());
+    }
+
+    //보스 인트로
+    IEnumerator BossPhaseRoutine()
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        TutorialMinion[] minions = FindObjectsByType<TutorialMinion>(FindObjectsSortMode.None);
+
+        foreach (var m in minions)
+        {
+            m.KillMinion();
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        yield return StartCoroutine(FadeOutMission());
+
+        playerController.Agent.ResetPath();
+        playerController.Agent.velocity = Vector3.zero;
+        playerController.enabled = false;
+        playerController.Anim.SetFloat("Move", 0f);
+
+        playerCam.Priority = 5;
+        tutorialCam.Priority = 20;
+
+        yield return new WaitForSeconds(1f);
+
+        if (spawnPoints.Length > 0)
+        {
+            int index = Random.Range(0, spawnPoints.Length);
+            Transform spawn = spawnPoints[index];
+
+            Instantiate(tutorialBossPrefab, spawn.position, spawn.rotation);
+        }
+
+        yield return new WaitForSeconds(2.5f);
+
+        tutorialCam.Priority = 5;
+        playerCam.Priority = 20;
+
+        yield return new WaitForSeconds(1f);
+
+        playerController.enabled = true;
+    }
+
+    //보스끝인트로
+    public void EndBossIntro()
+    {
+        tutorialCam.Priority = 5;
+        playerCam.Priority = 20;
+
+        playerController.enabled = true;
+    }
+
+    //튜토리얼 완료 보여주기
+    public void ShowTutorialComplete()
+    {
+        StartCoroutine(TutorialCompleteRoutine());
+    }
+
+
+    //튜토리얼 완료
+    IEnumerator TutorialCompleteRoutine()
+    {
+        yield return new WaitForSeconds(1f);
+
+        float t = 0f;
+
+        if (skillTutorial != null)
+            skillTutorial.ShowTutorialCompleteOverlay();
+
+        tutorialCompleteText.gameObject.SetActive(true);
+
+        tutorialCompleteText.text = "튜토리얼 완료";
+
+        t = 0f;
+        Color c = tutorialCompleteText.color;
+        tutorialCompleteText.transform.localScale = Vector3.one * 0.8f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime;
+
+            c.a = Mathf.Lerp(0, 1, t);
+            tutorialCompleteText.color = c;
+
+            tutorialCompleteText.transform.localScale = Vector3.Lerp(
+                Vector3.one * 0.8f,
+                Vector3.one,
+                t
+            );
+
+            yield return null;
+        }
     }
 
 }

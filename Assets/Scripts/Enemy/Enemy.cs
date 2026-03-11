@@ -462,6 +462,11 @@ public class Enemy : Actor
     {
         if (_isDead) return;
 
+        isStunned = false;
+        stunTimer = 0f;
+
+        animator?.SetBool("Stun", false);
+
         _isDead = true;
 
         isHit = false;

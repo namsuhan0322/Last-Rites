@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5bad62ff640ca5c4f943cf5ebad64133, type: 3}
+  m_Name: TutorialBoss
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
+  prefab: {fileID: 6686470288692599356, guid: db639394867802549a2169d3c1218642, type: 3}
+  rank: 2
+  enemyHp: 300
+  patrolSpeed: 2
+  chaseSpeed: 2
+  detectRadius: 4
+  patrolRadius: 2
+  patrolWaitTime: 2
+  attackDamage: 5
+  attackRange: 2.5
+  attackCooldown: 2.5

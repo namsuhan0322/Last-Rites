@@ -187,6 +187,7 @@ public class TutorialBoss : Enemy
 
             if (canDouble && rand < 0.33f)
             {
+                isSkillAttacking = true;
                 StartCoroutine(DoubleStomp());
                 return;
             }
@@ -231,7 +232,6 @@ public class TutorialBoss : Enemy
     IEnumerator DoubleStomp()
     {
         isAttacking = true;
-        isSkillAttacking = true;
         agent.isStopped = true;
 
         RotateToTarget();
@@ -249,13 +249,15 @@ public class TutorialBoss : Enemy
 
         animator.SetTrigger("DoubleStomp");
         doubleStompTimer = doubleStompCooldown;
-
+        stompIndicator.SetActive(false);
         yield return new WaitForSeconds(2f);
 
         attackTimer = 2.0f;
         isAttacking = false;
         isSkillAttacking = false;
         agent.isStopped = false;
+
+
     }
     //Idle 변환 스테이트
     void UpdateIdleState()

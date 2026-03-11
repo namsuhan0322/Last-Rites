@@ -28,9 +28,15 @@ public class SkillTutorial : MonoBehaviour
     bool dodgeTutorialPlaying = false;
     bool dodgeTutorialShown = false;
 
+    public RectTransform staminaHighlight;
+
+    bool staminaTutorialPlaying = false;
+    bool staminaTutorialShown = false;
+    Vector3 staminaBaseScale;
     void Start()
     {
         defaultFOV = playerCam.m_Lens.FieldOfView;
+        staminaBaseScale = staminaHighlight.localScale;
     }
 
     void Awake()
@@ -41,10 +47,15 @@ public class SkillTutorial : MonoBehaviour
 
     void Update()
     {
-        if (!playing && !stunTutorialPlaying && !dodgeTutorialPlaying) return;
+        if (!playing && !stunTutorialPlaying && !dodgeTutorialPlaying && !staminaTutorialPlaying) return;
 
-        float scale = 1 + Mathf.Sin(Time.unscaledTime * 4f) * 0.1f;
+        float scale = 1 + Mathf.Sin(Time.unscaledTime * 5f) * 0.12f;
         qHighlight.localScale = Vector3.one * scale;
+
+        if (staminaTutorialPlaying)
+        {
+            staminaHighlight.localScale = staminaBaseScale * scale;
+        }
 
         if (stunTutorialPlaying && Input.GetMouseButtonDown(1))
         {
@@ -54,6 +65,11 @@ public class SkillTutorial : MonoBehaviour
         if (dodgeTutorialPlaying && Input.GetKeyDown(KeyCode.Space))
         {
             EndBossDodgeTutorial();
+        }
+
+        if (staminaTutorialPlaying && Input.GetMouseButtonDown(1))
+        {
+            EndStaminaTutorial();
         }
     }
 
@@ -293,8 +309,53 @@ public class SkillTutorial : MonoBehaviour
         StartCoroutine(FadeOutGray());
         StartCoroutine(ResetCamera());
 
-        TutorialBoss boss = FindFirstObjectByType<TutorialBoss>();
-        if (boss != null)
-            boss.HideStompIndicator();
+        StartCoroutine(StartStaminaTutorialDelay());
+    }
+
+    IEnumerator StartStaminaTutorialDelay()
+    {
+        if (staminaTutorialShown) yield break;
+
+        yield return new WaitForSeconds(1f);
+
+        staminaTutorialShown = true;
+
+        StartStaminaTutorial();
+    }
+
+    void StartStaminaTutorial()
+    {
+        staminaTutorialPlaying = true;
+
+        Time.timeScale = 0f;
+
+        StartCoroutine(FadeGray());
+        StartCoroutine(ZoomCamera());
+
+        staminaHighlight.gameObject.SetActive(true);
+
+        battlePanel.SetActive(true);
+        battleText.text = "회피 시 일정 스테미나가 닳습니다";
+
+        tutorialSystem.rightClickUI.SetActive(true);
+        tutorialSystem.waitingForRightClick = true;
+    }
+
+    void EndStaminaTutorial()
+    {
+        staminaTutorialPlaying = false;
+
+        Time.timeScale = 1f;
+
+        battlePanel.SetActive(false);
+        battleText.text = "";
+
+        staminaHighlight.gameObject.SetActive(false);
+
+        tutorialSystem.rightClickUI.SetActive(false);
+        tutorialSystem.waitingForRightClick = false;
+
+        StartCoroutine(FadeOutGray());
+        StartCoroutine(ResetCamera());
     }
 }

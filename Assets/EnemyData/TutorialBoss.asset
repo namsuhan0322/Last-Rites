@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
   prefab: {fileID: 6686470288692599356, guid: db639394867802549a2169d3c1218642, type: 3}
   rank: 2
-  enemyHp: 300
+  enemyHp: 400
   patrolSpeed: 2
   chaseSpeed: 2
   detectRadius: 4
@@ -22,4 +22,4 @@ MonoBehaviour:
   patrolWaitTime: 2
   attackDamage: 5
   attackRange: 2.5
-  attackCooldown: 2.5
+  attackCooldown: 5

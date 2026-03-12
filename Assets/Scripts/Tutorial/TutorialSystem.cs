@@ -196,11 +196,14 @@ public class TutorialSystem : MonoBehaviour
 
     IEnumerator TypeBattleText()
     {
-        battleText.text = "";
-
         string msg = "<sprite=0> 버튼을 눌러 전투를 시작하십시오";
 
-        foreach (char c in msg)
+        battleText.text = msg;
+
+        string afterSprite = " 버튼을 눌러 전투를 시작하십시오";
+        battleText.text = "<sprite=0>"; 
+
+        foreach (char c in afterSprite)
         {
             battleText.text += c;
             yield return new WaitForSecondsRealtime(typingSpeed);

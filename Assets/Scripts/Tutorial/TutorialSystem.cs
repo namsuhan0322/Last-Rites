@@ -10,8 +10,8 @@ public class TutorialSystem : MonoBehaviour
     [Header("시작 판넬")]
     public GameObject startPanel;
     public TMP_Text startText;
-    public GameObject rightClickUI;   // 마우스 우클릭 아이콘
-    public CanvasGroup rightClickGroup;
+    public GameObject EnterClickUI;   // 마우스 우클릭 아이콘
+    public CanvasGroup EnterClickGroup;
 
     [Header("미션UI")]
     public TMP_Text missionText;
@@ -42,7 +42,7 @@ public class TutorialSystem : MonoBehaviour
     public float typingSpeed = 0.05f;
     public float blinkSpeed = 2f;
 
-    public bool waitingForRightClick = false;
+    public bool waitingForEnterClick = false;
 
     string startMessage = "마우스 우클릭으로 이동하십시오";
     string goalMessage = "목표 지점으로 이동하세요";
@@ -61,11 +61,11 @@ public class TutorialSystem : MonoBehaviour
 
     void Start()
     {
-        tutorialPlaying = true; 
-
+        tutorialPlaying = true;
+        directionArrow.SetActive(true);
         startPanel.SetActive(true);
         missionText.gameObject.SetActive(false);
-        rightClickUI.SetActive(false);
+        EnterClickUI.SetActive(false);
         StartCoroutine(TypeStartText());
         skillTutorial = FindFirstObjectByType<SkillTutorial>();
     }
@@ -74,31 +74,31 @@ public class TutorialSystem : MonoBehaviour
     {
         if (waitingForEnter)
         {
-            rightClickGroup.alpha =
+            EnterClickGroup.alpha =
                 Mathf.Lerp(0.3f, 1f, Mathf.PingPong(Time.unscaledTime * blinkSpeed, 1));
 
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetKeyDown(KeyCode.Return))
                 CloseStartTutorial();
         }
 
         if (waitingForBattleStart)
         {
-            rightClickGroup.alpha =
+            EnterClickGroup.alpha =
                 Mathf.Lerp(0.3f, 1f, Mathf.PingPong(Time.unscaledTime * blinkSpeed, 1));
 
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetKeyDown(KeyCode.Return))
                 StartBattle();
         }
 
-        if (waitingForRightClick)
+        if (waitingForEnterClick)
         {
-            rightClickGroup.alpha =
+            EnterClickGroup.alpha =
                 Mathf.Lerp(0.3f, 1f, Mathf.PingPong(Time.unscaledTime * blinkSpeed, 1));
 
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetKeyDown(KeyCode.Return))
             {
-                rightClickUI.SetActive(false);
-                waitingForRightClick = false;
+                EnterClickUI.SetActive(false);
+                waitingForEnterClick = false;
                 Time.timeScale = 1f;
             }
         }
@@ -116,7 +116,7 @@ public class TutorialSystem : MonoBehaviour
         }
 
         waitingForEnter = true;
-        rightClickUI.SetActive(true);
+        EnterClickUI.SetActive(true);
     }
 
     //시작 튜토리얼 닫기
@@ -125,7 +125,7 @@ public class TutorialSystem : MonoBehaviour
         waitingForEnter = false;
 
         startPanel.SetActive(false);
-        rightClickUI.SetActive(false);
+        EnterClickUI.SetActive(false);
 
         tutorialPlaying = false; 
 
@@ -229,7 +229,7 @@ public class TutorialSystem : MonoBehaviour
         waitingForBattleStart = false;
 
         battlePanel.SetActive(false);
-        rightClickUI.SetActive(false);
+        EnterClickUI.SetActive(false);
 
         tutorialPlaying = false; // 입력 허용
 
@@ -260,7 +260,7 @@ public class TutorialSystem : MonoBehaviour
         yield return StartCoroutine(TypeBattleText());
 
         yield return new WaitForSecondsRealtime(0.3f);
-        rightClickUI.SetActive(true);
+        EnterClickUI.SetActive(true);
         waitingForBattleStart = true;
     }
 
@@ -327,9 +327,7 @@ public class TutorialSystem : MonoBehaviour
 
         if (spawnPoints.Length > 0)
         {
-            int index = Random.Range(0, spawnPoints.Length);
-            Transform spawn = spawnPoints[index];
-
+            Transform spawn = spawnPoints[1];
             Instantiate(tutorialBossPrefab, spawn.position, spawn.rotation);
         }
 

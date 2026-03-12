@@ -49,6 +49,19 @@ public class SkillTutorial : MonoBehaviour
     {
         if (!playing && !stunTutorialPlaying && !dodgeTutorialPlaying && !staminaTutorialPlaying) return;
 
+        if (playing && Input.GetKeyDown(KeyCode.Q))
+        {
+            PlayerController pc = FindFirstObjectByType<PlayerController>();
+
+            if (pc.TryUseSkill(KeyCode.Q, "Skill_Q", 20, 5f))
+            {
+                pc.Anim.SetTrigger("Skill_Q");
+
+                firstQUsed = true;
+                EndTutorial();
+            }
+        }
+
         float scale = 1 + Mathf.Sin(Time.unscaledTime * 5f) * 0.12f;
         qHighlight.localScale = Vector3.one * scale;
 
@@ -57,7 +70,7 @@ public class SkillTutorial : MonoBehaviour
             staminaHighlight.localScale = staminaBaseScale * scale;
         }
 
-        if (stunTutorialPlaying && Input.GetMouseButtonDown(1))
+        if (stunTutorialPlaying && Input.GetKeyDown(KeyCode.Return))
         {
             EndStunTutorial();
         }
@@ -67,7 +80,7 @@ public class SkillTutorial : MonoBehaviour
             EndBossDodgeTutorial();
         }
 
-        if (staminaTutorialPlaying && Input.GetMouseButtonDown(1))
+        if (staminaTutorialPlaying && Input.GetKeyDown(KeyCode.Return))
         {
             EndStaminaTutorial();
         }
@@ -85,8 +98,8 @@ public class SkillTutorial : MonoBehaviour
         battlePanel.SetActive(true);
         battleText.text = "Q를 눌러 스킬을 쓰시오";
 
-        tutorialSystem.rightClickUI.SetActive(true);
-        tutorialSystem.waitingForRightClick = true;
+        tutorialSystem.EnterClickUI.SetActive(false);
+        tutorialSystem.waitingForEnterClick = false;
 
         WSkill.color = grayColor;
         ESkill.color = grayColor;
@@ -108,8 +121,8 @@ public class SkillTutorial : MonoBehaviour
 
         battlePanel.SetActive(false);
 
-        tutorialSystem.rightClickUI.SetActive(false);
-        tutorialSystem.waitingForRightClick = false;
+        tutorialSystem.EnterClickUI.SetActive(false);
+        tutorialSystem.waitingForEnterClick = false;
 
         StartCoroutine(FadeOutGray());
         StartCoroutine(ResetCamera());
@@ -237,8 +250,8 @@ public class SkillTutorial : MonoBehaviour
         battlePanel.SetActive(true);
         battleText.text = "일정 피해를 누적시키면 기절합니다.";
 
-        tutorialSystem.rightClickUI.SetActive(true);
-        tutorialSystem.waitingForRightClick = true;
+        tutorialSystem.EnterClickUI.SetActive(true);
+        tutorialSystem.waitingForEnterClick = true;
     }
 
     void EndStunTutorial()
@@ -249,7 +262,7 @@ public class SkillTutorial : MonoBehaviour
         Time.timeScale = 1f;
 
         battlePanel.SetActive(false);
-        tutorialSystem.rightClickUI.SetActive(false);
+        tutorialSystem.EnterClickUI.SetActive(false);
 
         StartCoroutine(FadeOutGray());
         StartCoroutine(ResetCamera());
@@ -295,7 +308,7 @@ public class SkillTutorial : MonoBehaviour
         battlePanel.SetActive(true);
         battleText.text = "보스가 강력한 일격을 준비합니다\nSpace를 이용해 피하십시오";
 
-        tutorialSystem.rightClickUI.SetActive(false);
+        tutorialSystem.EnterClickUI.SetActive(false);
     }
 
     void EndBossDodgeTutorial()
@@ -337,8 +350,8 @@ public class SkillTutorial : MonoBehaviour
         battlePanel.SetActive(true);
         battleText.text = "회피 시 일정 스테미나가 닳습니다";
 
-        tutorialSystem.rightClickUI.SetActive(true);
-        tutorialSystem.waitingForRightClick = true;
+        tutorialSystem.EnterClickUI.SetActive(true);
+        tutorialSystem.waitingForEnterClick = true;
     }
 
     void EndStaminaTutorial()
@@ -352,8 +365,8 @@ public class SkillTutorial : MonoBehaviour
 
         staminaHighlight.gameObject.SetActive(false);
 
-        tutorialSystem.rightClickUI.SetActive(false);
-        tutorialSystem.waitingForRightClick = false;
+        tutorialSystem.EnterClickUI.SetActive(false);
+        tutorialSystem.waitingForEnterClick = false;
 
         StartCoroutine(FadeOutGray());
         StartCoroutine(ResetCamera());

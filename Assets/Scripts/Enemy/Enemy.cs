@@ -496,7 +496,7 @@ public class Enemy : Actor
     }
 
     //데미지 받기
-    public override void TakeDamage(int damage)
+    public override void TakeDamage(int damage, float severityOverride = -1f)
     {
         if (_isDead) return;
 

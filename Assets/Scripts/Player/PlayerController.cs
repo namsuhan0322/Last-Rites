@@ -216,6 +216,8 @@ public class PlayerController : MonoBehaviour
         if (StateMachine.CurrentState == StunState || StateMachine.CurrentState == DeadState) return;
         if (HasRBuff) return;
 
+        if (severity <= 0f) return;
+
         HitState.SetSeverity(severity);
         StateMachine.ChangeState(HitState);
     }

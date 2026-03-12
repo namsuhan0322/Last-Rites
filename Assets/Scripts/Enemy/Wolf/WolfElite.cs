@@ -261,7 +261,7 @@ public class WolfElite : Enemy
     }
 
     //데미지 받기
-    public override void TakeDamage(int damage)
+    public override void TakeDamage(int damage, float severityOverride = -1f)
     {
         if (isHit || _isDead) return;
         base.TakeDamage(damage);

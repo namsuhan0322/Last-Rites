@@ -84,7 +84,7 @@ public class Actor : MonoBehaviour
         OnHPChanged?.Invoke(_currentHP, _maxHP);
     }
 
-    public virtual void TakeDamage(int damage)
+    public virtual void TakeDamage(int damage, float severityOverride = -1f)
     {
         if (_isDead) return;
         if (_isInvincible)
@@ -109,7 +109,9 @@ public class Actor : MonoBehaviour
         {
             if (_currentPoise > 0)
             {
-                float hitSeverity = CalculateHitSeverity(damage);
+                // 외부에서 0 같은 값을 강제로 넣어줬다면 그걸 쓰고, 아니면 평소처럼 계산
+                float hitSeverity = (severityOverride != -1f) ? severityOverride : CalculateHitSeverity(damage);
+
                 OnHit?.Invoke(hitSeverity);
             }
         }

@@ -1314,7 +1314,7 @@ NavMeshAgent:
   m_Acceleration: 8
   avoidancePriority: 50
   m_AngularSpeed: 120
-  m_StoppingDistance: 0.6
+  m_StoppingDistance: 1.5
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -1380,6 +1380,8 @@ MonoBehaviour:
   attackCooldown: 0
   attackDamage: 0
   attackTimer: 0
+  skillTutorial: {fileID: 0}
+  tutorialSystem: {fileID: 0}
 --- !u!1 &4275526382902506211
 GameObject:
   m_ObjectHideFlags: 0

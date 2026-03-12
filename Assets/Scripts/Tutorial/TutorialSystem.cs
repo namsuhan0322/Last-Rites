@@ -232,6 +232,8 @@ public class TutorialSystem : MonoBehaviour
         rightClickUI.SetActive(false);
 
         tutorialPlaying = false; // 입력 허용
+
+        playerController.enabled = true;
     }
 
     public void OnPlayerWeaponDraw()
@@ -245,7 +247,9 @@ public class TutorialSystem : MonoBehaviour
 
     IEnumerator ShowBattleMission()
     {
-        tutorialPlaying = true;   
+        tutorialPlaying = true;
+
+        playerController.enabled = false;
 
         playerController.Agent.ResetPath();
         playerController.Agent.velocity = Vector3.zero;

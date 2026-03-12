@@ -2751,7 +2751,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1338765179
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3013,7 +3013,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1634836737
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3088,8 +3088,8 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 0
-  m_HorizontalAlignment: 1
-  m_VerticalAlignment: 256
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
   m_textAlignment: 65535
   m_characterSpacing: 0
   m_characterHorizontalScale: 1
@@ -3150,6 +3150,7 @@ MonoBehaviour:
   goal: {fileID: 457177212}
   arrowUI: {fileID: 1634836737}
   screenOffset: 120
+  hideDistance: 12
 --- !u!1 &1644839066
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,14 +7,26 @@ public class WolfElite : Enemy
 {
     [Header("페이즈 설정")]
     public BossPhase currentPhase = BossPhase.Phase1;
-    public float phase2HpPercent = 0.6f;   //페이즈 변환 퍼센트
+    public float phase2HpPercent = 0.6f;   //2페이즈 변환 퍼센트
+    public float phase3HpPercent = 0.3f;   //3페이즈 변환 퍼센트
 
 
-    [Header("스킬")]
+    [Header("찍기 스킬")]
     public float stompCooldown = 5f;
     public float doubleStompCooldown = 8f;
     public GameObject stompIndicatorPrefab;
-  
+   
+    [Header("돌진 스킬")]
+    public float chargeCooldown = 10f;
+    public float chargeDistance = 10f;
+    public float chargeSpeed = 20f;
+    public GameObject chargeIndicatorPrefab;
+
+    float chargeTimer = 0f;
+    GameObject chargeIndicator;
+
+    bool isCharging = false;
+
     float stompTimer = 0f;
     float doubleStompTimer = 0f;
 
@@ -43,7 +55,10 @@ public class WolfElite : Enemy
         animator.SetBool("Phase2Idle", false);
 
         stompIndicator = Instantiate(stompIndicatorPrefab, transform);
-        stompIndicator.SetActive(false);   
+        stompIndicator.SetActive(false);
+
+        chargeIndicator = Instantiate(chargeIndicatorPrefab, transform);
+        chargeIndicator.SetActive(false);
     }
 
     //업데이트
@@ -63,14 +78,17 @@ public class WolfElite : Enemy
     //페이즈변환업데이트
     void UpdatePhase()
     {
-        if (currentPhase != BossPhase.Phase1) return;
         if (isPhaseChanging) return;
 
         float hpPercent = (float)_currentHP / _maxHP;
 
-        if (hpPercent <= phase2HpPercent)
+        if (currentPhase == BossPhase.Phase1 && hpPercent <= phase2HpPercent)
         {
             StartCoroutine(ChangeToPhase2());
+        }
+        else if (currentPhase == BossPhase.Phase2 && hpPercent <= phase3HpPercent)
+        {
+            StartCoroutine(ChangeToPhase3());
         }
     }
 
@@ -97,12 +115,33 @@ public class WolfElite : Enemy
         isPhaseChanging = false;
     }
 
+    //페이즈3 변환
+    IEnumerator ChangeToPhase3()
+    {
+        isAttacking = true;
+        isPhaseChanging = true;
+        agent.isStopped = true;
+
+        animator.SetTrigger("PhaseRoar");
+
+        yield return null;
+        AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
+        yield return new WaitForSeconds(state.length);
+
+        currentPhase = BossPhase.Phase3;
+
+        isAttacking = false;
+        isPhaseChanging = false;
+        agent.isStopped = false;
+    }
+
 
     //스킬 쿹라임
     void UpdateSkillCooldowns()
     {
         stompTimer -= Time.deltaTime;
         doubleStompTimer -= Time.deltaTime;
+        chargeTimer -= Time.deltaTime; 
     }
 
     //공겫히도
@@ -120,6 +159,12 @@ public class WolfElite : Enemy
             return;
         }
 
+        if (currentPhase == BossPhase.Phase3)
+        {
+            TryPhase3Attack();
+            return;
+        }
+
         if (currentPhase == BossPhase.Phase2)
         {
             TryPhase2Attack();
@@ -131,6 +176,7 @@ public class WolfElite : Enemy
             Attack();
         }
     }
+
     //페이즈2 공격
     void TryPhase2Attack()
     {
@@ -161,6 +207,30 @@ public class WolfElite : Enemy
             }
         }
     }
+
+    //페이즈3 공격
+    void TryPhase3Attack()
+    {
+        List<System.Action> patterns = new List<System.Action>();
+
+        if (chargeTimer <= 0f)
+            patterns.Add(() => StartCoroutine(Charge()));
+
+        if (doubleStompTimer <= 0f)
+            patterns.Add(() => StartCoroutine(DoubleStomp()));
+
+        if (stompTimer <= 0f)
+            patterns.Add(() => StartCoroutine(Stomp()));
+
+        if (attackTimer <= 0f)
+            patterns.Add(() => Attack());
+
+        if (patterns.Count == 0) return;
+
+        int index = Random.Range(0, patterns.Count);
+        patterns[index].Invoke();
+    }
+
     //오른발 내려찍기
     IEnumerator Stomp()
     {
@@ -255,7 +325,7 @@ public class WolfElite : Enemy
 
         RotateToTarget();
 
-        animator.SetTrigger("Attack"); // 엘리트 공격 애니메이션
+        animator.SetTrigger("Attack"); 
 
         attackTimer = attackCooldown;
     }
@@ -268,4 +338,80 @@ public class WolfElite : Enemy
 
         EndHit();
     }
+
+
+    //돌진 스킬
+    IEnumerator Charge()
+    {
+        isAttacking = true;
+        isSkillAttacking = true;
+        agent.isStopped = true;
+
+        Vector3 dir = (currentTarget.position - transform.position).normalized;
+        dir.y = 0;
+
+        transform.rotation = Quaternion.LookRotation(dir);
+
+        animator.SetTrigger("ChargeReady");
+
+        chargeIndicator.SetActive(true);
+
+        Vector3 forwardOffset = dir * (chargeDistance * 0.5f);
+        chargeIndicator.transform.position = transform.position + forwardOffset;
+        chargeIndicator.transform.rotation = Quaternion.LookRotation(dir) * Quaternion.Euler(90f, 0, 0);
+        chargeIndicator.transform.localScale = new Vector3(2f, chargeDistance, 1f);
+
+        float t = 0;
+        Renderer rend = chargeIndicator.GetComponentInChildren<Renderer>();
+        Color baseColor = rend.material.color;
+
+        while (t < 1.5f)
+        {
+            t += Time.deltaTime;
+
+            float alpha = Mathf.Lerp(0.2f, 0.7f, t / 1.5f);
+            rend.material.color = new Color(baseColor.r, baseColor.g, baseColor.b, alpha);
+
+            yield return null;
+        }
+
+        chargeIndicator.SetActive(false);
+        animator.SetTrigger("Charge");
+        yield return new WaitForSeconds(0.1f);
+        float moved = 0f;
+        bool hasHit = false;
+
+        while (moved < chargeDistance)
+        {
+            float step = chargeSpeed * Time.deltaTime;
+            transform.position += dir * step;
+            moved += step;
+
+            if (!hasHit)
+            {
+                Collider[] hits = Physics.OverlapSphere(transform.position, 1.5f);
+
+                foreach (var hit in hits)
+                {
+                    Actor actor = hit.GetComponent<Actor>();
+
+                    if (actor != null && actor != this)
+                    {
+                        actor.TakeDamage(20);
+                        hasHit = true;
+                        break;
+                    }
+                }
+            }
+
+            yield return null;
+        }
+
+        chargeTimer = chargeCooldown;
+
+        isAttacking = false;
+        isSkillAttacking = false;
+        agent.isStopped = false;
+    }
+
 }

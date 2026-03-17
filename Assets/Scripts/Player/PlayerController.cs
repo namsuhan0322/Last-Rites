@@ -499,7 +499,8 @@ public class PlayerController : MonoBehaviour
         if (VisualManager != null)
             VisualManager.DrawWeapon();
 
-        tutorialSystem.OnPlayerWeaponDraw(); // 여기 연결
+        tutorialSystem?.OnPlayerWeaponDraw();
+
     }
 
     // 칼을 칼집에 넣는 애니메이션 도중 손에서 자루를 놓을 때 호출

@@ -73,6 +73,12 @@ public class WolfElite : Enemy
         UpdatePhase();
         UpdateSkillCooldowns();
         UpdateIdleState();
+
+        if (isAttacking || isSkillAttacking || isPhaseChanging)
+        {
+            agent.isStopped = true;
+            return;
+        }
     }
 
     //페이즈변환업데이트
@@ -238,7 +244,11 @@ public class WolfElite : Enemy
         isSkillAttacking = true;
         agent.isStopped = true;
 
-        stompTimer = stompCooldown;  
+        stompTimer = stompCooldown;
+
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.ResetPath();
 
         RotateToTarget();
         animator.SetTrigger("Stomp");
@@ -257,12 +267,18 @@ public class WolfElite : Enemy
     //양발 내려찍기
     IEnumerator DoubleStomp()
     {
+
+
+
         isAttacking = true;
         isSkillAttacking = true;
         agent.isStopped = true;
 
-        RotateToTarget();
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.ResetPath();
 
+        RotateToTarget();
         stompIndicator.SetActive(true);
         stompIndicator.transform.localPosition = Vector3.zero;
         stompIndicator.transform.localRotation = Quaternion.Euler(90f, 0f, 0f);
@@ -323,6 +339,10 @@ public class WolfElite : Enemy
         agent.isStopped = true;
         agent.velocity = Vector3.zero;
 
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.ResetPath();
+
         RotateToTarget();
 
         animator.SetTrigger("Attack"); 
@@ -346,6 +366,10 @@ public class WolfElite : Enemy
         isAttacking = true;
         isSkillAttacking = true;
         agent.isStopped = true;
+
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;  
+        agent.ResetPath();
 
         Vector3 dir = (currentTarget.position - transform.position).normalized;
         dir.y = 0;

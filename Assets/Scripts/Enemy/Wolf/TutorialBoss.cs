@@ -310,7 +310,7 @@ public class TutorialBoss : Enemy
     public override void TakeDamage(int damage, float severityOverride = -1f)
     {
         if (isHit || _isDead) return;
-        base.TakeDamage(damage, 0f);
+        base.TakeDamage(damage, severityOverride);
 
         EndHit();
     }

@@ -500,7 +500,7 @@ public class Enemy : Actor
     {
         if (_isDead) return;
 
-        base.TakeDamage(damage);
+        base.TakeDamage(damage, severityOverride);
 
         if (_isDead) return;
 
@@ -557,7 +557,10 @@ public class Enemy : Actor
 
         Actor target = currentTarget.GetComponent<Actor>();
         if (target != null)
-            target.TakeDamage(attackDamage);
+        {
+            float hitSeverity = (data.rank == EnemyRank.Minion) ? 0f : 1.0f;
+            target.TakeDamage(attackDamage, hitSeverity);
+        }       
     }
 
     //타겟 쳐다보기

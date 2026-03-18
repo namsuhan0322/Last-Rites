@@ -354,7 +354,7 @@ public class WolfElite : Enemy
     public override void TakeDamage(int damage, float severityOverride = -1f)
     {
         if (isHit || _isDead) return;
-        base.TakeDamage(damage);
+        base.TakeDamage(damage, severityOverride);
 
         EndHit();
     }

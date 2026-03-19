@@ -3,8 +3,6 @@ using UnityEngine;
 using TMPro;
 using Cinemachine;
 
-
-
 public class TutorialSystem : MonoBehaviour
 {
     [Header("시작 판넬")]
@@ -56,8 +54,6 @@ public class TutorialSystem : MonoBehaviour
     Coroutine missionRoutine;
     bool bossPhaseStarted = false;
     SkillTutorial skillTutorial;
-
-
 
     void Start()
     {
@@ -374,6 +370,9 @@ public class TutorialSystem : MonoBehaviour
 
         tutorialCompleteText.text = "튜토리얼 완료";
 
+        GameProgressManager.Instance.progressData.isTutorialCleared = true;
+        GameProgressManager.Instance.SaveProgress(); // 즉시 파일로 저장
+
         t = 0f;
         Color c = tutorialCompleteText.color;
         tutorialCompleteText.transform.localScale = Vector3.one * 0.8f;
@@ -394,5 +393,4 @@ public class TutorialSystem : MonoBehaviour
             yield return null;
         }
     }
-
 }

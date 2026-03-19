@@ -8,6 +8,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
     public string mainMenuSceneName = "MainScene";
     public string tutorialSceneName = "TutorialScene";
     public string loadingSceneName = "LoadingScene";
+    public string LobbySceneName = "LobbyScene";
 
     [Header("Loading Settings")]
     [Tooltip("로딩을 최소 몇 초 동안 유지할지 설정합니다.")]
@@ -183,7 +184,13 @@ public class ScenesManager : SingletonMono<ScenesManager>
     }
 
     public void LoadMainMenu() => LoadScene(mainMenuSceneName);
-    public void LoadGameScene() => LoadScene(tutorialSceneName);
+    public void LoadGameScene()
+    {
+        // GameProgressManager의 진행도를 확인합니다.
+        if (GameProgressManager.Instance.progressData.isTutorialCleared) LoadScene(LobbySceneName);
+        else LoadScene(tutorialSceneName);
+    }
+    public void LoadLobbyScene() => LoadScene(LobbySceneName);
     public void ReloadCurrentScene() => LoadScene(currentSceneName);
 
     #endregion

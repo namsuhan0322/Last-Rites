@@ -126,7 +126,8 @@ public class Enemy : Actor
             return;
         }
 
-        if (isAttacking) return;   
+        if (isAttacking || IsRecovering())
+            return;
 
         HandleForcedTarget();
         HandleMovement();
@@ -574,7 +575,7 @@ public class Enemy : Actor
         if (dir.sqrMagnitude < 0.001f) return;
 
         Quaternion rot = Quaternion.LookRotation(dir);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 15f);
+        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 1.5f);
     }
 
     //피격 끝 시점
@@ -591,5 +592,10 @@ public class Enemy : Actor
     void HandleStun()
     {
         ApplyStun(2f); 
+    }
+
+    protected virtual bool IsRecovering()
+    {
+        return false;
     }
 }

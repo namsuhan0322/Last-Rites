@@ -33,7 +33,6 @@ public class WolfElite : Enemy
     GameObject stompIndicator;
     bool isRecovering = false;
     public float skillRecoveryTime = 2f;
-    Vector3 attackDirection;
 
     public float rotateSpeed = 5f;
 
@@ -248,7 +247,7 @@ public class WolfElite : Enemy
     IEnumerator Stomp()
     {
         agent.updateRotation = false;
-
+        Debug.DrawRay(transform.position, attackDirection * 3f, Color.red, 1f);
         animator.SetBool("Walk", false);
         animator.SetBool("Run", false);
         isAttacking = true;
@@ -258,7 +257,13 @@ public class WolfElite : Enemy
         agent.velocity = Vector3.zero;
         agent.ResetPath();
 
-        RotateToTarget();
+        Vector3 dir = currentTarget.position - transform.position;
+        dir.y = 0;
+
+        attackDirection = dir.normalized;
+        transform.rotation = Quaternion.LookRotation(attackDirection);
+        Debug.DrawRay(transform.position, attackDirection * 3f, Color.red, 1f);
+
         animator.SetTrigger("Stomp");
 
         yield return new WaitForSeconds(1.5f);
@@ -309,16 +314,19 @@ public class WolfElite : Enemy
     //양발찍기 데미지
     void DealDoubleStompDamage()
     {
-        Collider[] hits = Physics.OverlapSphere(transform.position, attackRange);
+        Collider[] hits = Physics.OverlapSphere(
+            transform.position,
+            attackRange,
+            targetLayer
+        );
 
         foreach (var hit in hits)
         {
             Actor actor = hit.GetComponent<Actor>();
 
-            if (actor != null && actor != this)
-            {
-                actor.TakeDamage(30, 1f);
-            }
+            if (actor == null || actor == this) continue;
+
+            actor.TakeDamage(30, 1f);
         }
     }
     //Idle 변환 스테이트
@@ -452,18 +460,21 @@ public class WolfElite : Enemy
 
             if (!hasHit)
             {
-                Collider[] hits = Physics.OverlapSphere(transform.position, 1.5f);
+                Collider[] hits = Physics.OverlapSphere(
+                   transform.position,
+                   1.5f,
+                   targetLayer
+                   );
 
                 foreach (var hit in hits)
                 {
                     Actor actor = hit.GetComponent<Actor>();
 
-                    if (actor != null && actor != this)
-                    {
-                        actor.TakeDamage(20, 1f);
-                        hasHit = true;
-                        break;
-                    }
+                    if (actor == null || actor == this) continue;
+
+                    actor.TakeDamage(20, 1f);
+                    hasHit = true;
+                    break;
                 }
             }
 

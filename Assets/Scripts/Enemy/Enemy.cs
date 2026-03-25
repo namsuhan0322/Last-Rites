@@ -37,7 +37,8 @@ public class Enemy : Actor
     float stunTimer = 0f;
 
     //변수들 선언
-    public LayerMask enemyLayer;   
+    public LayerMask enemyLayer;
+    public LayerMask targetLayer;
     Transform player;
     Transform forcedTarget;
     float forcedTimer = 0f;
@@ -55,6 +56,8 @@ public class Enemy : Actor
     protected float actionLockTimer = 0f;
     protected bool isAttacking = false;
     Transform lastTarget;
+    [System.NonSerialized]
+    protected Vector3 attackDirection;
 
     //랭크표시 편하게
     public EnemyRank Rank => data.rank;
@@ -537,8 +540,13 @@ public class Enemy : Actor
     {
         isAttacking = true;
 
-        agent.isStopped = true;   
+        agent.isStopped = true;
         agent.velocity = Vector3.zero;
+
+        Vector3 dir = currentTarget.position - transform.position;
+        dir.y = 0;
+
+        attackDirection = dir.normalized; 
 
         RotateToTarget();
 
@@ -556,11 +564,24 @@ public class Enemy : Actor
     //데미지 이벤트 함수
     public void DealDamage()
     {
-        if (currentTarget == null) return;
+        Collider[] hits = Physics.OverlapSphere(
+            transform.position,
+            attackRange,
+            targetLayer
+        );
 
-        Actor target = currentTarget.GetComponent<Actor>();
-        if (target != null)
+        foreach (var hit in hits)
         {
+            Actor target = hit.GetComponent<Actor>();
+
+            if (target == null || target == this) continue;
+
+            Vector3 toTarget = (target.transform.position - transform.position).normalized;
+
+            float dot = Vector3.Dot(attackDirection, toTarget);
+
+            if (dot < 0.8f) continue; 
+
             float hitSeverity = (data.rank == EnemyRank.Minion) ? 0f : 1.0f;
             target.TakeDamage(attackDamage, hitSeverity);
         }

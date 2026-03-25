@@ -33,6 +33,9 @@ public class WolfElite : Enemy
     GameObject stompIndicator;
     bool isRecovering = false;
     public float skillRecoveryTime = 2f;
+    Vector3 attackDirection;
+
+    public float rotateSpeed = 5f;
 
     //플레이어를 바라보고 있나?
     bool IsFacingTarget()
@@ -77,6 +80,11 @@ public class WolfElite : Enemy
         {
             agent.isStopped = true;
             return;
+        }
+
+        if (!isAttacking && !isSkillAttacking && !isRecovering)
+        {
+            RotateToTargetSmooth();
         }
     }
 
@@ -291,7 +299,7 @@ public class WolfElite : Enemy
         doubleStompTimer = doubleStompCooldown;
 
         yield return new WaitForSeconds(2f);
-        yield return StartCoroutine(Recover(2.0f));
+        yield return StartCoroutine(Recover(4.0f));
 
         attackTimer = 2.0f;
         isAttacking = false;
@@ -309,7 +317,7 @@ public class WolfElite : Enemy
 
             if (actor != null && actor != this)
             {
-                actor.TakeDamage(30, 1f); 
+                actor.TakeDamage(30, 1f);
             }
         }
     }
@@ -343,11 +351,13 @@ public class WolfElite : Enemy
             animator.SetBool("Phase2Idle", false);
         }
     }
-  
+
     //기본공격
     protected override void Attack()
     {
         isAttacking = true;
+
+        agent.updateRotation = false; 
 
         agent.isStopped = true;
         agent.velocity = Vector3.zero;
@@ -355,13 +365,26 @@ public class WolfElite : Enemy
 
         Vector3 dir = currentTarget.position - transform.position;
         dir.y = 0;
-        transform.rotation = Quaternion.LookRotation(dir);
+
+        attackDirection = dir.normalized;
+        transform.rotation = Quaternion.LookRotation(attackDirection);
 
         animator.SetTrigger("Attack");
-
         attackTimer = attackCooldown;
+
+        StartCoroutine(AttackRoutine());
     }
-   
+
+    IEnumerator AttackRoutine()
+    {
+        yield return new WaitForSeconds(1.2f); 
+
+        yield return StartCoroutine(Recover(3f));
+
+        isAttacking = false;
+    }
+
+
     //데미지 받기
     public override void TakeDamage(int damage, float severityOverride = -1f)
     {
@@ -455,29 +478,26 @@ public class WolfElite : Enemy
         isSkillAttacking = false;
         agent.isStopped = false;
     }
-  
+
     //공격 후딜 함수
     IEnumerator Recover(float time)
     {
         isRecovering = true;
 
-        agent.updateRotation = false; 
-
+        agent.updateRotation = false;
         agent.isStopped = true;
-        agent.velocity = Vector3.zero;
-        agent.ResetPath();
 
         yield return new WaitForSeconds(time);
 
         isRecovering = false;
 
-        agent.updateRotation = true;
+        agent.updateRotation = true; 
 
-        RotateToTarget();
-
+        isAttacking = false;
+        isSkillAttacking = false;
         agent.isStopped = false;
     }
-   
+
     protected override bool IsRecovering()
     {
         return isRecovering || isSkillAttacking || isPhaseChanging;
@@ -487,5 +507,27 @@ public class WolfElite : Enemy
     public void OnDoubleStompHit()
     {
         DealDoubleStompDamage();
+    }
+
+    public void RotateToTargetSmooth()
+    {
+        if (currentTarget == null) return;
+        if (isAttacking || isSkillAttacking || isRecovering) return;
+
+        Vector3 dir = currentTarget.position - transform.position;
+        dir.y = 0f;
+
+        if (dir.sqrMagnitude < 0.001f) return;
+
+        float dist = dir.magnitude;
+
+        float speed = Mathf.Lerp(1f, 5f, dist / 10f);
+
+        Quaternion targetRot = Quaternion.LookRotation(dir);
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation,
+            targetRot,
+            Time.deltaTime * speed
+        );
     }
 }

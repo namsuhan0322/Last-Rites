@@ -309,6 +309,8 @@ public class Enemy : Actor
     void ChasePlayer(float dist)
     {
         agent.updateRotation = false;
+        if (isAttacking || IsRecovering())
+            return;
 
         if (dist <= attackRange)
         {
@@ -561,7 +563,7 @@ public class Enemy : Actor
         {
             float hitSeverity = (data.rank == EnemyRank.Minion) ? 0f : 1.0f;
             target.TakeDamage(attackDamage, hitSeverity);
-        }       
+        }
     }
 
     //타겟 쳐다보기

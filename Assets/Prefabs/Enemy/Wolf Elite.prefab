@@ -2026,6 +2026,7 @@ MonoBehaviour:
   currentPhase: 0
   phase2HpPercent: 0.6
   phase3HpPercent: 0.3
+  doubleStompDamage: 15
   stompCooldown: 7
   doubleStompCooldown: 12
   stompIndicatorPrefab: {fileID: 1949041719786370152}
@@ -2033,6 +2034,8 @@ MonoBehaviour:
   chargeDistance: 10
   chargeSpeed: 20
   chargeIndicatorPrefab: {fileID: 2305880667250611829}
+  skillRecoveryTime: 2
+  rotateSpeed: 0.6
 --- !u!1 &6720238812539994233
 GameObject:
   m_ObjectHideFlags: 0

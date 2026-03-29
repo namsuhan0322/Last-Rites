@@ -113,9 +113,13 @@ public class WolfElite : Enemy
 
         animator.SetTrigger("PhaseRoar");
 
-        yield return null;
-        AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
-        yield return new WaitForSeconds(state.length);
+        yield return new WaitUntil(() =>
+            animator.GetCurrentAnimatorStateInfo(0).IsName("PhaseRoar")
+        );
+
+        yield return new WaitUntil(() =>
+            animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f
+        );
 
         currentPhase = BossPhase.Phase2;
 
@@ -123,9 +127,9 @@ public class WolfElite : Enemy
         animator.SetBool("Phase2Idle", true);
 
         isAttacking = false;
-        agent.isStopped = false;
         isPhaseChanging = false;
-    }   
+        agent.isStopped = false;
+    }
     //페이즈3 변환
     IEnumerator ChangeToPhase3()
     {
@@ -133,11 +137,13 @@ public class WolfElite : Enemy
         isPhaseChanging = true;
         agent.isStopped = true;
 
-        animator.SetTrigger("PhaseRoar");
+        yield return new WaitUntil(() =>
+     animator.GetCurrentAnimatorStateInfo(0).IsName("PhaseRoar")
+ );
 
-        yield return null;
-        AnimatorStateInfo state = animator.GetCurrentAnimatorStateInfo(0);
-        yield return new WaitForSeconds(state.length);
+        yield return new WaitUntil(() =>
+            animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1f
+        );
 
         currentPhase = BossPhase.Phase3;
 

@@ -119,7 +119,8 @@ public class Enemy : Actor
     {
         base.Update();
 
-        if (_isDead || isHit) return;
+        if (!isAttacking)
+            attackTimer -= Time.deltaTime;
 
         if (isStunned)
         {
@@ -153,7 +154,8 @@ public class Enemy : Actor
             if (forcedTimer <= 0)
                 forcedTarget = null;
         }
-
+         
+        if (_isDead) return;
     }
 
     //도발 걸린 상태
@@ -526,7 +528,6 @@ public class Enemy : Actor
         if (currentTarget == null) return;
         if (isAttacking) return;
 
-        attackTimer -= Time.deltaTime;
         if (attackTimer > 0f) return;
 
         float dist = Vector3.Distance(transform.position, currentTarget.position);

@@ -115,47 +115,20 @@ public class Enemy : Actor
     }
 
     //업데이트 부분
-    protected override void Update()
-    {
+    protected override void Update() 
+    { 
         base.Update();
-
-        if (!isAttacking)
-            attackTimer -= Time.deltaTime;
-
-        if (isStunned)
-        {
-            stunTimer -= Time.deltaTime;
-            if (stunTimer <= 0f)
-                EndStun();
-            return;
-        }
-
-        if (isAttacking || IsRecovering())
-            return;
-
+        if (_isDead || isHit) return;
+        if (isStunned) { stunTimer -= Time.deltaTime;
+        if (stunTimer <= 0f) EndStun();  return; } 
+        if (isAttacking || IsRecovering()) return;
         HandleForcedTarget();
-        HandleMovement();
-        TryAttack();
-
-        if (agent.velocity.magnitude < 0.1f)
-        {
-            animator?.SetBool("Walk", false);
-            animator?.SetBool("Run", false);
-        }
-
-        if (actionLockTimer > 0f)
-        {
-            actionLockTimer -= Time.deltaTime;
-            return;
-        }
-
-        if (forcedTimer > 0)
-        {
-            if (forcedTimer <= 0)
-                forcedTarget = null;
-        }
-         
-        if (_isDead) return;
+        HandleMovement(); 
+        TryAttack(); 
+        if (agent.velocity.magnitude < 0.1f) { animator?.SetBool("Walk", false); animator?.SetBool("Run", false); } 
+        if (actionLockTimer > 0f) { actionLockTimer -= Time.deltaTime; return; } if (forcedTimer > 0) { 
+        if (forcedTimer <= 0) forcedTarget = null; } 
+        if (Rank != EnemyRank.Boss && isHit) return; 
     }
 
     //도발 걸린 상태

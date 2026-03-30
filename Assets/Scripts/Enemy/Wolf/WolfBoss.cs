@@ -18,11 +18,22 @@ public class WolfBoss : Enemy
     public float slashAngle = 120f;
     public int slashDamage = 20;
     public float slashCooldown = 3f;
-
     public GameObject slashIndicatorPrefab;
 
+    [Header("1페이지 점프 공격")]
+    public float jumpAttackRange = 5f;
+    public int jumpAttackDamage = 30;
+    public float jumpDelay = 2.5f; 
+    public float jumpCooldown = 8f;
+    public GameObject jumpIndicatorPrefab;
+
+    //변수들
+    float jumpTimer = 0f;
+    GameObject jumpIndicator;
     float slashTimer = 0f;
     GameObject slashIndicator;
+    bool hasStartedCombat = false;
+
 
     [Header("Phase2 콤보")]
     public float comboDelay_P2 = 0.3f;
@@ -38,12 +49,17 @@ public class WolfBoss : Enemy
 
         slashIndicator = Instantiate(slashIndicatorPrefab, transform);
         slashIndicator.SetActive(false);
+
+        jumpIndicator = Instantiate(jumpIndicatorPrefab, transform);
+        jumpIndicator.SetActive(false);
     }
 
     protected override void Update()
     {
         attackTimer -= Time.deltaTime;
         slashTimer -= Time.deltaTime;
+        jumpTimer -= Time.deltaTime;
+
         if (_isDead) return;
 
         if (attackTimer > 0f || isPhaseChanging || isComboAttacking)
@@ -103,6 +119,7 @@ public class WolfBoss : Enemy
         }
     }
 
+    //페이즈 업데이트
     void UpdatePhase()
     {
         if (isPhaseChanging) return;
@@ -115,6 +132,7 @@ public class WolfBoss : Enemy
         }
     }
 
+    //페이즈2변환
     IEnumerator ChangeToPhase2()
     {
         isPhaseChanging = true;
@@ -126,6 +144,11 @@ public class WolfBoss : Enemy
         yield return new WaitForSeconds(2.0f);
 
         currentPhase = BossPhase.Phase2;
+
+        slashTimer = 0f;
+        jumpTimer = 0f;
+
+
         attackTimer = 0f;
 
         isAttacking = false;
@@ -135,30 +158,50 @@ public class WolfBoss : Enemy
         agent.isStopped = false;
     }
 
+    //공격시도 (스킬 포함)
     protected override void TryAttack()
     {
         if (isPhaseChanging || isComboAttacking) return;
         if (currentTarget == null) return;
 
-        float dist = Vector3.Distance(transform.position, currentTarget.position);
-
-        // ⭐ 1페이즈 할퀴기 우선
-        if (currentPhase == BossPhase.Phase1 && slashTimer <= 0f && dist <= slashRange)
+        if (!hasStartedCombat)
         {
-            StartCoroutine(Slash());
+            hasStartedCombat = true;
+            Attack();
+            return;
+        }
+        float dist = Vector3.Distance(transform.position, currentTarget.position);
+        if (currentPhase == BossPhase.Phase1)
+        {
+            List<System.Action> patterns = new List<System.Action>();
+
+            if (jumpTimer <= 0f)
+                patterns.Add(() => StartCoroutine(JumpAttack()));
+
+            if (slashTimer <= 0f && dist <= slashRange)
+                patterns.Add(() => StartCoroutine(Slash()));
+
+            patterns.Add(() => base.TryAttack());
+
+            if (patterns.Count == 0) return;
+
+            int index = Random.Range(0, patterns.Count);
+            patterns[index].Invoke();
+
             return;
         }
 
         base.TryAttack();
     }
 
+    //공격
     protected override void Attack()
     {
         if (isComboAttacking) return;
 
         StartCoroutine(ComboAttack());
     }
-
+    //기본 콤보
     IEnumerator ComboAttack()
     {
         isAttacking = true;
@@ -221,7 +264,7 @@ public class WolfBoss : Enemy
 
         attackTimer = attackCooldown;
     }
-
+    //오른쪽 할퀴기
     IEnumerator Slash()
     {
         isAttacking = true;
@@ -231,11 +274,40 @@ public class WolfBoss : Enemy
         agent.velocity = Vector3.zero;
         agent.updateRotation = false;
 
-        Vector3 dir = currentTarget.position - transform.position;
-        dir.y = 0;
-        attackDirection = dir.normalized;
-        transform.rotation = Quaternion.LookRotation(attackDirection);
+        float rotateTime = 0.5f; 
+        float timer = 0f;
 
+        while (timer < rotateTime)
+        {
+            timer += Time.deltaTime;
+
+            if (currentTarget != null)
+            {
+                Vector3 dir = currentTarget.position - transform.position;
+                dir.y = 0;
+
+                if (dir.sqrMagnitude > 0.01f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(dir);
+                    transform.rotation = Quaternion.Slerp(
+                        transform.rotation,
+                        targetRot,
+                        Time.deltaTime * 5f
+                    );
+
+                    attackDirection = dir.normalized;
+                }
+            }
+
+            yield return null;
+        }
+
+        if (currentTarget != null)
+        {
+            Vector3 dir = currentTarget.position - transform.position;
+            dir.y = 0;
+            attackDirection = dir.normalized;
+        }
         ShowSlashIndicator();
 
         yield return new WaitForSeconds(1.5f);
@@ -249,7 +321,7 @@ public class WolfBoss : Enemy
         DealSlashDamage();
 
         yield return new WaitForSeconds(1.0f);
-
+        yield return new WaitForSeconds(1.5f);
         slashTimer = slashCooldown;
 
         isComboAttacking = false;
@@ -258,7 +330,7 @@ public class WolfBoss : Enemy
         agent.isStopped = false;
         agent.updateRotation = true;
     }
-
+    //할퀴기 범위장판
     void ShowSlashIndicator()
     {
         slashIndicator.SetActive(true);
@@ -275,7 +347,7 @@ public class WolfBoss : Enemy
         slashIndicator.transform.rotation =
             Quaternion.LookRotation(attackDirection) * Quaternion.Euler(90f, 0, 0);
     }
-
+    //할퀴기 데미지
     void DealSlashDamage()
     {
         Vector3 center = transform.position + attackDirection * (slashRange * 0.5f);
@@ -302,6 +374,121 @@ public class WolfBoss : Enemy
                 actor.TakeDamage(slashDamage, 1f);
             }
         }
+    }
+
+
+    //점프 어택
+    IEnumerator JumpAttack()
+    {
+        isAttacking = true;
+        isComboAttacking = true;
+
+        agent.isStopped = true;
+        agent.updateRotation = false;
+
+        animator.SetTrigger("Jump");
+
+        yield return new WaitForSeconds(0.3f);
+
+        ShowJumpIndicator();
+
+        float airTime = 1.7f;
+        float followSpeed = 1.8f;
+
+        float timer = 0f;
+
+        float keepDistance = 2.0f; 
+
+        while (timer < airTime)
+        {
+            timer += Time.deltaTime;
+
+            if (currentTarget != null)
+            {
+                Vector3 targetPos = currentTarget.position;
+                targetPos.y = transform.position.y;
+
+                Vector3 dir = targetPos - transform.position;
+                float dist = dir.magnitude;
+
+                if (dist > keepDistance) 
+                {
+                    Vector3 moveDir = dir.normalized;
+
+                    transform.position += moveDir * followSpeed * Time.deltaTime;
+                }
+
+                if (dir.sqrMagnitude > 0.01f)
+                    transform.rotation = Quaternion.LookRotation(dir);
+            }
+
+            jumpIndicator.transform.position = transform.position;
+
+            yield return null;
+        }
+
+        jumpIndicator.SetActive(false);
+
+        yield return new WaitForSeconds(0.5f);
+
+        yield return new WaitForSeconds(3.0f);
+
+        jumpTimer = jumpCooldown;
+
+        isComboAttacking = false;
+        EndAttack();
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+    }
+
+    //점프어택 장판
+    void ShowJumpIndicator()
+    {
+        jumpIndicator.SetActive(true);
+
+        float diameter = jumpAttackRange * 2f;
+
+        jumpIndicator.transform.localScale = new Vector3(diameter, diameter, 1f);
+
+        Vector3 pos = transform.position;
+        pos.y += 0.05f;
+
+        jumpIndicator.transform.position = pos;
+
+        jumpIndicator.transform.rotation = Quaternion.Euler(90f, 0, 0);
+    }
+
+
+
+    //점프 데미지 주기
+    void DealJumpDamage()
+    {
+        Collider[] hits = Physics.OverlapSphere(
+            transform.position,
+            jumpAttackRange,
+            targetLayer
+        );
+
+        foreach (var hit in hits)
+        {
+            Actor actor = hit.GetComponent<Actor>();
+
+            if (actor == null || actor == this) continue;
+
+            actor.TakeDamage(jumpAttackDamage, 1f);
+        }
+    }
+
+    public void OnJumpImpact()
+    {
+        if (jumpIndicator != null)
+            jumpIndicator.SetActive(false);
+
+        DealJumpDamage();
+
+        // 3. (선택) 이펙트
+        // SpawnImpactEffect();
     }
 
     public override void TakeDamage(int damage, float severityOverride = -1f)

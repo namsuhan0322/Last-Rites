@@ -528,6 +528,810 @@ namespace DB_
 	}
 
 	[Preserve]
+	public sealed partial class _Item_Data : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ??= BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4749387857765881778UL,17300654880287372217UL), () => _metaDefault = null);
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.String ItemId
+		{
+			get => _ItemId[Index];
+			set => _ItemId[Index] = value;
+		}
+		public System.String name
+		{
+			get => _name[Index];
+			set => _name[Index] = value;
+		}
+		public System.String Type
+		{
+			get => _Type[Index];
+			set => _Type[Index] = value;
+		}
+		public System.Int32 Max_Stack
+		{
+			get => _Max_Stack[Index];
+			set => _Max_Stack.SetValue(this, value);
+		}
+		public System.String Description
+		{
+			get => _Description[Index];
+			set => _Description[Index] = value;
+		}
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_ItemId;
+		public static BansheeGz.BGDatabase.BGFieldString _ItemId => _ufle12jhs77_ItemId ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4817325206809527035UL, 11193530500974090159UL), () => _ufle12jhs77_ItemId = null);
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _name => _ufle12jhs77_name ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5264990321360451214UL, 8441271114958381466UL), () => _ufle12jhs77_name = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Type;
+		public static BansheeGz.BGDatabase.BGFieldString _Type => _ufle12jhs77_Type ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5636808256999801257UL, 3981878554176640664UL), () => _ufle12jhs77_Type = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Max_Stack;
+		public static BansheeGz.BGDatabase.BGFieldInt _Max_Stack => _ufle12jhs77_Max_Stack ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5436965847086974321UL, 2879565361716219274UL), () => _ufle12jhs77_Max_Stack = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Description;
+		public static BansheeGz.BGDatabase.BGFieldString _Description => _ufle12jhs77_Description ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5694453788768985321UL, 10710491947305958533UL), () => _ufle12jhs77_Description = null);
+		private _Item_Data() : base(MetaDefault) {}
+		private _Item_Data(BGId id) : base(MetaDefault, id) {}
+		private _Item_Data(BGMetaEntity meta) : base(meta) {}
+		private _Item_Data(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static _Item_Data FindEntity(Predicate<_Item_Data> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<_Item_Data> FindEntities(Predicate<_Item_Data> filter, List<_Item_Data> result=null, Comparison<_Item_Data> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<_Item_Data> action, Predicate<_Item_Data> filter=null, Comparison<_Item_Data> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static _Item_Data GetEntity(BGId entityId) => (_Item_Data) MetaDefault.GetEntity(entityId);
+		public static _Item_Data GetEntity(int index) => (_Item_Data) MetaDefault[index];
+		public static _Item_Data GetEntity(string entityName) => (_Item_Data) MetaDefault.GetEntity(entityName);
+		public static _Item_Data NewEntity() => (_Item_Data) MetaDefault.NewEntity();
+		public static _Item_Data NewEntity(BGId entityId) => (_Item_Data) MetaDefault.NewEntity(entityId);
+		public static _Item_Data NewEntity(Action<_Item_Data> callback) => (_Item_Data) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((_Item_Data)entity)));
+		public static void InitializeCodeGenRuntime()
+		{
+			_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4749387857765881778UL,17300654880287372217UL), ReleaseCodeGenRuntime);
+			_ufle12jhs77_ItemId = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4817325206809527035UL, 11193530500974090159UL));
+			_ufle12jhs77_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(_metaDefault, new BGId(5264990321360451214UL, 8441271114958381466UL));
+			_ufle12jhs77_Type = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5636808256999801257UL, 3981878554176640664UL));
+			_ufle12jhs77_Max_Stack = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5436965847086974321UL, 2879565361716219274UL));
+			_ufle12jhs77_Description = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5694453788768985321UL, 10710491947305958533UL));
+		}
+		public static void ReleaseCodeGenRuntime()
+		{
+			_metaDefault = null;
+			_ufle12jhs77_ItemId = null;
+			_ufle12jhs77_name = null;
+			_ufle12jhs77_Type = null;
+			_ufle12jhs77_Max_Stack = null;
+			_ufle12jhs77_Description = null;
+		}
+
+		[Preserve]
+		public sealed class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new _Item_Data(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new _Item_Data(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "Item_Data";
+			public const string ItemId = "ItemId";
+			public const string name = "name";
+			public const string Type = "Type";
+			public const string Max_Stack = "Max_Stack";
+			public const string Description = "Description";
+		}
+	}
+
+	[Preserve]
+	public sealed partial class _Shop_Recipe : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ??= BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(5144259258711102494UL,6828461879550992819UL), () => _metaDefault = null);
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.String name
+		{
+			get => _name[Index];
+			set => _name[Index] = value;
+		}
+		public System.String Result_Id
+		{
+			get => _Result_Id[Index];
+			set => _Result_Id[Index] = value;
+		}
+		public System.Int32 Result_Amt
+		{
+			get => _Result_Amt[Index];
+			set => _Result_Amt.SetValue(this, value);
+		}
+		public System.String Mat_Id
+		{
+			get => _Mat_Id[Index];
+			set => _Mat_Id[Index] = value;
+		}
+		public System.Int32 Mat_Amt
+		{
+			get => _Mat_Amt[Index];
+			set => _Mat_Amt.SetValue(this, value);
+		}
+		public System.String Cost_id
+		{
+			get => _Cost_id[Index];
+			set => _Cost_id[Index] = value;
+		}
+		public System.Int32 Cost_Amt
+		{
+			get => _Cost_Amt[Index];
+			set => _Cost_Amt.SetValue(this, value);
+		}
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _name => _ufle12jhs77_name ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5672778753997352409UL, 12335776964473025690UL), () => _ufle12jhs77_name = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Result_Id;
+		public static BansheeGz.BGDatabase.BGFieldString _Result_Id => _ufle12jhs77_Result_Id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5387353261303657337UL, 5204200491250804898UL), () => _ufle12jhs77_Result_Id = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Result_Amt;
+		public static BansheeGz.BGDatabase.BGFieldInt _Result_Amt => _ufle12jhs77_Result_Amt ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4818548623364298049UL, 15731818796113627060UL), () => _ufle12jhs77_Result_Amt = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Mat_Id;
+		public static BansheeGz.BGDatabase.BGFieldString _Mat_Id => _ufle12jhs77_Mat_Id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5580829323791946434UL, 9901769394040412057UL), () => _ufle12jhs77_Mat_Id = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Mat_Amt;
+		public static BansheeGz.BGDatabase.BGFieldInt _Mat_Amt => _ufle12jhs77_Mat_Amt ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5175183037403722749UL, 9643448722483821452UL), () => _ufle12jhs77_Mat_Amt = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Cost_id;
+		public static BansheeGz.BGDatabase.BGFieldString _Cost_id => _ufle12jhs77_Cost_id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5505327060155025369UL, 11735812262466096569UL), () => _ufle12jhs77_Cost_id = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Cost_Amt;
+		public static BansheeGz.BGDatabase.BGFieldInt _Cost_Amt => _ufle12jhs77_Cost_Amt ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5699957930496657917UL, 12683011067214470591UL), () => _ufle12jhs77_Cost_Amt = null);
+		private _Shop_Recipe() : base(MetaDefault) {}
+		private _Shop_Recipe(BGId id) : base(MetaDefault, id) {}
+		private _Shop_Recipe(BGMetaEntity meta) : base(meta) {}
+		private _Shop_Recipe(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static _Shop_Recipe FindEntity(Predicate<_Shop_Recipe> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<_Shop_Recipe> FindEntities(Predicate<_Shop_Recipe> filter, List<_Shop_Recipe> result=null, Comparison<_Shop_Recipe> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<_Shop_Recipe> action, Predicate<_Shop_Recipe> filter=null, Comparison<_Shop_Recipe> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static _Shop_Recipe GetEntity(BGId entityId) => (_Shop_Recipe) MetaDefault.GetEntity(entityId);
+		public static _Shop_Recipe GetEntity(int index) => (_Shop_Recipe) MetaDefault[index];
+		public static _Shop_Recipe GetEntity(string entityName) => (_Shop_Recipe) MetaDefault.GetEntity(entityName);
+		public static _Shop_Recipe NewEntity() => (_Shop_Recipe) MetaDefault.NewEntity();
+		public static _Shop_Recipe NewEntity(BGId entityId) => (_Shop_Recipe) MetaDefault.NewEntity(entityId);
+		public static _Shop_Recipe NewEntity(Action<_Shop_Recipe> callback) => (_Shop_Recipe) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((_Shop_Recipe)entity)));
+		public static void InitializeCodeGenRuntime()
+		{
+			_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(5144259258711102494UL,6828461879550992819UL), ReleaseCodeGenRuntime);
+			_ufle12jhs77_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(_metaDefault, new BGId(5672778753997352409UL, 12335776964473025690UL));
+			_ufle12jhs77_Result_Id = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5387353261303657337UL, 5204200491250804898UL));
+			_ufle12jhs77_Result_Amt = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4818548623364298049UL, 15731818796113627060UL));
+			_ufle12jhs77_Mat_Id = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5580829323791946434UL, 9901769394040412057UL));
+			_ufle12jhs77_Mat_Amt = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5175183037403722749UL, 9643448722483821452UL));
+			_ufle12jhs77_Cost_id = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5505327060155025369UL, 11735812262466096569UL));
+			_ufle12jhs77_Cost_Amt = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5699957930496657917UL, 12683011067214470591UL));
+		}
+		public static void ReleaseCodeGenRuntime()
+		{
+			_metaDefault = null;
+			_ufle12jhs77_name = null;
+			_ufle12jhs77_Result_Id = null;
+			_ufle12jhs77_Result_Amt = null;
+			_ufle12jhs77_Mat_Id = null;
+			_ufle12jhs77_Mat_Amt = null;
+			_ufle12jhs77_Cost_id = null;
+			_ufle12jhs77_Cost_Amt = null;
+		}
+
+		[Preserve]
+		public sealed class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new _Shop_Recipe(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new _Shop_Recipe(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "Shop_Recipe";
+			public const string name = "name";
+			public const string Result_Id = "Result_Id";
+			public const string Result_Amt = "Result_Amt";
+			public const string Mat_Id = "Mat_Id";
+			public const string Mat_Amt = "Mat_Amt";
+			public const string Cost_id = "Cost_id";
+			public const string Cost_Amt = "Cost_Amt";
+		}
+	}
+
+	[Preserve]
+	public sealed partial class _Shop_Potion : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ??= BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4910450648503447982UL,14853959834517543822UL), () => _metaDefault = null);
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.String name
+		{
+			get => _name[Index];
+			set => _name[Index] = value;
+		}
+		public System.Int32 Position_Lv
+		{
+			get => _Position_Lv[Index];
+			set => _Position_Lv.SetValue(this, value);
+		}
+		public System.Int32 Max_Count
+		{
+			get => _Max_Count[Index];
+			set => _Max_Count.SetValue(this, value);
+		}
+		public System.Int32 Heal_Percent
+		{
+			get => _Heal_Percent[Index];
+			set => _Heal_Percent.SetValue(this, value);
+		}
+		public System.String Req_Mat_Id_1
+		{
+			get => _Req_Mat_Id_1[Index];
+			set => _Req_Mat_Id_1[Index] = value;
+		}
+		public System.Int32 Req_Mat_Amt_1
+		{
+			get => _Req_Mat_Amt_1[Index];
+			set => _Req_Mat_Amt_1.SetValue(this, value);
+		}
+		public System.String Req_Mat_Id_2
+		{
+			get => _Req_Mat_Id_2[Index];
+			set => _Req_Mat_Id_2[Index] = value;
+		}
+		public System.Int32 Req_Mat_Amt_2
+		{
+			get => _Req_Mat_Amt_2[Index];
+			set => _Req_Mat_Amt_2.SetValue(this, value);
+		}
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _name => _ufle12jhs77_name ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5417288780189647068UL, 5775736762792946574UL), () => _ufle12jhs77_name = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Position_Lv;
+		public static BansheeGz.BGDatabase.BGFieldInt _Position_Lv => _ufle12jhs77_Position_Lv ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4814517739057112150UL, 15535417008242757276UL), () => _ufle12jhs77_Position_Lv = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Max_Count;
+		public static BansheeGz.BGDatabase.BGFieldInt _Max_Count => _ufle12jhs77_Max_Count ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5053448673767528405UL, 8529333336426413472UL), () => _ufle12jhs77_Max_Count = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Heal_Percent;
+		public static BansheeGz.BGDatabase.BGFieldInt _Heal_Percent => _ufle12jhs77_Heal_Percent ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5391896923282736777UL, 4128410372656755617UL), () => _ufle12jhs77_Heal_Percent = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Req_Mat_Id_1;
+		public static BansheeGz.BGDatabase.BGFieldString _Req_Mat_Id_1 => _ufle12jhs77_Req_Mat_Id_1 ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4815447141318057505UL, 656207616225598607UL), () => _ufle12jhs77_Req_Mat_Id_1 = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Req_Mat_Amt_1;
+		public static BansheeGz.BGDatabase.BGFieldInt _Req_Mat_Amt_1 => _ufle12jhs77_Req_Mat_Amt_1 ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4897258254734369226UL, 8302298422198361231UL), () => _ufle12jhs77_Req_Mat_Amt_1 = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Req_Mat_Id_2;
+		public static BansheeGz.BGDatabase.BGFieldString _Req_Mat_Id_2 => _ufle12jhs77_Req_Mat_Id_2 ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5303591520837514404UL, 14686358864128233884UL), () => _ufle12jhs77_Req_Mat_Id_2 = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Req_Mat_Amt_2;
+		public static BansheeGz.BGDatabase.BGFieldInt _Req_Mat_Amt_2 => _ufle12jhs77_Req_Mat_Amt_2 ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4789198026479070114UL, 9609715747988091825UL), () => _ufle12jhs77_Req_Mat_Amt_2 = null);
+		private _Shop_Potion() : base(MetaDefault) {}
+		private _Shop_Potion(BGId id) : base(MetaDefault, id) {}
+		private _Shop_Potion(BGMetaEntity meta) : base(meta) {}
+		private _Shop_Potion(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static _Shop_Potion FindEntity(Predicate<_Shop_Potion> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<_Shop_Potion> FindEntities(Predicate<_Shop_Potion> filter, List<_Shop_Potion> result=null, Comparison<_Shop_Potion> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<_Shop_Potion> action, Predicate<_Shop_Potion> filter=null, Comparison<_Shop_Potion> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static _Shop_Potion GetEntity(BGId entityId) => (_Shop_Potion) MetaDefault.GetEntity(entityId);
+		public static _Shop_Potion GetEntity(int index) => (_Shop_Potion) MetaDefault[index];
+		public static _Shop_Potion GetEntity(string entityName) => (_Shop_Potion) MetaDefault.GetEntity(entityName);
+		public static _Shop_Potion NewEntity() => (_Shop_Potion) MetaDefault.NewEntity();
+		public static _Shop_Potion NewEntity(BGId entityId) => (_Shop_Potion) MetaDefault.NewEntity(entityId);
+		public static _Shop_Potion NewEntity(Action<_Shop_Potion> callback) => (_Shop_Potion) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((_Shop_Potion)entity)));
+		public static void InitializeCodeGenRuntime()
+		{
+			_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4910450648503447982UL,14853959834517543822UL), ReleaseCodeGenRuntime);
+			_ufle12jhs77_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(_metaDefault, new BGId(5417288780189647068UL, 5775736762792946574UL));
+			_ufle12jhs77_Position_Lv = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4814517739057112150UL, 15535417008242757276UL));
+			_ufle12jhs77_Max_Count = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5053448673767528405UL, 8529333336426413472UL));
+			_ufle12jhs77_Heal_Percent = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5391896923282736777UL, 4128410372656755617UL));
+			_ufle12jhs77_Req_Mat_Id_1 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4815447141318057505UL, 656207616225598607UL));
+			_ufle12jhs77_Req_Mat_Amt_1 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4897258254734369226UL, 8302298422198361231UL));
+			_ufle12jhs77_Req_Mat_Id_2 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5303591520837514404UL, 14686358864128233884UL));
+			_ufle12jhs77_Req_Mat_Amt_2 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4789198026479070114UL, 9609715747988091825UL));
+		}
+		public static void ReleaseCodeGenRuntime()
+		{
+			_metaDefault = null;
+			_ufle12jhs77_name = null;
+			_ufle12jhs77_Position_Lv = null;
+			_ufle12jhs77_Max_Count = null;
+			_ufle12jhs77_Heal_Percent = null;
+			_ufle12jhs77_Req_Mat_Id_1 = null;
+			_ufle12jhs77_Req_Mat_Amt_1 = null;
+			_ufle12jhs77_Req_Mat_Id_2 = null;
+			_ufle12jhs77_Req_Mat_Amt_2 = null;
+		}
+
+		[Preserve]
+		public sealed class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new _Shop_Potion(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new _Shop_Potion(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "Shop_Potion";
+			public const string name = "name";
+			public const string Position_Lv = "Position_Lv";
+			public const string Max_Count = "Max_Count";
+			public const string Heal_Percent = "Heal_Percent";
+			public const string Req_Mat_Id_1 = "Req_Mat_Id_1";
+			public const string Req_Mat_Amt_1 = "Req_Mat_Amt_1";
+			public const string Req_Mat_Id_2 = "Req_Mat_Id_2";
+			public const string Req_Mat_Amt_2 = "Req_Mat_Amt_2";
+		}
+	}
+
+	[Preserve]
+	public sealed partial class _Shop_AI_Unlock : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ??= BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4646091361194687722UL,124280430918301572UL), () => _metaDefault = null);
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.String AI_Id
+		{
+			get => _AI_Id[Index];
+			set => _AI_Id[Index] = value;
+		}
+		public System.String name
+		{
+			get => _name[Index];
+			set => _name[Index] = value;
+		}
+		public System.String Req_Mat_Id_1
+		{
+			get => _Req_Mat_Id_1[Index];
+			set => _Req_Mat_Id_1[Index] = value;
+		}
+		public System.Int32 Req_Mat_Amt_1
+		{
+			get => _Req_Mat_Amt_1[Index];
+			set => _Req_Mat_Amt_1.SetValue(this, value);
+		}
+		public System.String Req_Mat_Id_2
+		{
+			get => _Req_Mat_Id_2[Index];
+			set => _Req_Mat_Id_2[Index] = value;
+		}
+		public System.Int32 Req_Mat_Amt_2
+		{
+			get => _Req_Mat_Amt_2[Index];
+			set => _Req_Mat_Amt_2.SetValue(this, value);
+		}
+		public System.Int32 Unlock_Conditon
+		{
+			get => _Unlock_Conditon[Index];
+			set => _Unlock_Conditon.SetValue(this, value);
+		}
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_AI_Id;
+		public static BansheeGz.BGDatabase.BGFieldString _AI_Id => _ufle12jhs77_AI_Id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5703556971876505444UL, 3491644531944136327UL), () => _ufle12jhs77_AI_Id = null);
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _name => _ufle12jhs77_name ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5261869694222605455UL, 7022168563445132975UL), () => _ufle12jhs77_name = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Req_Mat_Id_1;
+		public static BansheeGz.BGDatabase.BGFieldString _Req_Mat_Id_1 => _ufle12jhs77_Req_Mat_Id_1 ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4616816319248905667UL, 7209729238134094765UL), () => _ufle12jhs77_Req_Mat_Id_1 = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Req_Mat_Amt_1;
+		public static BansheeGz.BGDatabase.BGFieldInt _Req_Mat_Amt_1 => _ufle12jhs77_Req_Mat_Amt_1 ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5562621361733457065UL, 2835868531471027097UL), () => _ufle12jhs77_Req_Mat_Amt_1 = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Req_Mat_Id_2;
+		public static BansheeGz.BGDatabase.BGFieldString _Req_Mat_Id_2 => _ufle12jhs77_Req_Mat_Id_2 ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4919131898731247546UL, 1119184090236135083UL), () => _ufle12jhs77_Req_Mat_Id_2 = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Req_Mat_Amt_2;
+		public static BansheeGz.BGDatabase.BGFieldInt _Req_Mat_Amt_2 => _ufle12jhs77_Req_Mat_Amt_2 ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4620654747846696623UL, 5637221688917169306UL), () => _ufle12jhs77_Req_Mat_Amt_2 = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Unlock_Conditon;
+		public static BansheeGz.BGDatabase.BGFieldInt _Unlock_Conditon => _ufle12jhs77_Unlock_Conditon ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4688170220506795441UL, 3284245203372745150UL), () => _ufle12jhs77_Unlock_Conditon = null);
+		private _Shop_AI_Unlock() : base(MetaDefault) {}
+		private _Shop_AI_Unlock(BGId id) : base(MetaDefault, id) {}
+		private _Shop_AI_Unlock(BGMetaEntity meta) : base(meta) {}
+		private _Shop_AI_Unlock(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static _Shop_AI_Unlock FindEntity(Predicate<_Shop_AI_Unlock> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<_Shop_AI_Unlock> FindEntities(Predicate<_Shop_AI_Unlock> filter, List<_Shop_AI_Unlock> result=null, Comparison<_Shop_AI_Unlock> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<_Shop_AI_Unlock> action, Predicate<_Shop_AI_Unlock> filter=null, Comparison<_Shop_AI_Unlock> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static _Shop_AI_Unlock GetEntity(BGId entityId) => (_Shop_AI_Unlock) MetaDefault.GetEntity(entityId);
+		public static _Shop_AI_Unlock GetEntity(int index) => (_Shop_AI_Unlock) MetaDefault[index];
+		public static _Shop_AI_Unlock GetEntity(string entityName) => (_Shop_AI_Unlock) MetaDefault.GetEntity(entityName);
+		public static _Shop_AI_Unlock NewEntity() => (_Shop_AI_Unlock) MetaDefault.NewEntity();
+		public static _Shop_AI_Unlock NewEntity(BGId entityId) => (_Shop_AI_Unlock) MetaDefault.NewEntity(entityId);
+		public static _Shop_AI_Unlock NewEntity(Action<_Shop_AI_Unlock> callback) => (_Shop_AI_Unlock) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((_Shop_AI_Unlock)entity)));
+		public static void InitializeCodeGenRuntime()
+		{
+			_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4646091361194687722UL,124280430918301572UL), ReleaseCodeGenRuntime);
+			_ufle12jhs77_AI_Id = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5703556971876505444UL, 3491644531944136327UL));
+			_ufle12jhs77_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(_metaDefault, new BGId(5261869694222605455UL, 7022168563445132975UL));
+			_ufle12jhs77_Req_Mat_Id_1 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4616816319248905667UL, 7209729238134094765UL));
+			_ufle12jhs77_Req_Mat_Amt_1 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5562621361733457065UL, 2835868531471027097UL));
+			_ufle12jhs77_Req_Mat_Id_2 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4919131898731247546UL, 1119184090236135083UL));
+			_ufle12jhs77_Req_Mat_Amt_2 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4620654747846696623UL, 5637221688917169306UL));
+			_ufle12jhs77_Unlock_Conditon = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4688170220506795441UL, 3284245203372745150UL));
+		}
+		public static void ReleaseCodeGenRuntime()
+		{
+			_metaDefault = null;
+			_ufle12jhs77_AI_Id = null;
+			_ufle12jhs77_name = null;
+			_ufle12jhs77_Req_Mat_Id_1 = null;
+			_ufle12jhs77_Req_Mat_Amt_1 = null;
+			_ufle12jhs77_Req_Mat_Id_2 = null;
+			_ufle12jhs77_Req_Mat_Amt_2 = null;
+			_ufle12jhs77_Unlock_Conditon = null;
+		}
+
+		[Preserve]
+		public sealed class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new _Shop_AI_Unlock(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new _Shop_AI_Unlock(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "Shop_AI_Unlock";
+			public const string AI_Id = "AI_Id";
+			public const string name = "name";
+			public const string Req_Mat_Id_1 = "Req_Mat_Id_1";
+			public const string Req_Mat_Amt_1 = "Req_Mat_Amt_1";
+			public const string Req_Mat_Id_2 = "Req_Mat_Id_2";
+			public const string Req_Mat_Amt_2 = "Req_Mat_Amt_2";
+			public const string Unlock_Conditon = "Unlock_Conditon";
+		}
+	}
+
+	[Preserve]
+	public sealed partial class _Blacksmith_Enhance : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ??= BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(5286648394710833684UL,9819342162334008493UL), () => _metaDefault = null);
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.String name
+		{
+			get => _name[Index];
+			set => _name[Index] = value;
+		}
+		public System.String Enhance_Lv
+		{
+			get => _Enhance_Lv[Index];
+			set => _Enhance_Lv[Index] = value;
+		}
+		public System.Int32 Success_Rate
+		{
+			get => _Success_Rate[Index];
+			set => _Success_Rate.SetValue(this, value);
+		}
+		public System.Int32 Fall_Bonus
+		{
+			get => _Fall_Bonus[Index];
+			set => _Fall_Bonus.SetValue(this, value);
+		}
+		public System.String Req_Mat_Id
+		{
+			get => _Req_Mat_Id[Index];
+			set => _Req_Mat_Id[Index] = value;
+		}
+		public System.Int32 Req_Mat_Amt
+		{
+			get => _Req_Mat_Amt[Index];
+			set => _Req_Mat_Amt.SetValue(this, value);
+		}
+		public System.String Req_Cost_Id
+		{
+			get => _Req_Cost_Id[Index];
+			set => _Req_Cost_Id[Index] = value;
+		}
+		public System.Int32 Req_Cost_Amt
+		{
+			get => _Req_Cost_Amt[Index];
+			set => _Req_Cost_Amt.SetValue(this, value);
+		}
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _name => _ufle12jhs77_name ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5719837422082678162UL, 13901615248365182623UL), () => _ufle12jhs77_name = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Enhance_Lv;
+		public static BansheeGz.BGDatabase.BGFieldString _Enhance_Lv => _ufle12jhs77_Enhance_Lv ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4799670494009792604UL, 9995018521604861608UL), () => _ufle12jhs77_Enhance_Lv = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Success_Rate;
+		public static BansheeGz.BGDatabase.BGFieldInt _Success_Rate => _ufle12jhs77_Success_Rate ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5116946137810782032UL, 5237136050740162996UL), () => _ufle12jhs77_Success_Rate = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Fall_Bonus;
+		public static BansheeGz.BGDatabase.BGFieldInt _Fall_Bonus => _ufle12jhs77_Fall_Bonus ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5425271592601439102UL, 1170331692847514788UL), () => _ufle12jhs77_Fall_Bonus = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Req_Mat_Id;
+		public static BansheeGz.BGDatabase.BGFieldString _Req_Mat_Id => _ufle12jhs77_Req_Mat_Id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4882906965459353966UL, 6090444092716062640UL), () => _ufle12jhs77_Req_Mat_Id = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Req_Mat_Amt;
+		public static BansheeGz.BGDatabase.BGFieldInt _Req_Mat_Amt => _ufle12jhs77_Req_Mat_Amt ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5633704316494570476UL, 6769957894763250103UL), () => _ufle12jhs77_Req_Mat_Amt = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Req_Cost_Id;
+		public static BansheeGz.BGDatabase.BGFieldString _Req_Cost_Id => _ufle12jhs77_Req_Cost_Id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4902834909793647901UL, 5484702445421243551UL), () => _ufle12jhs77_Req_Cost_Id = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Req_Cost_Amt;
+		public static BansheeGz.BGDatabase.BGFieldInt _Req_Cost_Amt => _ufle12jhs77_Req_Cost_Amt ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4762743261004638103UL, 18239265455699099290UL), () => _ufle12jhs77_Req_Cost_Amt = null);
+		private _Blacksmith_Enhance() : base(MetaDefault) {}
+		private _Blacksmith_Enhance(BGId id) : base(MetaDefault, id) {}
+		private _Blacksmith_Enhance(BGMetaEntity meta) : base(meta) {}
+		private _Blacksmith_Enhance(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static _Blacksmith_Enhance FindEntity(Predicate<_Blacksmith_Enhance> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<_Blacksmith_Enhance> FindEntities(Predicate<_Blacksmith_Enhance> filter, List<_Blacksmith_Enhance> result=null, Comparison<_Blacksmith_Enhance> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<_Blacksmith_Enhance> action, Predicate<_Blacksmith_Enhance> filter=null, Comparison<_Blacksmith_Enhance> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static _Blacksmith_Enhance GetEntity(BGId entityId) => (_Blacksmith_Enhance) MetaDefault.GetEntity(entityId);
+		public static _Blacksmith_Enhance GetEntity(int index) => (_Blacksmith_Enhance) MetaDefault[index];
+		public static _Blacksmith_Enhance GetEntity(string entityName) => (_Blacksmith_Enhance) MetaDefault.GetEntity(entityName);
+		public static _Blacksmith_Enhance NewEntity() => (_Blacksmith_Enhance) MetaDefault.NewEntity();
+		public static _Blacksmith_Enhance NewEntity(BGId entityId) => (_Blacksmith_Enhance) MetaDefault.NewEntity(entityId);
+		public static _Blacksmith_Enhance NewEntity(Action<_Blacksmith_Enhance> callback) => (_Blacksmith_Enhance) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((_Blacksmith_Enhance)entity)));
+		public static void InitializeCodeGenRuntime()
+		{
+			_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(5286648394710833684UL,9819342162334008493UL), ReleaseCodeGenRuntime);
+			_ufle12jhs77_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(_metaDefault, new BGId(5719837422082678162UL, 13901615248365182623UL));
+			_ufle12jhs77_Enhance_Lv = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4799670494009792604UL, 9995018521604861608UL));
+			_ufle12jhs77_Success_Rate = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5116946137810782032UL, 5237136050740162996UL));
+			_ufle12jhs77_Fall_Bonus = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5425271592601439102UL, 1170331692847514788UL));
+			_ufle12jhs77_Req_Mat_Id = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4882906965459353966UL, 6090444092716062640UL));
+			_ufle12jhs77_Req_Mat_Amt = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5633704316494570476UL, 6769957894763250103UL));
+			_ufle12jhs77_Req_Cost_Id = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4902834909793647901UL, 5484702445421243551UL));
+			_ufle12jhs77_Req_Cost_Amt = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4762743261004638103UL, 18239265455699099290UL));
+		}
+		public static void ReleaseCodeGenRuntime()
+		{
+			_metaDefault = null;
+			_ufle12jhs77_name = null;
+			_ufle12jhs77_Enhance_Lv = null;
+			_ufle12jhs77_Success_Rate = null;
+			_ufle12jhs77_Fall_Bonus = null;
+			_ufle12jhs77_Req_Mat_Id = null;
+			_ufle12jhs77_Req_Mat_Amt = null;
+			_ufle12jhs77_Req_Cost_Id = null;
+			_ufle12jhs77_Req_Cost_Amt = null;
+		}
+
+		[Preserve]
+		public sealed class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new _Blacksmith_Enhance(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new _Blacksmith_Enhance(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "Blacksmith_Enhance";
+			public const string name = "name";
+			public const string Enhance_Lv = "Enhance_Lv";
+			public const string Success_Rate = "Success_Rate";
+			public const string Fall_Bonus = "Fall_Bonus";
+			public const string Req_Mat_Id = "Req_Mat_Id";
+			public const string Req_Mat_Amt = "Req_Mat_Amt";
+			public const string Req_Cost_Id = "Req_Cost_Id";
+			public const string Req_Cost_Amt = "Req_Cost_Amt";
+		}
+	}
+
+	[Preserve]
+	public sealed partial class _Blacksmith_Infusion : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ??= BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4849538096767727619UL,16254680226971335611UL), () => _metaDefault = null);
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.String Soul_id
+		{
+			get => _Soul_id[Index];
+			set => _Soul_id[Index] = value;
+		}
+		public System.String name
+		{
+			get => _name[Index];
+			set => _name[Index] = value;
+		}
+		public System.String Target_Weapon
+		{
+			get => _Target_Weapon[Index];
+			set => _Target_Weapon[Index] = value;
+		}
+		public System.String Effect_Vaule
+		{
+			get => _Effect_Vaule[Index];
+			set => _Effect_Vaule[Index] = value;
+		}
+		public System.String Effect_Desc
+		{
+			get => _Effect_Desc[Index];
+			set => _Effect_Desc[Index] = value;
+		}
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Soul_id;
+		public static BansheeGz.BGDatabase.BGFieldString _Soul_id => _ufle12jhs77_Soul_id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5608995856598065124UL, 4057622218634091966UL), () => _ufle12jhs77_Soul_id = null);
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _name => _ufle12jhs77_name ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5525933704699841827UL, 10626315695967431054UL), () => _ufle12jhs77_name = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Target_Weapon;
+		public static BansheeGz.BGDatabase.BGFieldString _Target_Weapon => _ufle12jhs77_Target_Weapon ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4807689163153227345UL, 3731886730718054019UL), () => _ufle12jhs77_Target_Weapon = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Effect_Vaule;
+		public static BansheeGz.BGDatabase.BGFieldString _Effect_Vaule => _ufle12jhs77_Effect_Vaule ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4968005260195819769UL, 12411230147292049841UL), () => _ufle12jhs77_Effect_Vaule = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Effect_Desc;
+		public static BansheeGz.BGDatabase.BGFieldString _Effect_Desc => _ufle12jhs77_Effect_Desc ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5204567325880125880UL, 6668683619917092498UL), () => _ufle12jhs77_Effect_Desc = null);
+		private _Blacksmith_Infusion() : base(MetaDefault) {}
+		private _Blacksmith_Infusion(BGId id) : base(MetaDefault, id) {}
+		private _Blacksmith_Infusion(BGMetaEntity meta) : base(meta) {}
+		private _Blacksmith_Infusion(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static _Blacksmith_Infusion FindEntity(Predicate<_Blacksmith_Infusion> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<_Blacksmith_Infusion> FindEntities(Predicate<_Blacksmith_Infusion> filter, List<_Blacksmith_Infusion> result=null, Comparison<_Blacksmith_Infusion> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<_Blacksmith_Infusion> action, Predicate<_Blacksmith_Infusion> filter=null, Comparison<_Blacksmith_Infusion> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static _Blacksmith_Infusion GetEntity(BGId entityId) => (_Blacksmith_Infusion) MetaDefault.GetEntity(entityId);
+		public static _Blacksmith_Infusion GetEntity(int index) => (_Blacksmith_Infusion) MetaDefault[index];
+		public static _Blacksmith_Infusion GetEntity(string entityName) => (_Blacksmith_Infusion) MetaDefault.GetEntity(entityName);
+		public static _Blacksmith_Infusion NewEntity() => (_Blacksmith_Infusion) MetaDefault.NewEntity();
+		public static _Blacksmith_Infusion NewEntity(BGId entityId) => (_Blacksmith_Infusion) MetaDefault.NewEntity(entityId);
+		public static _Blacksmith_Infusion NewEntity(Action<_Blacksmith_Infusion> callback) => (_Blacksmith_Infusion) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((_Blacksmith_Infusion)entity)));
+		public static void InitializeCodeGenRuntime()
+		{
+			_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4849538096767727619UL,16254680226971335611UL), ReleaseCodeGenRuntime);
+			_ufle12jhs77_Soul_id = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5608995856598065124UL, 4057622218634091966UL));
+			_ufle12jhs77_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(_metaDefault, new BGId(5525933704699841827UL, 10626315695967431054UL));
+			_ufle12jhs77_Target_Weapon = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4807689163153227345UL, 3731886730718054019UL));
+			_ufle12jhs77_Effect_Vaule = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4968005260195819769UL, 12411230147292049841UL));
+			_ufle12jhs77_Effect_Desc = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5204567325880125880UL, 6668683619917092498UL));
+		}
+		public static void ReleaseCodeGenRuntime()
+		{
+			_metaDefault = null;
+			_ufle12jhs77_Soul_id = null;
+			_ufle12jhs77_name = null;
+			_ufle12jhs77_Target_Weapon = null;
+			_ufle12jhs77_Effect_Vaule = null;
+			_ufle12jhs77_Effect_Desc = null;
+		}
+
+		[Preserve]
+		public sealed class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new _Blacksmith_Infusion(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new _Blacksmith_Infusion(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "Blacksmith_Infusion";
+			public const string Soul_id = "Soul_id";
+			public const string name = "name";
+			public const string Target_Weapon = "Target_Weapon";
+			public const string Effect_Vaule = "Effect_Vaule";
+			public const string Effect_Desc = "Effect_Desc";
+		}
+	}
+
+	[Preserve]
+	public sealed partial class _Monster : BGEntity
+	{
+		private static BansheeGz.BGDatabase.BGMetaRow _metaDefault;
+		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ??= BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(5632426435125749514UL,12679777038485935539UL), () => _metaDefault = null);
+		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
+		public static int CountEntities => MetaDefault.CountEntities;
+		public System.Int32 id
+		{
+			get => _id[Index];
+			set => _id.SetValue(this, value);
+		}
+		public System.String name
+		{
+			get => _name[Index];
+			set => _name[Index] = value;
+		}
+		public System.String Type
+		{
+			get => _Type[Index];
+			set => _Type[Index] = value;
+		}
+		public System.String Rank
+		{
+			get => _Rank[Index];
+			set => _Rank[Index] = value;
+		}
+		public System.Int32 HP
+		{
+			get => _HP[Index];
+			set => _HP.SetValue(this, value);
+		}
+		public System.Int32 Atk
+		{
+			get => _Atk[Index];
+			set => _Atk.SetValue(this, value);
+		}
+		public System.Int32 Groggy_Max
+		{
+			get => _Groggy_Max[Index];
+			set => _Groggy_Max.SetValue(this, value);
+		}
+		public System.Single Phase2_Rate
+		{
+			get => _Phase2_Rate[Index];
+			set => _Phase2_Rate.SetValue(this, value);
+		}
+		public System.Int32 Part1_HP
+		{
+			get => _Part1_HP[Index];
+			set => _Part1_HP.SetValue(this, value);
+		}
+		public System.Int32 Part2_HP
+		{
+			get => _Part2_HP[Index];
+			set => _Part2_HP.SetValue(this, value);
+		}
+		public System.Int32 Reward_Val
+		{
+			get => _Reward_Val[Index];
+			set => _Reward_Val.SetValue(this, value);
+		}
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_id;
+		public static BansheeGz.BGDatabase.BGFieldInt _id => _ufle12jhs77_id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5696227667541300283UL, 4541317653318628759UL), () => _ufle12jhs77_id = null);
+		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_name;
+		public static BansheeGz.BGDatabase.BGFieldEntityName _name => _ufle12jhs77_name ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5142202403593453399UL, 16079946551402736539UL), () => _ufle12jhs77_name = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Type;
+		public static BansheeGz.BGDatabase.BGFieldString _Type => _ufle12jhs77_Type ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5015766708682060443UL, 2945876012551751556UL), () => _ufle12jhs77_Type = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Rank;
+		public static BansheeGz.BGDatabase.BGFieldString _Rank => _ufle12jhs77_Rank ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5404444536854264769UL, 12949572453596122544UL), () => _ufle12jhs77_Rank = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_HP;
+		public static BansheeGz.BGDatabase.BGFieldInt _HP => _ufle12jhs77_HP ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4812515218641505298UL, 7491597645400445574UL), () => _ufle12jhs77_HP = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Atk;
+		public static BansheeGz.BGDatabase.BGFieldInt _Atk => _ufle12jhs77_Atk ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5344440459314195397UL, 3059079363660152247UL), () => _ufle12jhs77_Atk = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Groggy_Max;
+		public static BansheeGz.BGDatabase.BGFieldInt _Groggy_Max => _ufle12jhs77_Groggy_Max ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5209044986435485122UL, 2997071241470799790UL), () => _ufle12jhs77_Groggy_Max = null);
+		private static BansheeGz.BGDatabase.BGFieldFloat _ufle12jhs77_Phase2_Rate;
+		public static BansheeGz.BGDatabase.BGFieldFloat _Phase2_Rate => _ufle12jhs77_Phase2_Rate ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(MetaDefault, new BGId(5408481347942909662UL, 13684370235434966938UL), () => _ufle12jhs77_Phase2_Rate = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Part1_HP;
+		public static BansheeGz.BGDatabase.BGFieldInt _Part1_HP => _ufle12jhs77_Part1_HP ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5129944789094407735UL, 11683374050087499933UL), () => _ufle12jhs77_Part1_HP = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Part2_HP;
+		public static BansheeGz.BGDatabase.BGFieldInt _Part2_HP => _ufle12jhs77_Part2_HP ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5513435072953755352UL, 13985810102452695193UL), () => _ufle12jhs77_Part2_HP = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Reward_Val;
+		public static BansheeGz.BGDatabase.BGFieldInt _Reward_Val => _ufle12jhs77_Reward_Val ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4744497617833939196UL, 6407832117089734049UL), () => _ufle12jhs77_Reward_Val = null);
+		private _Monster() : base(MetaDefault) {}
+		private _Monster(BGId id) : base(MetaDefault, id) {}
+		private _Monster(BGMetaEntity meta) : base(meta) {}
+		private _Monster(BGMetaEntity meta, BGId id) : base(meta, id) {}
+		public static _Monster FindEntity(Predicate<_Monster> filter) => BGCodeGenUtils.FindEntity(MetaDefault, filter);
+		public static List<_Monster> FindEntities(Predicate<_Monster> filter, List<_Monster> result=null, Comparison<_Monster> sort=null) => BGCodeGenUtils.FindEntities(MetaDefault, filter, result, sort);
+		public static void ForEachEntity(Action<_Monster> action, Predicate<_Monster> filter=null, Comparison<_Monster> sort=null) => BGCodeGenUtils.ForEachEntity(MetaDefault, action, filter, sort);
+		public static _Monster GetEntity(BGId entityId) => (_Monster) MetaDefault.GetEntity(entityId);
+		public static _Monster GetEntity(int index) => (_Monster) MetaDefault[index];
+		public static _Monster GetEntity(string entityName) => (_Monster) MetaDefault.GetEntity(entityName);
+		public static _Monster NewEntity() => (_Monster) MetaDefault.NewEntity();
+		public static _Monster NewEntity(BGId entityId) => (_Monster) MetaDefault.NewEntity(entityId);
+		public static _Monster NewEntity(Action<_Monster> callback) => (_Monster) MetaDefault.NewEntity(new BGMetaEntity.NewEntityContext(entity => callback((_Monster)entity)));
+		public static void InitializeCodeGenRuntime()
+		{
+			_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(5632426435125749514UL,12679777038485935539UL), ReleaseCodeGenRuntime);
+			_ufle12jhs77_id = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5696227667541300283UL, 4541317653318628759UL));
+			_ufle12jhs77_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(_metaDefault, new BGId(5142202403593453399UL, 16079946551402736539UL));
+			_ufle12jhs77_Type = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5015766708682060443UL, 2945876012551751556UL));
+			_ufle12jhs77_Rank = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5404444536854264769UL, 12949572453596122544UL));
+			_ufle12jhs77_HP = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4812515218641505298UL, 7491597645400445574UL));
+			_ufle12jhs77_Atk = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5344440459314195397UL, 3059079363660152247UL));
+			_ufle12jhs77_Groggy_Max = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5209044986435485122UL, 2997071241470799790UL));
+			_ufle12jhs77_Phase2_Rate = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldFloat>(_metaDefault, new BGId(5408481347942909662UL, 13684370235434966938UL));
+			_ufle12jhs77_Part1_HP = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5129944789094407735UL, 11683374050087499933UL));
+			_ufle12jhs77_Part2_HP = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5513435072953755352UL, 13985810102452695193UL));
+			_ufle12jhs77_Reward_Val = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4744497617833939196UL, 6407832117089734049UL));
+		}
+		public static void ReleaseCodeGenRuntime()
+		{
+			_metaDefault = null;
+			_ufle12jhs77_id = null;
+			_ufle12jhs77_name = null;
+			_ufle12jhs77_Type = null;
+			_ufle12jhs77_Rank = null;
+			_ufle12jhs77_HP = null;
+			_ufle12jhs77_Atk = null;
+			_ufle12jhs77_Groggy_Max = null;
+			_ufle12jhs77_Phase2_Rate = null;
+			_ufle12jhs77_Part1_HP = null;
+			_ufle12jhs77_Part2_HP = null;
+			_ufle12jhs77_Reward_Val = null;
+		}
+
+		[Preserve]
+		public sealed class Factory : BGEntity.EntityFactory
+		{
+			public BGEntity NewEntity(BGMetaEntity meta) => new _Monster(meta);
+			public BGEntity NewEntity(BGMetaEntity meta, BGId id) => new _Monster(meta, id);
+		}
+
+		public static class __Names
+		{
+			public const string Meta = "Monster";
+			public const string id = "id";
+			public const string name = "name";
+			public const string Type = "Type";
+			public const string Rank = "Rank";
+			public const string HP = "HP";
+			public const string Atk = "Atk";
+			public const string Groggy_Max = "Groggy_Max";
+			public const string Phase2_Rate = "Phase2_Rate";
+			public const string Part1_HP = "Part1_HP";
+			public const string Part2_HP = "Part2_HP";
+			public const string Reward_Val = "Reward_Val";
+		}
+	}
+
+	[Preserve]
 	public static class BGCodeGenRuntimeInitializer
 	{
 		[Preserve]
@@ -536,6 +1340,13 @@ namespace DB_
 			_Player.InitializeCodeGenRuntime();
 			_Weapon.InitializeCodeGenRuntime();
 			_AI.InitializeCodeGenRuntime();
+			_Item_Data.InitializeCodeGenRuntime();
+			_Shop_Recipe.InitializeCodeGenRuntime();
+			_Shop_Potion.InitializeCodeGenRuntime();
+			_Shop_AI_Unlock.InitializeCodeGenRuntime();
+			_Blacksmith_Enhance.InitializeCodeGenRuntime();
+			_Blacksmith_Infusion.InitializeCodeGenRuntime();
+			_Monster.InitializeCodeGenRuntime();
 		}
 		[Preserve]
 		public static void ReleaseCodeGenRuntime()
@@ -543,6 +1354,13 @@ namespace DB_
 			_Player.ReleaseCodeGenRuntime();
 			_Weapon.ReleaseCodeGenRuntime();
 			_AI.ReleaseCodeGenRuntime();
+			_Item_Data.ReleaseCodeGenRuntime();
+			_Shop_Recipe.ReleaseCodeGenRuntime();
+			_Shop_Potion.ReleaseCodeGenRuntime();
+			_Shop_AI_Unlock.ReleaseCodeGenRuntime();
+			_Blacksmith_Enhance.ReleaseCodeGenRuntime();
+			_Blacksmith_Infusion.ReleaseCodeGenRuntime();
+			_Monster.ReleaseCodeGenRuntime();
 		}
 	}
 }

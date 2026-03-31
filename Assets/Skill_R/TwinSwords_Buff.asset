@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f684e0c6fa7c8ee4194a9e7e56d966ae, type: 3}
+  m_Name: TwinSwords_Buff
+  m_EditorClassIdentifier: Assembly-CSharp::TwinSwordsBuff_SO
+  skillName: "\uD53C\uC758 \uBB34\uB3C4"
+  description: "1.[\uAC00\uC18D]: 10\uCD08 \uB3D9\uC548 \uD50C\uB808\uC774\uC5B4\uC758
+    \uACF5\uACA9 \uC560\uB2C8\uBA54\uC774\uC158 \uBC30\uC18D\uC774 1.3\uBC30 \uC99D\uAC00\uD558\uACE0,
+    \uC774\uB3D9 \uC18D\uB3C4\uAC00 1.2\uBC30 \uC99D\uAC00\uD568. 2.[\uAC00\uBCBC\uC6B4
+    \uBC1C\uAC78\uC74C]: \uBC84\uD504 \uC720\uC9C0 \uC911 \uC2A4\uD0DC\uBBF8\uB098
+    \uC18C\uBAA8\uD615 \uD68C\uD53C\uC758 \uC2A4\uD0DC\uBBF8\uB098 \uC18C\uBAA8\uB7C9\uC774
+    \uC808\uBC18\uC73C\uB85C \uAC10\uC18C. "
+  duration: 10
+  atkSpeedMultiplier: 1.3
+  moveSpeedMultiplier: 1.2

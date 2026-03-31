@@ -21,5 +21,6 @@ public class WeaponSO : ScriptableObject
     public int V_Dmg;
     public float V_Cool;
 
+    public BuffSkill_SO R_Skill_Logic;
     public AnimatorOverrideController weaponAnimator;
 }

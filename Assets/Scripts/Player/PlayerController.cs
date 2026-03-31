@@ -59,7 +59,12 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public string CurrentSkillAnim;   // 어떤 스킬 애니메이션을 틀지
     [HideInInspector] public int CurrentSkillDamage;    // 현재 스킬 데미지가 얼마인지
     [HideInInspector] public float CurrentSkillVal;
-    [HideInInspector] public bool HasRBuff = false;
+
+    [Header("무기 특수 버프 플래그")]
+    [HideInInspector] public bool HasRBuff = false;         // 대검 (결정타/슈퍼아머)
+    [HideInInspector] public bool HasTwinBuff = false;      // 쌍검 (스태미나 감소)
+    [HideInInspector] public bool HasSpearBuff = false;     // 창 (방어력 관통)
+    [HideInInspector] public bool HasShieldBuff = false;    // 검방 (피해 70% 감소/반격)
 
     public float Q_Timer { get; private set; }
     public float W_Timer { get; private set; }
@@ -475,11 +480,15 @@ public class PlayerController : MonoBehaviour
                 if (R_Timer <= 0)
                 {
                     R_Timer = maxCool;
-                    HasRBuff = true;
-                    Debug.Log($"[R 스킬 발동] 슈퍼아머 활성화! 다음 타격 데미지 {val}배!");
 
-                    if (weaponEffect != null) 
-                        weaponEffect.SetActive(true);
+                    if (CurrentWeapon != null && CurrentWeapon.R_Skill_Logic != null)
+                    {
+                        CurrentWeapon.R_Skill_Logic.Execute(this, val);
+                    }
+                    else
+                    {
+                        Debug.LogWarning("경고: 현재 무기에 R 스킬(BuffSkill_SO)이 할당되지 않았습니다!");
+                    }
 
                     return true;
                 }

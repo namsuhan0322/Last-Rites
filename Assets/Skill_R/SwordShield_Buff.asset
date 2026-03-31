@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 101a9ba9d805e0d41866d4cae5452687, type: 3}
+  m_Name: SwordShield_Buff
+  m_EditorClassIdentifier: Assembly-CSharp::SwordShieldBuff_SO
+  skillName: "\uCCA0\uC758 \uBB18\uC2E4"
+  description: "1.[\uCCA0\uBCBD \uBC29\uC5B4]: 5\uCD08 \uB3D9\uC548 \uD50C\uB808\uC774\uC5B4\uAC00
+    \uBC1B\uB294 \uBAA8\uB4E0 \uB370\uBBF8\uC9C0\uAC00 70% \uAC10\uC18C\uD568. (\uD53C\uD560
+    \uC218 \uC5C6\uB294 \uBCF4\uC2A4\uC758 \uAD11\uC5ED\uAE30\uB098 \uC989\uC0AC\uAE09
+    \uD328\uD134\uC744 \uAC15\uC81C\uB85C \uBC84\uD168\uB0BC \uB54C \uC0AC\uC6A9)
+    2.\t[\uBC18\uACA9\uC758 \uD2C8]: \uC774 \uBC84\uD504\uAC00 \uCF1C\uC9C4 \uC0C1\uD0DC\uC5D0\uC11C
+    \uBCF4\uC2A4\uC758 \uACF5\uACA9\uC744 \uBC29\uC5B4(\uD53C\uACA9)\uD558\uBA74,
+    \uC989\uC2DC \uBCF4\uC2A4\uC758 \uAC15\uC778\uB3C4(Poise)\uC5D0 \uD070 \uD0C0\uACA9\uC744
+    \uBC18\uC0AC\uD568 "
+  duration: 5

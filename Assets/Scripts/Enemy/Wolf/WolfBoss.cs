@@ -28,6 +28,13 @@ public class WolfBoss : Enemy
     public float jumpCooldown = 8f;
     public GameObject jumpIndicatorPrefab;
 
+    [Header("1페이지 돌진 스킬")]
+    public float chargeCooldown = 10f;
+    public float chargeDistance = 10f;
+    public float chargeSpeed = 20f;
+    public float chargeLockTime = 2f;
+    public GameObject chargeIndicatorPrefab;
+
     //변수들
     float jumpTimer = 0f;
     GameObject jumpIndicator;
@@ -35,6 +42,9 @@ public class WolfBoss : Enemy
     GameObject slashIndicator;
     bool hasStartedCombat = false;
     bool isInvincible = false;
+    float chargeTimer = 0f;
+    bool isCharging = false;
+    GameObject chargeIndicator;
 
 
     [Header("Phase2 콤보")]
@@ -58,6 +68,9 @@ public class WolfBoss : Enemy
 
         jumpIndicator = Instantiate(jumpIndicatorPrefab, transform);
         jumpIndicator.SetActive(false);
+
+        chargeIndicator = Instantiate(chargeIndicatorPrefab, transform);
+        chargeIndicator.SetActive(false);
     }
 
     protected override void Update()
@@ -186,6 +199,9 @@ public class WolfBoss : Enemy
 
             if (slashTimer <= 0f && dist <= slashRange)
                 patterns.Add(() => StartCoroutine(Slash()));
+
+            if (chargeTimer <= 0f)
+                patterns.Add(() => StartCoroutine(Charge()));
 
             patterns.Add(() => base.TryAttack());
 
@@ -386,8 +402,6 @@ public class WolfBoss : Enemy
             }
         }
     }
-
-
     //점프 어택
     IEnumerator JumpAttack()
     {
@@ -464,7 +478,6 @@ public class WolfBoss : Enemy
 
 
     }
-
     //점프어택 장판
     void ShowJumpIndicator()
     {
@@ -480,6 +493,116 @@ public class WolfBoss : Enemy
         jumpIndicator.transform.position = pos;
 
         jumpIndicator.transform.rotation = Quaternion.Euler(90f, 0, 0);
+    }
+    IEnumerator Charge()
+    {
+        isAttacking = true;
+        isComboAttacking = true;
+        isCharging = true;
+
+        agent.isStopped = true;
+        agent.updateRotation = false;
+        agent.velocity = Vector3.zero;
+        agent.ResetPath();
+
+        animator.SetTrigger("ChargeReady");
+
+        chargeIndicator.SetActive(true);
+
+        float timer = 0f;
+
+        while (timer < chargeLockTime)
+        {
+            if (isPhaseChanging || _isDead)
+            {
+                chargeIndicator.SetActive(false);
+                EndAttack();
+                yield break;
+            }
+
+            timer += Time.deltaTime;
+
+            if (currentTarget != null)
+            {
+                Vector3 dir = currentTarget.position - transform.position;
+                dir.y = 0;
+
+                if (dir.sqrMagnitude > 0.01f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(dir);
+
+                    transform.rotation = Quaternion.Slerp(
+                        transform.rotation,
+                        targetRot,
+                        Time.deltaTime * 6f
+                    );
+
+                    Vector3 forwardOffset = transform.forward * (chargeDistance * 0.5f);
+
+                    chargeIndicator.transform.position = transform.position + forwardOffset;
+
+                    chargeIndicator.transform.rotation =
+                        Quaternion.LookRotation(transform.forward) *
+                        Quaternion.Euler(90f, 0, 0);
+
+                    chargeIndicator.transform.localScale =
+                        new Vector3(2f, chargeDistance, 1f);
+                }
+            }
+
+            yield return null;
+        }
+        Vector3 finalDir = transform.forward;
+        attackDirection = finalDir;
+
+        chargeIndicator.SetActive(false);
+
+        animator.SetTrigger("Charge");
+
+        yield return new WaitForSeconds(0.2f);
+
+        float moved = 0f;
+        bool hasHit = false;
+
+        while (moved < chargeDistance)
+        {
+            float step = chargeSpeed * Time.deltaTime;
+
+            transform.position += finalDir * step;
+            moved += step;
+
+            if (!hasHit)
+            {
+                Collider[] hits = Physics.OverlapSphere(
+                    transform.position,
+                    1.5f,
+                    targetLayer
+                );
+
+                foreach (var hit in hits)
+                {
+                    Actor actor = hit.GetComponent<Actor>();
+                    if (actor == null || actor == this) continue;
+
+                    actor.TakeDamage(25, 1f);
+                    hasHit = true;
+                    break;
+                }
+            }
+
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(3f);
+
+        chargeTimer = chargeCooldown;
+
+        isCharging = false;
+        isComboAttacking = false;
+        EndAttack();
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
     }
 
 

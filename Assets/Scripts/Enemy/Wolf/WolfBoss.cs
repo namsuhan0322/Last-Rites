@@ -45,6 +45,8 @@ public class WolfBoss : Enemy
     float chargeTimer = 0f;
     bool isCharging = false;
     GameObject chargeIndicator;
+    public float stunDuration = 5f;
+    bool isStuned = false;
 
 
     [Header("Phase2 콤보")]
@@ -78,6 +80,7 @@ public class WolfBoss : Enemy
         attackTimer -= Time.deltaTime;
         slashTimer -= Time.deltaTime;
         jumpTimer -= Time.deltaTime;
+        chargeTimer -= Time.deltaTime;
 
         if (_isDead) return;
 
@@ -88,6 +91,12 @@ public class WolfBoss : Enemy
             animator.SetBool("Run_P1", false);
             animator.SetBool("Run_P2", false);
 
+            return;
+        }
+
+        if (isStuned)
+        {
+            agent.isStopped = true;
             return;
         }
 
@@ -584,10 +593,22 @@ public class WolfBoss : Enemy
                     Actor actor = hit.GetComponent<Actor>();
                     if (actor == null || actor == this) continue;
 
-                    actor.TakeDamage(25, 1f);
+                    actor.TakeDamage(40, 1f);
                     hasHit = true;
                     break;
                 }
+            }
+
+            Collider[] envHits = Physics.OverlapSphere(
+                transform.position,
+                1.2f,
+                LayerMask.GetMask("Environment")
+            );
+
+            if (envHits.Length > 0)
+            {
+                StartCoroutine(StunRoutine());
+                yield break;
             }
 
             yield return null;
@@ -605,7 +626,29 @@ public class WolfBoss : Enemy
         agent.updateRotation = true;
     }
 
+    IEnumerator StunRoutine()
+    {
+        isStuned = true;
+        isAttacking = true;
 
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.updateRotation = false;
+
+        animator.SetBool("Stun", true); 
+
+        yield return new WaitForSeconds(stunDuration);
+
+        animator.SetBool("Stun", false);
+
+        isStuned = false;
+        isAttacking = false;
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+
+        attackTimer = 3f; 
+    }
 
     //점프 데미지 주기
     void DealJumpDamage()

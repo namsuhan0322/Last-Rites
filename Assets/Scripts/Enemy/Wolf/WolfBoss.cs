@@ -19,6 +19,7 @@ public class WolfBoss : Enemy
     public int slashDamage = 20;
     public float slashCooldown = 3f;
     public GameObject slashIndicatorPrefab;
+    public Transform clawSpawnPoint; // 손 위치
 
     [Header("1페이지 점프 공격")]
     public float jumpAttackRange = 5f;
@@ -33,15 +34,20 @@ public class WolfBoss : Enemy
     float slashTimer = 0f;
     GameObject slashIndicator;
     bool hasStartedCombat = false;
+    bool isInvincible = false;
 
 
     [Header("Phase2 콤보")]
     public float comboDelay_P2 = 0.3f;
     public float comboRecovery_P2 = 1.0f;
-
+    public Transform headTransform; 
     int comboIndex = 0;
     bool isComboAttacking = false;
     bool isPhaseChanging = false;
+    [Header("Vfx")]
+    public GameObject roarVFXPrefab;
+    public GameObject clawVFXPrefab;
+    public GameObject biteVFXPrefab;
 
     protected override void Awake()
     {
@@ -279,6 +285,11 @@ public class WolfBoss : Enemy
 
         while (timer < rotateTime)
         {
+            if (isPhaseChanging)
+            {
+                EndAttack();
+                yield break;
+            }
             timer += Time.deltaTime;
 
             if (currentTarget != null)
@@ -382,6 +393,7 @@ public class WolfBoss : Enemy
     {
         isAttacking = true;
         isComboAttacking = true;
+        isInvincible = true; 
 
         agent.isStopped = true;
         agent.updateRotation = false;
@@ -401,6 +413,12 @@ public class WolfBoss : Enemy
 
         while (timer < airTime)
         {
+            if (isPhaseChanging || _isDead)
+            {
+                EndAttack(); 
+                yield break;
+            }
+
             timer += Time.deltaTime;
 
             if (currentTarget != null)
@@ -431,15 +449,20 @@ public class WolfBoss : Enemy
 
         yield return new WaitForSeconds(0.5f);
 
+        isInvincible = false;
+
         yield return new WaitForSeconds(3.0f);
 
         jumpTimer = jumpCooldown;
 
         isComboAttacking = false;
         EndAttack();
+        attackTimer = attackCooldown;
 
         agent.isStopped = false;
         agent.updateRotation = true;
+
+
     }
 
     //점프어택 장판
@@ -486,16 +509,63 @@ public class WolfBoss : Enemy
             jumpIndicator.SetActive(false);
 
         DealJumpDamage();
-
-        // 3. (선택) 이펙트
-        // SpawnImpactEffect();
     }
 
     public override void TakeDamage(int damage, float severityOverride = -1f)
     {
+        if (isInvincible) return; 
+
         if (isHit || _isDead) return;
         base.TakeDamage(damage, severityOverride);
 
         EndHit();
     }
+
+    //vfx 애니메이션들
+
+    //할퀴기
+    public void SpawnClawVFX()
+    {
+        if (clawVFXPrefab == null) return;
+        Vector3 spawnPos = clawSpawnPoint != null
+            ? clawSpawnPoint.position
+            : transform.position;
+        Quaternion rot = Quaternion.LookRotation(attackDirection);
+        rot *= Quaternion.AngleAxis(180f, Vector3.forward);
+
+        GameObject vfx = Instantiate(clawVFXPrefab, spawnPos, rot);
+
+        ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
+        if (ps != null)
+        {
+            ps.Play();
+        }
+
+        Destroy(vfx, 1.5f);
+    }
+
+    //포효
+    public void SpawnRoarVFX()
+    {
+        GameObject vfx = Instantiate(roarVFXPrefab, transform.position, Quaternion.identity);
+
+        Destroy(vfx, 2f);
+    }
+
+    //물기
+    public void SpawnBiteVFX()
+    {
+        if (biteVFXPrefab == null) return;
+
+        Vector3 spawnPos = headTransform != null
+            ? headTransform.position
+            : transform.position + transform.forward * 1.0f + Vector3.up * 1.5f;
+
+        Quaternion rot = Quaternion.LookRotation(attackDirection);
+
+        GameObject vfx = Instantiate(biteVFXPrefab, spawnPos, rot);
+
+        Destroy(vfx, 2f);
+    }
+
 }

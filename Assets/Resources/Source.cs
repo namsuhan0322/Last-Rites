@@ -651,10 +651,10 @@ namespace DB_
 			get => _Mat_Amt[Index];
 			set => _Mat_Amt.SetValue(this, value);
 		}
-		public System.String Cost_id
+		public System.String Cost_Id
 		{
-			get => _Cost_id[Index];
-			set => _Cost_id[Index] = value;
+			get => _Cost_Id[Index];
+			set => _Cost_Id[Index] = value;
 		}
 		public System.Int32 Cost_Amt
 		{
@@ -671,8 +671,8 @@ namespace DB_
 		public static BansheeGz.BGDatabase.BGFieldString _Mat_Id => _ufle12jhs77_Mat_Id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5580829323791946434UL, 9901769394040412057UL), () => _ufle12jhs77_Mat_Id = null);
 		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Mat_Amt;
 		public static BansheeGz.BGDatabase.BGFieldInt _Mat_Amt => _ufle12jhs77_Mat_Amt ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5175183037403722749UL, 9643448722483821452UL), () => _ufle12jhs77_Mat_Amt = null);
-		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Cost_id;
-		public static BansheeGz.BGDatabase.BGFieldString _Cost_id => _ufle12jhs77_Cost_id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5505327060155025369UL, 11735812262466096569UL), () => _ufle12jhs77_Cost_id = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Cost_Id;
+		public static BansheeGz.BGDatabase.BGFieldString _Cost_Id => _ufle12jhs77_Cost_Id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5505327060155025369UL, 11735812262466096569UL), () => _ufle12jhs77_Cost_Id = null);
 		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Cost_Amt;
 		public static BansheeGz.BGDatabase.BGFieldInt _Cost_Amt => _ufle12jhs77_Cost_Amt ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5699957930496657917UL, 12683011067214470591UL), () => _ufle12jhs77_Cost_Amt = null);
 		private _Shop_Recipe() : base(MetaDefault) {}
@@ -696,7 +696,7 @@ namespace DB_
 			_ufle12jhs77_Result_Amt = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4818548623364298049UL, 15731818796113627060UL));
 			_ufle12jhs77_Mat_Id = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5580829323791946434UL, 9901769394040412057UL));
 			_ufle12jhs77_Mat_Amt = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5175183037403722749UL, 9643448722483821452UL));
-			_ufle12jhs77_Cost_id = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5505327060155025369UL, 11735812262466096569UL));
+			_ufle12jhs77_Cost_Id = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5505327060155025369UL, 11735812262466096569UL));
 			_ufle12jhs77_Cost_Amt = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5699957930496657917UL, 12683011067214470591UL));
 		}
 		public static void ReleaseCodeGenRuntime()
@@ -707,7 +707,7 @@ namespace DB_
 			_ufle12jhs77_Result_Amt = null;
 			_ufle12jhs77_Mat_Id = null;
 			_ufle12jhs77_Mat_Amt = null;
-			_ufle12jhs77_Cost_id = null;
+			_ufle12jhs77_Cost_Id = null;
 			_ufle12jhs77_Cost_Amt = null;
 		}
 
@@ -726,7 +726,7 @@ namespace DB_
 			public const string Result_Amt = "Result_Amt";
 			public const string Mat_Id = "Mat_Id";
 			public const string Mat_Amt = "Mat_Amt";
-			public const string Cost_id = "Cost_id";
+			public const string Cost_Id = "Cost_Id";
 			public const string Cost_Amt = "Cost_Amt";
 		}
 	}
@@ -743,10 +743,10 @@ namespace DB_
 			get => _name[Index];
 			set => _name[Index] = value;
 		}
-		public System.Int32 Position_Lv
+		public System.Int32 Potion_Lv
 		{
-			get => _Position_Lv[Index];
-			set => _Position_Lv.SetValue(this, value);
+			get => _Potion_Lv[Index];
+			set => _Potion_Lv.SetValue(this, value);
 		}
 		public System.Int32 Max_Count
 		{
@@ -780,8 +780,8 @@ namespace DB_
 		}
 		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_name;
 		public static BansheeGz.BGDatabase.BGFieldEntityName _name => _ufle12jhs77_name ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5417288780189647068UL, 5775736762792946574UL), () => _ufle12jhs77_name = null);
-		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Position_Lv;
-		public static BansheeGz.BGDatabase.BGFieldInt _Position_Lv => _ufle12jhs77_Position_Lv ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4814517739057112150UL, 15535417008242757276UL), () => _ufle12jhs77_Position_Lv = null);
+		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Potion_Lv;
+		public static BansheeGz.BGDatabase.BGFieldInt _Potion_Lv => _ufle12jhs77_Potion_Lv ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4814517739057112150UL, 15535417008242757276UL), () => _ufle12jhs77_Potion_Lv = null);
 		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Max_Count;
 		public static BansheeGz.BGDatabase.BGFieldInt _Max_Count => _ufle12jhs77_Max_Count ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(5053448673767528405UL, 8529333336426413472UL), () => _ufle12jhs77_Max_Count = null);
 		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Heal_Percent;
@@ -811,7 +811,7 @@ namespace DB_
 		{
 			_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4910450648503447982UL,14853959834517543822UL), ReleaseCodeGenRuntime);
 			_ufle12jhs77_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(_metaDefault, new BGId(5417288780189647068UL, 5775736762792946574UL));
-			_ufle12jhs77_Position_Lv = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4814517739057112150UL, 15535417008242757276UL));
+			_ufle12jhs77_Potion_Lv = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4814517739057112150UL, 15535417008242757276UL));
 			_ufle12jhs77_Max_Count = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5053448673767528405UL, 8529333336426413472UL));
 			_ufle12jhs77_Heal_Percent = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5391896923282736777UL, 4128410372656755617UL));
 			_ufle12jhs77_Req_Mat_Id_1 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4815447141318057505UL, 656207616225598607UL));
@@ -823,7 +823,7 @@ namespace DB_
 		{
 			_metaDefault = null;
 			_ufle12jhs77_name = null;
-			_ufle12jhs77_Position_Lv = null;
+			_ufle12jhs77_Potion_Lv = null;
 			_ufle12jhs77_Max_Count = null;
 			_ufle12jhs77_Heal_Percent = null;
 			_ufle12jhs77_Req_Mat_Id_1 = null;
@@ -843,7 +843,7 @@ namespace DB_
 		{
 			public const string Meta = "Shop_Potion";
 			public const string name = "name";
-			public const string Position_Lv = "Position_Lv";
+			public const string Potion_Lv = "Potion_Lv";
 			public const string Max_Count = "Max_Count";
 			public const string Heal_Percent = "Heal_Percent";
 			public const string Req_Mat_Id_1 = "Req_Mat_Id_1";
@@ -890,10 +890,10 @@ namespace DB_
 			get => _Req_Mat_Amt_2[Index];
 			set => _Req_Mat_Amt_2.SetValue(this, value);
 		}
-		public System.Int32 Unlock_Conditon
+		public System.String Unlock_Condition
 		{
-			get => _Unlock_Conditon[Index];
-			set => _Unlock_Conditon.SetValue(this, value);
+			get => _Unlock_Condition[Index];
+			set => _Unlock_Condition[Index] = value;
 		}
 		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_AI_Id;
 		public static BansheeGz.BGDatabase.BGFieldString _AI_Id => _ufle12jhs77_AI_Id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5703556971876505444UL, 3491644531944136327UL), () => _ufle12jhs77_AI_Id = null);
@@ -907,8 +907,8 @@ namespace DB_
 		public static BansheeGz.BGDatabase.BGFieldString _Req_Mat_Id_2 => _ufle12jhs77_Req_Mat_Id_2 ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4919131898731247546UL, 1119184090236135083UL), () => _ufle12jhs77_Req_Mat_Id_2 = null);
 		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Req_Mat_Amt_2;
 		public static BansheeGz.BGDatabase.BGFieldInt _Req_Mat_Amt_2 => _ufle12jhs77_Req_Mat_Amt_2 ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4620654747846696623UL, 5637221688917169306UL), () => _ufle12jhs77_Req_Mat_Amt_2 = null);
-		private static BansheeGz.BGDatabase.BGFieldInt _ufle12jhs77_Unlock_Conditon;
-		public static BansheeGz.BGDatabase.BGFieldInt _Unlock_Conditon => _ufle12jhs77_Unlock_Conditon ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(MetaDefault, new BGId(4688170220506795441UL, 3284245203372745150UL), () => _ufle12jhs77_Unlock_Conditon = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Unlock_Condition;
+		public static BansheeGz.BGDatabase.BGFieldString _Unlock_Condition => _ufle12jhs77_Unlock_Condition ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5242700754701957861UL, 5090757899899639217UL), () => _ufle12jhs77_Unlock_Condition = null);
 		private _Shop_AI_Unlock() : base(MetaDefault) {}
 		private _Shop_AI_Unlock(BGId id) : base(MetaDefault, id) {}
 		private _Shop_AI_Unlock(BGMetaEntity meta) : base(meta) {}
@@ -931,7 +931,7 @@ namespace DB_
 			_ufle12jhs77_Req_Mat_Amt_1 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(5562621361733457065UL, 2835868531471027097UL));
 			_ufle12jhs77_Req_Mat_Id_2 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4919131898731247546UL, 1119184090236135083UL));
 			_ufle12jhs77_Req_Mat_Amt_2 = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4620654747846696623UL, 5637221688917169306UL));
-			_ufle12jhs77_Unlock_Conditon = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldInt>(_metaDefault, new BGId(4688170220506795441UL, 3284245203372745150UL));
+			_ufle12jhs77_Unlock_Condition = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5242700754701957861UL, 5090757899899639217UL));
 		}
 		public static void ReleaseCodeGenRuntime()
 		{
@@ -942,7 +942,7 @@ namespace DB_
 			_ufle12jhs77_Req_Mat_Amt_1 = null;
 			_ufle12jhs77_Req_Mat_Id_2 = null;
 			_ufle12jhs77_Req_Mat_Amt_2 = null;
-			_ufle12jhs77_Unlock_Conditon = null;
+			_ufle12jhs77_Unlock_Condition = null;
 		}
 
 		[Preserve]
@@ -961,7 +961,7 @@ namespace DB_
 			public const string Req_Mat_Amt_1 = "Req_Mat_Amt_1";
 			public const string Req_Mat_Id_2 = "Req_Mat_Id_2";
 			public const string Req_Mat_Amt_2 = "Req_Mat_Amt_2";
-			public const string Unlock_Conditon = "Unlock_Conditon";
+			public const string Unlock_Condition = "Unlock_Condition";
 		}
 	}
 
@@ -1094,10 +1094,10 @@ namespace DB_
 		public static BansheeGz.BGDatabase.BGMetaRow MetaDefault => _metaDefault ??= BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4849538096767727619UL,16254680226971335611UL), () => _metaDefault = null);
 		public static BansheeGz.BGDatabase.BGRepoEvents Events => BGRepo.I.Events;
 		public static int CountEntities => MetaDefault.CountEntities;
-		public System.String Soul_id
+		public System.String Soul_Id
 		{
-			get => _Soul_id[Index];
-			set => _Soul_id[Index] = value;
+			get => _Soul_Id[Index];
+			set => _Soul_Id[Index] = value;
 		}
 		public System.String name
 		{
@@ -1109,24 +1109,24 @@ namespace DB_
 			get => _Target_Weapon[Index];
 			set => _Target_Weapon[Index] = value;
 		}
-		public System.String Effect_Vaule
+		public System.String Effect_Value
 		{
-			get => _Effect_Vaule[Index];
-			set => _Effect_Vaule[Index] = value;
+			get => _Effect_Value[Index];
+			set => _Effect_Value[Index] = value;
 		}
 		public System.String Effect_Desc
 		{
 			get => _Effect_Desc[Index];
 			set => _Effect_Desc[Index] = value;
 		}
-		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Soul_id;
-		public static BansheeGz.BGDatabase.BGFieldString _Soul_id => _ufle12jhs77_Soul_id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5608995856598065124UL, 4057622218634091966UL), () => _ufle12jhs77_Soul_id = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Soul_Id;
+		public static BansheeGz.BGDatabase.BGFieldString _Soul_Id => _ufle12jhs77_Soul_Id ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5608995856598065124UL, 4057622218634091966UL), () => _ufle12jhs77_Soul_Id = null);
 		private static BansheeGz.BGDatabase.BGFieldEntityName _ufle12jhs77_name;
 		public static BansheeGz.BGDatabase.BGFieldEntityName _name => _ufle12jhs77_name ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(MetaDefault, new BGId(5525933704699841827UL, 10626315695967431054UL), () => _ufle12jhs77_name = null);
 		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Target_Weapon;
 		public static BansheeGz.BGDatabase.BGFieldString _Target_Weapon => _ufle12jhs77_Target_Weapon ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4807689163153227345UL, 3731886730718054019UL), () => _ufle12jhs77_Target_Weapon = null);
-		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Effect_Vaule;
-		public static BansheeGz.BGDatabase.BGFieldString _Effect_Vaule => _ufle12jhs77_Effect_Vaule ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4968005260195819769UL, 12411230147292049841UL), () => _ufle12jhs77_Effect_Vaule = null);
+		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Effect_Value;
+		public static BansheeGz.BGDatabase.BGFieldString _Effect_Value => _ufle12jhs77_Effect_Value ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(4968005260195819769UL, 12411230147292049841UL), () => _ufle12jhs77_Effect_Value = null);
 		private static BansheeGz.BGDatabase.BGFieldString _ufle12jhs77_Effect_Desc;
 		public static BansheeGz.BGDatabase.BGFieldString _Effect_Desc => _ufle12jhs77_Effect_Desc ??= BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(MetaDefault, new BGId(5204567325880125880UL, 6668683619917092498UL), () => _ufle12jhs77_Effect_Desc = null);
 		private _Blacksmith_Infusion() : base(MetaDefault) {}
@@ -1145,19 +1145,19 @@ namespace DB_
 		public static void InitializeCodeGenRuntime()
 		{
 			_metaDefault = BGCodeGenUtils.GetMeta<BansheeGz.BGDatabase.BGMetaRow>(new BGId(4849538096767727619UL,16254680226971335611UL), ReleaseCodeGenRuntime);
-			_ufle12jhs77_Soul_id = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5608995856598065124UL, 4057622218634091966UL));
+			_ufle12jhs77_Soul_Id = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5608995856598065124UL, 4057622218634091966UL));
 			_ufle12jhs77_name = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldEntityName>(_metaDefault, new BGId(5525933704699841827UL, 10626315695967431054UL));
 			_ufle12jhs77_Target_Weapon = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4807689163153227345UL, 3731886730718054019UL));
-			_ufle12jhs77_Effect_Vaule = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4968005260195819769UL, 12411230147292049841UL));
+			_ufle12jhs77_Effect_Value = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(4968005260195819769UL, 12411230147292049841UL));
 			_ufle12jhs77_Effect_Desc = BGCodeGenUtils.GetField<BansheeGz.BGDatabase.BGFieldString>(_metaDefault, new BGId(5204567325880125880UL, 6668683619917092498UL));
 		}
 		public static void ReleaseCodeGenRuntime()
 		{
 			_metaDefault = null;
-			_ufle12jhs77_Soul_id = null;
+			_ufle12jhs77_Soul_Id = null;
 			_ufle12jhs77_name = null;
 			_ufle12jhs77_Target_Weapon = null;
-			_ufle12jhs77_Effect_Vaule = null;
+			_ufle12jhs77_Effect_Value = null;
 			_ufle12jhs77_Effect_Desc = null;
 		}
 
@@ -1171,10 +1171,10 @@ namespace DB_
 		public static class __Names
 		{
 			public const string Meta = "Blacksmith_Infusion";
-			public const string Soul_id = "Soul_id";
+			public const string Soul_Id = "Soul_Id";
 			public const string name = "name";
 			public const string Target_Weapon = "Target_Weapon";
-			public const string Effect_Vaule = "Effect_Vaule";
+			public const string Effect_Value = "Effect_Value";
 			public const string Effect_Desc = "Effect_Desc";
 		}
 	}

@@ -2,16 +2,21 @@
 using UnityEngine;
 using UnityEditor;
 using System.IO;
+using System.Collections.Generic;
 using DB_;
 
 public class BGShopDataConverter : EditorWindow
 {
     private const string ITEM_PATH = "Assets/Resources/GameData/ItemData";
+    private const string DB_PATH = "Assets/Resources/GameData/Databases"; // 데이터베이스 SO가 저장될 폴더
 
-    [MenuItem("Tools/BGDatabase/상점 및 정비대 SO 변환하기")]
+    [MenuItem("Tools/BGDatabase/상점 및 정비대 SO 전체 변환 (Database 자동등록)")]
     public static void ConvertAllShopData()
     {
-        ConvertItemData(); // 무조건 1순위 실행
+        // 데이터베이스가 저장될 폴더가 없으면 생성
+        if (!Directory.Exists(DB_PATH)) Directory.CreateDirectory(DB_PATH);
+
+        ConvertItemData(); // 무조건 1순위 실행 (다른 SO들이 아이템을 참조해야 하므로)
 
         ConvertShopRecipe();
         ConvertShopPotion();
@@ -21,7 +26,7 @@ public class BGShopDataConverter : EditorWindow
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log("<color=cyan><b>[성공] 상점/정비대 SO 변환 및 맵핑이 완료되었습니다!</b></color>");
+        Debug.Log("<color=lime><b>[대성공] 모든 SO 생성 및 Database 자동 등록이 완벽하게 끝났습니다!</b></color>");
     }
 
     private static ItemDataSO GetItemSO(string itemId)
@@ -37,10 +42,14 @@ public class BGShopDataConverter : EditorWindow
         return foundSO;
     }
 
-    // 아이템 데이터
+    // ==========================================================
+    // 1. 아이템 데이터 & Database 갱신
+    // ==========================================================
     private static void ConvertItemData()
     {
         if (!Directory.Exists(ITEM_PATH)) Directory.CreateDirectory(ITEM_PATH);
+
+        List<ItemDataSO> createdList = new List<ItemDataSO>();
 
         _Item_Data.ForEachEntity(entity =>
         {
@@ -61,18 +70,30 @@ public class BGShopDataConverter : EditorWindow
                 so.itemType = ItemType.None;
 
             EditorUtility.SetDirty(so);
+            createdList.Add(so);
         });
+
+        // [데이터베이스 연동]
+        string dbFile = $"{DB_PATH}/ItemDatabase.asset";
+        ItemDatabaseSO db = AssetDatabase.LoadAssetAtPath<ItemDatabaseSO>(dbFile);
+        if (db == null) { db = ScriptableObject.CreateInstance<ItemDatabaseSO>(); AssetDatabase.CreateAsset(db, dbFile); }
+        db.itemSOs = createdList;
+        EditorUtility.SetDirty(db);
     }
 
-    // 상점 레시피
+    // ==========================================================
+    // 2. 상점 레시피 & Database 갱신
+    // ==========================================================
     private static void ConvertShopRecipe()
     {
         string path = "Assets/Resources/GameData/ShopRecipe";
         if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
+        List<ShopRecipeSO> createdList = new List<ShopRecipeSO>();
+
         _Shop_Recipe.ForEachEntity(entity =>
         {
-            if (string.IsNullOrEmpty(entity.Result_Id)) return; // 빈 줄 스킵
+            if (string.IsNullOrEmpty(entity.Result_Id)) return;
 
             string assetPath = $"{path}/Recipe_{entity.Result_Id}.asset";
             ShopRecipeSO so = AssetDatabase.LoadAssetAtPath<ShopRecipeSO>(assetPath);
@@ -87,18 +108,29 @@ public class BGShopDataConverter : EditorWindow
             so.CostItem = GetItemSO(entity.Cost_Id);
 
             EditorUtility.SetDirty(so);
+            createdList.Add(so);
         });
+
+        string dbFile = $"{DB_PATH}/ShopRecipeDatabase.asset";
+        ShopRecipeDatabaseSO db = AssetDatabase.LoadAssetAtPath<ShopRecipeDatabaseSO>(dbFile);
+        if (db == null) { db = ScriptableObject.CreateInstance<ShopRecipeDatabaseSO>(); AssetDatabase.CreateAsset(db, dbFile); }
+        db.recipeSOs = createdList;
+        EditorUtility.SetDirty(db);
     }
 
-    // 상점 포션
+    // ==========================================================
+    // 3. 상점 포션 & Database 갱신
+    // ==========================================================
     private static void ConvertShopPotion()
     {
         string path = "Assets/Resources/GameData/ShopPotion";
         if (!Directory.Exists(path)) Directory.CreateDirectory(path);
 
+        List<ShopPotionSO> createdList = new List<ShopPotionSO>();
+
         _Shop_Potion.ForEachEntity(entity =>
         {
-            if (entity.Potion_Lv <= 0) return; // 레벨이 0 이하면 스킵
+            if (entity.Potion_Lv <= 0) return;
 
             string assetPath = $"{path}/Potion_Lv_{entity.Potion_Lv}.asset";
             ShopPotionSO so = AssetDatabase.LoadAssetAtPath<ShopPotionSO>(assetPath);
@@ -114,14 +146,25 @@ public class BGShopDataConverter : EditorWindow
             so.Req_Mat_2 = GetItemSO(entity.Req_Mat_Id_2);
 
             EditorUtility.SetDirty(so);
+            createdList.Add(so);
         });
+
+        string dbFile = $"{DB_PATH}/ShopPotionDatabase.asset";
+        ShopPotionDatabaseSO db = AssetDatabase.LoadAssetAtPath<ShopPotionDatabaseSO>(dbFile);
+        if (db == null) { db = ScriptableObject.CreateInstance<ShopPotionDatabaseSO>(); AssetDatabase.CreateAsset(db, dbFile); }
+        db.potionSOs = createdList;
+        EditorUtility.SetDirty(db);
     }
 
-    // AI 동료 해금
+    // ==========================================================
+    // 4. AI 동료 해금 & Database 갱신
+    // ==========================================================
     private static void ConvertShopAIUnlock()
     {
         string path = "Assets/Resources/GameData/ShopAIUnlock";
         if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+        List<ShopAIUnlockSO> createdList = new List<ShopAIUnlockSO>();
 
         _Shop_AI_Unlock.ForEachEntity(entity =>
         {
@@ -131,6 +174,7 @@ public class BGShopDataConverter : EditorWindow
             ShopAIUnlockSO so = AssetDatabase.LoadAssetAtPath<ShopAIUnlockSO>(assetPath);
             if (so == null) { so = ScriptableObject.CreateInstance<ShopAIUnlockSO>(); AssetDatabase.CreateAsset(so, assetPath); }
 
+            so.unlockName = entity.name;
             so.AI_Id = entity.AI_Id;
             so.Req_Mat_Amt_1 = entity.Req_Mat_Amt_1;
             so.Req_Mat_Amt_2 = entity.Req_Mat_Amt_2;
@@ -140,14 +184,25 @@ public class BGShopDataConverter : EditorWindow
             so.Req_Mat_2 = GetItemSO(entity.Req_Mat_Id_2);
 
             EditorUtility.SetDirty(so);
+            createdList.Add(so);
         });
+
+        string dbFile = $"{DB_PATH}/ShopAIUnlockDatabase.asset";
+        ShopAIUnlockDatabaseSO db = AssetDatabase.LoadAssetAtPath<ShopAIUnlockDatabaseSO>(dbFile);
+        if (db == null) { db = ScriptableObject.CreateInstance<ShopAIUnlockDatabaseSO>(); AssetDatabase.CreateAsset(db, dbFile); }
+        db.aiUnlockSOs = createdList;
+        EditorUtility.SetDirty(db);
     }
 
-    // 무기 강화
+    // ==========================================================
+    // 5. 무기 강화 & Database 갱신
+    // ==========================================================
     private static void ConvertBlacksmithEnhance()
     {
         string path = "Assets/Resources/GameData/BlacksmithEnhance";
         if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+        List<BlacksmithEnhanceSO> createdList = new List<BlacksmithEnhanceSO>();
 
         _Blacksmith_Enhance.ForEachEntity(entity =>
         {
@@ -167,14 +222,25 @@ public class BGShopDataConverter : EditorWindow
             so.Req_Cost = GetItemSO(entity.Req_Cost_Id);
 
             EditorUtility.SetDirty(so);
+            createdList.Add(so);
         });
+
+        string dbFile = $"{DB_PATH}/BlacksmithEnhanceDatabase.asset";
+        BlacksmithEnhanceDatabaseSO db = AssetDatabase.LoadAssetAtPath<BlacksmithEnhanceDatabaseSO>(dbFile);
+        if (db == null) { db = ScriptableObject.CreateInstance<BlacksmithEnhanceDatabaseSO>(); AssetDatabase.CreateAsset(db, dbFile); }
+        db.enhanceSOs = createdList;
+        EditorUtility.SetDirty(db);
     }
 
-    // 속성 부여(인퓨전)
+    // ==========================================================
+    // 6. 속성 부여(인퓨전) & Database 갱신
+    // ==========================================================
     private static void ConvertBlacksmithInfusion()
     {
         string path = "Assets/Resources/GameData/BlacksmithInfusion";
         if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+        List<BlacksmithInfusionSO> createdList = new List<BlacksmithInfusionSO>();
 
         _Blacksmith_Infusion.ForEachEntity(entity =>
         {
@@ -191,8 +257,14 @@ public class BGShopDataConverter : EditorWindow
             so.Effect_Desc = entity.Effect_Desc;
 
             EditorUtility.SetDirty(so);
+            createdList.Add(so);
         });
+
+        string dbFile = $"{DB_PATH}/BlacksmithInfusionDatabase.asset";
+        BlacksmithInfusionDatabaseSO db = AssetDatabase.LoadAssetAtPath<BlacksmithInfusionDatabaseSO>(dbFile);
+        if (db == null) { db = ScriptableObject.CreateInstance<BlacksmithInfusionDatabaseSO>(); AssetDatabase.CreateAsset(db, dbFile); }
+        db.infusionSOs = createdList;
+        EditorUtility.SetDirty(db);
     }
 }
-
 #endif

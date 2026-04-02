@@ -5,31 +5,30 @@ using UnityEngine.EventSystems;
 public class ShopItemSlot : MonoBehaviour, IPointerClickHandler
 {
     [Header("UI References")]
-    public GameObject selectBg;    // 선택되었을 때 켜질 테두리/배경 이미지
-    public GameObject noSelectBg;  // 평소 배경 이미지
-    public Image itemIcon;         // 슬롯 안의 아이템 아이콘
+    public GameObject Select_Bg;    // 프리팹 이름과 동일하게
+    public GameObject UnSelect_Bg;  // 프리팹 이름과 동일하게
+    public Image Item_Icon;         // 자식 오브젝트인 Item_Icon의 Image 컴포넌트
 
-    [Header("Item Info")]
-    public string itemName;        // 이 슬롯이 가진 아이템 이름
-    public Sprite iconSprite;      // 아이템 아이콘 (현재는 없으면 비워둠)
+    public ScriptableObject myData { get; private set; }
+    private System.Action<ShopItemSlot> onSelectedCallback;
 
-    // 어떤 데이터(SO)를 담고 있는지 저장해둘 변수 (나중에 캐스팅해서 사용)
-    public ScriptableObject itemData;
-
-    // 클릭 시 매니저에게 알릴 콜백
-    public System.Action<ShopItemSlot> onSelected;
-
-    public void Initialize(string name, Sprite icon, ScriptableObject data, System.Action<ShopItemSlot> callback)
+    // 초기화 시 isOwned(보유 여부)를 받아서 실루엣 처리
+    public void Initialize(ScriptableObject data, Sprite icon, bool isOwned, System.Action<ShopItemSlot> callback)
     {
-        itemName = name;
-        iconSprite = icon;
-        itemData = data;
-        onSelected = callback;
+        myData = data;
+        onSelectedCallback = callback;
 
-        if (itemIcon != null && iconSprite != null)
+        if (Item_Icon != null && icon != null)
         {
-            itemIcon.sprite = iconSprite;
-            itemIcon.enabled = true;
+            Item_Icon.sprite = icon;
+            Item_Icon.enabled = true;
+
+            // [핵심] 미보유 시 검은색 실루엣 처리, 보유 시 원래 색상
+            Item_Icon.color = isOwned ? Color.white : Color.black;
+        }
+        else if (Item_Icon != null)
+        {
+            Item_Icon.enabled = false;
         }
 
         SetSelectedState(false);
@@ -37,12 +36,12 @@ public class ShopItemSlot : MonoBehaviour, IPointerClickHandler
 
     public void SetSelectedState(bool isSelected)
     {
-        if (selectBg != null) selectBg.SetActive(isSelected);
-        if (noSelectBg != null) noSelectBg.SetActive(!isSelected);
+        if (Select_Bg != null) Select_Bg.SetActive(isSelected);
+        if (UnSelect_Bg != null) UnSelect_Bg.SetActive(!isSelected);
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-        onSelected?.Invoke(this);
+        onSelectedCallback?.Invoke(this);
     }
 }

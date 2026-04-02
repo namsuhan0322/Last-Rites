@@ -461,8 +461,10 @@ public class TutorialSystem : MonoBehaviour
         GameProgressManager.Instance.CompleteTutorial();
         if (InventoryManager.Instance != null)
         {
+            // 테스트 용
             InventoryManager.Instance.AddItem("S_000", 1);
-            Debug.Log("튜토리얼 스킵! 보스 소울(S_000) 획득 완료.");
+            InventoryManager.Instance.AddItem("R_001", 99);
+            InventoryManager.Instance.AddCurrency(9999);
         }
         if (DataManager.Instance != null)
         {

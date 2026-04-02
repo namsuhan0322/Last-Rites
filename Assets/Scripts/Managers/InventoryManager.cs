@@ -26,6 +26,21 @@ public class InventoryManager : SingletonMono<InventoryManager>
         SaveGame();
     }
 
+    public void AddCurrency(int amount)
+    {
+        if (holder != null && holder.CurrentData != null)
+        {
+            holder.CurrentData.currencyAmount += amount;
+            Debug.Log($"[Manager] 재화 {amount} 획득 완료. (현재 총합: {holder.CurrentData.currencyAmount})");
+
+            SaveGame();
+        }
+        else
+        {
+            Debug.LogWarning("[Manager] 인벤토리 데이터가 없어 재화를 추가할 수 없습니다.");
+        }
+    }
+
     // 인벤토리 변경사항 저장 트리거
     public void SaveGame()
     {

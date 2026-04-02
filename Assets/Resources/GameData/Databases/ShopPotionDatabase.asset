@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3aceeaf5fb2b3b14c88a1f20bbcae472, type: 3}
+  m_Name: ShopPotionDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::ShopPotionDatabaseSO
+  potionSOs:
+  - {fileID: 11400000, guid: 463921fe6c5a4884785a72e39891abe0, type: 2}
+  - {fileID: 11400000, guid: 14e93fe2c9a1d7141a7ca10e3e1932d7, type: 2}
+  - {fileID: 11400000, guid: ccd87b1920fd780419006f283c4865d2, type: 2}

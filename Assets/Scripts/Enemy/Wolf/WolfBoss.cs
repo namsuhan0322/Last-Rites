@@ -182,6 +182,15 @@ public class WolfBoss : Enemy
         isAttacking = true;
         agent.isStopped = true;
 
+        slashIndicator.SetActive(false);
+        jumpIndicator.SetActive(false);
+        chargeIndicator.SetActive(false);
+        spinIndicator.SetActive(false);
+
+        animator.ResetTrigger("AttackReady_P1");
+        animator.ResetTrigger("Attack1_P1");
+        animator.ResetTrigger("Attack2_P1");
+        animator.ResetTrigger("Attack3_P1");
         animator.SetTrigger("PhaseRoar");
 
         yield return new WaitForSeconds(2.0f);
@@ -204,7 +213,7 @@ public class WolfBoss : Enemy
     //공격시도 (스킬 포함)
     protected override void TryAttack()
     {
-        if (isPhaseChanging || isComboAttacking) return;
+        if (isPhaseChanging || isComboAttacking || isStuned) return;
         if (currentTarget == null) return;
 
         if (!hasStartedCombat)
@@ -264,6 +273,7 @@ public class WolfBoss : Enemy
     //기본 콤보
     IEnumerator ComboAttack()
     {
+        if (isPhaseChanging) yield break;
         isAttacking = true;
         isComboAttacking = true;
 
@@ -327,6 +337,7 @@ public class WolfBoss : Enemy
     //오른쪽 할퀴기
     IEnumerator Slash()
     {
+        if (isPhaseChanging) yield break;
         isAttacking = true;
         isComboAttacking = true;
 
@@ -443,6 +454,7 @@ public class WolfBoss : Enemy
     //점프 어택
     IEnumerator JumpAttack()
     {
+        if (isPhaseChanging) yield break;
         isAttacking = true;
         isComboAttacking = true;
         isInvincible = true; 
@@ -532,8 +544,10 @@ public class WolfBoss : Enemy
 
         jumpIndicator.transform.rotation = Quaternion.Euler(90f, 0, 0);
     }
+    //돌진 
     IEnumerator Charge()
     {
+        if (isPhaseChanging) yield break;
         isAttacking = true;
         isComboAttacking = true;
         isCharging = true;
@@ -654,7 +668,7 @@ public class WolfBoss : Enemy
         agent.isStopped = false;
         agent.updateRotation = true;
     }
-
+    //스턴
     IEnumerator StunRoutine()
     {
         isStuned = true;
@@ -706,8 +720,11 @@ public class WolfBoss : Enemy
         DealJumpDamage();
     }
 
+    //휘두르기
     IEnumerator SpinAttack()
     {
+
+        if (isPhaseChanging) yield break;
         isAttacking = true;
         isComboAttacking = true;
 
@@ -734,7 +751,7 @@ public class WolfBoss : Enemy
         agent.isStopped = false;
         agent.updateRotation = true;
     }
-
+    //휘두르기 보여주기
     void ShowSpinIndicator()
     {
         spinIndicator.SetActive(true);
@@ -750,7 +767,7 @@ public class WolfBoss : Enemy
 
         spinIndicator.transform.rotation = Quaternion.Euler(90f, 0, 0);
     }
-
+    //휘두르기 데미지 주기
    public  void DealSpinDamage()
     {
         Collider[] hits = Physics.OverlapSphere(
@@ -770,7 +787,7 @@ public class WolfBoss : Enemy
 
     public override void TakeDamage(int damage, float severityOverride = -1f)
     {
-        if (isInvincible) return; 
+        if (isInvincible || isPhaseChanging) return; 
 
         if (isHit || _isDead) return;
         base.TakeDamage(damage, severityOverride);

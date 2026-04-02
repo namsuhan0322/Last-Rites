@@ -52,6 +52,17 @@ public class WolfBoss : Enemy
     [Header("Phase2 콤보")]
     public float comboDelay_P2 = 0.3f;
     public float comboRecovery_P2 = 1.0f;
+
+    [Header("Phase2 휘두르기")]
+    public float spinAttackRange = 5f;
+    public int spinAttackDamage = 35;
+    public float spinCooldown = 6f;
+    public GameObject spinIndicatorPrefab;
+
+    float spinTimer = 0f;
+    GameObject spinIndicator;
+
+
     public Transform headTransform; 
     int comboIndex = 0;
     bool isComboAttacking = false;
@@ -60,7 +71,7 @@ public class WolfBoss : Enemy
     public GameObject roarVFXPrefab;
     public GameObject clawVFXPrefab;
     public GameObject biteVFXPrefab;
-
+    public GameObject spinVFXPrefab;
     protected override void Awake()
     {
         base.Awake();
@@ -73,6 +84,9 @@ public class WolfBoss : Enemy
 
         chargeIndicator = Instantiate(chargeIndicatorPrefab, transform);
         chargeIndicator.SetActive(false);
+
+        spinIndicator = Instantiate(spinIndicatorPrefab, transform);
+        spinIndicator.SetActive(false);
     }
 
     protected override void Update()
@@ -81,6 +95,7 @@ public class WolfBoss : Enemy
         slashTimer -= Time.deltaTime;
         jumpTimer -= Time.deltaTime;
         chargeTimer -= Time.deltaTime;
+        spinTimer -= Time.deltaTime;
 
         if (_isDead) return;
 
@@ -219,6 +234,20 @@ public class WolfBoss : Enemy
             int index = Random.Range(0, patterns.Count);
             patterns[index].Invoke();
 
+            return;
+        }
+
+        if (currentPhase == BossPhase.Phase2)
+        {
+            List<System.Action> patterns = new List<System.Action>();
+
+            if (spinTimer <= 0f)
+                patterns.Add(() => StartCoroutine(SpinAttack()));
+
+            patterns.Add(() => base.TryAttack());
+
+            int index = Random.Range(0, patterns.Count);
+            patterns[index].Invoke();
             return;
         }
 
@@ -677,6 +706,68 @@ public class WolfBoss : Enemy
         DealJumpDamage();
     }
 
+    IEnumerator SpinAttack()
+    {
+        isAttacking = true;
+        isComboAttacking = true;
+
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.updateRotation = false;
+
+        ShowSpinIndicator();
+
+        yield return new WaitForSeconds(1.5f); 
+
+        spinIndicator.SetActive(false);
+
+        animator.SetTrigger("Spin"); 
+
+        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(2f);
+
+        spinTimer = spinCooldown;
+
+        isComboAttacking = false;
+        EndAttack();
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+    }
+
+    void ShowSpinIndicator()
+    {
+        spinIndicator.SetActive(true);
+
+        float diameter = spinAttackRange * 2f;
+
+        spinIndicator.transform.localScale = new Vector3(diameter, diameter, 1f);
+
+        Vector3 pos = transform.position;
+        pos.y += 0.05f;
+
+        spinIndicator.transform.position = pos;
+
+        spinIndicator.transform.rotation = Quaternion.Euler(90f, 0, 0);
+    }
+
+   public  void DealSpinDamage()
+    {
+        Collider[] hits = Physics.OverlapSphere(
+            transform.position,
+            spinAttackRange,
+            targetLayer
+        );
+
+        foreach (var hit in hits)
+        {
+            Actor actor = hit.GetComponent<Actor>();
+            if (actor == null || actor == this) continue;
+
+            actor.TakeDamage(spinAttackDamage, 1f);
+        }
+    }
+
     public override void TakeDamage(int damage, float severityOverride = -1f)
     {
         if (isInvincible) return; 
@@ -730,6 +821,21 @@ public class WolfBoss : Enemy
         Quaternion rot = Quaternion.LookRotation(attackDirection);
 
         GameObject vfx = Instantiate(biteVFXPrefab, spawnPos, rot);
+
+        Destroy(vfx, 2f);
+    }
+
+    //돌기
+    public void SpawnSpinVFX()
+    {
+        if (spinVFXPrefab == null) return;
+
+        Vector3 pos = transform.position;
+        pos.y += 0.1f;
+
+        GameObject vfx = Instantiate(spinVFXPrefab, pos, Quaternion.identity);
+
+        vfx.transform.localScale = Vector3.one * 2f; 
 
         Destroy(vfx, 2f);
     }

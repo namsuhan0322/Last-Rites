@@ -28,7 +28,6 @@ public class TutorialSystem : MonoBehaviour
     [Header("튜토리얼 완료 UI")]
     public TMP_Text tutorialCompleteText;
 
-
     public PlayerController playerController; // 추가
     public GameObject wolfPrefab;
 
@@ -54,6 +53,9 @@ public class TutorialSystem : MonoBehaviour
     Coroutine missionRoutine;
     bool bossPhaseStarted = false;
     SkillTutorial skillTutorial;
+
+    [Header("스킵 기능")]
+    public Transform bossFightLocation;
 
     void Start()
     {
@@ -370,8 +372,20 @@ public class TutorialSystem : MonoBehaviour
 
         tutorialCompleteText.text = "튜토리얼 완료";
 
-        GameProgressManager.Instance.progressData.isTutorialCleared = true;
-        GameProgressManager.Instance.SaveProgress(); // 즉시 파일로 저장
+        GameProgressManager.Instance.CompleteTutorial();
+
+        // 인벤토리에 튜토리얼 보스 소울(S_000) 1개 지급
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.AddItem("S_000", 1);
+            Debug.Log("튜토리얼 보스 소울(S_000) 획득!");
+        }
+
+        // 진행도와 인벤토리가 모두 변경되었으므로, 하나의 세이브 파일로 완벽하게 통합 저장
+        if (DataManager.Instance != null)
+        {
+            DataManager.Instance.SaveAllData();
+        }
 
         t = 0f;
         Color c = tutorialCompleteText.color;
@@ -392,5 +406,80 @@ public class TutorialSystem : MonoBehaviour
 
             yield return null;
         }
+    }
+
+    public void SkipTutorial()
+    {
+        if (bossPhaseStarted) return;
+
+        StopAllCoroutines();
+        StartCoroutine(SkipCoroutine());
+    }
+
+    private IEnumerator SkipCoroutine()
+    {
+        EventSystemManager.Instance?.StartEvent();
+
+        if (ScenesManager.Instance != null)
+        {
+            yield return StartCoroutine(ScenesManager.Instance.FadeIn());
+        }
+
+        // UI 끄기 및 상태 초기화
+        startPanel.SetActive(false);
+        battlePanel.SetActive(false);
+        EnterClickUI.SetActive(false);
+        tutorialCompleteText.gameObject.SetActive(false);
+
+        waitingForEnter = false;
+        waitingForBattleStart = false;
+        waitingForEnterClick = false;
+        tutorialPlaying = false;
+        bossPhaseStarted = true;
+
+        tutorialCam.Priority = 5;
+        playerCam.Priority = 20;
+
+        // 플레이어 순간이동
+        if (playerController != null && bossFightLocation != null)
+        {
+            playerController.enabled = false;
+            playerController.Agent.enabled = false;
+            playerController.CC.enabled = false;
+
+            playerController.transform.position = bossFightLocation.position;
+            playerController.transform.rotation = bossFightLocation.rotation;
+
+            playerController.CC.enabled = true;
+            playerController.Agent.enabled = true;
+            playerController.enabled = true;
+
+            playerController.Anim.SetFloat("Move", 0f);
+        }
+
+        // 보상 지급 및 마스터 세이브
+        GameProgressManager.Instance.CompleteTutorial();
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.AddItem("S_000", 1);
+            Debug.Log("튜토리얼 스킵! 보스 소울(S_000) 획득 완료.");
+        }
+        if (DataManager.Instance != null)
+        {
+            DataManager.Instance.SaveAllData();
+        }
+
+        // 다음 미션 안내 띄우기
+        directionArrow.SetActive(true);
+        ShowMission("포탈을 통해 로비로 이동하세요");
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
+        if (ScenesManager.Instance != null)
+        {
+            yield return StartCoroutine(ScenesManager.Instance.FadeOut());
+        }
+
+        EventSystemManager.Instance?.EndEvent();
     }
 }

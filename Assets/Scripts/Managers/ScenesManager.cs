@@ -139,7 +139,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
         DontDestroyOnLoad(fadeObject);
     }
 
-    private IEnumerator FadeIn()
+    public IEnumerator FadeIn()
     {
         if (fadeCanvasGroup == null) yield break;
 
@@ -153,7 +153,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
         fadeCanvasGroup.alpha = 1f;
     }
 
-    private IEnumerator FadeOut()
+    public IEnumerator FadeOut()
     {
         if (fadeCanvasGroup == null) yield break;
 

@@ -1,57 +1,29 @@
 using UnityEngine;
-using System.IO;
 
 public class GameProgressManager : SingletonMono<GameProgressManager>
 {
     protected override bool DontDestroy => true;
 
     [Header("Data")]
-    public GameProgressData progressData;
+    public GameProgressData progressData { get; private set; }
 
-    private string saveFilePath;
-
-    protected override void Awake()
+    // DataManager가 게임 시작 시 이 함수를 호출해 데이터를 주입해 줍니다.
+    public void InitializeData(GameProgressData data)
     {
-        base.Awake();
-        // 설정 데이터와 파일 이름을 다르게 지정합니다!
-        saveFilePath = Path.Combine(Application.persistentDataPath, "progress_data.json");
-        LoadProgress();
+        progressData = data ?? new GameProgressData();
+        Debug.Log("[GameProgressManager] 진행도 데이터 초기화 완료");
     }
 
-    public void SaveProgress()
+
+    public void CompleteTutorial()
     {
-        string json = JsonUtility.ToJson(progressData, true);
-        File.WriteAllText(saveFilePath, json);
-        Debug.Log($"[GameProgressManager] 진행도 저장 완료: {saveFilePath}");
+        progressData.isTutorialCleared = true;
+        DataManager.Instance.SaveAllData();
     }
 
-    public void LoadProgress()
+    public void CompleteTheme(int themeLevel)
     {
-        if (File.Exists(saveFilePath))
-        {
-            try
-            {
-                string json = File.ReadAllText(saveFilePath);
-                progressData = JsonUtility.FromJson<GameProgressData>(json);
-                Debug.Log("[GameProgressManager] 진행도 불러오기 성공");
-            }
-            catch
-            {
-                Debug.LogError("[GameProgressManager] 데이터 손상됨, 기본값(처음부터) 시작");
-                progressData = new GameProgressData();
-            }
-        }
-        else
-        {
-            Debug.Log("[GameProgressManager] 진행도 파일 없음, 뉴 게임 시작");
-            progressData = new GameProgressData();
-        }
-    }
-
-    // 진행도를 아예 초기화하는 기능 (새 게임 시작 시 호출)
-    public void ResetProgress()
-    {
-        progressData = new GameProgressData();
-        SaveProgress();
+        progressData.clearedThemeLevel = themeLevel;
+        DataManager.Instance.SaveAllData();
     }
 }

@@ -59,6 +59,16 @@ public class WolfBoss : Enemy
     public float spinCooldown = 6f;
     public GameObject spinIndicatorPrefab;
 
+    [Header("Phase2 암흑탄")]
+    public GameObject darkProjectilePrefab;
+    public Transform firePoint;
+    public float projectileSpeed = 10f;
+    public float spreadAngle = 50f; 
+    public float projectileLifeTime = 3f;
+    public float darkShotCooldown = 5f;
+
+    float darkShotTimer = 0f;
+
     float spinTimer = 0f;
     GameObject spinIndicator;
 
@@ -96,7 +106,7 @@ public class WolfBoss : Enemy
         jumpTimer -= Time.deltaTime;
         chargeTimer -= Time.deltaTime;
         spinTimer -= Time.deltaTime;
-
+        darkShotTimer -= Time.deltaTime;
         if (_isDead) return;
 
         if (attackTimer > 0f || isPhaseChanging || isComboAttacking)
@@ -166,6 +176,8 @@ public class WolfBoss : Enemy
     void UpdatePhase()
     {
         if (isPhaseChanging) return;
+
+        if (isAttacking || isComboAttacking) return;
 
         float hpPercent = (float)_currentHP / _maxHP;
 
@@ -256,6 +268,9 @@ public class WolfBoss : Enemy
 
             if (spinTimer <= 0f)
                 patterns.Add(() => StartCoroutine(SpinAttack()));
+
+            if (darkShotTimer <= 0f)
+                patterns.Add(() => StartCoroutine(DarkShot()));
 
             patterns.Add(() => base.TryAttack());
 
@@ -785,6 +800,69 @@ public class WolfBoss : Enemy
         }
     }
 
+    //암흑 공 샷
+    IEnumerator DarkShot()
+    {
+        if (isPhaseChanging) yield break;
+
+        isAttacking = true;
+        isComboAttacking = true;
+
+        agent.isStopped = true;
+        agent.updateRotation = false;
+
+        Vector3 dir = currentTarget.position - transform.position;
+        dir.y = 0;
+        dir.Normalize();
+
+        attackDirection = dir;
+        transform.rotation = Quaternion.LookRotation(dir);
+
+        animator.SetTrigger("DarkShot");
+
+        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(3f);
+
+        darkShotTimer = darkShotCooldown;
+
+        isComboAttacking = false;
+        EndAttack();
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+    }
+    //암흑 공 샷
+    public void FireDarkShot()
+    {
+        FireSpreadProjectiles(attackDirection);
+    }
+    //암흑 공 샷
+    void FireSpreadProjectiles(Vector3 forward)
+    {
+        float halfAngle = spreadAngle * 0.5f;
+
+        SpawnProjectile(forward);
+
+        Vector3 leftDir = Quaternion.Euler(0, -halfAngle, 0) * forward;
+        SpawnProjectile(leftDir);
+
+        Vector3 rightDir = Quaternion.Euler(0, halfAngle, 0) * forward;
+        SpawnProjectile(rightDir);
+    }
+
+    void SpawnProjectile(Vector3 dir)
+    {
+        GameObject proj = Instantiate(darkProjectilePrefab, firePoint.position, Quaternion.LookRotation(dir));
+
+        Rigidbody rb = proj.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.linearVelocity = dir * projectileSpeed;
+        }
+
+        Destroy(proj, projectileLifeTime);
+    }
+
     public override void TakeDamage(int damage, float severityOverride = -1f)
     {
         if (isInvincible || isPhaseChanging) return; 
@@ -794,6 +872,7 @@ public class WolfBoss : Enemy
 
         EndHit();
     }
+
 
     //vfx 애니메이션들
 

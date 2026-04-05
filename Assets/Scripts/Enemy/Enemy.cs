@@ -520,9 +520,9 @@ public class Enemy : Actor
         Vector3 dir = currentTarget.position - transform.position;
         dir.y = 0;
 
-        attackDirection = dir.normalized; 
+        attackDirection = dir.normalized;
 
-        RotateToTarget();
+        transform.rotation = Quaternion.LookRotation(attackDirection);
 
         attackTimer = attackCooldown;
     }
@@ -572,7 +572,8 @@ public class Enemy : Actor
         if (dir.sqrMagnitude < 0.001f) return;
 
         Quaternion rot = Quaternion.LookRotation(dir);
-        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 1.5f);
+
+        transform.rotation = Quaternion.Slerp(transform.rotation, rot, Time.deltaTime * 8f);
     }
 
     //피격 끝 시점

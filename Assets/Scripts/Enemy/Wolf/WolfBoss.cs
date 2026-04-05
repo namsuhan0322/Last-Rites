@@ -107,7 +107,10 @@ public class WolfBoss : Enemy
         chargeTimer -= Time.deltaTime;
         spinTimer -= Time.deltaTime;
         darkShotTimer -= Time.deltaTime;
+
         if (_isDead) return;
+
+        UpdatePhase();
 
         if (attackTimer > 0f || isPhaseChanging || isComboAttacking)
         {
@@ -126,8 +129,6 @@ public class WolfBoss : Enemy
         }
 
         base.Update();
-
-        UpdatePhase();
         UpdateIdleState();
     }
 
@@ -177,11 +178,12 @@ public class WolfBoss : Enemy
     {
         if (isPhaseChanging) return;
 
-        if (isAttacking || isComboAttacking) return;
-
         float hpPercent = (float)_currentHP / _maxHP;
 
-        if (currentPhase == BossPhase.Phase1 && hpPercent <= phase2HpPercent)
+        if (currentPhase == BossPhase.Phase1
+            && hpPercent <= phase2HpPercent
+            && !isAttacking
+            && !isComboAttacking)
         {
             StartCoroutine(ChangeToPhase2());
         }
@@ -305,9 +307,21 @@ public class WolfBoss : Enemy
 
         Vector3 dir = currentTarget.position - transform.position;
         dir.y = 0;
-        attackDirection = dir.normalized;
 
-        transform.rotation = Quaternion.LookRotation(attackDirection);
+        float rotateTime = 0.3f;
+        float t = 0f;
+
+        Quaternion startRot = transform.rotation;
+        Quaternion targetRot = Quaternion.LookRotation(dir);
+
+        while (t < rotateTime)
+        {
+            t += Time.deltaTime;
+            transform.rotation = Quaternion.Slerp(startRot, targetRot, t / rotateTime);
+            yield return null;
+        }
+
+        attackDirection = dir.normalized;
 
         float recovery = (currentPhase == BossPhase.Phase1) ? comboRecovery_P1 : comboRecovery_P2;
 
@@ -318,18 +332,13 @@ public class WolfBoss : Enemy
 
         yield return new WaitForSeconds(1.5f);
 
-        int rand = Random.Range(1, 4); 
+        int rand = Random.Range(1, 4);
 
         if (currentPhase == BossPhase.Phase1)
-        {
             animator.SetTrigger($"Attack{rand}_P1");
-        }
         else
-        {
             animator.SetTrigger($"Attack{rand}_P2");
-        }
 
-        // 공격 후 딜레이
         yield return new WaitForSeconds(recovery);
 
         agent.updateRotation = true;
@@ -815,9 +824,19 @@ public class WolfBoss : Enemy
         dir.y = 0;
         dir.Normalize();
 
-        attackDirection = dir;
-        transform.rotation = Quaternion.LookRotation(dir);
+        float rotateTime = 0.4f; 
+        float t = 0f;
 
+        Quaternion startRot = transform.rotation;
+        Quaternion targetRot = Quaternion.LookRotation(dir);
+
+        while (t < rotateTime)
+        {
+            t += Time.deltaTime;
+            transform.rotation = Quaternion.Slerp(startRot, targetRot, t / rotateTime);
+            yield return null;
+        }
+        attackDirection = dir;
         animator.SetTrigger("DarkShot");
 
         yield return new WaitForSeconds(1.5f);
@@ -849,7 +868,7 @@ public class WolfBoss : Enemy
         Vector3 rightDir = Quaternion.Euler(0, halfAngle, 0) * forward;
         SpawnProjectile(rightDir);
     }
-
+    //암흑 공 샷
     void SpawnProjectile(Vector3 dir)
     {
         GameObject proj = Instantiate(darkProjectilePrefab, firePoint.position, Quaternion.LookRotation(dir));
@@ -872,7 +891,6 @@ public class WolfBoss : Enemy
 
         EndHit();
     }
-
 
     //vfx 애니메이션들
 
@@ -937,5 +955,7 @@ public class WolfBoss : Enemy
 
         Destroy(vfx, 2f);
     }
+
+
 
 }

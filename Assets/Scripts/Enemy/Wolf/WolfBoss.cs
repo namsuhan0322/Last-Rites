@@ -219,9 +219,13 @@ public class WolfBoss : Enemy
         if (!hasStartedCombat)
         {
             hasStartedCombat = true;
-            Attack();
+
+            animator.SetTrigger("FirstRoar");
+
+            attackTimer = 2f;
             return;
         }
+
         float dist = Vector3.Distance(transform.position, currentTarget.position);
         if (currentPhase == BossPhase.Phase1)
         {
@@ -274,6 +278,7 @@ public class WolfBoss : Enemy
     IEnumerator ComboAttack()
     {
         if (isPhaseChanging) yield break;
+
         isAttacking = true;
         isComboAttacking = true;
 
@@ -289,41 +294,27 @@ public class WolfBoss : Enemy
 
         transform.rotation = Quaternion.LookRotation(attackDirection);
 
-        float delay = (currentPhase == BossPhase.Phase1) ? comboDelay_P1 : comboDelay_P2;
         float recovery = (currentPhase == BossPhase.Phase1) ? comboRecovery_P1 : comboRecovery_P2;
 
         if (currentPhase == BossPhase.Phase1)
-        {
             animator.SetTrigger("AttackReady_P1");
-        }
         else
-        {
             animator.SetTrigger("AttackReady_P2");
-        }
 
         yield return new WaitForSeconds(1.5f);
 
+        int rand = Random.Range(1, 4); 
+
         if (currentPhase == BossPhase.Phase1)
         {
-            animator.SetTrigger("Attack1_P1");
-            yield return new WaitForSeconds(delay);
-
-            animator.SetTrigger("Attack2_P1");
-            yield return new WaitForSeconds(delay);
-
-            animator.SetTrigger("Attack3_P1");
+            animator.SetTrigger($"Attack{rand}_P1");
         }
         else
         {
-            animator.SetTrigger("Attack1_P2");
-            yield return new WaitForSeconds(delay);
-
-            animator.SetTrigger("Attack2_P2");
-            yield return new WaitForSeconds(delay);
-
-            animator.SetTrigger("Attack3_P2");
+            animator.SetTrigger($"Attack{rand}_P2");
         }
 
+        // 공격 후 딜레이
         yield return new WaitForSeconds(recovery);
 
         agent.updateRotation = true;
@@ -650,6 +641,11 @@ public class WolfBoss : Enemy
 
             if (envHits.Length > 0)
             {
+                isCharging = false;
+                isComboAttacking = false;
+
+                EndAttack(); 
+
                 StartCoroutine(StunRoutine());
                 yield break;
             }
@@ -673,12 +669,13 @@ public class WolfBoss : Enemy
     {
         isStuned = true;
         isAttacking = true;
+        isComboAttacking = false;
 
         agent.isStopped = true;
         agent.velocity = Vector3.zero;
         agent.updateRotation = false;
 
-        animator.SetBool("Stun", true); 
+        animator.SetBool("Stun", true);
 
         yield return new WaitForSeconds(stunDuration);
 
@@ -686,11 +683,14 @@ public class WolfBoss : Enemy
 
         isStuned = false;
         isAttacking = false;
+        isComboAttacking = false;
+
+        EndAttack(); 
 
         agent.isStopped = false;
         agent.updateRotation = true;
 
-        attackTimer = 3f; 
+        attackTimer = 2f; 
     }
 
     //점프 데미지 주기
@@ -808,6 +808,8 @@ public class WolfBoss : Enemy
         rot *= Quaternion.AngleAxis(180f, Vector3.forward);
 
         GameObject vfx = Instantiate(clawVFXPrefab, spawnPos, rot);
+
+        vfx.transform.localScale = Vector3.one * 1.5f;
 
         ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
         if (ps != null)

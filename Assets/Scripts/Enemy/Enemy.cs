@@ -554,7 +554,7 @@ public class Enemy : Actor
 
             float dot = Vector3.Dot(attackDirection, toTarget);
 
-            if (dot < 0.8f) continue; 
+            if (dot < 0.7f) continue; 
 
             float hitSeverity = (data.rank == EnemyRank.Minion) ? 0f : 1.0f;
             target.TakeDamage(attackDamage, hitSeverity);

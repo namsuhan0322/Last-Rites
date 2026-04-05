@@ -2019,15 +2019,15 @@ MonoBehaviour:
   slashRange: 3
   slashAngle: 100
   slashDamage: 20
-  slashCooldown: 3
+  slashCooldown: 10
   slashIndicatorPrefab: {fileID: 1779612450509799420}
   clawSpawnPoint: {fileID: 412715945584459843}
   jumpAttackRange: 5
   jumpAttackDamage: 30
   jumpDelay: 2.5
-  jumpCooldown: 8
+  jumpCooldown: 15
   jumpIndicatorPrefab: {fileID: 2172075335282298989}
-  chargeCooldown: 10
+  chargeCooldown: 30
   chargeDistance: 10
   chargeSpeed: 20
   chargeLockTime: 2

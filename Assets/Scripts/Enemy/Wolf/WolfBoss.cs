@@ -66,14 +66,19 @@ public class WolfBoss : Enemy
     public float spreadAngle = 50f; 
     public float projectileLifeTime = 3f;
     public float darkShotCooldown = 5f;
+    public Transform headTransform;
+    [Header("Phase2 내려찍기")]
+    public float stompRange = 6f;
+    public int stompDamage = 50;
+    public float stompCooldown = 8f;
+    public GameObject stompIndicatorPrefab;
+    public float stompWarningTime = 2.5f;
 
+    float stompTimer = 0f;
+    GameObject stompIndicator;
     float darkShotTimer = 0f;
-
     float spinTimer = 0f;
     GameObject spinIndicator;
-
-
-    public Transform headTransform; 
     int comboIndex = 0;
     bool isComboAttacking = false;
     bool isPhaseChanging = false;
@@ -97,6 +102,9 @@ public class WolfBoss : Enemy
 
         spinIndicator = Instantiate(spinIndicatorPrefab, transform);
         spinIndicator.SetActive(false);
+
+        stompIndicator = Instantiate(stompIndicatorPrefab, transform);
+        stompIndicator.SetActive(false);
     }
 
     protected override void Update()
@@ -107,6 +115,7 @@ public class WolfBoss : Enemy
         chargeTimer -= Time.deltaTime;
         spinTimer -= Time.deltaTime;
         darkShotTimer -= Time.deltaTime;
+        stompTimer -= Time.deltaTime;
 
         if (_isDead) return;
 
@@ -275,6 +284,9 @@ public class WolfBoss : Enemy
                 patterns.Add(() => StartCoroutine(DarkShot()));
 
             patterns.Add(() => base.TryAttack());
+
+            if (stompTimer <= 0f)
+                patterns.Add(() => StartCoroutine(StompAttack()));
 
             int index = Random.Range(0, patterns.Count);
             patterns[index].Invoke();
@@ -882,6 +894,108 @@ public class WolfBoss : Enemy
         Destroy(proj, projectileLifeTime);
     }
 
+    //내려찍기 공격
+    IEnumerator StompAttack()
+    {
+        if (isPhaseChanging) yield break;
+
+        isAttacking = true;
+        isComboAttacking = true;
+
+        agent.isStopped = true;
+        agent.updateRotation = false;
+
+        Vector3 dir = currentTarget.position - transform.position;
+        dir.y = 0;
+
+        float rotateTime = 0.3f;
+        float t = 0f;
+
+        Quaternion startRot = transform.rotation;
+        Quaternion targetRot = Quaternion.LookRotation(dir);
+
+        while (t < rotateTime)
+        {
+            t += Time.deltaTime;
+            transform.rotation = Quaternion.Slerp(startRot, targetRot, t / rotateTime);
+            yield return null;
+        }
+
+        attackDirection = dir.normalized;
+
+        yield return new WaitForSeconds(stompWarningTime);
+
+        animator.speed = 0.4f; 
+
+        animator.SetTrigger("Stomp");
+
+        yield return new WaitForSeconds(4.0f);
+
+        stompTimer = stompCooldown;
+
+        isComboAttacking = false;
+        EndAttack();
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+
+        animator.speed = 1f; 
+    }
+
+    //내려찍기 장판
+    void ShowStompIndicator()
+    {
+        stompIndicator.SetActive(true);
+
+        float diameter = stompRange * 2f;
+
+        stompIndicator.transform.localScale = new Vector3(diameter, diameter, 1f);
+
+        Vector3 pos = transform.position;
+        pos.y += 0.05f;
+
+        stompIndicator.transform.position = pos;
+        stompIndicator.transform.rotation = Quaternion.Euler(90f, 0, 0);
+    }
+
+    //내려찍기 입팩트
+    public void OnStompImpact()
+    {
+        if (stompIndicator != null)
+            stompIndicator.SetActive(false);
+
+        Collider[] hits = Physics.OverlapSphere(
+            transform.position,
+            stompRange,
+            targetLayer
+        );
+
+        foreach (var hit in hits)
+        {
+            Actor actor = hit.GetComponent<Actor>();
+            if (actor == null || actor == this) continue;
+
+            actor.TakeDamage(stompDamage, 1f);
+        }
+
+        animator.speed = 1f; 
+    }
+
+    public void OnStompReady()
+    {
+        ShowStompIndicator();
+
+        animator.speed = 0f;
+
+        StartCoroutine(StompResumeRoutine());
+    }
+
+    IEnumerator StompResumeRoutine()
+    {
+        yield return new WaitForSeconds(2.5f);
+
+        animator.speed = 0.25f;
+    }
     public override void TakeDamage(int damage, float severityOverride = -1f)
     {
         if (isInvincible || isPhaseChanging) return; 
@@ -906,7 +1020,7 @@ public class WolfBoss : Enemy
 
         GameObject vfx = Instantiate(clawVFXPrefab, spawnPos, rot);
 
-        vfx.transform.localScale = Vector3.one * 1.5f;
+        vfx.transform.localScale = Vector3.one * 1.8f;
 
         ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
         if (ps != null)
@@ -951,7 +1065,7 @@ public class WolfBoss : Enemy
 
         GameObject vfx = Instantiate(spinVFXPrefab, pos, Quaternion.identity);
 
-        vfx.transform.localScale = Vector3.one * 2f; 
+        vfx.transform.localScale = Vector3.one * 1.8f; 
 
         Destroy(vfx, 2f);
     }

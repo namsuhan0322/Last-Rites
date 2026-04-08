@@ -115,7 +115,6 @@ public class ShopUIManager : MonoBehaviour
             if (s != null) myRawAmount = s.amount;
         }
 
-        // [요구사항 반영] 가공 결과물 텍스트 삭제, 가공 필요 비용만 표시
         if (requirementText != null)
         {
             string reqStr = "<color=yellow>[가공 필요 비용]</color>\n";
@@ -155,10 +154,6 @@ public class ShopUIManager : MonoBehaviour
         if (middleItemImage != null) middleItemImage.color = new Color(1f, 1f, 1f, 0f);
     }
 
-    // =======================================================
-    // 팝업 및 실제 가공 로직
-    // =======================================================
-
     private void OpenPopup(ShopItemSlot slot)
     {
         ShopRecipeSO recipe = slot.myData as ShopRecipeSO;
@@ -184,38 +179,33 @@ public class ShopUIManager : MonoBehaviour
         ShopRecipeSO recipe = currentSelectedSlot.myData as ShopRecipeSO;
         if (recipe == null) return;
 
-        // 1. 현재 보유량 다시 체크
+        // 현재 보유량 다시 체크
         InventoryData inv = InventoryManager.Instance.GetCurrentData();
         ItemSlot s = inv.items.Find(x => x.itemID == recipe.MatItem.ItemId);
         int myRawAmount = (s != null) ? s.amount : 0;
         int myCurrencyAmount = inv.currencyAmount;
 
-        // 2. 재료와 재화가 충분한지 검사
+        // 재료와 재화가 충분한지 검사
         if (myRawAmount >= recipe.Mat_Amt && myCurrencyAmount >= recipe.Cost_Amt)
         {
-            // 3. 재료 및 재화 차감 (마이너스 값으로 AddItem 호출)
             InventoryManager.Instance.AddItem(recipe.MatItem.ItemId, -recipe.Mat_Amt);
             if (recipe.CostItem != null && recipe.Cost_Amt > 0)
             {
                 InventoryManager.Instance.AddItem(recipe.CostItem.ItemId, -recipe.Cost_Amt);
             }
 
-            // 4. 결과물 획득!
             InventoryManager.Instance.AddItem(recipe.ResultItem.ItemId, recipe.Result_Amt);
 
-            // 5. 마스터 세이브 진행
             DataManager.Instance.SaveAllData();
             Debug.Log($"<color=cyan>[가공 성공] {recipe.ResultItem.itemName}을(를) {recipe.Result_Amt}개 획득했습니다!</color>");
 
-            // 6. UI 갱신 및 팝업 닫기
-            GenerateShopSlots(); // 재료를 다 써서 0개가 되었다면 실루엣 처리되도록 슬롯 재배치
-            UpdateDetailPanel(currentSelectedSlot); // 우측 텍스트 최신화
+            GenerateShopSlots();
+            UpdateDetailPanel(currentSelectedSlot);
             ClosePopup();
         }
         else
         {
             Debug.Log("<color=red>[가공 실패] 재료 또는 재화가 부족합니다.</color>");
-            // (선택 사항) 화면에 "재료가 부족합니다" 플로팅 텍스트를 띄우면 더 좋습니다.
         }
     }
 }

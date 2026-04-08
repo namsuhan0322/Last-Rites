@@ -15,4 +15,9 @@ public class AISO : ScriptableObject
     public string S2_Name;
     public float S2_Val;
     public float S2_Cool;
+
+    [Header("Visuals & Info")]
+    public Sprite aiIcon;
+    public Sprite aiIllustration;
+    [TextArea] public string description;
 }

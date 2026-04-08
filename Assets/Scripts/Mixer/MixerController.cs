@@ -25,15 +25,19 @@ public class MixerController : MonoBehaviour
     {
         SaveData data = SaveDataHolder.Instance.currentData;
 
+        float mVol = data.masterVolume / 10f;
+        float bVol = data.bgmVolume / 10f;
+        float sVol = data.sfxVolume / 10f;
+
         // 저장된 값으로 초기화
-        masterSlider.Initialize(data.masterVolume, SetMasterVolume);
-        bgmSlider.Initialize(data.bgmVolume, SetBGMVolume);
-        sfxSlider.Initialize(data.sfxVolume, SetSFXVolume);
+        masterSlider.Initialize(mVol, SetMasterVolume);
+        bgmSlider.Initialize(bVol, SetBGMVolume);
+        sfxSlider.Initialize(sVol, SetSFXVolume);
 
         // 믹서에도 적용
-        UpdateMixer("Master", data.masterVolume);
-        UpdateMixer("BGM", data.bgmVolume);
-        UpdateMixer("SFX", data.sfxVolume);
+        UpdateMixer("Master", mVol);
+        UpdateMixer("BGM", bVol);
+        UpdateMixer("SFX", sVol);
 
         // UI 선택 상태
         masterSlider.onSelected = OnSliderSelected;
@@ -57,31 +61,37 @@ public class MixerController : MonoBehaviour
     #region 볼륨 조절 로직
     public void SetMasterVolume(float volume)
     {
-        if (SaveDataHolder.Instance.currentData.masterVolume != volume)
+        int volumeInt = Mathf.RoundToInt(volume * 10f);
+
+        if (SaveDataHolder.Instance.currentData.masterVolume != volumeInt)
         {
-            SaveDataHolder.Instance.currentData.masterVolume = volume;
+            SaveDataHolder.Instance.currentData.masterVolume = volumeInt;
             SaveDataHolder.Instance.HasChanges = true;
-            UpdateMixer("Master", volume);
+            UpdateMixer("Master", volumeInt / 10f);
         }
     }
 
     public void SetBGMVolume(float volume)
     {
-        if (SaveDataHolder.Instance.currentData.bgmVolume != volume)
+        int volumeInt = Mathf.RoundToInt(volume * 10f);
+
+        if (SaveDataHolder.Instance.currentData.bgmVolume != volumeInt)
         {
-            SaveDataHolder.Instance.currentData.bgmVolume = volume;
+            SaveDataHolder.Instance.currentData.bgmVolume = volumeInt;
             SaveDataHolder.Instance.HasChanges = true;
-            UpdateMixer("BGM", volume);
+            UpdateMixer("BGM", volumeInt / 10f);
         }
     }
 
     public void SetSFXVolume(float volume)
     {
-        if (SaveDataHolder.Instance.currentData.sfxVolume != volume)
+        int volumeInt = Mathf.RoundToInt(volume * 10f);
+
+        if (SaveDataHolder.Instance.currentData.sfxVolume != volumeInt)
         {
-            SaveDataHolder.Instance.currentData.sfxVolume = volume;
+            SaveDataHolder.Instance.currentData.sfxVolume = volumeInt;
             SaveDataHolder.Instance.HasChanges = true;
-            UpdateMixer("SFX", volume);
+            UpdateMixer("SFX", volumeInt / 10f);
         }
     }
 

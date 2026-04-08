@@ -18,9 +18,9 @@ public class SaveData
     public float contrast;
 
     // --- 사운드 설정 ---
-    public float masterVolume;
-    public float bgmVolume;
-    public float sfxVolume;
+    public int masterVolume;
+    public int bgmVolume;
+    public int sfxVolume;
 
     // 생성자 (초기화 시 기본값 설정)
     public SaveData()
@@ -33,8 +33,8 @@ public class SaveData
         brightness = 1.0f;
         contrast = 0.5f;
 
-        masterVolume = 1.0f;
-        bgmVolume = 0.8f;
-        sfxVolume = 1.0f;
+        masterVolume = 10;
+        bgmVolume = 10;
+        sfxVolume = 10;
     }
 }

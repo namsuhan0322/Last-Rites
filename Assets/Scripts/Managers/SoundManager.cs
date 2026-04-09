@@ -53,6 +53,8 @@ public class SoundManager : SingletonMono<SoundManager>
     #endregion
 
     #region 사운드
+
+    // 일반 효과음 재생용
     public void PlaySound(string name)
     {
         Sound soundToPlay = sounds.Find(sound => sound.name == name);
@@ -63,8 +65,33 @@ public class SoundManager : SingletonMono<SoundManager>
         }
         else
         {
-            Debug.Log("사운드 : " + name + " 없습니다.");
+            Debug.LogWarning("사운드 : " + name + " 없습니다.");
         }
+    }
+
+    // 특정 사운드 정지용
+    public void StopSound(string name)
+    {
+        Sound soundToStop = sounds.Find(sound => sound.name == name);
+
+        if (soundToStop != null)
+        {
+            soundToStop.source.Stop();
+        }
+    }
+
+    // BGM 전용 재생기 (기존 BGM을 다 끄고 새 BGM을 틉니다)
+    public void PlayBGM(string name)
+    {
+        foreach (Sound s in sounds)
+        {
+            if (s.loop && s.source.isPlaying)
+            {
+                s.source.Stop();
+            }
+        }
+
+        PlaySound(name);
     }
 
     #endregion

@@ -38,6 +38,8 @@ public class ScenesManager : SingletonMono<ScenesManager>
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
         SceneManager.sceneUnloaded += OnSceneUnloaded;
+
+        PlaySceneBGM(currentSceneName);
     }
 
     private void OnDestroy()
@@ -59,6 +61,9 @@ public class ScenesManager : SingletonMono<ScenesManager>
     private IEnumerator LoadSceneWithLoading(string targetScene)
     {
         isLoading = true;
+
+        LoadingProgress = 0f;
+
         GameManager.Instance?.ChangeGameState(GameState.Loading);
 
         // 페이드 인
@@ -71,17 +76,14 @@ public class ScenesManager : SingletonMono<ScenesManager>
         // 페이드 아웃
         if (useFadeEffect) yield return StartCoroutine(FadeOut());
 
-        // 비동기 로딩 시작 (활성화 막기)
         AsyncOperation op = SceneManager.LoadSceneAsync(targetScene);
         op.allowSceneActivation = false;
 
         float timer = 0.0f;
-        LoadingProgress = 0f;
 
         // 로딩 루프
         while (!op.isDone)
         {
-            yield return null;
             timer += Time.deltaTime;
 
             float opProgress = Mathf.Clamp01(op.progress / 0.9f);
@@ -96,6 +98,12 @@ public class ScenesManager : SingletonMono<ScenesManager>
                 if (useFadeEffect) yield return StartCoroutine(FadeIn());
 
                 op.allowSceneActivation = true;
+
+                yield return new WaitUntil(() => op.isDone);
+            }
+            else
+            {
+                yield return null;
             }
         }
 
@@ -175,7 +183,31 @@ public class ScenesManager : SingletonMono<ScenesManager>
 
         if (scene.name != loadingSceneName) GameEvents.SceneChanged(currentSceneName);
 
+        PlaySceneBGM(scene.name);
+
         Debug.Log($"씬 로드 : {scene.name}");
+    }
+
+    private void PlaySceneBGM(string sceneName)
+    {
+        if (SoundManager.Instance == null) return;
+
+        if (sceneName == mainMenuSceneName)
+        {
+            SoundManager.Instance.PlayBGM("MainBGM");
+        }
+        else if (sceneName == LobbySceneName)
+        {
+            SoundManager.Instance.PlayBGM("LobbyBGM");
+        }
+        else if (sceneName == tutorialSceneName)
+        {
+            SoundManager.Instance.PlayBGM("TutorialBGM");
+        }
+        else if (sceneName == loadingSceneName)
+        {
+            SoundManager.Instance.PlayBGM(""); 
+        }
     }
 
     private void OnSceneUnloaded(Scene scene)

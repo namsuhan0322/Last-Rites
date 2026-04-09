@@ -44,5 +44,45 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8b0333421b28aa42b12586d9a27f65c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sounds: []
+  sounds:
+  - name: MainBGM
+    clip: {fileID: 8300000, guid: 92496a4571640e344882d66e2681da15, type: 3}
+    volume: 0
+    pitch: 0
+    loop: 0
+    mixerGroup: {fileID: 5286009159456646738, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: TutorialBGM
+    clip: {fileID: 8300000, guid: abbca778b9f786b49bd3aedf680ccbe0, type: 3}
+    volume: 0
+    pitch: 0
+    loop: 0
+    mixerGroup: {fileID: 5286009159456646738, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: TutorialBoss
+    clip: {fileID: 8300000, guid: efe4523fb545cd147a39e45d97347b49, type: 3}
+    volume: 0
+    pitch: 0
+    loop: 0
+    mixerGroup: {fileID: 5286009159456646738, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: LobbyBGM
+    clip: {fileID: 8300000, guid: f422462253ccf374da1228e3357e0700, type: 3}
+    volume: 0
+    pitch: 0
+    loop: 0
+    mixerGroup: {fileID: 5286009159456646738, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: ButtonClick
+    clip: {fileID: 8300000, guid: 1726dcae01d47564caf07853a0a712fd, type: 3}
+    volume: 0
+    pitch: 0
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
   audioMixer: {fileID: 24100000, guid: 263a0b6783e617d40839c9a9db1e63ee, type: 2}

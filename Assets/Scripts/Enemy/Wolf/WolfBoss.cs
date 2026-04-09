@@ -5,36 +5,102 @@ using System.Collections.Generic;
 
 public class WolfBoss : Enemy
 {
+    [Header("멍때리는 시간")]
+    [Tooltip("내려찍기 멍때리기")]
+    [SerializeField] float stompDelay = 3f;
+    [Tooltip("점프공격 멍때리기")]
+    [SerializeField] float jump2Delay = 12f;
+    [Tooltip("일반공격 멍때리기")]
+    [SerializeField] float normalDelay = 2f;
+    [Tooltip("할퀴기 멍때리기")]
+    [SerializeField] float slashDelay = 2f;
+    [Tooltip("돌진 멍때리기")]
+    [SerializeField] float chargeDelay = 2f;
+    [Tooltip("암흑탄 공격 멍때리기")]
+    [SerializeField] float darkDelay = 2f;
+    [Tooltip("스핀 멍때리기")]
+    [SerializeField] float spinDelay = 2f;
+    [Tooltip("포효후 멍때리기")]
+    [SerializeField] float RoarDelay = 2f;
+
+
     [Header("보스 페이즈")]
     public BossPhase currentPhase = BossPhase.Phase1;
+    [Tooltip("페이즈2변환 hp퍼센트")]
     public float phase2HpPercent = 0.6f;
 
-    [Header("Phase1 콤보")]
-    public float comboDelay_P1 = 0.7f;
-    public float comboRecovery_P1 = 2.0f;
-
     [Header("1페이지 할퀴기 스킬")]
+    [Tooltip("할퀴기 앞쪽 범위")]
     public float slashRange = 4f;
+    [Tooltip("할퀴기 양옆 범위")]
     public float slashAngle = 120f;
+    [Tooltip("할퀴기 데미지")]
     public int slashDamage = 20;
+    [Tooltip("할퀴기 대기시간")]
     public float slashCooldown = 3f;
     public GameObject slashIndicatorPrefab;
     public Transform clawSpawnPoint; // 손 위치
 
     [Header("1페이지 점프 공격")]
+    [Tooltip("점프공격범위")]
     public float jumpAttackRange = 5f;
+    [Tooltip("점프공격데미지")]
     public int jumpAttackDamage = 30;
-    public float jumpDelay = 2.5f; 
+    [Tooltip("점프 하고나서 기다리는 시간")]
+    public float jumpDelay = 2.5f;
+    [Tooltip("점프공격 대기시간")]
     public float jumpCooldown = 8f;
     public GameObject jumpIndicatorPrefab;
 
     [Header("1페이지 돌진 스킬")]
+    [Tooltip("돌진대기시간")]
     public float chargeCooldown = 10f;
+    [Tooltip("돌진거리")]
     public float chargeDistance = 10f;
+    [Tooltip("돌진속도")]
     public float chargeSpeed = 20f;
+    [Tooltip("돌진하기전기다리는시간")]
     public float chargeLockTime = 2f;
     public GameObject chargeIndicatorPrefab;
 
+    [Header("Phase2 휘두르기")]
+    [Tooltip("휘두르기범위")]
+    public float spinAttackRange = 5f;
+    [Tooltip("휘두르기데미지")]
+    public int spinAttackDamage = 35;
+    [Tooltip("휘두르기 대기시간")]
+    public float spinCooldown = 6f;
+    public GameObject spinIndicatorPrefab;
+
+    [Header("Phase2 암흑탄")]
+    public GameObject darkProjectilePrefab;
+    public Transform firePoint;
+    [Tooltip("암흑탄속도")]
+    public float projectileSpeed = 10f;
+    [Tooltip("암흑탄퍼지는각도")]
+    public float spreadAngle = 50f;
+    [Tooltip("암흑탄 살아있는 시간")]
+    public float projectileLifeTime = 3f;
+    [Tooltip("암흑탄 대기시간")]
+    public float darkShotCooldown = 5f;
+    public Transform headTransform;
+    [Header("Phase2 내려찍기")]
+    [Tooltip("내려찍기 범위")]
+    public float stompRange = 6f;
+    [Tooltip("내려찍기 데미지")]
+    public int stompDamage = 50;
+    [Tooltip("내려찍기 대기시간")]
+    public float stompCooldown = 8f;
+    [Tooltip("내려찍기 위험표시시간")]
+    public float stompWarningTime = 2.5f;
+    public GameObject stompIndicatorPrefab;
+
+    [Header("Vfx")]
+    public GameObject roarVFXPrefab;
+    public GameObject clawVFXPrefab;
+    public GameObject biteVFXPrefab;
+    public GameObject spinVFXPrefab;
+    
     //변수들
     float jumpTimer = 0f;
     GameObject jumpIndicator;
@@ -47,33 +113,6 @@ public class WolfBoss : Enemy
     GameObject chargeIndicator;
     public float stunDuration = 5f;
     bool isStuned = false;
-
-
-    [Header("Phase2 콤보")]
-    public float comboDelay_P2 = 0.3f;
-    public float comboRecovery_P2 = 1.0f;
-
-    [Header("Phase2 휘두르기")]
-    public float spinAttackRange = 5f;
-    public int spinAttackDamage = 35;
-    public float spinCooldown = 6f;
-    public GameObject spinIndicatorPrefab;
-
-    [Header("Phase2 암흑탄")]
-    public GameObject darkProjectilePrefab;
-    public Transform firePoint;
-    public float projectileSpeed = 10f;
-    public float spreadAngle = 50f; 
-    public float projectileLifeTime = 3f;
-    public float darkShotCooldown = 5f;
-    public Transform headTransform;
-    [Header("Phase2 내려찍기")]
-    public float stompRange = 6f;
-    public int stompDamage = 50;
-    public float stompCooldown = 8f;
-    public GameObject stompIndicatorPrefab;
-    public float stompWarningTime = 2.5f;
-
     float stompTimer = 0f;
     GameObject stompIndicator;
     float darkShotTimer = 0f;
@@ -82,11 +121,6 @@ public class WolfBoss : Enemy
     int comboIndex = 0;
     bool isComboAttacking = false;
     bool isPhaseChanging = false;
-    [Header("Vfx")]
-    public GameObject roarVFXPrefab;
-    public GameObject clawVFXPrefab;
-    public GameObject biteVFXPrefab;
-    public GameObject spinVFXPrefab;
     protected override void Awake()
     {
         base.Awake();
@@ -216,7 +250,7 @@ public class WolfBoss : Enemy
         animator.ResetTrigger("Attack3_P1");
         animator.SetTrigger("PhaseRoar");
 
-        yield return new WaitForSeconds(2.0f);
+        yield return StartCoroutine(IdleDelayRoutine(RoarDelay));
 
         currentPhase = BossPhase.Phase2;
 
@@ -335,8 +369,6 @@ public class WolfBoss : Enemy
 
         attackDirection = dir.normalized;
 
-        float recovery = (currentPhase == BossPhase.Phase1) ? comboRecovery_P1 : comboRecovery_P2;
-
         if (currentPhase == BossPhase.Phase1)
             animator.SetTrigger("AttackReady_P1");
         else
@@ -351,7 +383,7 @@ public class WolfBoss : Enemy
         else
             animator.SetTrigger($"Attack{rand}_P2");
 
-        yield return new WaitForSeconds(recovery);
+        yield return StartCoroutine(IdleDelayRoutine(normalDelay));
 
         agent.updateRotation = true;
         agent.isStopped = false;
@@ -413,7 +445,7 @@ public class WolfBoss : Enemy
         }
         ShowSlashIndicator();
 
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(1.5f);  //슬래쉬 범위 보여주는 시간
 
         slashIndicator.SetActive(false);
 
@@ -423,8 +455,7 @@ public class WolfBoss : Enemy
 
         DealSlashDamage();
 
-        yield return new WaitForSeconds(1.0f);
-        yield return new WaitForSeconds(1.5f);
+        yield return new WaitForSeconds(slashDelay);
         slashTimer = slashCooldown;
 
         isComboAttacking = false;
@@ -542,7 +573,7 @@ public class WolfBoss : Enemy
 
         isInvincible = false;
 
-        yield return new WaitForSeconds(3.0f);
+        yield return new WaitForSeconds(jump2Delay);
 
         jumpTimer = jumpCooldown;
 
@@ -689,7 +720,7 @@ public class WolfBoss : Enemy
             yield return null;
         }
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(chargeDelay);
 
         chargeTimer = chargeCooldown;
 
@@ -776,8 +807,8 @@ public class WolfBoss : Enemy
 
         animator.SetTrigger("Spin"); 
 
-        yield return new WaitForSeconds(1.5f);
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(spinDelay);
 
         spinTimer = spinCooldown;
 
@@ -851,8 +882,8 @@ public class WolfBoss : Enemy
         attackDirection = dir;
         animator.SetTrigger("DarkShot");
 
-        yield return new WaitForSeconds(1.5f);
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(darkDelay);
 
         darkShotTimer = darkShotCooldown;
 
@@ -929,7 +960,7 @@ public class WolfBoss : Enemy
 
         animator.SetTrigger("Stomp");
 
-        yield return new WaitForSeconds(4.0f);
+        yield return new WaitForSeconds(stompDelay);
 
         stompTimer = stompCooldown;
 
@@ -1071,5 +1102,12 @@ public class WolfBoss : Enemy
     }
 
 
+    //----------------멍떄리는 코드
+    IEnumerator IdleDelayRoutine(float delay)
+    {
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
 
+        yield return new WaitForSeconds(delay);
+    }
 }

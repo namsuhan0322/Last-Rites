@@ -2126,10 +2126,16 @@ MonoBehaviour:
   attackCooldown: 0
   attackDamage: 0
   attackTimer: 0
+  stompDelay: 3
+  jump2Delay: 12
+  normalDelay: 2
+  slashDelay: 2
+  chargeDelay: 2
+  darkDelay: 2
+  spinDelay: 2
+  RoarDelay: 2
   currentPhase: 0
   phase2HpPercent: 0.6
-  comboDelay_P1: 1.9
-  comboRecovery_P1: 2
   slashRange: 3
   slashAngle: 100
   slashDamage: 20
@@ -2146,9 +2152,6 @@ MonoBehaviour:
   chargeSpeed: 20
   chargeLockTime: 2
   chargeIndicatorPrefab: {fileID: 7945134718621079172}
-  stunDuration: 5
-  comboDelay_P2: 1.6
-  comboRecovery_P2: 2
   spinAttackRange: 5
   spinAttackDamage: 35
   spinCooldown: 6
@@ -2164,8 +2167,8 @@ MonoBehaviour:
   stompRange: 10
   stompDamage: 50
   stompCooldown: 20
-  stompIndicatorPrefab: {fileID: 2962546301729575269}
   stompWarningTime: 2.5
+  stompIndicatorPrefab: {fileID: 2962546301729575269}
   roarVFXPrefab: {fileID: 8767289172806821397, guid: b5d195e9c48138c49a6a9424b0bd987c,
     type: 3}
   clawVFXPrefab: {fileID: 5444956481936223230, guid: 9c4ed545eb90aeb44a5a897ecec71369,
@@ -2174,6 +2177,7 @@ MonoBehaviour:
     type: 3}
   spinVFXPrefab: {fileID: 3617404426564344756, guid: d51bc38f590bfed43b2ab6a2c941ad59,
     type: 3}
+  stunDuration: 5
 --- !u!1 &3505636748791606037
 GameObject:
   m_ObjectHideFlags: 0

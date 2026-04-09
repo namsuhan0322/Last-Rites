@@ -52,6 +52,7 @@ public class WolfBoss : Enemy
     public float jumpCooldown = 8f;
     public GameObject jumpIndicatorPrefab;
 
+
     [Header("1페이지 돌진 스킬")]
     [Tooltip("돌진대기시간")]
     public float chargeCooldown = 10f;

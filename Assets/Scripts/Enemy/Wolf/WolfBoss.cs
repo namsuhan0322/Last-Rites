@@ -59,6 +59,8 @@ public class WolfBoss : Enemy
     public float chargeDistance = 10f;
     [Tooltip("돌진속도")]
     public float chargeSpeed = 20f;
+    [Header("돌진 전 딜레이(후)")]
+    [SerializeField] float chargeStartDelay = 0.5f;
     [Tooltip("돌진하기전기다리는시간")]
     public float chargeLockTime = 2f;
     public GameObject chargeIndicatorPrefab;
@@ -84,6 +86,7 @@ public class WolfBoss : Enemy
     [Tooltip("암흑탄 대기시간")]
     public float darkShotCooldown = 5f;
     public Transform headTransform;
+
     [Header("Phase2 내려찍기")]
     [Tooltip("내려찍기 범위")]
     public float stompRange = 6f;
@@ -94,6 +97,10 @@ public class WolfBoss : Enemy
     [Tooltip("내려찍기 위험표시시간")]
     public float stompWarningTime = 2.5f;
     public GameObject stompIndicatorPrefab;
+    [Header("내려찍기 장판 연출")]
+    [SerializeField] AnimationCurve stompFillCurve;
+    [SerializeField] float stompGrowTime = 2.5f;
+    [SerializeField] Material mat;
 
     [Header("Vfx")]
     public GameObject roarVFXPrefab;
@@ -121,6 +128,7 @@ public class WolfBoss : Enemy
     int comboIndex = 0;
     bool isComboAttacking = false;
     bool isPhaseChanging = false;
+
     protected override void Awake()
     {
         base.Awake();
@@ -667,6 +675,8 @@ public class WolfBoss : Enemy
 
         chargeIndicator.SetActive(false);
 
+        yield return new WaitForSeconds(chargeStartDelay);
+
         animator.SetTrigger("Charge");
 
         yield return new WaitForSeconds(0.2f);
@@ -979,7 +989,6 @@ public class WolfBoss : Enemy
         stompIndicator.SetActive(true);
 
         float diameter = stompRange * 2f;
-
         stompIndicator.transform.localScale = new Vector3(diameter, diameter, 1f);
 
         Vector3 pos = transform.position;
@@ -987,6 +996,56 @@ public class WolfBoss : Enemy
 
         stompIndicator.transform.position = pos;
         stompIndicator.transform.rotation = Quaternion.Euler(90f, 0, 0);
+
+        StartCoroutine(FillStompIndicator());
+    }
+    IEnumerator FillStompIndicator()
+    {
+        float timer = 0f;
+
+        Color start = new Color(1, 1, 1, 0.15f);
+        Color mid = new Color(1, 0.5f, 0, 0.5f);
+        Color end = new Color(1, 0, 0, 0.9f);
+
+        float maxDiameter = stompRange * 2f;
+
+        while (timer < stompGrowTime)
+        {
+            timer += Time.deltaTime;
+            float t = timer / stompGrowTime;
+
+            float curved = stompFillCurve.Evaluate(t);
+
+            float size = Mathf.Lerp(0.1f, maxDiameter, curved);
+            stompIndicator.transform.localScale = new Vector3(size, size, 1f);
+
+            if (t < 0.5f)
+                mat.color = Color.Lerp(start, mid, t * 2f);
+            else
+                mat.color = Color.Lerp(mid, end, (t - 0.5f) * 2f);
+
+            yield return null;
+        }
+
+        StartCoroutine(FlashIndicator());
+    }
+
+    IEnumerator FlashIndicator()
+    {
+        float timer = 0f;
+
+        while (timer < 0.5f)
+        {
+            timer += Time.deltaTime;
+
+            float alpha = Mathf.PingPong(timer * 10f, 1f);
+
+            Color c = mat.color;
+            c.a = Mathf.Lerp(0.3f, 1f, alpha);
+            mat.color = c;
+
+            yield return null;
+        }
     }
 
     //내려찍기 입팩트

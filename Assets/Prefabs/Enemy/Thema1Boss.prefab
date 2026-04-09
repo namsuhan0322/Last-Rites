@@ -1990,8 +1990,8 @@ GameObject:
   - component: {fileID: 1719235359462219430}
   - component: {fileID: 6954538023838300714}
   - component: {fileID: 4985439015522128079}
-  - component: {fileID: 2422977573903759998}
   - component: {fileID: 3234644385486043413}
+  - component: {fileID: 4682225429077064480}
   m_Layer: 6
   m_Name: Thema1Boss
   m_TagString: Enemy
@@ -2065,27 +2065,6 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!65 &2422977573903759998
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3468004297658778971}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Size: {x: 3.8666892, y: 3.1446483, z: 2.6985695}
-  m_Center: {x: 0.045346975, y: 1.0723242, z: -0.0612365}
 --- !u!114 &3234644385486043413
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2150,6 +2129,7 @@ MonoBehaviour:
   chargeCooldown: 30
   chargeDistance: 10
   chargeSpeed: 20
+  chargeStartDelay: 0.5
   chargeLockTime: 2
   chargeIndicatorPrefab: {fileID: 7945134718621079172}
   spinAttackRange: 5
@@ -2169,6 +2149,32 @@ MonoBehaviour:
   stompCooldown: 20
   stompWarningTime: 2.5
   stompIndicatorPrefab: {fileID: 2962546301729575269}
+  stompFillCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0.0047950745
+      value: 0.002960205
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.9855957
+      value: 1.0029488
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  stompGrowTime: 2.5
+  mat: {fileID: 2100000, guid: 6bb2295eee42b5849b45f9572e874273, type: 2}
   roarVFXPrefab: {fileID: 8767289172806821397, guid: b5d195e9c48138c49a6a9424b0bd987c,
     type: 3}
   clawVFXPrefab: {fileID: 5444956481936223230, guid: 9c4ed545eb90aeb44a5a897ecec71369,
@@ -2178,6 +2184,29 @@ MonoBehaviour:
   spinVFXPrefab: {fileID: 3617404426564344756, guid: d51bc38f590bfed43b2ab6a2c941ad59,
     type: 3}
   stunDuration: 5
+--- !u!136 &4682225429077064480
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3468004297658778971}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.9735615
+  m_Height: 3.2290652
+  m_Direction: 1
+  m_Center: {x: 0.016756296, y: 1.1145326, z: 0}
 --- !u!1 &3505636748791606037
 GameObject:
   m_ObjectHideFlags: 0

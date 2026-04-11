@@ -20,6 +20,7 @@ public class PlayerHitState : PlayerState
         _player.Anim.SetLayerWeight(1, 0f);
         _player.Anim.SetFloat("HitPower", _hitSeverity);
         _player.Anim.SetTrigger("IsHit");
+        _player.ForceDisableAllAttackEffects();
 
         // 강도에 따른 경직(Stun) 시간 설정
         // 0.0f (약함): 0.5초

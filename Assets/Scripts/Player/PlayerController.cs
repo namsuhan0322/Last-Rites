@@ -51,6 +51,11 @@ public class PlayerController : MonoBehaviour
     public Transform bodyEffectPos;
     private GameObject currentRSkillInstance;
 
+    [Header("Combo Effects")]
+    public ParticleSystem attack1Effect;
+    public ParticleSystem attack2Effect;
+    public ParticleSystem attack3Effect;
+
     private float _combatTimer;
     private bool _inCombat;
     public TutorialSystem tutorialSystem;
@@ -434,6 +439,24 @@ public class PlayerController : MonoBehaviour
         currentRSkillInstance.SetActive(true);
     }
 
+    public void ForceDisableAllAttackEffects()
+    {
+        if (attack1Effect != null)
+        {
+            attack1Effect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            attack1Effect.gameObject.SetActive(false);
+        }
+        if (attack2Effect != null)
+        {
+            attack2Effect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            attack2Effect.gameObject.SetActive(false);
+        }
+        if (attack3Effect != null)
+        {
+            attack3Effect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            attack3Effect.gameObject.SetActive(false);
+        }
+    }
     #endregion
 
     #region 스킬 관련
@@ -652,6 +675,55 @@ public class PlayerController : MonoBehaviour
         Agent.ResetPath();
         Agent.velocity = Vector3.zero;
         StateMachine.ChangeState(IdleState);
+    }
+
+    #endregion
+
+    #region 평타 콤보 이펙트 제어
+    public void EnableAttackEffect(int step)
+    {
+        if (StateMachine.CurrentState != AttackState)
+        {
+            return;
+        }
+
+        ParticleSystem targetEffect = null;
+
+        // 몇 번째 공격인지에 따라 켤 이펙트를 고릅니다.
+        if (step == 1) targetEffect = attack1Effect;
+        else if (step == 2) targetEffect = attack2Effect;
+        else if (step == 3) targetEffect = attack3Effect;
+
+        if (targetEffect != null)
+        {
+            if (!targetEffect.gameObject.activeSelf)
+            {
+                targetEffect.gameObject.SetActive(true);
+            }
+
+            targetEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+
+            var mainModule = targetEffect.main;
+            mainModule.simulationSpeed = Anim.speed;
+
+            targetEffect.Play(true);
+        }
+    }
+
+    // 애니메이션 이벤트에서 호출 (타격 종료 타이밍)
+    public void DisableAttackEffect(int step)
+    {
+        ParticleSystem targetEffect = null;
+
+        if (step == 1) targetEffect = attack1Effect;
+        else if (step == 2) targetEffect = attack2Effect;
+        else if (step == 3) targetEffect = attack3Effect;
+
+        if (targetEffect != null)
+        {
+            targetEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+            targetEffect.gameObject.SetActive(false); 
+        }
     }
 
     #endregion

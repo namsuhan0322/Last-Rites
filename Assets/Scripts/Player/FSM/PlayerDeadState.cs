@@ -10,6 +10,7 @@ public class PlayerDeadState : PlayerState
         _player.Agent.ResetPath();
         _player.Agent.velocity = Vector3.zero;
         _player.Agent.isStopped = true;
+        _player.ForceDisableAllAttackEffects();
 
         if (_player.CC != null) 
             _player.CC.enabled = false;

@@ -98,5 +98,7 @@ public class PlayerAttackState : PlayerState
     {
         _player.Anim.ResetTrigger("Attack");
         _player.TogglePlayerOutline(true);
+
+        _player.ForceDisableAllAttackEffects();
     }
 }

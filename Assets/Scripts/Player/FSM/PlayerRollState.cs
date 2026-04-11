@@ -16,6 +16,7 @@ public class PlayerRollState : PlayerState
         _player.Anim.applyRootMotion = true;
 
         _player.RotateToMouseImmediate();
+        _player.ForceDisableAllAttackEffects();
 
         _player.Anim.SetTrigger("Roll");
         _player.Agent.ResetPath();

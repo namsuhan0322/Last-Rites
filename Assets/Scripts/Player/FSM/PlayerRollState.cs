@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class PlayerRollState : PlayerState
 {
-    private float _rollDuration;
     private float _stateTimer;
 
     public PlayerRollState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
@@ -20,7 +19,6 @@ public class PlayerRollState : PlayerState
 
         _player.Anim.SetTrigger("Roll");
         _player.Agent.ResetPath();
-        _rollDuration = 1.0f;
     }
 
     public override void LogicUpdate()
@@ -30,25 +28,24 @@ public class PlayerRollState : PlayerState
         AnimatorStateInfo stateInfo = _player.Anim.GetCurrentAnimatorStateInfo(0);
         if (stateInfo.IsName("Roll") || stateInfo.IsTag("Roll"))
         {
-            if (_rollDuration == 1.0f && stateInfo.length > 0)
+            if (stateInfo.normalizedTime >= 0.9f)
             {
-                _rollDuration = stateInfo.length;
+                if (Input.GetMouseButton(1))
+                {
+                    _player.Stats.SetInvincible(false);
+                    _stateMachine.ChangeState(_player.MoveState);
+                }
+                else
+                {
+                    _player.Stats.SetInvincibleForSeconds(0.5f);
+                    _stateMachine.ChangeState(_player.IdleState);
+                }
             }
         }
-
-        if (_stateTimer >= _rollDuration)
+        else
         {
-            // 구르기가 끝났을 때의 행동에 따른 무적 처리
-            if (Input.GetMouseButton(1))
+            if (_stateTimer >= 1.5f)
             {
-                // 바로 이동하려 한다면 0.5초 보너스 없이 무적 즉시 해제
-                _player.Stats.SetInvincible(false);
-                _stateMachine.ChangeState(_player.MoveState);
-            }
-            else
-            {
-                // 가만히 대기 상태로 간다면 0.5초 보너스 무적 부여
-                _player.Stats.SetInvincibleForSeconds(0.5f);
                 _stateMachine.ChangeState(_player.IdleState);
             }
         }
@@ -61,5 +58,7 @@ public class PlayerRollState : PlayerState
         _player.Anim.applyRootMotion = false;
         _player.Agent.velocity = Vector3.zero;
         _player.TogglePlayerOutline(true);
+
+        _player.ResetDashTimer();
     }
 }

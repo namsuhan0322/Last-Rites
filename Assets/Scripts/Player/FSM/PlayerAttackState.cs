@@ -37,7 +37,8 @@ public class PlayerAttackState : PlayerState
 
     public override void HandleInput()
     {
-        if (Input.GetMouseButtonDown(0)) _nextComboBuffered = true;
+        if (Input.GetMouseButton(0)) _nextComboBuffered = true;
+
         if (Input.GetMouseButtonDown(1))
         {
             _player.Anim.ResetTrigger("Attack");

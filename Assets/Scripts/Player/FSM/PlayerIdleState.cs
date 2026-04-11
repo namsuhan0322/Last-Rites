@@ -12,11 +12,11 @@ public class PlayerIdleState : PlayerState
 
     public override void HandleInput()
     {
-        if (Input.GetMouseButtonDown(1)) // 우클릭 -> 이동
+        if (Input.GetMouseButton(1)) // 우클릭 -> 이동
         {
             _stateMachine.ChangeState(_player.MoveState);
         }
-        if (Input.GetMouseButtonDown(0)) // 좌클릭 -> 공격
+        if (Input.GetMouseButton(0)) // 좌클릭 -> 공격
         {
             if (_player.InCombat)
             {

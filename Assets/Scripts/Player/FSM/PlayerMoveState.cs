@@ -15,7 +15,7 @@ public class PlayerMoveState : PlayerState
     public override void HandleInput()
     {
         if (Input.GetMouseButton(1)) SetDestinationToMouse();
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButton(0))
         {
             if (_player.InCombat)
             {

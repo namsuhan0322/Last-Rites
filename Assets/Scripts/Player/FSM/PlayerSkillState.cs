@@ -26,6 +26,8 @@ public class PlayerSkillState : PlayerState
         _player.Anim.SetFloat("AttackSpd", atkSpd);
 
         _stateTimer = 0f;
+
+        _player.globalSkillTimer = _player.globalSkillDelay;
     }
 
     public override void LogicUpdate()
@@ -41,7 +43,16 @@ public class PlayerSkillState : PlayerState
         {
             float normalizedTime = stateInfo.normalizedTime;
 
-            // 스킬 애니메이션이 95% 끝났으면 대기 상태로 복귀
+            if (normalizedTime >= 0.6f)
+            {
+                // 이 시점부터 다른 스킬이나 회피(Space) 키가 눌리면 즉시 그 상태로 넘어갑니다!
+                if (_player.CheckSkillAndDashInput())
+                {
+                    return; // 성공적으로 다른 스킬/회피가 나갔다면 여기서 멈춤
+                }
+            }
+
+            // 아무것도 안 누르고 가만히 있으면 95%에서 대기 상태로 복귀
             if (normalizedTime >= 0.95f)
             {
                 _stateMachine.ChangeState(_player.IdleState);

@@ -39,6 +39,11 @@ public class PlayerController : MonoBehaviour
     [Header("Input")]
     public LayerMask GroundLayer;
 
+    [Header("이동 및 회피")]
+    [Tooltip("회피 후 다음 회피를 할 수 있을 때까지의 최소 지연 시간")]
+    public float dashCooldown = 0.2f;
+    private float _dashTimer = 0f;
+
     [Header("전투 감지 센서")]
     public float DetectionRadius = 8.0f;   
     [Range(0, 360)]
@@ -66,6 +71,9 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public string CurrentSkillAnim;   // 어떤 스킬 애니메이션을 틀지
     [HideInInspector] public int CurrentSkillDamage;    // 현재 스킬 데미지가 얼마인지
     [HideInInspector] public float CurrentSkillVal;
+    [Tooltip("스킬 종료 후 다음 스킬을 쓸 수 있을 때까지의 대기 시간")]
+    public float globalSkillDelay = 0.5f;
+    [HideInInspector] public float globalSkillTimer = 0f;
 
     [Header("무기 특수 버프 플래그")]
     [HideInInspector] public bool HasRBuff = false;         // 대검 (결정타/슈퍼아머)
@@ -324,8 +332,15 @@ public class PlayerController : MonoBehaviour
         {
             if (Stats.CurrentStamina >= Stats.DashCost)
             {
-                StateMachine.ChangeState(RollState);
-                return true;
+                if (_dashTimer <= 0)
+                {
+                    StateMachine.ChangeState(RollState);
+                    return true;
+                }
+                else
+                {
+                    Debug.Log($"<color=orange>[회피 불가] 쿨타임 중입니다! 남은 시간: {_dashTimer:F2}초</color>");
+                }
             }
         }
 
@@ -373,6 +388,11 @@ public class PlayerController : MonoBehaviour
         }
 
         return false;
+    }
+
+    public void ResetDashTimer()
+    {
+        _dashTimer = dashCooldown;
     }
 
     #region 공격 판정
@@ -452,6 +472,9 @@ public class PlayerController : MonoBehaviour
     #region 스킬 관련
     private void UpdateSkillCooldowns()
     {
+        if (_dashTimer > 0) _dashTimer -= Time.deltaTime;
+        if (globalSkillTimer > 0) globalSkillTimer -= Time.deltaTime;
+
         if (Q_Timer > 0)
         {
             Q_Timer -= Time.deltaTime;
@@ -485,6 +508,12 @@ public class PlayerController : MonoBehaviour
 
     public bool TryUseSkill(KeyCode key, string animName, int damage, float maxCool)
     {
+        if (globalSkillTimer > 0f)
+        {
+            Debug.Log($"스킬 전환 딜레이 중입니다! ({globalSkillTimer:F1}초 남음)");
+            return false;
+        }
+
         CurrentSkillAnim = animName;
         CurrentSkillDamage = damage;
 

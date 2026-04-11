@@ -51,6 +51,7 @@ public class WolfBoss : Enemy
     [Tooltip("점프공격 대기시간")]
     public float jumpCooldown = 8f;
     public GameObject jumpIndicatorPrefab;
+    [SerializeField] GameObject modelRoot;
 
 
     [Header("1페이지 돌진 스킬")]
@@ -129,6 +130,8 @@ public class WolfBoss : Enemy
     int comboIndex = 0;
     bool isComboAttacking = false;
     bool isPhaseChanging = false;
+    Vector3 jumpTargetPos;
+    bool isLocked = false;
 
     protected override void Awake()
     {
@@ -137,7 +140,7 @@ public class WolfBoss : Enemy
         slashIndicator = Instantiate(slashIndicatorPrefab, transform);
         slashIndicator.SetActive(false);
 
-        jumpIndicator = Instantiate(jumpIndicatorPrefab, transform);
+        jumpIndicator = Instantiate(jumpIndicatorPrefab);
         jumpIndicator.SetActive(false);
 
         chargeIndicator = Instantiate(chargeIndicatorPrefab, transform);
@@ -522,9 +525,11 @@ public class WolfBoss : Enemy
     IEnumerator JumpAttack()
     {
         if (isPhaseChanging) yield break;
+
+        isLocked = false;
         isAttacking = true;
         isComboAttacking = true;
-        isInvincible = true; 
+        isInvincible = true;
 
         agent.isStopped = true;
         agent.updateRotation = false;
@@ -535,50 +540,140 @@ public class WolfBoss : Enemy
 
         ShowJumpIndicator();
 
-        float airTime = 1.7f;
-        float followSpeed = 1.8f;
+        float followSpeed = 2.0f;
+        float keepDistance = 2.5f;
 
+        float upTime = 0.6f;          
+        float airTime = jumpDelay;  
+        float downTime = 1f;        
+        float jumpHeight = 7f;
+
+        Vector3 startPos = transform.position;
         float timer = 0f;
 
-        float keepDistance = 2.0f; 
-
-        while (timer < airTime)
+        while (timer < upTime)
         {
             if (isPhaseChanging || _isDead)
             {
-                EndAttack(); 
+                EndAttack();
                 yield break;
             }
 
             timer += Time.deltaTime;
 
+            float t = timer / upTime;
+            t = Mathf.SmoothStep(0, 1, t);
+
+            Vector3 pos = transform.position;
+
             if (currentTarget != null)
             {
                 Vector3 targetPos = currentTarget.position;
-                targetPos.y = transform.position.y;
 
-                Vector3 dir = targetPos - transform.position;
-                float dist = dir.magnitude;
+                Vector3 dir = targetPos - pos;
+                dir.y = 0;
 
-                if (dist > keepDistance) 
-                {
-                    Vector3 moveDir = dir.normalized;
-
-                    transform.position += moveDir * followSpeed * Time.deltaTime;
-                }
+                if (dir.magnitude > keepDistance)
+                    pos += dir.normalized * followSpeed * Time.deltaTime;
 
                 if (dir.sqrMagnitude > 0.01f)
                     transform.rotation = Quaternion.LookRotation(dir);
+
+                jumpTargetPos = new Vector3(targetPos.x, 0.05f, targetPos.z);
             }
 
-            jumpIndicator.transform.position = transform.position;
+            pos.y = Mathf.Lerp(startPos.y, startPos.y + jumpHeight, t);
+            transform.position = pos;
+
+            jumpIndicator.transform.position = jumpTargetPos;
+
+            yield return null;
+        }
+
+        HideModel();
+        animator.speed = 0f;
+
+        timer = 0f;
+
+        while (timer < airTime)
+        {
+            if (isPhaseChanging || _isDead)
+            {
+                EndAttack();
+                yield break;
+            }
+
+            timer += Time.deltaTime;
+
+            float t = timer / airTime;
+
+            Vector3 pos = transform.position;
+
+            if (currentTarget != null && !isLocked)
+            {
+                Vector3 targetPos = currentTarget.position;
+
+                Vector3 dir = targetPos - pos;
+                dir.y = 0;
+
+                if (dir.magnitude > keepDistance)
+                    pos += dir.normalized * followSpeed * Time.deltaTime;
+
+                jumpTargetPos = new Vector3(targetPos.x, 0.05f, targetPos.z);
+            }
+
+            if (!isLocked && t >= 0.8f)
+            {
+                isLocked = true;
+            }
+
+            transform.position = pos;
+            jumpIndicator.transform.position = jumpTargetPos;
+
+            yield return null;
+        }
+
+        transform.position = new Vector3(
+            jumpTargetPos.x,
+            transform.position.y,
+            jumpTargetPos.z
+        );
+
+        ShowModel();
+        animator.speed = 1f;
+        timer = 0f;
+
+        float startY = startPos.y + jumpHeight;
+
+        while (timer < downTime)
+        {
+            if (isPhaseChanging || _isDead)
+            {
+                EndAttack();
+                yield break;
+            }
+
+            timer += Time.deltaTime;
+
+            float t = timer / downTime;
+
+            float curve = t * t;
+
+            Vector3 pos = transform.position;
+            pos.y = Mathf.Lerp(startY, startPos.y, curve);
+
+            transform.position = pos;
+
+            jumpIndicator.transform.position = jumpTargetPos;
 
             yield return null;
         }
 
         jumpIndicator.SetActive(false);
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.05f);
+
+        OnJumpImpact();
 
         isInvincible = false;
 
@@ -588,12 +683,11 @@ public class WolfBoss : Enemy
 
         isComboAttacking = false;
         EndAttack();
+
         attackTimer = attackCooldown;
 
         agent.isStopped = false;
         agent.updateRotation = true;
-
-
     }
     //점프어택 장판
     void ShowJumpIndicator()
@@ -601,16 +695,25 @@ public class WolfBoss : Enemy
         jumpIndicator.SetActive(true);
 
         float diameter = jumpAttackRange * 2f;
-
         jumpIndicator.transform.localScale = new Vector3(diameter, diameter, 1f);
 
-        Vector3 pos = transform.position;
-        pos.y += 0.05f;
+        if (currentTarget != null)
+        {
+            jumpTargetPos = new Vector3(
+                currentTarget.position.x,
+                0.05f,
+                currentTarget.position.z
+            );
 
-        jumpIndicator.transform.position = pos;
+            jumpIndicator.transform.position = jumpTargetPos;
+        }
 
         jumpIndicator.transform.rotation = Quaternion.Euler(90f, 0, 0);
     }
+    public void HideModel()
+    { modelRoot.SetActive(false); }
+    public void ShowModel()
+    { modelRoot.SetActive(true); }
     //돌진 
     IEnumerator Charge()
     {

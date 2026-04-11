@@ -312,16 +312,31 @@ public class PlayerController : MonoBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, 100f, GroundLayer))
+        if (Physics.Raycast(ray, out hit, 100f, EnemyLayer))
         {
-            Vector3 targetPoint = hit.point;
-            targetPoint.y = transform.position.y; // 캐릭터가 위아래로 기울어지는 것 방지
+            Vector3 targetPoint = hit.collider.transform.position;
+            targetPoint.y = transform.position.y;
 
             Vector3 dir = (targetPoint - transform.position).normalized;
-
             if (dir != Vector3.zero)
             {
                 transform.rotation = Quaternion.LookRotation(dir);
+            }
+            return;
+        }
+
+        if (Physics.Raycast(ray, out hit, 100f, GroundLayer))
+        {
+            Vector3 targetPoint = hit.point;
+            targetPoint.y = transform.position.y;
+
+            if (Vector3.Distance(transform.position, targetPoint) > 0.5f)
+            {
+                Vector3 dir = (targetPoint - transform.position).normalized;
+                if (dir != Vector3.zero)
+                {
+                    transform.rotation = Quaternion.LookRotation(dir);
+                }
             }
         }
     }

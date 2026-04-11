@@ -14,10 +14,7 @@ public class GreatSwordBuff_SO : BuffSkill_SO
         player.CurrentSkillVal = rVal;
 
         // 붉은색 투기 이펙트 켜기
-        if (player.weaponEffect != null)
-        {
-            player.weaponEffect.SetActive(true);
-        }
+        player.EnableREffect();
     }
 
     public override void EndBuff(PlayerController player)

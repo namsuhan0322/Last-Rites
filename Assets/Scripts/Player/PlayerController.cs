@@ -35,9 +35,6 @@ public class PlayerController : MonoBehaviour
 
     public WeaponVisualManager VisualManager;
 
-    [Tooltip("R스킬 쓰면 무기 강화 관련 이펙트")]
-    public GameObject weaponEffect;
-
     [Header("Input")]
     public LayerMask GroundLayer;
 
@@ -46,8 +43,13 @@ public class PlayerController : MonoBehaviour
     [Range(0, 360)]
     public float ViewAngle = 120.0f;     
     public LayerMask EnemyLayer;           
-    public float CombatCooldown = 5.0f;    
+    public float CombatCooldown = 5.0f;
 
+    [Header("Effect && Pos")]
+    public GameObject HealEffect;
+    public GameObject GreateSwordEffect;
+    public Transform bodyEffectPos;
+    private GameObject currentRSkillInstance;
 
     private float _combatTimer;
     private bool _inCombat;
@@ -410,11 +412,28 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // 특정 공격 모션에서 이펙트 끄기
+    // 특정 공격 모션에서 이펙트 끄기 (애니메이션 이벤트용)
     public void DisableREffect()
     {
-        if (weaponEffect != null) weaponEffect.SetActive(false);
+        if (currentRSkillInstance != null)
+        {
+            currentRSkillInstance.SetActive(false);
+        }
     }
+
+    public void EnableREffect()
+    {
+        if (GreateSwordEffect == null || bodyEffectPos == null)
+        {
+            Debug.LogWarning("[PlayerController] R스킬 아우라 프리팹 또는 생성 위치가 할당되지 않았습니다!");
+            return;
+        }
+
+        currentRSkillInstance = Instantiate(GreateSwordEffect, bodyEffectPos.position, Quaternion.identity, bodyEffectPos);
+
+        currentRSkillInstance.SetActive(true);
+    }
+
     #endregion
 
     #region 스킬 관련

@@ -61,7 +61,7 @@ public class EffectManager : SingletonMono<EffectManager>
             // 초기 풀 크기만큼 생성 후 비활성화
             for (int i = 0; i < effect._initialPoolSize; i++)
             {
-                GameObject obj = CreateNewInstance(effect._effectPrefab);
+                GameObject obj = CreateNewInstance(effect._effectPrefab, effect._name);
                 poolData.poolQueue.Enqueue(obj);
             }
 
@@ -70,11 +70,12 @@ public class EffectManager : SingletonMono<EffectManager>
     }
 
     // 이펙트 인스턴스를 생성하고 비활성화된 상태로 반환
-    private GameObject CreateNewInstance(GameObject prefab)
+    private GameObject CreateNewInstance(GameObject prefab, string effectName)
     {
         GameObject instance = Instantiate(prefab);
+        instance.name = effectName;
         instance.SetActive(false);
-        instance.transform.SetParent(transform); // 계층 정리용 부모 설정
+        instance.transform.SetParent(transform);
         return instance;
     }
 
@@ -106,12 +107,34 @@ public class EffectManager : SingletonMono<EffectManager>
         else
         {
             var effectPrefab = effects.First(e => e._name == effectName)._effectPrefab;
-            effectInstance = CreateNewInstance(effectPrefab);
+            effectInstance = CreateNewInstance(effectPrefab, effectName);
             poolData.currentSize++;
         }
 
         SetupEffectInstance(effectInstance, position, rotation);
         StartCoroutine(ReturnToPoolAfterDelay(effectInstance, effectName));     // 자동 반환 처리
+    }
+
+    public void StopEffect(string effectName)
+    {
+        if (!_effectPools.ContainsKey(effectName)) return;
+
+        EffectPoolData poolData = _effectPools[effectName];
+
+        // EffectManager의 자식들 중, 켜져있고 이름이 일치하는 이펙트를 전부 찾습니다.
+        foreach (Transform child in transform)
+        {
+            if (child.gameObject.activeSelf && child.name == effectName)
+            {
+                child.gameObject.SetActive(false);
+
+                // 큐에 두 번 들어가는 것을 방지 (안전장치)
+                if (!poolData.poolQueue.Contains(child.gameObject))
+                {
+                    poolData.poolQueue.Enqueue(child.gameObject);
+                }
+            }
+        }
     }
 
     // 이펙트 재생 후 일정 시간 뒤에 풀로 반환

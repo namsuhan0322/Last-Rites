@@ -6407,6 +6407,7 @@ Transform:
   - {fileID: 4211181829961048105}
   - {fileID: 3249193758539475612}
   - {fileID: 1019482578067254672}
+  - {fileID: 7219820817851896826}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!95 &8435180508540260817
@@ -6557,6 +6558,9 @@ MonoBehaviour:
   CurrentSkillDamage: 0
   CurrentSkillVal: 0
   HasRBuff: 0
+  HasTwinBuff: 0
+  HasSpearBuff: 0
+  HasShieldBuff: 0
 --- !u!114 &3114906001766314662
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -37988,6 +37992,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2074851772166953721}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5767586637457273049
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7219820817851896826}
+  m_Layer: 8
+  m_Name: HealEffectPos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7219820817851896826
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5767586637457273049}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.7, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3703098705586024236}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5774496328309570021
 GameObject:

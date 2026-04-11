@@ -23,6 +23,14 @@ public class WolfBoss : Enemy
     [Tooltip("포효후 멍때리기")]
     [SerializeField] float RoarDelay = 2f;
 
+    [Header("부위파괴")]
+    [Header("오른팔 부위파괴 설정")]
+    [SerializeField] GameObject RightHandPointCollider;
+    [SerializeField] int RightHandPointHP = 100;
+    [SerializeField] float breakDownTime = 5f;   // 눕고 있는 시간
+    [SerializeField] float breakAnimTime = 1.5f; // 넘어지는 시간
+    [SerializeField] float getUpTime = 2f;       // 일어나는 시간
+
 
     [Header("보스 페이즈")]
     public BossPhase currentPhase = BossPhase.Phase1;
@@ -132,6 +140,7 @@ public class WolfBoss : Enemy
     bool isPhaseChanging = false;
     Vector3 jumpTargetPos;
     bool isLocked = false;
+    bool isBroken = false;
 
     protected override void Awake()
     {
@@ -858,7 +867,14 @@ public class WolfBoss : Enemy
 
         animator.SetBool("Stun", true);
 
+        RightHandPointCollider.SetActive(true);
+
+        WeakPoint wp = RightHandPointCollider.GetComponent<WeakPoint>();
+        wp.Init(RightHandPointHP, this);
+
         yield return new WaitForSeconds(stunDuration);
+
+        RightHandPointCollider.SetActive(false);
 
         animator.SetBool("Stun", false);
 
@@ -866,12 +882,62 @@ public class WolfBoss : Enemy
         isAttacking = false;
         isComboAttacking = false;
 
-        EndAttack(); 
+        EndAttack();
 
         agent.isStopped = false;
         agent.updateRotation = true;
 
-        attackTimer = 2f; 
+        attackTimer = 2f;
+    }
+
+    //스턴 후 부위파괴
+    public void OnWeakPointBreak()
+    {
+        if (isBroken || _isDead) return;
+
+        animator.SetBool("Stun", false);
+
+        StartCoroutine(BreakRoutine());
+    }
+
+    //스턴 후 부위파괴
+    IEnumerator BreakRoutine()
+    {
+        isBroken = true;
+
+        isStuned = false;
+        isAttacking = true;
+        isComboAttacking = false;
+
+        RightHandPointCollider.SetActive(false);
+
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.updateRotation = false;
+
+        animator.speed = 0.23f;
+        animator.SetTrigger("Break");
+
+        yield return new WaitForSecondsRealtime(breakAnimTime);
+
+        animator.speed = 0f;
+
+        yield return new WaitForSecondsRealtime(breakDownTime);
+
+        animator.speed = 0.5f;
+        animator.SetTrigger("GetUp");
+
+        yield return new WaitForSecondsRealtime(getUpTime);
+
+        animator.speed = 1f;
+
+        isBroken = false;
+        isAttacking = false;
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+
+        attackTimer = 2f;
     }
 
     //점프 데미지 주기

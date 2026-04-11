@@ -1028,6 +1028,7 @@ GameObject:
   - component: {fileID: 1664682987}
   - component: {fileID: 1664682986}
   - component: {fileID: 1664682990}
+  - component: {fileID: 1664682991}
   m_Layer: 12
   m_Name: Cube
   m_TagString: 'Environment '
@@ -1144,6 +1145,24 @@ NavMeshObstacle:
   m_CarveOnlyStationary: 1
   m_Center: {x: 0, y: 0, z: 0}
   m_TimeToStationary: 0.5
+--- !u!114 &1664682991
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1664682985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6756a046ca287134697f50b1711c95d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Actor
+  _currentHP: 100
+  _maxPoise: 20
+  _currentPoise: 0
+  _poiseRecoveryRate: 0
+  _isInvincible: 0
+  _invincibleTimer: 0
 --- !u!1001 &1835126042
 PrefabInstance:
   m_ObjectHideFlags: 0

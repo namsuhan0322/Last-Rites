@@ -3162,7 +3162,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 173e48f9ee169d449a02ead2256b05e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WolfBoss
-  _currentHP: 0
+  _currentHP: 1000
   _maxPoise: 20
   _currentPoise: 0
   _poiseRecoveryRate: 0
@@ -3198,6 +3198,11 @@ MonoBehaviour:
   darkDelay: 2
   spinDelay: 2
   RoarDelay: 2
+  RightHandPointCollider: {fileID: 9042115551629583037}
+  RightHandPointHP: 100
+  breakDownTime: 5
+  breakAnimTime: 1.5
+  getUpTime: 2
   currentPhase: 0
   phase2HpPercent: 0.6
   slashRange: 3
@@ -3271,7 +3276,7 @@ MonoBehaviour:
     type: 3}
   spinVFXPrefab: {fileID: 3617404426564344756, guid: d51bc38f590bfed43b2ab6a2c941ad59,
     type: 3}
-  stunDuration: 5
+  stunDuration: 30
 --- !u!136 &7274095394174317013
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3897,6 +3902,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 8665530206722657586}
   - {fileID: 7599092388553011971}
   m_Father: {fileID: 4871788173246256619}
   m_LocalEulerAnglesHint: {x: -89.98021, y: 0, z: 0}
@@ -4395,6 +4401,78 @@ Transform:
   m_Children: []
   m_Father: {fileID: 3018508382258628199}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &9042115551629583037
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8665530206722657586}
+  - component: {fileID: 4548477474531824190}
+  - component: {fileID: 7156469286326502691}
+  m_Layer: 6
+  m_Name: RightHandWeak
+  m_TagString: Enemy
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!4 &8665530206722657586
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9042115551629583037}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0.7071069, y: -0.000000081932264, z: -0.00000022900335, w: 0.70710665}
+  m_LocalPosition: {x: 2.12, y: -0.23, z: 1.54}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 455632924753607869}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &4548477474531824190
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9042115551629583037}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1.2407358, y: 1.8045979, z: 2.4812663}
+  m_Center: {x: -0.5658339, y: 0.11532295, z: -0.12604645}
+--- !u!114 &7156469286326502691
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9042115551629583037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a19957c2b3d81e143bdf15c3c44e410f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WeakPoint
+  _currentHP: 100
+  _maxPoise: 20
+  _currentPoise: 0
+  _poiseRecoveryRate: 0
+  _isInvincible: 0
+  _invincibleTimer: 0
 --- !u!1 &9150132335611128010
 GameObject:
   m_ObjectHideFlags: 0

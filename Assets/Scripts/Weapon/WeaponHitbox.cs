@@ -1,17 +1,17 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 
 public class WeaponHitbox : MonoBehaviour
 {
-    [Header("¿¬°áÇÒ Äİ¶óÀÌ´õµé (ÀÎ½ºÆåÅÍ¿¡¼­ ÇÒ´ç)")]
-    [SerializeField] private BoxCollider _greatSwordCol; // ´ë°Ë
-    [SerializeField] private BoxCollider _spearCol;      // Ã¢
-    [SerializeField] private BoxCollider _swordCol;      // ÇÑ¼Õ°Ë
-    [SerializeField] private BoxCollider _dualBladeRCol; // ½Ö°Ë(¿ì)
-    [SerializeField] private BoxCollider _dualBladeLCol; // ½Ö°Ë(ÁÂ)
-    [SerializeField] private BoxCollider _shieldCol;     // ¹æÆĞ
+    [Header("ì—°ê²°í•  ì½œë¼ì´ë”ë“¤ (ì¸ìŠ¤í™í„°ì—ì„œ í• ë‹¹)")]
+    [SerializeField] private BoxCollider _greatSwordCol; // ëŒ€ê²€
+    [SerializeField] private BoxCollider _spearCol;      // ì°½
+    [SerializeField] private BoxCollider _swordCol;      // í•œì†ê²€
+    [SerializeField] private BoxCollider _dualBladeRCol; // ìŒê²€(ìš°)
+    [SerializeField] private BoxCollider _dualBladeLCol; // ìŒê²€(ì¢Œ)
+    [SerializeField] private BoxCollider _shieldCol;     // ë°©íŒ¨
 
-    // ½ÇÁ¦·Î »ç¿ëÇÒ Äİ¶óÀÌ´õ ¸ñ·Ï
+    // ì‹¤ì œë¡œ ì‚¬ìš©í•  ì½œë¼ì´ë” ëª©ë¡
     private List<BoxCollider> _activeColliders = new List<BoxCollider>();
 
     private int _damage;
@@ -49,7 +49,7 @@ public class WeaponHitbox : MonoBehaviour
         }
     }
 
-    // °ø°İ ½Ã ÄÑ±â
+    // ê³µê²© ì‹œ ì¼œê¸°
     public void EnableHitbox(int damage)
     {
         _damage = damage;
@@ -61,7 +61,7 @@ public class WeaponHitbox : MonoBehaviour
         }
     }
 
-    // °ø°İ Á¾·á ½Ã ²ô±â
+    // ê³µê²© ì¢…ë£Œ ì‹œ ë„ê¸°
     public void DisableHitbox()
     {
         foreach (var col in _activeColliders)
@@ -92,7 +92,7 @@ public class WeaponHitbox : MonoBehaviour
             {
                 enemy.TakeDamage(_damage);
                 _hitActors.Add(enemy);
-                Debug.Log($"[Hit] {_damage} µ¥¹ÌÁö!");
+                Debug.Log($"[Hit] {_damage} ë°ë¯¸ì§€!");
             }
         }
     }

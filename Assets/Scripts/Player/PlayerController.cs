@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.AI;
 
 public class PlayerController : MonoBehaviour
@@ -51,10 +52,9 @@ public class PlayerController : MonoBehaviour
     public Transform bodyEffectPos;
     private GameObject currentRSkillInstance;
 
-    [Header("Combo Effects")]
-    public ParticleSystem attack1Effect;
-    public ParticleSystem attack2Effect;
-    public ParticleSystem attack3Effect;
+    [Header("Action Effects (현재 무기의 액션 이펙트 모음)")]
+    public List<ActionEffectMapping> weaponEffects = new List<ActionEffectMapping>();
+    private Dictionary<string, ParticleSystem[]> effectDictionary = new Dictionary<string, ParticleSystem[]>();
 
     private float _combatTimer;
     private bool _inCombat;
@@ -102,6 +102,14 @@ public class PlayerController : MonoBehaviour
         Stats.OnHit += HandleHit;
         Stats.OnDeath += HandleDeath;
         Stats.OnStun += HandleStun;
+
+        foreach (var mapping in weaponEffects)
+        {
+            if (!effectDictionary.ContainsKey(mapping.actionCode))
+            {
+                effectDictionary.Add(mapping.actionCode, mapping.particles);
+            }
+        }
     }
 
     private void Start()
@@ -439,24 +447,6 @@ public class PlayerController : MonoBehaviour
         currentRSkillInstance.SetActive(true);
     }
 
-    public void ForceDisableAllAttackEffects()
-    {
-        if (attack1Effect != null)
-        {
-            attack1Effect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-            attack1Effect.gameObject.SetActive(false);
-        }
-        if (attack2Effect != null)
-        {
-            attack2Effect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-            attack2Effect.gameObject.SetActive(false);
-        }
-        if (attack3Effect != null)
-        {
-            attack3Effect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-            attack3Effect.gameObject.SetActive(false);
-        }
-    }
     #endregion
 
     #region 스킬 관련
@@ -679,50 +669,65 @@ public class PlayerController : MonoBehaviour
 
     #endregion
 
-    #region 평타 콤보 이펙트 제어
-    public void EnableAttackEffect(int step)
+    #region 액션 이펙트 제어 (Refactored)
+    public void EnableActionEffect(string actionCode)
     {
-        if (StateMachine.CurrentState != AttackState)
+        if (StateMachine.CurrentState != AttackState && StateMachine.CurrentState != SkillState) return;
+
+        if (effectDictionary.TryGetValue(actionCode, out ParticleSystem[] particles))
         {
-            return;
-        }
-
-        ParticleSystem targetEffect = null;
-
-        // 몇 번째 공격인지에 따라 켤 이펙트를 고릅니다.
-        if (step == 1) targetEffect = attack1Effect;
-        else if (step == 2) targetEffect = attack2Effect;
-        else if (step == 3) targetEffect = attack3Effect;
-
-        if (targetEffect != null)
-        {
-            if (!targetEffect.gameObject.activeSelf)
+            foreach (var p in particles)
             {
-                targetEffect.gameObject.SetActive(true);
+                PlayParticle(p);
             }
-
-            targetEffect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-
-            var mainModule = targetEffect.main;
-            mainModule.simulationSpeed = Anim.speed;
-
-            targetEffect.Play(true);
+        }
+        else
+        {
+            Debug.LogWarning($"[Effect] '{actionCode}' 이펙트가 리스트에 등록되지 않았습니다!");
         }
     }
 
-    // 애니메이션 이벤트에서 호출 (타격 종료 타이밍)
-    public void DisableAttackEffect(int step)
+    public void DisableActionEffect(string actionCode)
     {
-        ParticleSystem targetEffect = null;
-
-        if (step == 1) targetEffect = attack1Effect;
-        else if (step == 2) targetEffect = attack2Effect;
-        else if (step == 3) targetEffect = attack3Effect;
-
-        if (targetEffect != null)
+        if (effectDictionary.TryGetValue(actionCode, out ParticleSystem[] particles))
         {
-            targetEffect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-            targetEffect.gameObject.SetActive(false); 
+            foreach (var p in particles)
+            {
+                StopParticle(p);
+            }
+        }
+    }
+
+    public void ForceDisableAllActionEffects()
+    {
+        foreach (var particles in effectDictionary.Values)
+        {
+            foreach (var p in particles)
+            {
+                if (p != null)
+                {
+                    p.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+                    p.gameObject.SetActive(false);
+                }
+            }
+        }
+    }
+
+    private void PlayParticle(ParticleSystem effect)
+    {
+        if (effect == null) return;
+        if (!effect.gameObject.activeSelf) effect.gameObject.SetActive(true);
+        effect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+        var mainModule = effect.main;
+        mainModule.simulationSpeed = Anim.speed;
+        effect.Play(true);
+    }
+
+    private void StopParticle(ParticleSystem effect)
+    {
+        if (effect != null)
+        {
+            effect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         }
     }
 

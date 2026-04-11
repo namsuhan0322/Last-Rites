@@ -8,7 +8,7 @@ public class PlayerMoveState : PlayerState
     {
         _player.Stats.SetInvincible(false);
         _player.Agent.stoppingDistance = 0f;
-        _player.ForceDisableAllAttackEffects();
+        _player.ForceDisableAllActionEffects();
         SetDestinationToMouse();
     }
 

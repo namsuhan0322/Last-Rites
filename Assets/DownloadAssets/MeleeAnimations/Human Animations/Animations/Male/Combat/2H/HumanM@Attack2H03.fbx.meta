@@ -62,6 +62,13 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
+      - time: 0.20493339
+        functionName: EnableActionEffect
+        data: GS_Attack03
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       - time: 0.3503469
         functionName: DisableWeaponCollider
         data: 
@@ -77,18 +84,11 @@ ModelImporter:
         intParameter: 0
         messageOptions: 0
       - time: 0.40935963
-        functionName: DisableAttackEffect
-        data: 
+        functionName: DisableActionEffect
+        data: GS_Attack03
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
-        intParameter: 3
-        messageOptions: 0
-      - time: 0.20197044
-        functionName: EnableAttackEffect
-        data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 3
+        intParameter: 0
         messageOptions: 0
       transformMask:
       - path: 

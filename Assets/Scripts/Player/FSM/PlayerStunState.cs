@@ -16,7 +16,7 @@ public class PlayerStunState : PlayerState
 
         _stateTimer = 0f;
 
-        _player.ForceDisableAllAttackEffects();
+        _player.ForceDisableAllActionEffects();
 
         // 스턴 이펙트나 사운드 재생
     }

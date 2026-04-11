@@ -62,6 +62,13 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
+      - time: 0.2280788
+        functionName: EnableActionEffect
+        data: GS_V 01
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       - time: 0.27497527
         functionName: DisableWeaponCollider
         data: 
@@ -69,9 +76,23 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.38476753
+      - time: 0.28768474
+        functionName: DisableActionEffect
+        data: GS_V 01
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.3877305
         functionName: EnableWeaponCollider
         data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.3901623
+        functionName: EnableActionEffect
+        data: GS_V 02
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
@@ -83,9 +104,23 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
+      - time: 0.48571426
+        functionName: DisableActionEffect
+        data: GS_V 02
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       - time: 0.6048467
         functionName: EnableWeaponCollider
         data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.64878297
+        functionName: EnableActionEffect
+        data: GS_V 03
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
@@ -100,6 +135,13 @@ ModelImporter:
       - time: 0.67705256
         functionName: DisableREffect
         data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.7044335
+        functionName: DisableActionEffect
+        data: GS_V 03
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0

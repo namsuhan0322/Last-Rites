@@ -1256,7 +1256,7 @@ public class WolfBoss : Enemy
 
         animator.speed = 0.25f;
     }
-    public override void TakeDamage(int damage, float severityOverride = -1f)
+    public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false)
     {
         if (isInvincible || isPhaseChanging) return; 
 

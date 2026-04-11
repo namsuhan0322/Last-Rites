@@ -84,7 +84,7 @@ public class Actor : MonoBehaviour
         OnHPChanged?.Invoke(_currentHP, _maxHP);
     }
 
-    public virtual void TakeDamage(int damage, float severityOverride = -1f)
+    public virtual void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false)
     {
         if (_isDead) return;
         if (_isInvincible)
@@ -107,11 +107,15 @@ public class Actor : MonoBehaviour
             Die();
         else
         {
-            if (_currentPoise > 0)
+            // [변경 사항] 큰 패턴에 맞았다면 강인도 상관없이 즉시 스턴!
+            if (isHeavyAttack)
             {
-                // 외부에서 0 같은 값을 강제로 넣어줬다면 그걸 쓰고, 아니면 평소처럼 계산
+                OnStun?.Invoke();
+            }
+            // 큰 패턴이 아닐 때만 일반 피격 이벤트 발생
+            else if (_currentPoise > 0)
+            {
                 float hitSeverity = (severityOverride != -1f) ? severityOverride : CalculateHitSeverity(damage);
-
                 OnHit?.Invoke(hitSeverity);
             }
         }
@@ -154,7 +158,7 @@ public class Actor : MonoBehaviour
         return 0.0f;                        // 약한 데미지
     }
 
-    public void TakePoiseDamage(float amount)
+    public virtual void TakePoiseDamage(float amount)
     {
         _currentPoise -= amount;
         Debug.Log($"[강인도] {_currentPoise} / {_maxPoise}");

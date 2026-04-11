@@ -28,9 +28,9 @@ public class PlayerStats : Actor
 
     protected override void Update()
     {
-        base.Update(); // Actor.cs의 강인도 계산 등 실행
+        base.Update();
 
-        // [추가] 스태미나 자동 회복
+        // 스태미나 자동 회복
         if (_currentStamina < MaxStamina)
         {
             _currentStamina += _playerData.Stamina_Regen * Time.deltaTime;
@@ -53,4 +53,6 @@ public class PlayerStats : Actor
         }
         return false;
     }
+
+    public override void TakePoiseDamage(float amount) { }
 }

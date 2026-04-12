@@ -99,6 +99,16 @@ public class Enemy : Actor
     {
         base.Start();
 
+        if (data != null)
+        {
+            Init(null, data);
+        }
+        else
+        {
+            Debug.LogError("EnemyData 없음");
+        }
+
+
         OnStun += HandleStun;
     }
 

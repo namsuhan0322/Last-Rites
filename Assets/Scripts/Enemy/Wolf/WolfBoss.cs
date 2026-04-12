@@ -513,7 +513,7 @@ public class WolfBoss : Enemy
         var ps = slashIndicator.GetComponent<ParticleSystem>();
 
         var main = ps.main;
-        main.startSize = 5f;
+        main.startSize = 8f;
 
         var shape = ps.shape;
         shape.shapeType = ParticleSystemShapeType.Cone;
@@ -521,7 +521,7 @@ public class WolfBoss : Enemy
         shape.radius = 0f;
         shape.length = slashRange;
 
-        float startOffset = 3f; 
+        float startOffset = 4.5f; 
 
         slashIndicator.transform.position =
             transform.position + attackDirection * startOffset;
@@ -1335,7 +1335,7 @@ public class WolfBoss : Enemy
 
         GameObject vfx = Instantiate(clawVFXPrefab, spawnPos, rot);
 
-        vfx.transform.localScale = Vector3.one * 1.8f;
+        vfx.transform.localScale = Vector3.one * 3.5f;
 
         float vfxSpeed = isRightHandBroken ? brokenHandAnimSpeed : 1f;
 
@@ -1355,6 +1355,8 @@ public class WolfBoss : Enemy
     public void SpawnRoarVFX()
     {
         GameObject vfx = Instantiate(roarVFXPrefab, transform.position, Quaternion.identity);
+
+        vfx.transform.localScale = Vector3.one * 4f; 
 
         Destroy(vfx, 2f);
     }
@@ -1399,7 +1401,7 @@ public class WolfBoss : Enemy
 
         GameObject vfx = Instantiate(jumpVFXPrefab, pos, Quaternion.identity);
 
-        vfx.transform.localScale = Vector3.one * 4f;
+        vfx.transform.localScale = Vector3.one * 7f;
 
         Destroy(vfx, 2f);
     }

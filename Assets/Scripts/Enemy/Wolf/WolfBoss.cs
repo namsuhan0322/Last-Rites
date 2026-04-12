@@ -1175,6 +1175,9 @@ public class WolfBoss : Enemy
         stompTimer = stompCooldown;
 
         isComboAttacking = false;
+
+        attackTimer = attackCooldown; 
+
         EndAttack();
 
         agent.isStopped = false;

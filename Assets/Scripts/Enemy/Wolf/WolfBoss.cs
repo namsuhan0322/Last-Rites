@@ -30,6 +30,9 @@ public class WolfBoss : Enemy
     [SerializeField] float breakDownTime = 5f;   // 눕고 있는 시간
     [SerializeField] float breakAnimTime = 1.5f; // 넘어지는 시간
     [SerializeField] float getUpTime = 2f;       // 일어나는 시간
+    [Header("부위파괴 할퀴기 디버프")]
+    [SerializeField] float brokenHandAnimSpeed = 0.6f;   
+    [SerializeField] float brokenHandAttackSpeedMultiplier = 0.6f;
 
 
     [Header("보스 페이즈")]
@@ -48,6 +51,7 @@ public class WolfBoss : Enemy
     public float slashCooldown = 3f;
     public GameObject slashIndicatorPrefab;
     public Transform clawSpawnPoint; // 손 위치
+    [SerializeField] float slashBaseAngle = 90f;
 
     [Header("1페이지 점프 공격")]
     [Tooltip("점프공격범위")]
@@ -58,6 +62,8 @@ public class WolfBoss : Enemy
     public float jumpDelay = 2.5f;
     [Tooltip("점프공격 대기시간")]
     public float jumpCooldown = 8f;
+    [Tooltip("점프공격 이펙트 보정값")]
+    [SerializeField] float jumpIndicatorScaleMultiplier = 0.7f;
     public GameObject jumpIndicatorPrefab;
     [SerializeField] GameObject modelRoot;
 
@@ -73,6 +79,7 @@ public class WolfBoss : Enemy
     [SerializeField] float chargeStartDelay = 0.5f;
     [Tooltip("돌진하기전기다리는시간")]
     public float chargeLockTime = 2f;
+    [SerializeField] float chargeIndicatorBaseLength = 7f;
     public GameObject chargeIndicatorPrefab;
 
     [Header("Phase2 휘두르기")]
@@ -110,14 +117,14 @@ public class WolfBoss : Enemy
     [Header("내려찍기 장판 연출")]
     [SerializeField] AnimationCurve stompFillCurve;
     [SerializeField] float stompGrowTime = 2.5f;
-    [SerializeField] Material mat;
 
     [Header("Vfx")]
     public GameObject roarVFXPrefab;
     public GameObject clawVFXPrefab;
     public GameObject biteVFXPrefab;
     public GameObject spinVFXPrefab;
-    
+    public GameObject jumpVFXPrefab;
+
     //변수들
     float jumpTimer = 0f;
     GameObject jumpIndicator;
@@ -140,7 +147,7 @@ public class WolfBoss : Enemy
     bool isPhaseChanging = false;
     Vector3 jumpTargetPos;
     bool isLocked = false;
-    bool isBroken = false;
+    bool isRightHandBroken = false;
 
     protected override void Awake()
     {
@@ -418,6 +425,7 @@ public class WolfBoss : Enemy
     IEnumerator Slash()
     {
         if (isPhaseChanging) yield break;
+
         isAttacking = true;
         isComboAttacking = true;
 
@@ -425,16 +433,23 @@ public class WolfBoss : Enemy
         agent.velocity = Vector3.zero;
         agent.updateRotation = false;
 
-        float rotateTime = 0.5f; 
+        float speedMul = isRightHandBroken ? brokenHandAttackSpeedMultiplier : 1f;
+        float animSpeed = isRightHandBroken ? brokenHandAnimSpeed : 1f;
+
+        animator.speed = animSpeed;
+
+        float rotateTime = 0.5f / speedMul;
         float timer = 0f;
 
         while (timer < rotateTime)
         {
             if (isPhaseChanging)
             {
+                ResetAnimSpeed();
                 EndAttack();
                 yield break;
             }
+
             timer += Time.deltaTime;
 
             if (currentTarget != null)
@@ -464,22 +479,27 @@ public class WolfBoss : Enemy
             dir.y = 0;
             attackDirection = dir.normalized;
         }
+
         ShowSlashIndicator();
 
-        yield return new WaitForSeconds(1.5f);  //슬래쉬 범위 보여주는 시간
+        yield return new WaitForSeconds(1.5f / speedMul);
 
         slashIndicator.SetActive(false);
 
         animator.SetTrigger("Slash");
 
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.3f / speedMul);
 
         DealSlashDamage();
 
-        yield return new WaitForSeconds(slashDelay);
+        yield return new WaitForSeconds(slashDelay / speedMul);
+
         slashTimer = slashCooldown;
 
         isComboAttacking = false;
+
+        ResetAnimSpeed(); 
+
         EndAttack();
 
         agent.isStopped = false;
@@ -490,17 +510,24 @@ public class WolfBoss : Enemy
     {
         slashIndicator.SetActive(true);
 
-        float diameter = slashRange * 2f;
+        float baseLength = 0.8f;
+        float slashBaseAngle = 90f;
 
-        slashIndicator.transform.localScale = new Vector3(diameter, diameter, 1f);
+        float scaleZ = slashRange / baseLength;
+        float angleScale = (slashAngle / slashBaseAngle) * 2.5f;
 
-        Vector3 pos = transform.position + attackDirection * (slashRange * 0.5f);
+        slashIndicator.transform.localScale =
+            new Vector3(angleScale, 1f, scaleZ);
+
+        float halfLength = (baseLength * scaleZ) * 0.5f;
+
+        Vector3 pos = transform.position + attackDirection * halfLength;
         pos.y += 0.05f;
 
         slashIndicator.transform.position = pos;
 
         slashIndicator.transform.rotation =
-            Quaternion.LookRotation(attackDirection) * Quaternion.Euler(90f, 0, 0);
+            Quaternion.LookRotation(attackDirection);
     }
     //할퀴기 데미지
     void DealSlashDamage()
@@ -703,8 +730,9 @@ public class WolfBoss : Enemy
     {
         jumpIndicator.SetActive(true);
 
-        float diameter = jumpAttackRange * 2f;
-        jumpIndicator.transform.localScale = new Vector3(diameter, diameter, 1f);
+        float diameter = jumpAttackRange * 2f * jumpIndicatorScaleMultiplier;
+
+        jumpIndicator.transform.localScale = Vector3.one * diameter;
 
         if (currentTarget != null)
         {
@@ -717,7 +745,7 @@ public class WolfBoss : Enemy
             jumpIndicator.transform.position = jumpTargetPos;
         }
 
-        jumpIndicator.transform.rotation = Quaternion.Euler(90f, 0, 0);
+        jumpIndicator.transform.rotation = Quaternion.identity;
     }
     public void HideModel()
     { modelRoot.SetActive(false); }
@@ -774,10 +802,12 @@ public class WolfBoss : Enemy
 
                     chargeIndicator.transform.rotation =
                         Quaternion.LookRotation(transform.forward) *
-                        Quaternion.Euler(90f, 0, 0);
+                        Quaternion.Euler(0f, 0f, 0f);
+
+                    float scaleZ = chargeDistance / chargeIndicatorBaseLength;
 
                     chargeIndicator.transform.localScale =
-                        new Vector3(2f, chargeDistance, 1f);
+                        new Vector3(2f, 1f, scaleZ);
                 }
             }
 
@@ -893,7 +923,9 @@ public class WolfBoss : Enemy
     //스턴 후 부위파괴
     public void OnWeakPointBreak()
     {
-        if (isBroken || _isDead) return;
+        if (isRightHandBroken || _isDead) return;
+
+        isRightHandBroken = true; 
 
         animator.SetBool("Stun", false);
 
@@ -903,8 +935,6 @@ public class WolfBoss : Enemy
     //스턴 후 부위파괴
     IEnumerator BreakRoutine()
     {
-        isBroken = true;
-
         isStuned = false;
         isAttacking = true;
         isComboAttacking = false;
@@ -930,8 +960,6 @@ public class WolfBoss : Enemy
         yield return new WaitForSecondsRealtime(getUpTime);
 
         animator.speed = 1f;
-
-        isBroken = false;
         isAttacking = false;
 
         agent.isStopped = false;
@@ -1012,7 +1040,7 @@ public class WolfBoss : Enemy
 
         spinIndicator.transform.position = pos;
 
-        spinIndicator.transform.rotation = Quaternion.Euler(90f, 0, 0);
+        spinIndicator.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
     }
     //휘두르기 데미지 주기
    public  void DealSpinDamage()
@@ -1158,64 +1186,10 @@ public class WolfBoss : Enemy
     {
         stompIndicator.SetActive(true);
 
-        float diameter = stompRange * 2f;
-        stompIndicator.transform.localScale = new Vector3(diameter, diameter, 1f);
+        stompIndicator.transform.position = transform.position + Vector3.up * 0.05f;
+        stompIndicator.transform.rotation = Quaternion.identity;
 
-        Vector3 pos = transform.position;
-        pos.y += 0.05f;
-
-        stompIndicator.transform.position = pos;
-        stompIndicator.transform.rotation = Quaternion.Euler(90f, 0, 0);
-
-        StartCoroutine(FillStompIndicator());
-    }
-    IEnumerator FillStompIndicator()
-    {
-        float timer = 0f;
-
-        Color start = new Color(1, 1, 1, 0.15f);
-        Color mid = new Color(1, 0.5f, 0, 0.5f);
-        Color end = new Color(1, 0, 0, 0.9f);
-
-        float maxDiameter = stompRange * 2f;
-
-        while (timer < stompGrowTime)
-        {
-            timer += Time.deltaTime;
-            float t = timer / stompGrowTime;
-
-            float curved = stompFillCurve.Evaluate(t);
-
-            float size = Mathf.Lerp(0.1f, maxDiameter, curved);
-            stompIndicator.transform.localScale = new Vector3(size, size, 1f);
-
-            if (t < 0.5f)
-                mat.color = Color.Lerp(start, mid, t * 2f);
-            else
-                mat.color = Color.Lerp(mid, end, (t - 0.5f) * 2f);
-
-            yield return null;
-        }
-
-        StartCoroutine(FlashIndicator());
-    }
-
-    IEnumerator FlashIndicator()
-    {
-        float timer = 0f;
-
-        while (timer < 0.5f)
-        {
-            timer += Time.deltaTime;
-
-            float alpha = Mathf.PingPong(timer * 10f, 1f);
-
-            Color c = mat.color;
-            c.a = Mathf.Lerp(0.3f, 1f, alpha);
-            mat.color = c;
-
-            yield return null;
-        }
+        StartCoroutine(FillStompVFX(stompIndicator));
     }
 
     //내려찍기 입팩트
@@ -1256,6 +1230,69 @@ public class WolfBoss : Enemy
 
         animator.speed = 0.25f;
     }
+
+    IEnumerator FillStompVFX(GameObject vfx)
+    {
+        float timer = 0f;
+
+        float maxScale = stompRange * 2f;
+
+        ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
+        Renderer rend = vfx.GetComponentInChildren<Renderer>();
+
+        Color start = new Color(1, 1, 1, 0.2f);
+        Color mid = new Color(1, 0.5f, 0, 0.6f);
+        Color end = new Color(1, 0, 0, 1f);
+
+        while (timer < stompGrowTime)
+        {
+            timer += Time.deltaTime;
+            float t = timer / stompGrowTime;
+
+            float curved = stompFillCurve.Evaluate(t);
+
+            float size = Mathf.Lerp(0.1f, maxScale, curved);
+            vfx.transform.localScale = new Vector3(size, size, size);
+
+            if (rend != null)
+            {
+                Color c;
+                if (t < 0.5f)
+                    c = Color.Lerp(start, mid, t * 2f);
+                else
+                    c = Color.Lerp(mid, end, (t - 0.5f) * 2f);
+
+                rend.material.color = c;
+            }
+
+            yield return null;
+        }
+
+        StartCoroutine(FlashVFX(vfx));
+    }
+    IEnumerator FlashVFX(GameObject vfx)
+    {
+        float timer = 0f;
+
+        Renderer rend = vfx.GetComponentInChildren<Renderer>();
+
+        while (timer < 0.5f)
+        {
+            timer += Time.deltaTime;
+
+            float alpha = Mathf.PingPong(timer * 10f, 1f);
+
+            if (rend != null)
+            {
+                Color c = rend.material.color;
+                c.a = Mathf.Lerp(0.3f, 1f, alpha);
+                rend.material.color = c;
+            }
+
+            yield return null;
+        }
+    }
+
     public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false)
     {
         if (isInvincible || isPhaseChanging) return; 
@@ -1266,15 +1303,28 @@ public class WolfBoss : Enemy
         EndHit();
     }
 
-    //vfx 애니메이션들
+
+
+    //----------------멍떄리는 코드
+    IEnumerator IdleDelayRoutine(float delay)
+    {
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+
+        yield return new WaitForSeconds(delay);
+    }
+
+    //vfx , 애니메이션들
 
     //할퀴기
     public void SpawnClawVFX()
     {
         if (clawVFXPrefab == null) return;
+
         Vector3 spawnPos = clawSpawnPoint != null
             ? clawSpawnPoint.position
             : transform.position;
+
         Quaternion rot = Quaternion.LookRotation(attackDirection);
         rot *= Quaternion.AngleAxis(180f, Vector3.forward);
 
@@ -1282,13 +1332,18 @@ public class WolfBoss : Enemy
 
         vfx.transform.localScale = Vector3.one * 1.8f;
 
+        float vfxSpeed = isRightHandBroken ? brokenHandAnimSpeed : 1f;
+
         ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
         if (ps != null)
         {
+            var main = ps.main;
+            main.simulationSpeed = vfxSpeed; 
+
             ps.Play();
         }
 
-        Destroy(vfx, 1.5f);
+        Destroy(vfx, 1.5f / vfxSpeed);
     }
 
     //포효
@@ -1330,13 +1385,22 @@ public class WolfBoss : Enemy
         Destroy(vfx, 2f);
     }
 
-
-    //----------------멍떄리는 코드
-    IEnumerator IdleDelayRoutine(float delay)
+    public void SpawnJumpVFX()
     {
-        agent.isStopped = true;
-        agent.velocity = Vector3.zero;
+        if (jumpVFXPrefab == null) return;
 
-        yield return new WaitForSeconds(delay);
+        Vector3 pos = transform.position;
+        pos.y += 0.1f;
+
+        GameObject vfx = Instantiate(jumpVFXPrefab, pos, Quaternion.identity);
+
+        vfx.transform.localScale = Vector3.one * 4f;
+
+        Destroy(vfx, 2f);
+    }
+
+    void ResetAnimSpeed()
+    {
+        animator.speed = 1f;
     }
 }

@@ -43,6 +43,9 @@ public class PlayerController : MonoBehaviour
     [Tooltip("회피 후 다음 회피를 할 수 있을 때까지의 최소 지연 시간")]
     public float dashCooldown = 0.2f;
     private float _dashTimer = 0f;
+    [Tooltip("회피 후 평타 공격을 할 수 있을 때까지의 지연 시간")]
+    public float postRollAttackDelay = 0.3f;
+    [HideInInspector] public float postRollAttackTimer = 0f;
 
     [Header("전투 감지 센서")]
     public float DetectionRadius = 8.0f;   
@@ -489,6 +492,7 @@ public class PlayerController : MonoBehaviour
     {
         if (_dashTimer > 0) _dashTimer -= Time.deltaTime;
         if (globalSkillTimer > 0) globalSkillTimer -= Time.deltaTime;
+        if (postRollAttackTimer > 0) postRollAttackTimer -= Time.deltaTime;
 
         if (Q_Timer > 0)
         {

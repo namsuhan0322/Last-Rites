@@ -19,7 +19,10 @@ public class PlayerMoveState : PlayerState
         {
             if (_player.InCombat)
             {
-                _stateMachine.ChangeState(_player.AttackState);
+                if (_player.InCombat && _player.postRollAttackTimer <= 0f)
+                {
+                    _stateMachine.ChangeState(_player.AttackState);
+                }
             }
         }
 

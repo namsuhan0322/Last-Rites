@@ -60,5 +60,6 @@ public class PlayerRollState : PlayerState
         _player.TogglePlayerOutline(true);
 
         _player.ResetDashTimer();
+        _player.postRollAttackTimer = _player.postRollAttackDelay;
     }
 }

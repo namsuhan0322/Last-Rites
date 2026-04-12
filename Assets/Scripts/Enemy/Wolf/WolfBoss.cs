@@ -510,24 +510,26 @@ public class WolfBoss : Enemy
     {
         slashIndicator.SetActive(true);
 
-        float baseLength = 0.8f;
-        float slashBaseAngle = 90f;
+        var ps = slashIndicator.GetComponent<ParticleSystem>();
 
-        float scaleZ = slashRange / baseLength;
-        float angleScale = (slashAngle / slashBaseAngle) * 2.5f;
+        var main = ps.main;
+        main.startSize = 5f;
 
-        slashIndicator.transform.localScale =
-            new Vector3(angleScale, 1f, scaleZ);
+        var shape = ps.shape;
+        shape.shapeType = ParticleSystemShapeType.Cone;
+        shape.angle = slashAngle * 0.5f;
+        shape.radius = 0f;
+        shape.length = slashRange;
 
-        float halfLength = (baseLength * scaleZ) * 0.5f;
+        float startOffset = 3f; 
 
-        Vector3 pos = transform.position + attackDirection * halfLength;
-        pos.y += 0.05f;
-
-        slashIndicator.transform.position = pos;
+        slashIndicator.transform.position =
+            transform.position + attackDirection * startOffset;
 
         slashIndicator.transform.rotation =
             Quaternion.LookRotation(attackDirection);
+
+        ps.Play();
     }
     //할퀴기 데미지
     void DealSlashDamage()

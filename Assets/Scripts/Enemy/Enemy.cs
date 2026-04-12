@@ -214,13 +214,7 @@ public class Enemy : Actor
 
         float dist = Vector3.Distance(transform.position, currentTarget.position);
 
-        if (dist <= detectRadius)
-            ChasePlayer(dist);
-        else
-        {
-            currentTarget = null;
-            RandomPatrol();
-        }
+        ChasePlayer(dist);
     }
     //---------어떤것이 더 적합한 타겟인가?------------
     Transform GetBestTargetExcept(Transform except)

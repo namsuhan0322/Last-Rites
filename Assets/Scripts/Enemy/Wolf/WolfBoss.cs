@@ -1042,7 +1042,7 @@ public class WolfBoss : Enemy
 
         spinIndicator.transform.position = pos;
 
-        spinIndicator.transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+        spinIndicator.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
     }
     //휘두르기 데미지 주기
    public  void DealSpinDamage()

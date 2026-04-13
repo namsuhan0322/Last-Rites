@@ -2955,7 +2955,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!143 &3514320879435135363
 CharacterController:
@@ -3045,6 +3045,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   dashCooldown: 0.05
+  postRollAttackDelay: 0.3
+  postRollAttackTimer: 0
   DetectionRadius: 3
   ViewAngle: 90
   EnemyLayer:

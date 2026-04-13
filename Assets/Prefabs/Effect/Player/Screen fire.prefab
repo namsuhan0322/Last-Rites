@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 207495765307802987}
   - component: {fileID: 8155274695289465113}
   m_Layer: 0
-  m_Name: Screen water
+  m_Name: Screen fire
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -305,7 +305,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5.95596
+      scalar: 22.136553
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -358,7 +358,7 @@ ParticleSystem:
     startSizeY:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 3.3502274
+      scalar: 12.451811
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -690,7 +690,7 @@ ParticleSystem:
     donutRadius: 0.2
     m_Position: {x: 0, y: 0, z: 0}
     m_Rotation: {x: 0, y: 0, z: 0}
-    m_Scale: {x: 5.95596, y: 3.3502274, z: 1}
+    m_Scale: {x: 22.136553, y: 12.451811, z: 1}
     placementMode: 0
     m_MeshMaterialIndex: 0
     m_MeshNormalOffset: 0
@@ -4858,7 +4858,7 @@ ParticleSystemRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 035e22a8d218f954094e11d00bfda23e, type: 2}
+  - {fileID: 2100000, guid: a2185f5530eb7ce488175648807dbdaa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

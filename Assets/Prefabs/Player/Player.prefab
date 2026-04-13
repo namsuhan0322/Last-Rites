@@ -3057,6 +3057,11 @@ MonoBehaviour:
   GreateSwordEffect: {fileID: 1679348057962266, guid: 0335b834533bcfa4696fa549573ce169,
     type: 3}
   bodyEffectPos: {fileID: 7219820817851896826}
+  screenBloodEffect: {fileID: 0}
+  screenFireEffect: {fileID: 0}
+  currentPotionData: {fileID: 11400000, guid: 463921fe6c5a4884785a72e39891abe0, type: 2}
+  currentPotionCount: 0
+  potionCooldown: 5
   weaponEffects:
   - actionCode: GS_Attack01
     particles:

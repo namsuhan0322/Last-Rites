@@ -61,6 +61,10 @@ public class PlayerController : MonoBehaviour
     public Transform bodyEffectPos;
     private GameObject currentRSkillInstance;
 
+    [Header("카메라 스크린 이펙트")]
+    public ScreenBloodController screenBloodEffect;
+    public GameObject screenFireEffect;
+
     [Header("아이템 관리")]
     public ShopPotionSO currentPotionData;          // 장착된 포션 SO
     public int currentPotionCount;                  // 현재 인벤토리에 남은 포션 개수
@@ -125,6 +129,7 @@ public class PlayerController : MonoBehaviour
         Stats.OnHit += HandleHit;
         Stats.OnDeath += HandleDeath;
         Stats.OnStun += HandleStun;
+        Stats.OnHPChanged += CheckDangerState;
 
         foreach (var mapping in weaponEffects)
         {
@@ -186,6 +191,7 @@ public class PlayerController : MonoBehaviour
             Stats.OnHit -= HandleHit;
             Stats.OnDeath -= HandleDeath;
             Stats.OnStun -= HandleStun;
+            Stats.OnHPChanged -= CheckDangerState;
         }
     }
 
@@ -263,6 +269,11 @@ public class PlayerController : MonoBehaviour
 
     private void HandleHit(float severity)
     {
+        if (screenBloodEffect != null)
+        {
+            screenBloodEffect.PlayHitEffect(1.5f); // 1.5초 동안 피 튀김
+        }
+
         if (StateMachine.CurrentState == StunState || StateMachine.CurrentState == DeadState) return;
         if (HasRBuff) return;
 
@@ -270,6 +281,17 @@ public class PlayerController : MonoBehaviour
 
         HitState.SetSeverity(severity);
         StateMachine.ChangeState(HitState);
+    }
+
+    private void CheckDangerState(int currentHP, int maxHP)
+    {
+        if (screenBloodEffect == null) return;
+
+        float hpPercent = (float)currentHP / maxHP;
+
+        // 체력이 20% 이하이고 살아있으면 Danger 모드 ON, 아니면 OFF
+        bool isDanger = (hpPercent <= 0.2f && currentHP > 0);
+        screenBloodEffect.SetDangerMode(isDanger);
     }
 
     private void HandleDeath()
@@ -467,6 +489,8 @@ public class PlayerController : MonoBehaviour
             HasRBuff = false;
 
             Debug.Log($"[R 스킬 효과 적용!] 데미지 {damageToDeal}로 뻥튀기 됨! 슈퍼아머 해제.");
+
+            if (screenFireEffect != null) screenFireEffect.SetActive(false);
         }
 
         // 히트박스 켜면서 결정된 데미지 전달
@@ -489,6 +513,8 @@ public class PlayerController : MonoBehaviour
         {
             currentRSkillInstance.SetActive(false);
         }
+
+        if (screenFireEffect != null) screenFireEffect.SetActive(false);
     }
 
     public void EnableREffect()
@@ -502,6 +528,8 @@ public class PlayerController : MonoBehaviour
         currentRSkillInstance = Instantiate(GreateSwordEffect, bodyEffectPos.position, Quaternion.identity, bodyEffectPos);
 
         currentRSkillInstance.SetActive(true);
+
+        if (screenFireEffect != null) screenFireEffect.SetActive(true);
     }
 
     #endregion

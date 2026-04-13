@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -59,6 +60,17 @@ public class PlayerController : MonoBehaviour
     public GameObject GreateSwordEffect;
     public Transform bodyEffectPos;
     private GameObject currentRSkillInstance;
+
+    [Header("아이템 관리")]
+    public ShopPotionSO currentPotionData;          // 장착된 포션 SO
+    public int currentPotionCount;                  // 현재 인벤토리에 남은 포션 개수
+    private GameObject currentHealInstance;
+    private Coroutine _healEffectCoroutine;
+
+    public float potionCooldown = 5.0f;
+    public float Potion_Timer { get; private set; }
+
+    public event Action<int> OnPotionCountChanged;
 
     [Header("Action Effects (현재 무기의 액션 이펙트 모음)")]
     public List<ActionEffectMapping> weaponEffects = new List<ActionEffectMapping>();
@@ -137,6 +149,12 @@ public class PlayerController : MonoBehaviour
         }
 
         StateMachine.Initialize(IdleState);
+
+        if (currentPotionData != null)
+        {
+            currentPotionCount = currentPotionData.Max_Count;
+            OnPotionCountChanged?.Invoke(currentPotionCount);
+        }
     }
 
     private void Update()
@@ -153,6 +171,7 @@ public class PlayerController : MonoBehaviour
         CheckEnemyInSight();
         ManageUpperBodyWeight();
         UpdateSkillCooldowns();
+        CheckItemInput();
     }
 
     private void FixedUpdate()
@@ -494,6 +513,12 @@ public class PlayerController : MonoBehaviour
         if (globalSkillTimer > 0) globalSkillTimer -= Time.deltaTime;
         if (postRollAttackTimer > 0) postRollAttackTimer -= Time.deltaTime;
 
+        if (Potion_Timer > 0)
+        {
+            Potion_Timer -= Time.deltaTime;
+            if (Potion_Timer <= 0) Debug.Log("포션 쿨타임이 끝났습니다!");
+        }
+
         if (Q_Timer > 0)
         {
             Q_Timer -= Time.deltaTime;
@@ -776,6 +801,70 @@ public class PlayerController : MonoBehaviour
         if (effect != null)
         {
             effect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        }
+    }
+
+    #endregion
+
+    #region 아이템 사용
+    private void CheckItemInput()
+    {
+        if (StateMachine.CurrentState == DeadState || StateMachine.CurrentState == StunState) return;
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            UsePotion();
+        }
+    }
+
+    private void UsePotion()
+    {
+        if (currentPotionData == null) return;
+        if (currentPotionCount <= 0) return;
+        if (Stats.IsFullHP) return;
+        if (Potion_Timer > 0) return;
+
+        float percentRatio = currentPotionData.Heal_Percent / 100f;
+        int healAmount = Mathf.RoundToInt(Stats.MaxHP * percentRatio);
+
+        Stats.Heal(healAmount);
+        currentPotionCount--;
+        OnPotionCountChanged?.Invoke(currentPotionCount);
+        Potion_Timer = potionCooldown;
+
+        PlayHealEffect();
+    }
+
+    private void PlayHealEffect()
+    {
+        if (HealEffect == null || bodyEffectPos == null) return;
+
+        if (currentHealInstance == null)
+            currentHealInstance = Instantiate(HealEffect, bodyEffectPos.position, Quaternion.identity, bodyEffectPos);
+
+        currentHealInstance.SetActive(false);
+        currentHealInstance.SetActive(true);
+
+        ParticleSystem[] particles = currentHealInstance.GetComponentsInChildren<ParticleSystem>();
+        foreach (var p in particles)
+        {
+            p.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            p.Play(true);
+        }
+
+        if (_healEffectCoroutine != null) StopCoroutine(_healEffectCoroutine);
+
+        _healEffectCoroutine = StartCoroutine(DisableHealEffectAfterDelay(2.0f));
+    }
+
+    private System.Collections.IEnumerator DisableHealEffectAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        if (currentHealInstance != null)
+        {
+            currentHealInstance.SetActive(false);
+            _healEffectCoroutine = null;
         }
     }
 

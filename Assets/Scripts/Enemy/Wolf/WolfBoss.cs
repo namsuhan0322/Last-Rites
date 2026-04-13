@@ -22,6 +22,9 @@ public class WolfBoss : Enemy
     [SerializeField] float spinDelay = 2f;
     [Tooltip("포효후 멍때리기")]
     [SerializeField] float RoarDelay = 2f;
+    [Tooltip("토네이도 멍때리기")]
+    [SerializeField] float tornadoDelay = 2f;
+    
 
     [Header("부위파괴")]
     [Header("오른팔 부위파괴 설정")]
@@ -1060,6 +1063,7 @@ public class WolfBoss : Enemy
         EndTornado();
 
         yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(tornadoDelay);
 
         isComboAttacking = false;
         EndAttack();

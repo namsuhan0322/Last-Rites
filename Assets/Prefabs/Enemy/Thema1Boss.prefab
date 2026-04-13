@@ -3240,10 +3240,11 @@ MonoBehaviour:
   darkProjectilePrefab: {fileID: 6745805672652322922, guid: be83aa24963a8944fafe645f5299ca61,
     type: 3}
   firePoint: {fileID: 7585036651237967618}
-  projectileSpeed: 4
+  projectileSpeed: 5
   spreadAngle: 50
-  projectileLifeTime: 3
+  projectileLifeTime: 5
   darkShotCooldown: 5
+  darkShotMinDistance: 6
   headTransform: {fileID: 7585036651237967618}
   stompRange: 7
   stompDamage: 50

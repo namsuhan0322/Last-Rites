@@ -82,7 +82,7 @@ public class WolfBoss : Enemy
     [SerializeField] float chargeIndicatorBaseLength = 7f;
     public GameObject chargeIndicatorPrefab;
 
-    [Header("Phase2 휘두르기")]
+    [Header("2페이지 휘두르기")]
     [Tooltip("휘두르기범위")]
     public float spinAttackRange = 5f;
     [Tooltip("휘두르기데미지")]
@@ -91,7 +91,7 @@ public class WolfBoss : Enemy
     public float spinCooldown = 6f;
     public GameObject spinIndicatorPrefab;
 
-    [Header("Phase2 암흑탄")]
+    [Header("2페이지 암흑탄")]
     public GameObject darkProjectilePrefab;
     public Transform firePoint;
     [Tooltip("암흑탄속도")]
@@ -102,9 +102,11 @@ public class WolfBoss : Enemy
     public float projectileLifeTime = 3f;
     [Tooltip("암흑탄 대기시간")]
     public float darkShotCooldown = 5f;
+    [Tooltip("암흑탄 사용 거리")]
+    public float darkShotMinDistance = 5f;
     public Transform headTransform;
 
-    [Header("Phase2 내려찍기")]
+    [Header("2페이지 내려찍기")]
     [Tooltip("내려찍기 범위")]
     public float stompRange = 6f;
     [Tooltip("내려찍기 데미지")]
@@ -344,7 +346,7 @@ public class WolfBoss : Enemy
             if (spinTimer <= 0f)
                 patterns.Add(() => StartCoroutine(SpinAttack()));
 
-            if (darkShotTimer <= 0f)
+            if (darkShotTimer <= 0f && dist >= darkShotMinDistance)
                 patterns.Add(() => StartCoroutine(DarkShot()));
 
             patterns.Add(() => base.TryAttack());

@@ -82,6 +82,13 @@ public class WolfBoss : Enemy
     [SerializeField] float chargeIndicatorBaseLength = 7f;
     public GameObject chargeIndicatorPrefab;
 
+    [Header("1페이지 회오리 스킬")]
+    [SerializeField] float tornadoSpeed = 3f;
+    [SerializeField] float tornadoDuration = 5f;
+    [SerializeField] int tornadoDamage = 20;
+    [SerializeField] float tornadoCooldown = 10f;
+
+
     [Header("2페이지 휘두르기")]
     [Tooltip("휘두르기범위")]
     public float spinAttackRange = 5f;
@@ -126,6 +133,8 @@ public class WolfBoss : Enemy
     public GameObject biteVFXPrefab;
     public GameObject spinVFXPrefab;
     public GameObject jumpVFXPrefab;
+    public GameObject tornadoVFX;
+    public GameObject sandstormVFXPrefab;
 
     //변수들
     float jumpTimer = 0f;
@@ -151,7 +160,8 @@ public class WolfBoss : Enemy
     bool isLocked = false;
     bool isRightHandBroken = false;
     Collider myCollider;
-
+    GameObject sandstormInstance;
+    float tornadoTimer = 0f;
     protected override void Awake()
     {
         base.Awake();
@@ -182,6 +192,7 @@ public class WolfBoss : Enemy
         spinTimer -= Time.deltaTime;
         darkShotTimer -= Time.deltaTime;
         stompTimer -= Time.deltaTime;
+        tornadoTimer -= Time.deltaTime;
 
         if (_isDead) return;
 
@@ -328,6 +339,9 @@ public class WolfBoss : Enemy
 
             if (chargeTimer <= 0f)
                 patterns.Add(() => StartCoroutine(Charge()));
+
+            if (tornadoTimer <= 0f)
+                patterns.Add(() => StartCoroutine(TornadoSkill()));
 
             patterns.Add(() => base.TryAttack());
 
@@ -517,7 +531,7 @@ public class WolfBoss : Enemy
         var ps = slashIndicator.GetComponent<ParticleSystem>();
 
         var main = ps.main;
-        main.startSize = 8f;
+        main.startSize = 7f;
 
         var shape = ps.shape;
         shape.shapeType = ParticleSystemShapeType.Cone;
@@ -683,6 +697,9 @@ public class WolfBoss : Enemy
             jumpTargetPos.z
         );
 
+        jumpIndicator.SetActive(false);
+
+        yield return new WaitForSeconds(1f);
 
         ShowModel();
         animator.speed = 1f;
@@ -715,8 +732,6 @@ public class WolfBoss : Enemy
 
             yield return null;
         }
-
-        jumpIndicator.SetActive(false);
 
         yield return new WaitForSeconds(0.05f);
 
@@ -1006,6 +1021,89 @@ public class WolfBoss : Enemy
         DealJumpDamage();
     }
 
+    //회오리 스킬
+    IEnumerator TornadoSkill()
+    {
+        if (isPhaseChanging) yield break;
+
+        isAttacking = true;
+        isComboAttacking = true;
+
+        agent.isStopped = true;
+        agent.updateRotation = false;
+
+        animator.SetTrigger("Tornado");
+
+        float timer = 0f;
+
+        yield return new WaitUntil(() => tornadoVFX.activeSelf);
+
+        while (timer < tornadoDuration)
+        {
+            timer += Time.deltaTime;
+
+            if (currentTarget != null)
+            {
+                Vector3 dir = currentTarget.position - transform.position;
+                dir.y = 0;
+
+                if (dir.sqrMagnitude > 0.01f)
+                {
+                    transform.position += dir.normalized * tornadoSpeed * Time.deltaTime;
+                    transform.rotation = Quaternion.LookRotation(dir);
+                }
+            }
+
+            yield return null;
+        }
+
+        EndTornado();
+
+        yield return new WaitForSeconds(0.5f);
+
+        isComboAttacking = false;
+        EndAttack();
+
+        tornadoTimer = tornadoCooldown;
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+    }
+
+    public void OnTornadoTransform()
+    {
+        animator.speed = 0f;
+
+        HideModel();
+        myCollider.enabled = false;
+
+        tornadoVFX.SetActive(true);
+
+        tornadoVFX.transform.position = transform.position;
+        tornadoVFX.transform.localPosition = Vector3.zero;
+
+        var ps = tornadoVFX.GetComponent<ParticleSystem>();
+        if (ps != null) ps.Play();
+
+        sandstormInstance = Instantiate(
+            sandstormVFXPrefab,
+            transform.position,
+            Quaternion.identity
+        );
+    }
+
+    void EndTornado()
+    {
+        tornadoVFX.SetActive(false);
+
+        if (sandstormInstance != null)
+            Destroy(sandstormInstance);
+
+        ShowModel();
+        myCollider.enabled = true;
+
+        animator.speed = 1f;
+    }
     //휘두르기
     IEnumerator SpinAttack()
     {

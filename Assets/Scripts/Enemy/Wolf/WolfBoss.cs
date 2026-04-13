@@ -148,10 +148,12 @@ public class WolfBoss : Enemy
     Vector3 jumpTargetPos;
     bool isLocked = false;
     bool isRightHandBroken = false;
+    Collider myCollider;
 
     protected override void Awake()
     {
         base.Awake();
+        myCollider = GetComponent<Collider>();
 
         slashIndicator = Instantiate(slashIndicatorPrefab, transform);
         slashIndicator.SetActive(false);
@@ -569,6 +571,8 @@ public class WolfBoss : Enemy
         isComboAttacking = true;
         isInvincible = true;
 
+        myCollider.enabled = false;
+
         agent.isStopped = true;
         agent.updateRotation = false;
 
@@ -677,8 +681,10 @@ public class WolfBoss : Enemy
             jumpTargetPos.z
         );
 
+
         ShowModel();
         animator.speed = 1f;
+        myCollider.enabled = true;
         timer = 0f;
 
         float startY = startPos.y + jumpHeight;
@@ -687,6 +693,7 @@ public class WolfBoss : Enemy
         {
             if (isPhaseChanging || _isDead)
             {
+                myCollider.enabled = true;
                 EndAttack();
                 yield break;
             }

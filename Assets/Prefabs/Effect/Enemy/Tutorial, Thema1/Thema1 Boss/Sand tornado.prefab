@@ -9708,6 +9708,8 @@ GameObject:
   - component: {fileID: 4677889589842664610}
   - component: {fileID: 4539876733570282801}
   - component: {fileID: 7307174228040055037}
+  - component: {fileID: 8740386818989738821}
+  - component: {fileID: 4646046514848199928}
   m_Layer: 0
   m_Name: Sand tornado
   m_TagString: Untagged
@@ -9725,7 +9727,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1035080349397821873}
@@ -14631,7 +14633,7 @@ AudioSource:
   SpatializePostEffects: 0
   Priority: 128
   DopplerLevel: 1
-  MinDistance: 1
+  MinDistance: 5.37981
   MaxDistance: 500
   Pan2D: 0
   rolloffMode: 0
@@ -14707,6 +14709,42 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!136 &8740386818989738821
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5479954327375917211}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 3.8504155
+  m_Height: 8.371784
+  m_Direction: 1
+  m_Center: {x: -0.21591862, y: 2.8036685, z: -0.09216706}
+--- !u!114 &4646046514848199928
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5479954327375917211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e21d098f389428f4ead96ae114d9c2be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TornadoDamage
+  damage: 10
 --- !u!1 &6547257060904594532
 GameObject:
   m_ObjectHideFlags: 0

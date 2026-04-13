@@ -39,7 +39,6 @@ Material:
   m_CustomRenderQueue: 3000
   stringTagMap:
     MotionVector: User
-    RenderType: Transparent
   disabledShaderPasses:
   - MOTIONVECTORS
   - TransparentDepthPrepass
@@ -100,6 +99,8 @@ Material:
     - _AlphaCutoffEnable: 0
     - _AlphaDstBlend: 10
     - _AlphaSrcBlend: 1
+    - _BUILTIN_QueueControl: -1
+    - _BUILTIN_QueueOffset: 0
     - _BlendMode: 0
     - _ConservativeDepthOffsetEnable: 0
     - _CullMode: 0
@@ -129,7 +130,7 @@ Material:
     - _QueueOffset: 0
     - _RenderQueueType: 3
     - _Rounded_corners: 0
-    - _Sides: 15
+    - _Sides: 9
     - _Size: 0.5
     - _SrcBlend: 1
     - _StencilRef: 0
@@ -157,7 +158,7 @@ Material:
     - _ZTestTransparent: 4
     - _ZWrite: 0
     m_Colors:
-    - _Color: {r: 1, g: 0.58994263, b: 0.49411762, a: 1}
+    - _Color: {r: 1, g: 0.015723169, b: 0.07895638, a: 1}
     - _DistortionSpeedXYPowerZ: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}

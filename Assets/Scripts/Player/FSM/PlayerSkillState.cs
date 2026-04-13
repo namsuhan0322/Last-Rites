@@ -22,8 +22,8 @@ public class PlayerSkillState : PlayerState
         _player.Anim.ResetTrigger(_player.CurrentSkillAnim);
         _player.Anim.SetTrigger(_player.CurrentSkillAnim);
 
-        float atkSpd = _player.CurrentWeapon != null ? _player.CurrentWeapon.Atk_Spd : 1f;
-        _player.Anim.SetFloat("AttackSpd", atkSpd);
+        float baseAtkSpd = _player.CurrentWeapon != null ? _player.CurrentWeapon.Atk_Spd : 1f;
+        _player.Anim.SetFloat("AttackSpd", baseAtkSpd * _player.AtkSpeedModifier);
 
         _stateTimer = 0f;
 

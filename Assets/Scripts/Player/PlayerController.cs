@@ -87,6 +87,7 @@ public class PlayerController : MonoBehaviour
     public bool InCombat => _inCombat;
 
     [Header("스킬 관리")]
+    [HideInInspector] public float AtkSpeedModifier = 1.0f;
     [HideInInspector] public string CurrentSkillAnim;   // 어떤 스킬 애니메이션을 틀지
     [HideInInspector] public int CurrentSkillDamage;    // 현재 스킬 데미지가 얼마인지
     [HideInInspector] public float CurrentSkillVal;
@@ -482,15 +483,8 @@ public class PlayerController : MonoBehaviour
 
         if (HasRBuff)
         {
-            // 데미지를 CurrentSkillVal(R_Val) 배율만큼 곱해줍니다.
+            // 데미지를 CurrentSkillVal 배율만큼 곱해줍니다.
             damageToDeal = Mathf.RoundToInt(damageToDeal * CurrentSkillVal);
-
-            // 공격을 시작했으므로 버프를 끕니다! (허공에 쳐도 날아감)
-            HasRBuff = false;
-
-            Debug.Log($"[R 스킬 효과 적용!] 데미지 {damageToDeal}로 뻥튀기 됨! 슈퍼아머 해제.");
-
-            if (screenFireEffect != null) screenFireEffect.SetActive(false);
         }
 
         // 히트박스 켜면서 결정된 데미지 전달
@@ -509,6 +503,8 @@ public class PlayerController : MonoBehaviour
     // 특정 공격 모션에서 이펙트 끄기 (애니메이션 이벤트용)
     public void DisableREffect()
     {
+        if (HasRBuff) return;
+
         if (currentRSkillInstance != null)
         {
             currentRSkillInstance.SetActive(false);

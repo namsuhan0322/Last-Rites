@@ -9,6 +9,9 @@ public class ScenesManager : SingletonMono<ScenesManager>
     public string tutorialSceneName = "TutorialScene";
     public string loadingSceneName = "LoadingScene";
     public string LobbySceneName = "LobbyScene";
+    public string Thema1SceneName = "Thema1Scene";
+    public string Thema2SceneName = "Thema2Scene";
+    public string Thema3SceneName = "Thema3Scene";
 
     [Header("Loading Settings")]
     [Tooltip("로딩을 최소 몇 초 동안 유지할지 설정합니다.")]

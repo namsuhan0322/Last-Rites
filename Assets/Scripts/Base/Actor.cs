@@ -183,4 +183,16 @@ public class Actor : MonoBehaviour
         _isInvincible = true;
         _invincibleTimer = seconds;
     }
+
+    public void DrainHP(int amount)
+    {
+        _currentHP -= amount;
+        if (_currentHP <= 0)
+        {
+            _currentHP = 0;
+            Die();
+        }
+
+        OnHPChanged?.Invoke(_currentHP, MaxHP);
+    }
 }

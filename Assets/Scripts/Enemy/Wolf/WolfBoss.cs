@@ -87,9 +87,16 @@ public class WolfBoss : Enemy
 
     [Header("1페이지 회오리 스킬")]
     [SerializeField] float tornadoSpeed = 3f;
+    [Tooltip("토네이도 시간")]
     [SerializeField] float tornadoDuration = 5f;
     [SerializeField] int tornadoDamage = 20;
     [SerializeField] float tornadoCooldown = 10f;
+    [Tooltip("토네이도 당기는 범위")]
+    [SerializeField] float tornadoPullRadius = 8f;
+    [Tooltip("토네이도 당기는 힘")]
+    [SerializeField] float tornadoPullForce = 15f;
+    [Tooltip("토네이도 당기는 최소거리")]
+    [SerializeField] float tornadoMinDistance = 1.5f;
 
 
     [Header("2페이지 휘두르기")]
@@ -542,10 +549,12 @@ public class WolfBoss : Enemy
         shape.radius = 0f;
         shape.length = slashRange;
 
-        float startOffset = 4.5f; 
+        float startOffset = 4.5f;
 
-        slashIndicator.transform.position =
-            transform.position + attackDirection * startOffset;
+        Vector3 pos = transform.position + attackDirection * startOffset;
+        pos.y += 0.1f; 
+
+        slashIndicator.transform.position = pos;
 
         slashIndicator.transform.rotation =
             Quaternion.LookRotation(attackDirection);
@@ -1055,6 +1064,8 @@ public class WolfBoss : Enemy
                     transform.position += dir.normalized * tornadoSpeed * Time.deltaTime;
                     transform.rotation = Quaternion.LookRotation(dir);
                 }
+
+                ApplyTornadoPull(currentTarget);
             }
 
             yield return null;
@@ -1107,6 +1118,31 @@ public class WolfBoss : Enemy
         myCollider.enabled = true;
 
         animator.speed = 1f;
+    }
+
+    //토네이도 플레이어 당기는 힘
+    void ApplyTornadoPull(Transform target)
+    {
+        float dist = Vector3.Distance(transform.position, target.position);
+
+        if (dist > tornadoPullRadius) return;
+
+        Vector3 dir = (transform.position - target.position).normalized;
+
+        float force = tornadoPullForce * (1f - (dist / tornadoPullRadius));
+
+        if (dist < tornadoMinDistance)
+            force *= 0.3f;
+
+        Rigidbody rb = target.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.AddForce(dir * force, ForceMode.Acceleration);
+        }
+        else
+        {
+            target.position += dir * force * Time.deltaTime;
+        }
     }
     //휘두르기
     IEnumerator SpinAttack()

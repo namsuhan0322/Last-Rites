@@ -28,7 +28,7 @@ public class TornadoDamage : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         Actor actor = other.GetComponent<Actor>();
-        if (actor == null) return;
+        if (actor == null || actor.IsDead) return;
 
         if (hitTimers.ContainsKey(actor))
             hitTimers.Remove(actor);

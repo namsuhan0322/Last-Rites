@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     public CharacterController CC { get; private set; }
     public PlayerStats Stats { get; private set; }
     public Animator Anim { get; private set; }
+    public Rigidbody RB { get; private set; }
 
     [Header("스탯")]
     [SerializeField] public float RotateSpeed = 10f;
@@ -125,6 +126,7 @@ public class PlayerController : MonoBehaviour
         CC = GetComponent<CharacterController>();
         Stats = GetComponent<PlayerStats>();
         Anim = GetComponent<Animator>();
+        RB = GetComponent<Rigidbody>();
         skillTutorial = FindFirstObjectByType<SkillTutorial>();
 
         Stats.OnHit += HandleHit;

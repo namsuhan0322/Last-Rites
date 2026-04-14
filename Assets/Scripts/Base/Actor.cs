@@ -100,6 +100,9 @@ public class Actor : MonoBehaviour
         _currentHP -= damage;
         OnHPChanged?.Invoke(_currentHP, _maxHP);
 
+        HitFlashEffect hitFlash = GetComponentInChildren<HitFlashEffect>();
+        if (hitFlash != null) hitFlash.PlayFlash();
+
         float poiseDamage = damage * 0.5f;
         TakePoiseDamage(poiseDamage);
 

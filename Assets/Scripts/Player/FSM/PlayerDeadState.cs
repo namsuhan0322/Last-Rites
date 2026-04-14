@@ -16,5 +16,13 @@ public class PlayerDeadState : PlayerState
 
         if (_player.CC != null) 
             _player.CC.enabled = false;
+
+        if (_player.RB != null)
+        {
+            _player.RB.linearVelocity = Vector3.zero;
+            _player.RB.angularVelocity = Vector3.zero;
+            _player.RB.useGravity = false;
+            _player.RB.isKinematic = true;
+        }
     }
 }

@@ -1013,7 +1013,7 @@ Transform:
   m_GameObject: {fileID: 1636900306836240693}
   serializedVersion: 2
   m_LocalRotation: {x: 1, y: -0, z: 0, w: -0.0000000754979}
-  m_LocalPosition: {x: -0, y: 0, z: -1}
+  m_LocalPosition: {x: 0.095, y: -0.3, z: 0.027}
   m_LocalScale: {x: 1.000003, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -3078,6 +3078,7 @@ GameObject:
   - component: {fileID: 7622661191585237494}
   - component: {fileID: 3795227016174183471}
   - component: {fileID: 6764799035139232018}
+  - component: {fileID: 304556309518226884}
   - component: {fileID: 7274095394174317013}
   m_Layer: 6
   m_Name: Thema1Boss
@@ -3192,9 +3193,9 @@ MonoBehaviour:
   attackCooldown: 0
   attackDamage: 0
   attackTimer: 0
-  stompDelay: 3
-  jump2Delay: 4
-  normalDelay: 2
+  stompDelay: 3.5
+  jump2Delay: 3.5
+  normalDelay: 0.07
   slashDelay: 2
   chargeDelay: 2
   darkDelay: 2
@@ -3211,7 +3212,7 @@ MonoBehaviour:
   brokenHandAttackSpeedMultiplier: 0.6
   currentPhase: 0
   phase2HpPercent: 0.6
-  slashRange: 5.5
+  slashRange: 5
   slashAngle: 70
   slashDamage: 20
   slashCooldown: 2
@@ -3242,7 +3243,7 @@ MonoBehaviour:
   tornadoPullRadius: 8
   tornadoPullForce: 15
   tornadoMinDistance: 2
-  spinAttackRange: 6
+  spinAttackRange: 7
   spinAttackDamage: 35
   spinCooldown: 6
   spinIndicatorPrefab: {fileID: 204416013530851194, guid: 25fe0237a74d377419a5ba77d7626a99,
@@ -3312,6 +3313,23 @@ MonoBehaviour:
   explosionVFXPrefab: {fileID: 4764377679742672062, guid: f4eac3924c077da46a2bb4d93bf5c19a,
     type: 3}
   stunDuration: 10
+--- !u!114 &304556309518226884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7143477529762470578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 047fae5f98ecc984d84c0e6dfde1cf1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitFlashEffect
+  flashColor: {r: 1, g: 1, b: 1, a: 1}
+  maxFlashAmount: 3
+  flashDuration: 0.1
+  colorPropertyName: _BaseColorTint
+  amountPropertyName: _Self_Ilumination_Intensity
 --- !u!136 &7274095394174317013
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -3331,10 +3349,10 @@ CapsuleCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.9735615
-  m_Height: 3.2290652
+  m_Radius: 0.67882246
+  m_Height: 2.6372736
   m_Direction: 1
-  m_Center: {x: 0.016756296, y: 1.1145326, z: 0}
+  m_Center: {x: -0.03920374, y: 1.4093417, z: -5.283554e-11}
 --- !u!1 &7240272040581463812
 GameObject:
   m_ObjectHideFlags: 0

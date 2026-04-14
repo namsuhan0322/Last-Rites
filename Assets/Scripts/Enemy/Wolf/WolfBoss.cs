@@ -1123,6 +1123,10 @@ public class WolfBoss : Enemy
     //토네이도 플레이어 당기는 힘
     void ApplyTornadoPull(Transform target)
     {
+        Actor actor = target.GetComponent<Actor>();
+
+        if (actor == null || actor.IsDead) return;
+
         float dist = Vector3.Distance(transform.position, target.position);
 
         if (dist > tornadoPullRadius) return;

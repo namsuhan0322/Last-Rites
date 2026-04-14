@@ -6,6 +6,8 @@ public class PlayerDeadState : PlayerState
 
     public override void Enter()
     {
+        _player.Anim.SetLayerWeight(1, 0f);
+
         _player.Anim.SetTrigger("IsDead");
         _player.Agent.ResetPath();
         _player.Agent.velocity = Vector3.zero;

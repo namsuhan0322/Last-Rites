@@ -2871,7 +2871,6 @@ GameObject:
   m_Component:
   - component: {fileID: 3703098705586024236}
   - component: {fileID: 8435180508540260817}
-  - component: {fileID: 4598901928712613883}
   - component: {fileID: 3514320879435135363}
   - component: {fileID: 6215844659013588744}
   - component: {fileID: 6078991296296674633}
@@ -2930,33 +2929,6 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
---- !u!54 &4598901928712613883
-Rigidbody:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1070490428555067037}
-  serializedVersion: 5
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
-  m_InertiaTensor: {x: 1, y: 1, z: 1}
-  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ImplicitCom: 1
-  m_ImplicitTensor: 1
-  m_UseGravity: 0
-  m_IsKinematic: 0
-  m_Interpolate: 0
-  m_Constraints: 116
-  m_CollisionDetection: 0
 --- !u!143 &3514320879435135363
 CharacterController:
   m_ObjectHideFlags: 0
@@ -3095,6 +3067,7 @@ MonoBehaviour:
     particles:
     - {fileID: 8617284517952872258}
   tutorialSystem: {fileID: 0}
+  AtkSpeedModifier: 1
   CurrentSkillAnim: 
   CurrentSkillDamage: 0
   CurrentSkillVal: 0

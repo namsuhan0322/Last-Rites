@@ -317,7 +317,10 @@ public class PlayerController : MonoBehaviour
     private void ManageUpperBodyWeight()
     {
         // 전신을 써야 하는 상태(공격, 회피 등)에서는 상체 레이어를 즉시 끕니다.
-        if (StateMachine.CurrentState == AttackState ||
+        if (StateMachine.CurrentState == DeadState ||
+            StateMachine.CurrentState == StunState ||
+            StateMachine.CurrentState == HitState ||
+            StateMachine.CurrentState == AttackState ||
             StateMachine.CurrentState == RollState ||
             StateMachine.CurrentState == SkillState)
         {

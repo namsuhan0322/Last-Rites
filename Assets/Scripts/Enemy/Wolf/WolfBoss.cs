@@ -1,7 +1,8 @@
-﻿using UnityEngine;
-using static BossPhase;
+﻿using Project.Scripts.Fractures;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using static BossPhase;
 
 public class WolfBoss : Enemy
 {
@@ -902,7 +903,26 @@ public class WolfBoss : Enemy
                 isCharging = false;
                 isComboAttacking = false;
 
-                EndAttack(); 
+                EndAttack();
+
+                foreach (var hit in envHits)
+                {
+                    FractureThis f = hit.GetComponentInParent<FractureThis>();
+
+                    if (f != null && f.gameObject.activeSelf)
+                    {
+                        f.FractureAndDestroy();
+
+                        // 만약 f.gameObject가 hit.gameObject와 다르다면 (부모-자식 관계라면)
+                        // hit 오브젝트도 같이 꺼줘야 확실합니다.
+                        if (f.gameObject != hit.gameObject)
+                        {
+                            hit.gameObject.SetActive(false);
+                        }
+
+                        break;
+                    }
+                }
 
                 StartCoroutine(StunRoutine());
                 yield break;

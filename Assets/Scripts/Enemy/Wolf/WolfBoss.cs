@@ -25,7 +25,9 @@ public class WolfBoss : Enemy
     [SerializeField] float RoarDelay = 2f;
     [Tooltip("토네이도 멍때리기")]
     [SerializeField] float tornadoDelay = 2f;
-    
+    [Tooltip("똥장판 멍때리기")]
+    [SerializeField] float explosionDelay = 2f;
+
 
     [Header("부위파괴")]
     [Header("오른팔 부위파괴 설정")]
@@ -135,8 +137,18 @@ public class WolfBoss : Enemy
     public float stompWarningTime = 2.5f;
     public GameObject stompIndicatorPrefab;
     [Header("내려찍기 장판 연출")]
-    [SerializeField] AnimationCurve stompFillCurve;
-    [SerializeField] float stompGrowTime = 2.5f;
+    public AnimationCurve stompFillCurve;
+    public float stompGrowTime = 2.5f;
+
+    [Header("2페이지 원형똥 할퀴기")]
+    public int explosionDamage = 15;
+    public float explosionRadius = 8f;
+    public GameObject circleIndicatorPrefab;
+    public float slamExplosionCooldown = 8f;
+    public float slamExplosionTimer = 0f;
+    public float minExplodeDelay = 1.2f;
+    public float maxExplodeDelay = 2.0f;
+    public float indicatorBaseSize = 1f;
 
     [Header("Vfx")]
     public GameObject roarVFXPrefab;
@@ -146,6 +158,7 @@ public class WolfBoss : Enemy
     public GameObject jumpVFXPrefab;
     public GameObject tornadoVFX;
     public GameObject sandstormVFXPrefab;
+    public GameObject explosionVFXPrefab;
 
     //변수들
     float jumpTimer = 0f;
@@ -204,6 +217,7 @@ public class WolfBoss : Enemy
         darkShotTimer -= Time.deltaTime;
         stompTimer -= Time.deltaTime;
         tornadoTimer -= Time.deltaTime;
+        slamExplosionTimer -= Time.deltaTime;
 
         if (_isDead) return;
 
@@ -378,6 +392,9 @@ public class WolfBoss : Enemy
 
             if (stompTimer <= 0f)
                 patterns.Add(() => StartCoroutine(StompAttack()));
+
+            if (slamExplosionTimer <= 0f)
+                patterns.Add(() => StartCoroutine(SlamExplosionPattern()));
 
             int index = Random.Range(0, patterns.Count);
             patterns[index].Invoke();
@@ -1169,69 +1186,69 @@ public class WolfBoss : Enemy
         }
     }
     //휘두르기
-    IEnumerator SpinAttack()
-    {
-
-        if (isPhaseChanging) yield break;
-        isAttacking = true;
-        isComboAttacking = true;
-
-        agent.isStopped = true;
-        agent.velocity = Vector3.zero;
-        agent.updateRotation = false;
-
-        ShowSpinIndicator();
-
-        yield return new WaitForSeconds(1.5f); 
-
-        spinIndicator.SetActive(false);
-
-        animator.SetTrigger("Spin"); 
-
-        yield return new WaitForSeconds(1f);
-        yield return new WaitForSeconds(spinDelay);
-
-        spinTimer = spinCooldown;
-
-        isComboAttacking = false;
-        EndAttack();
-
-        agent.isStopped = false;
-        agent.updateRotation = true;
-    }
-    //휘두르기 보여주기
-    void ShowSpinIndicator()
-    {
-        spinIndicator.SetActive(true);
-
-        float diameter = spinAttackRange * 2f;
-
-        spinIndicator.transform.localScale = new Vector3(diameter, diameter, 1f);
-
-        Vector3 pos = transform.position;
-        pos.y += 0.05f;
-
-        spinIndicator.transform.position = pos;
-
-        spinIndicator.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-    }
-    //휘두르기 데미지 주기
-   public  void DealSpinDamage()
-    {
-        Collider[] hits = Physics.OverlapSphere(
-            transform.position,
-            spinAttackRange,
-            targetLayer
-        );
-
-        foreach (var hit in hits)
+        IEnumerator SpinAttack()
         {
-            Actor actor = hit.GetComponent<Actor>();
-            if (actor == null || actor == this) continue;
 
-            actor.TakeDamage(spinAttackDamage, 1f);
+            if (isPhaseChanging) yield break;
+            isAttacking = true;
+            isComboAttacking = true;
+
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+            agent.updateRotation = false;
+
+            ShowSpinIndicator();
+
+            yield return new WaitForSeconds(1.5f); 
+
+            spinIndicator.SetActive(false);
+
+            animator.SetTrigger("Spin"); 
+
+            yield return new WaitForSeconds(1f);
+            yield return new WaitForSeconds(spinDelay);
+
+            spinTimer = spinCooldown;
+
+            isComboAttacking = false;
+            EndAttack();
+
+            agent.isStopped = false;
+            agent.updateRotation = true;
         }
-    }
+        //휘두르기 보여주기
+        void ShowSpinIndicator()
+        {
+            spinIndicator.SetActive(true);
+
+            float diameter = spinAttackRange * 0.75f;
+
+            spinIndicator.transform.localScale = new Vector3(diameter, diameter, 1f);
+
+            Vector3 pos = transform.position;
+            pos.y += 0.1f;
+
+            spinIndicator.transform.position = pos;
+
+            spinIndicator.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+        }
+        //휘두르기 데미지 주기
+       public  void DealSpinDamage()
+        {
+            Collider[] hits = Physics.OverlapSphere(
+                transform.position,
+                spinAttackRange,
+                targetLayer
+            );
+
+            foreach (var hit in hits)
+            {
+                Actor actor = hit.GetComponent<Actor>();
+                if (actor == null || actor == this) continue;
+
+                actor.TakeDamage(spinAttackDamage, 1f);
+            }
+        }
 
     //암흑 공 샷
     IEnumerator DarkShot()
@@ -1407,6 +1424,129 @@ public class WolfBoss : Enemy
         animator.speed = 0.25f;
     }
 
+    
+    //양팔 - 내려찍기 - 똥 패턴
+    IEnumerator SlamExplosionPattern()
+    {
+        if (isPhaseChanging) yield break;
+
+        isAttacking = true;
+        isComboAttacking = true;
+
+        agent.isStopped = true;
+        agent.updateRotation = false;
+
+        Vector3 dir = currentTarget.position - transform.position;
+        dir.y = 0;
+        transform.rotation = Quaternion.LookRotation(dir);
+        attackDirection = dir.normalized;
+
+        animator.SetTrigger("DoubleSlash");
+        yield return new WaitForSeconds(0.3f);
+
+        yield return new WaitForSeconds(0.5f);
+
+        animator.SetTrigger("DdongStomp");
+        yield return new WaitForSeconds(0.5f);
+
+        yield return StartCoroutine(SpawnAndExplodeSequential());
+
+        yield return new WaitForSeconds(explosionDelay);
+
+        slamExplosionTimer = slamExplosionCooldown;
+
+        isComboAttacking = false;
+        EndAttack();
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+    }
+
+    IEnumerator SpawnAndExplodeSequential()
+    {
+        int count = Random.Range(6, 10);
+
+        float spawnDelay = 0.1f;
+
+        for (int i = 0; i < count; i++)
+        {
+            if (_isDead) yield break;
+
+            float angle = Random.Range(0f, 360f);
+            float radius = Random.Range(3f, 8f);
+
+            Vector3 dir = Quaternion.Euler(0, angle, 0) * Vector3.forward;
+
+            Vector3 center = Random.value < 0.5f ? transform.position : currentTarget.position;
+
+            Vector3 pos = center + dir * radius;
+            pos.y = 0.05f;
+
+            GameObject indicator = Instantiate(
+        circleIndicatorPrefab,
+        pos,
+        Quaternion.Euler(-90f, 0f, 0f)
+    );
+
+            Renderer renderer = indicator.GetComponent<Renderer>();
+
+            float baseSize = renderer.bounds.size.x;
+            float targetDiameter = explosionRadius * 2f;
+
+            float scale = targetDiameter / baseSize;
+
+            indicator.transform.localScale = Vector3.one * scale;
+
+            float explodeDelay = Random.Range(minExplodeDelay, maxExplodeDelay);
+
+            StartCoroutine(GrowAndExplode(indicator, pos, explodeDelay));
+
+            yield return new WaitForSeconds(spawnDelay);
+        }
+    }
+    IEnumerator GrowAndExplode(GameObject indicator, Vector3 pos, float delay)
+    {
+        if (indicator == null) yield break;
+
+        Renderer renderer = indicator.GetComponent<Renderer>();
+
+        float baseSize = renderer.bounds.size.x;
+        float targetDiameter = explosionRadius * 2f;
+        float targetScale = targetDiameter / indicatorBaseSize;
+
+        float timer = 0f;
+
+        indicator.transform.localScale = Vector3.zero;
+
+        while (timer < delay)
+        {
+            if (_isDead) yield break;
+
+            timer += Time.deltaTime;
+            float t = timer / delay;
+
+            float scale = Mathf.Lerp(0f, targetScale, t);
+            indicator.transform.localScale = Vector3.one * scale;
+
+            yield return null;
+        }
+
+        if (indicator != null)
+            Destroy(indicator);
+
+        Instantiate(explosionVFXPrefab, pos, Quaternion.identity);
+
+        Collider[] hits = Physics.OverlapSphere(pos, explosionRadius, targetLayer);
+
+        foreach (var hit in hits)
+        {
+            Actor actor = hit.GetComponent<Actor>();
+            if (actor == null || actor.IsDead) continue;
+
+            actor.TakeDamage(explosionDamage, 1f);
+        }
+    }
+
     IEnumerator FillStompVFX(GameObject vfx)
     {
         float timer = 0f;
@@ -1558,7 +1698,7 @@ public class WolfBoss : Enemy
 
         GameObject vfx = Instantiate(spinVFXPrefab, pos, Quaternion.identity);
 
-        vfx.transform.localScale = Vector3.one * 1.8f; 
+        vfx.transform.localScale = Vector3.one * 3f; 
 
         Destroy(vfx, 2f);
     }

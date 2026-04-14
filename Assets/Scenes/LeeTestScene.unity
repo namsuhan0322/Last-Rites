@@ -2427,28 +2427,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6764799035139232018, guid: b6d4a1c44719b5942b5d381d9636fe29,
         type: 3}
-      propertyPath: slashAngle
-      value: 70
-      objectReference: {fileID: 0}
-    - target: {fileID: 6764799035139232018, guid: b6d4a1c44719b5942b5d381d9636fe29,
-        type: 3}
-      propertyPath: slashRange
-      value: 5.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 6764799035139232018, guid: b6d4a1c44719b5942b5d381d9636fe29,
-        type: 3}
-      propertyPath: tornadoPullForce
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 6764799035139232018, guid: b6d4a1c44719b5942b5d381d9636fe29,
-        type: 3}
-      propertyPath: tornadoMinDistance
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6976672093431489559, guid: b6d4a1c44719b5942b5d381d9636fe29,
-        type: 3}
-      propertyPath: damage
-      value: 3
+      propertyPath: spinAttackRange
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 7143477529762470578, guid: b6d4a1c44719b5942b5d381d9636fe29,
         type: 3}

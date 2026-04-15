@@ -161,8 +161,6 @@ public class Actor : MonoBehaviour
         _isDead = true;
         OnDeath?.Invoke();
 
-
-
         if (animator != null)
             animator.SetTrigger("Die");
     }

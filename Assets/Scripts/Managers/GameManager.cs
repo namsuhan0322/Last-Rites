@@ -16,6 +16,10 @@ public class GameManager : SingletonMono<GameManager>
     public GameState currentGameState = GameState.Menu;
     public bool isGamePaused = false;
 
+    [Header("Respawn Settings")]
+    public Transform respawnPoint;      // 유니티 에디터에서 부활시킬 빈 오브젝트(Transform)를 넣어주세요.
+    public float respawnDelay = 3.0f;   // 죽고 나서 부활하기까지 걸리는 대기 시간
+
     [Header("Game Stats")]
     public int currentScore = 0;
     public int currentLevel = 1;
@@ -178,6 +182,8 @@ public class GameManager : SingletonMono<GameManager>
     {
         ChangeGameState(GameState.GameOver);
 
+        StartCoroutine(RespawnRoutine());
+
         // 게임 오버 처리
         //SaveManager.Instance?.SaveHighScore(currentScore);
         //UIManager.Instance?.ShowGameOverUI();
@@ -196,6 +202,41 @@ public class GameManager : SingletonMono<GameManager>
     }
 
     #endregion
+
+    private IEnumerator RespawnRoutine()
+    {
+        yield return new WaitForSeconds(respawnDelay);
+
+        PlayerController player = FindObjectOfType<PlayerController>();
+
+        if (player != null && respawnPoint != null)
+        {
+            player.Revive(respawnPoint);
+
+            ResetAllEnemies();
+
+            ChangeGameState(GameState.Playing);
+        }
+    }
+
+    private void ResetAllEnemies()
+    {
+        Actor[] allActors = FindObjectsOfType<Actor>();
+
+        foreach (Actor actor in allActors)
+        {
+            if (actor.GetComponent<PlayerController>() == null)
+            {
+                actor.InitActor(actor.MaxHP);
+
+                WolfBoss wolfBoss = actor.GetComponent<WolfBoss>();
+                if (wolfBoss != null)
+                {
+                    wolfBoss.ResetEnemy();
+                }
+            }
+        }
+    }
 
     #region Score & Stats Management
 

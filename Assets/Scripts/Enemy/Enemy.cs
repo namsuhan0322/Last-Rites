@@ -600,4 +600,47 @@ public class Enemy : Actor
     {
         return false;
     }
+
+    public virtual void ResetEnemy()
+    {
+        // 타겟 완벽 초기화
+        currentTarget = null;
+        forcedTarget = null;
+        lastTarget = null;
+
+        // 각종 타이머 초기화
+        aggroTimer = 0f;
+        forcedTimer = 0f;
+        targetLockTimer = 0f;
+        attackTimer = 0f;
+        actionLockTimer = 0f;
+        stunTimer = 0f;
+        waitTimer = 0f;
+
+        // 상태 플래그 초기화
+        isHit = false;
+        isStunned = false;
+        isAttacking = false;
+
+        // UI 텍스트(기절, 도발 마크) 숨기기
+        if (stunText != null) stunText.gameObject.SetActive(false);
+        if (tauntText != null) tauntText.gameObject.SetActive(false);
+
+        // 애니메이션 리셋
+        if (animator != null)
+        {
+            animator.SetBool("Walk", false);
+            animator.SetBool("Run", false);
+            animator.SetBool("Stun", false);
+            animator.ResetTrigger("Hit");
+        }
+
+        // 네비게이션(이동) 정지
+        if (agent != null && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+        }
+    }
 }

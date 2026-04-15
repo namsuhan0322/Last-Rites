@@ -1788,4 +1788,62 @@ public class WolfBoss : Enemy
 
         DealJumpDamage();
     }
+
+    public override void ResetEnemy()
+    {
+        // 부모(Enemy)의 리셋을 먼저 실행해서 타겟(currentTarget)과 어그로를 싹 지웁니다.
+        base.ResetEnemy();
+
+        // 진행 중인 보스 패턴 코루틴 강제 종료
+        StopAllCoroutines();
+
+        // 보스 전용 플래그 초기화
+        isComboAttacking = false;
+        isPhaseChanging = false;
+        isInvincible = false;
+        isCharging = false;
+        isLocked = false;
+        isSlashFinished = false;
+        isStompStopped = false;
+        hasStartedCombat = false;
+        activeExplosions = 0;
+
+        // 보스 전용 스킬 타이머 초기화 
+        attackTimer = 2f;
+        slashTimer = 0f;
+        jumpTimer = 0f;
+        chargeTimer = 0f;
+        spinTimer = 0f;
+        darkShotTimer = 0f;
+        stompTimer = 0f;
+        tornadoTimer = 0f;
+        slamExplosionTimer = 0f;
+
+        animator.speed = 1f;
+        animator.Rebind();
+        animator.Update(0f);
+
+        myCollider.enabled = true;
+        ShowModel();
+        isRightHandBroken = false;
+        if (RightHandPointCollider != null)
+        {
+            RightHandPointCollider.SetActive(true);
+            WeakPoint wp = RightHandPointCollider.GetComponent<WeakPoint>();
+            if (wp != null) wp.Init(RightHandPointHP, this);
+        }
+
+        if (slashIndicator != null) slashIndicator.SetActive(false);
+        if (jumpIndicator != null) jumpIndicator.SetActive(false);
+        if (chargeIndicator != null) chargeIndicator.SetActive(false);
+        if (spinIndicator != null) spinIndicator.SetActive(false);
+        if (stompIndicator != null) stompIndicator.SetActive(false);
+
+        if (tornadoVFX != null) tornadoVFX.SetActive(false);
+        if (sandstormInstance != null) Destroy(sandstormInstance);
+        GameObject[] circles = GameObject.FindGameObjectsWithTag("Indicator");
+        foreach (var c in circles) Destroy(c);
+
+        currentPhase = BossPhase.Phase1;
+    }
 }

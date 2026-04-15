@@ -24,5 +24,7 @@ public class PlayerDeadState : PlayerState
             _player.RB.useGravity = false;
             _player.RB.isKinematic = true;
         }
+
+        GameManager.Instance.GameOver();
     }
 }

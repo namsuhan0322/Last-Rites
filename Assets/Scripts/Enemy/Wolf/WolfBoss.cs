@@ -27,6 +27,8 @@ public class WolfBoss : Enemy
     [SerializeField] float tornadoDelay = 2f;
     [Tooltip("똥장판 멍때리기")]
     [SerializeField] float explosionDelay = 2f;
+    [Tooltip("던지기 멍때리기")]
+    [SerializeField] float throwDelay = 2f;
 
 
     [Header("부위파괴")]
@@ -57,7 +59,20 @@ public class WolfBoss : Enemy
     public float slashCooldown = 3f;
     public GameObject slashIndicatorPrefab;
     public Transform clawSpawnPoint; // 손 위치
-    [SerializeField] float slashBaseAngle = 90f;
+    [Tooltip("할퀴기 위험표시 앵글")]
+    public float slashBaseAngle = 90f;
+
+    [Header("1페이지 불 독 던지기")]
+    public GameObject projectilePrefab;
+    public Transform throwPoint;
+    public int fireDamage = 20;
+    public int poisonDamage = 15;
+    [Tooltip("불독 장판 크기")]
+    public float throwRadius = 6f;
+    public float throwCooldown = 8f;
+    [Tooltip("불독 터지기 대기시간")]
+    public float throwWarningTime = 1.5f;
+    public GameObject throwIndicatorPrefab;
 
     [Header("1페이지 점프 공격")]
     [Tooltip("점프공격범위")]
@@ -162,7 +177,8 @@ public class WolfBoss : Enemy
     public GameObject sandstormVFXPrefab;
     public GameObject explosionVFXPrefab;
     public GameObject clawDdongVFXPrefab;
-
+    public GameObject fireVFX;
+    public GameObject poisonVFX;
     //변수들
     float jumpTimer = 0f;
     GameObject jumpIndicator;
@@ -192,6 +208,18 @@ public class WolfBoss : Enemy
     bool isSlashFinished = false;
     bool isStompStopped = false;
     int activeExplosions = 0;
+    bool isThrowFinished = false;
+    int activeProjectiles = 0;
+    float throwTimer = 0f;
+    List<Vector3> poisonZones = new List<Vector3>();
+    HashSet<Actor> hitActors = new HashSet<Actor>();
+    enum ThrowType
+    {
+        Fire,
+        Poison
+    }
+
+    ThrowType currentThrowType;
     protected override void Awake()
     {
         base.Awake();
@@ -224,6 +252,7 @@ public class WolfBoss : Enemy
         stompTimer -= Time.deltaTime;
         tornadoTimer -= Time.deltaTime;
         slamExplosionTimer -= Time.deltaTime;
+        throwTimer -= Time.deltaTime;
 
         if (_isDead) return;
 
@@ -374,6 +403,9 @@ public class WolfBoss : Enemy
             if (tornadoTimer <= 0f)
                 patterns.Add(() => StartCoroutine(TornadoSkill()));
 
+            if (throwTimer <= 0f)
+                patterns.Add(() => StartCoroutine(ThrowPattern()));
+
             patterns.Add(() => base.TryAttack());
 
             if (patterns.Count == 0) return;
@@ -473,6 +505,240 @@ public class WolfBoss : Enemy
 
         attackTimer = attackCooldown;
     }
+
+    //불독 스킬 
+    IEnumerator ThrowPattern()
+    {
+        if (isPhaseChanging) yield break;
+
+        hitActors.Clear(); 
+
+        isAttacking = true;
+        isComboAttacking = true;
+
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.updateRotation = false;
+
+        Vector3 dir = currentTarget.position - transform.position;
+        dir.y = 0;
+        transform.rotation = Quaternion.LookRotation(dir);
+
+        currentThrowType = (Random.value < 0.5f) ? ThrowType.Fire : ThrowType.Poison;
+
+        animator.SetTrigger("Throw");
+
+        yield return new WaitUntil(() => isThrowFinished);
+        isThrowFinished = false;
+
+        yield return new WaitUntil(() => activeProjectiles <= 0);
+
+        if (currentThrowType == ThrowType.Poison)
+        {
+            ApplyPoisonDamage();
+            poisonZones.Clear();
+        }
+
+        yield return new WaitForSeconds(throwDelay);
+
+        throwTimer = throwCooldown;
+
+        isComboAttacking = false;
+
+        EndAttack();
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+    }
+
+    //불독 장판 스폰
+    void SpawnThrowProjectiles()
+    {
+        int count = 7;
+
+        activeProjectiles = count;
+
+        for (int i = 0; i < count; i++)
+        {
+            Vector3 targetPos = GetRandomPointAroundPlayer(throwRadius);
+
+            GameObject proj = Instantiate(projectilePrefab, throwPoint.position, Quaternion.identity);
+
+            StartCoroutine(MoveProjectile(proj, targetPos));
+        }
+    }
+
+    //플레이어 주변 던지기
+    Vector3 GetRandomPointAroundPlayer(float radius)
+    {
+        float angle = Random.Range(0f, 360f);
+        float dist = Random.Range(1f, radius);
+
+        Vector3 dir = Quaternion.Euler(0, angle, 0) * Vector3.forward;
+
+        Vector3 pos = currentTarget.position + dir * dist;
+        pos.y = 0.05f;
+
+        return pos;
+    }
+
+    IEnumerator MoveProjectile(GameObject proj, Vector3 targetPos)
+    {
+        Vector3 start = proj.transform.position;
+
+        float time = 0f;
+        float duration = 0.7f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float t = time / duration;
+
+            Vector3 pos = Vector3.Lerp(start, targetPos, t);
+            pos.y += Mathf.Sin(t * Mathf.PI) * 3f;
+
+            proj.transform.position = pos;
+
+            yield return null;
+        }
+
+        Destroy(proj);
+
+        SpawnExplosionPattern(targetPos);
+    }
+    void SpawnExplosionPattern(Vector3 pos)
+    {
+        if (currentThrowType == ThrowType.Fire)
+        {
+            StartCoroutine(FireExplosion(pos));
+        }
+        else
+        {
+            StartCoroutine(PoisonExplosion(pos));
+        }
+    }
+
+    //불 장판 
+    IEnumerator FireExplosion(Vector3 pos)
+    {
+        float radius = 4f;
+
+        GameObject indicator = Instantiate(throwIndicatorPrefab, pos, Quaternion.Euler(-90f, 0f, 0f));
+        indicator.transform.localScale = Vector3.zero;
+
+        SetIndicatorColor(indicator, Color.red);
+
+        StartCoroutine(GrowIndicator(indicator, radius, throwWarningTime));
+
+        yield return new WaitForSeconds(throwWarningTime);
+
+        if (indicator != null)
+            Destroy(indicator);
+
+        Instantiate(fireVFX, pos, Quaternion.identity);
+
+        Collider[] hits = Physics.OverlapSphere(pos, radius, targetLayer);
+
+        foreach (var hit in hits)
+        {
+            Actor actor = hit.GetComponent<Actor>();
+            if (actor == null || actor.IsDead) continue;
+
+            if (hitActors.Contains(actor)) continue;
+
+            hitActors.Add(actor);
+
+            actor.TakeDamage(fireDamage, 1f);
+        }
+        activeProjectiles--;
+    }
+    //독 장판
+    IEnumerator PoisonExplosion(Vector3 pos)
+    {
+        float radius = 5f;
+
+        poisonZones.Add(pos);
+
+        GameObject indicator = Instantiate(throwIndicatorPrefab, pos, Quaternion.Euler(-90f, 0f, 0f));
+        indicator.transform.localScale = Vector3.zero;
+
+        SetIndicatorColor(indicator, Color.green);
+
+        StartCoroutine(GrowIndicator(indicator, radius, throwWarningTime));
+
+        yield return new WaitForSeconds(throwWarningTime);
+
+        if (indicator != null)
+            Destroy(indicator);
+
+        Instantiate(poisonVFX, pos, Quaternion.identity);
+
+        activeProjectiles--;
+    }
+
+    //독 장판 데미지 주기
+    void ApplyPoisonDamage()
+    {
+        float radius = 5f;
+
+        foreach (var actor in FindObjectsByType<Actor>(FindObjectsSortMode.None))
+        {
+            if (actor == null || actor.IsDead) continue;
+
+            bool isSafe = false;
+
+            foreach (var zone in poisonZones)
+            {
+                float dist = Vector3.Distance(actor.transform.position, zone);
+
+                if (dist <= radius)
+                {
+                    isSafe = true;
+                    break;
+                }
+            }
+
+            if (!isSafe)
+            {
+                if (hitActors.Contains(actor)) continue;
+
+                hitActors.Add(actor);
+
+                actor.TakeDamage(poisonDamage, 1f);
+            }
+        }
+    }
+
+    //장판 색 바꾸기
+    void SetIndicatorColor(GameObject indicator, Color color)
+    {
+        Renderer rend = indicator.GetComponent<Renderer>();
+
+        if (rend != null)
+        {
+            // 머티리얼 복사해서 색 변경 (공유 방지)
+            rend.material = new Material(rend.material);
+            rend.material.color = color;
+        }
+    }
+
+    //장판 자라나는 코드
+    IEnumerator GrowIndicator(GameObject indicator, float radius, float duration)
+    {
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            float t = timer / duration;
+
+            float scale = Mathf.Lerp(0f, radius * 2f, t);
+            indicator.transform.localScale = new Vector3(scale, scale, scale);
+
+            yield return null;
+        }
+    }
+
     //오른쪽 할퀴기
     IEnumerator Slash()
     {
@@ -909,7 +1175,7 @@ public class WolfBoss : Enemy
                     Actor actor = hit.GetComponent<Actor>();
                     if (actor == null || actor == this) continue;
 
-                    actor.TakeDamage(40, 1f);
+                    actor.TakeDamage(25, 1f);
                     hasHit = true;
                     break;
                 }
@@ -1681,6 +1947,21 @@ public class WolfBoss : Enemy
         Destroy(vfx, 2f);
     }
 
+    //불독 돌기
+    public void FirePosSpinVFX()
+    {
+        if (spinVFXPrefab == null) return;
+
+        Vector3 pos = transform.position;
+        pos.y += 0.1f;
+
+        GameObject vfx = Instantiate(spinVFXPrefab, pos, Quaternion.identity);
+
+        vfx.transform.localScale = Vector3.one * 1.4f;
+
+        Destroy(vfx, 2f);
+    }
+
     public void SpawnJumpVFX()
     {
         if (jumpVFXPrefab == null) return;
@@ -1807,6 +2088,16 @@ public class WolfBoss : Enemy
             jumpIndicator.SetActive(false);
 
         DealJumpDamage();
+    }
+
+    public void OnThrowProjectile()
+    {
+        SpawnThrowProjectiles();
+    }
+
+    public void OnThrowEnd()
+    {
+        isThrowFinished = true;
     }
 
     public override void ResetEnemy()

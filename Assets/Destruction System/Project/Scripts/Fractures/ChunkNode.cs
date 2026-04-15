@@ -96,7 +96,17 @@ namespace Project.Scripts.Fractures
             frozen = false;
             rb.constraints = RigidbodyConstraints.None;
             rb.useGravity = true;
-            rb.gameObject.layer = LayerMask.NameToLayer("Default");
+
+            int debrisLayer = LayerMask.NameToLayer("Debris");
+            if (debrisLayer != -1)
+            {
+                rb.gameObject.layer = debrisLayer;
+            }
+            else
+            {
+                Debug.LogWarning("Debris 레이어가 없습니다! 유니티에서 추가해주세요.");
+                rb.gameObject.layer = LayerMask.NameToLayer("Default");
+            }
         }
 
         private void Freeze()

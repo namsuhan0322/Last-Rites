@@ -13,11 +13,18 @@ namespace Project.Scripts.Fractures
         public void Setup(Rigidbody[] bodies)
         {
             nodes = new ChunkNode[bodies.Length];
+
+            int debrisLayer = LayerMask.NameToLayer("Debris");
             for (int i = 0; i < bodies.Length; i++)
             {
                 var node = bodies[i].GetOrAddComponent<ChunkNode>();
                 node.Setup();
                 nodes[i] = node;
+
+                if (debrisLayer != -1)
+                {
+                    bodies[i].gameObject.layer = debrisLayer;
+                }
             }
         }
         

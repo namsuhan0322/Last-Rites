@@ -167,6 +167,16 @@ public class WolfBoss : Enemy
     public Transform leftHand;
     public Transform rightHand;
 
+    [Header("2페이지 세르카 버전 삼각형")]
+    [SerializeField] private GameObject trianglePrefab;
+    [SerializeField] private Transform trileftHand;
+    [SerializeField] private Transform trirightHand;
+    [SerializeField] private int triangleCountPerHand = 3;
+    [SerializeField] private float triangleLength = 8f;
+    [SerializeField] private float triangleWidth = 2f;
+    [SerializeField] private float triCooldown = 20f;
+    [SerializeField] private LayerMask groundLayer;
+
     [Header("Vfx")]
     public GameObject roarVFXPrefab;
     public GameObject clawVFXPrefab;
@@ -211,6 +221,7 @@ public class WolfBoss : Enemy
     bool isThrowFinished = false;
     int activeProjectiles = 0;
     float throwTimer = 0f;
+    float triTimer = 0f;
     List<Vector3> poisonZones = new List<Vector3>();
     HashSet<Actor> hitActors = new HashSet<Actor>();
     enum ThrowType
@@ -253,6 +264,7 @@ public class WolfBoss : Enemy
         tornadoTimer -= Time.deltaTime;
         slamExplosionTimer -= Time.deltaTime;
         throwTimer -= Time.deltaTime;
+        triTimer -= Time.deltaTime;
 
         if (_isDead) return;
 
@@ -433,6 +445,9 @@ public class WolfBoss : Enemy
 
             if (slamExplosionTimer <= 0f)
                 patterns.Add(() => StartCoroutine(SlamExplosionPattern()));
+
+            if (triTimer <= 0f)
+                patterns.Add(() => StartCoroutine(GroundSmash()));
 
             int index = Random.Range(0, patterns.Count);
             patterns[index].Invoke();
@@ -1711,12 +1726,15 @@ public class WolfBoss : Enemy
 
         slamExplosionTimer = slamExplosionCooldown;
 
+        attackTimer = attackCooldown;
+
         isComboAttacking = false;
         EndAttack();
 
         agent.isStopped = false;
         agent.updateRotation = true;
     }
+
 
     IEnumerator SpawnAndExplodeSequential()
     {
@@ -1831,6 +1849,88 @@ public class WolfBoss : Enemy
 
         activeExplosions--;
     } //vfx역할
+
+
+    //삼각형 공격
+    IEnumerator GroundSmash()
+    {
+        if (isPhaseChanging) yield break;
+
+        isAttacking = true;
+        isComboAttacking = true;
+
+        agent.isStopped = true;
+        agent.updateRotation = false;
+
+        // 타겟 바라보기
+        if (currentTarget != null)
+        {
+            Vector3 dir = currentTarget.position - transform.position;
+            dir.y = 0;
+
+            if (dir.sqrMagnitude > 0.01f)
+            {
+                transform.rotation = Quaternion.LookRotation(dir);
+                attackDirection = dir.normalized;
+            }
+        }
+
+        animator.SetTrigger("Down");
+
+        yield return new WaitForSeconds(0.8f);
+
+        yield return new WaitForSeconds(0.7f);
+
+        triTimer = triCooldown;
+
+        attackTimer = attackCooldown;
+        isComboAttacking = false;
+
+        EndAttack();
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+    }
+
+
+    //손에서 생성
+    void SpawnTrianglesFromHand(Transform hand)
+    {
+        float angleStep = 360f / triangleCountPerHand;
+
+        for (int i = 0; i < triangleCountPerHand; i++)
+        {
+            float baseAngle = i * angleStep;
+            float randomOffset = Random.Range(-20f, 20f);
+            float finalAngle = baseAngle + randomOffset;
+
+            Quaternion rot = Quaternion.Euler(0, finalAngle, 0);
+
+            Vector3 rayOrigin = hand.position + Vector3.up * 0.5f;
+            Vector3 spawnPos = hand.position;
+
+            RaycastHit hit;
+            if (Physics.Raycast(rayOrigin, Vector3.down, out hit, 50f, groundLayer))
+            {
+                spawnPos = hit.point;
+            }
+            else
+            {
+                spawnPos.y = 0f; // fallback
+            }
+
+            spawnPos.y += 0.05f;
+
+            GameObject tri = Instantiate(trianglePrefab, spawnPos, rot);
+
+            TriangleMesh aoe = tri.GetComponent<TriangleMesh>();
+            if (aoe != null)
+            {
+                aoe.Init(spawnPos, rot * Vector3.forward, triangleLength, triangleWidth);
+            }
+        }
+    }
+
 
 
     //데미지 받는 함수
@@ -2100,6 +2200,11 @@ public class WolfBoss : Enemy
         isThrowFinished = true;
     }
 
+    public void SpawnHandTriangles()
+    {
+        SpawnTrianglesFromHand(leftHand);
+        SpawnTrianglesFromHand(rightHand);
+    }
     public override void ResetEnemy()
     {
         // 부모(Enemy)의 리셋을 먼저 실행해서 타겟(currentTarget)과 어그로를 싹 지웁니다.

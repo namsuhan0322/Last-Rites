@@ -1841,8 +1841,6 @@ public class WolfBoss : Enemy
 
         if (tornadoVFX != null) tornadoVFX.SetActive(false);
         if (sandstormInstance != null) Destroy(sandstormInstance);
-        GameObject[] circles = GameObject.FindGameObjectsWithTag("Indicator");
-        foreach (var c in circles) Destroy(c);
 
         currentPhase = BossPhase.Phase1;
     }

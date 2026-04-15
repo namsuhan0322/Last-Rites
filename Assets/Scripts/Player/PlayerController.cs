@@ -918,18 +918,37 @@ public class PlayerController : MonoBehaviour
         if (CC != null) CC.enabled = true;
 
         Stats.InitActor(Stats.MaxHP);
-
         if (currentPotionData != null)
         {
             currentPotionCount = currentPotionData.Max_Count;
             OnPotionCountChanged?.Invoke(currentPotionCount);
         }
 
+        Anim.ResetTrigger("IsDead");
+        Anim.ResetTrigger("IsHit");
+        Anim.ResetTrigger("IsStun");
+        Anim.ResetTrigger("Attack");
+        Anim.ResetTrigger("Roll");
+        Anim.ResetTrigger("Skill_Q");
+        Anim.ResetTrigger("Skill_W");
+        Anim.ResetTrigger("Skill_E");
+        Anim.ResetTrigger("Skill_R");
+        Anim.ResetTrigger("Skill_V");
+
+        Anim.SetBool("InCombat", false);
+        _inCombat = false;
+        Anim.SetFloat("Move", 0f);
+        Anim.SetFloat("HitPower", 0f);
+
         Anim.Rebind();
         Anim.Update(0f);
-        StateMachine.ChangeState(IdleState);
 
+        Anim.SetLayerWeight(1, 0f);
+        Anim.Play("Idle", 0, 0f);
+
+        StateMachine.ChangeState(IdleState);
         ForceDisableAllActionEffects();
     }
+
     #endregion
 }

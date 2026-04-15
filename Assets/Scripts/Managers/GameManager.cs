@@ -207,15 +207,25 @@ public class GameManager : SingletonMono<GameManager>
     {
         yield return new WaitForSeconds(respawnDelay);
 
+        if (ScenesManager.Instance != null)
+        {
+            yield return ScenesManager.Instance.StartCoroutine(ScenesManager.Instance.FadeIn());
+        }
+
         PlayerController player = FindObjectOfType<PlayerController>();
 
         if (player != null && respawnPoint != null)
         {
             player.Revive(respawnPoint);
-
             ResetAllEnemies();
-
             ChangeGameState(GameState.Playing);
+        }
+
+        yield return new WaitForSeconds(0.5f);
+
+        if (ScenesManager.Instance != null)
+        {
+            yield return ScenesManager.Instance.StartCoroutine(ScenesManager.Instance.FadeOut());
         }
     }
 

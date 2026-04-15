@@ -149,6 +149,8 @@ public class WolfBoss : Enemy
     public float minExplodeDelay = 1.2f;
     public float maxExplodeDelay = 2.0f;
     public float indicatorBaseSize = 1f;
+    public Transform leftHand;
+    public Transform rightHand;
 
     [Header("Vfx")]
     public GameObject roarVFXPrefab;
@@ -1452,12 +1454,20 @@ public class WolfBoss : Enemy
 
     IEnumerator SpawnAndExplodeSequential()
     {
-        int count = Random.Range(6, 10);
+        int randomCount = Random.Range(6, 10);
+
+        int totalCount = randomCount + 2;
+
         float spawnDelay = 0.1f;
 
-        activeExplosions = count;
+        activeExplosions = totalCount;
 
-        for (int i = 0; i < count; i++)
+        SpawnSingleCircle(leftHand.position);
+        SpawnSingleCircle(rightHand.position);
+
+        yield return new WaitForSeconds(0.6f); 
+
+        for (int i = 0; i < randomCount; i++)
         {
             if (_isDead) yield break;
 
@@ -1470,29 +1480,39 @@ public class WolfBoss : Enemy
             Vector3 pos = center + dir * radius;
             pos.y = 0.05f;
 
-            GameObject indicator = Instantiate(
-                circleIndicatorPrefab,
-                pos,
-                Quaternion.Euler(-90f, 0f, 0f)
-            );
-
-            Renderer renderer = indicator.GetComponent<Renderer>();
-
-            float baseSize = renderer.bounds.size.x;
-            float targetDiameter = explosionRadius * 2f;
-            float scale = targetDiameter / baseSize;
-
-            indicator.transform.localScale = Vector3.one * scale;
-
-            float explodeDelay = Random.Range(minExplodeDelay, maxExplodeDelay);
-
-            StartCoroutine(GrowAndExplode(indicator, pos, explodeDelay));
+            SpawnSingleCircle(pos);
 
             yield return new WaitForSeconds(spawnDelay);
         }
 
         yield return new WaitUntil(() => activeExplosions <= 0);
-    } //스폰하고 터지는 코드
+    }
+
+    void SpawnSingleCircle(Vector3 pos)
+    {
+        pos.y = 0.05f;
+
+        GameObject indicator = Instantiate(
+            circleIndicatorPrefab,
+            pos,
+            Quaternion.Euler(-90f, 0f, 0f)
+        );
+
+        Renderer renderer = indicator.GetComponent<Renderer>();
+
+        float baseSize = renderer.bounds.size.x;
+        float targetDiameter = explosionRadius * 2f;
+        float scale = targetDiameter / baseSize;
+
+        indicator.transform.localScale = Vector3.one * scale;
+
+        float explodeDelay = Random.Range(minExplodeDelay, maxExplodeDelay);
+
+        StartCoroutine(GrowAndExplode(indicator, pos, explodeDelay));
+    }
+
+
+    //스폰하고 터지는 코드
     IEnumerator GrowAndExplode(GameObject indicator, Vector3 pos, float delay)
     {
         if (indicator == null)

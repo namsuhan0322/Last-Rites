@@ -3289,14 +3289,16 @@ MonoBehaviour:
     m_RotationOrder: 4
   stompGrowTime: 2.5
   explosionDamage: 15
-  explosionRadius: 3
+  explosionRadius: 2.3
   circleIndicatorPrefab: {fileID: 5101077483706461774, guid: d1d91db04f6fe9141a9763bedad0a1f8,
     type: 3}
   slamExplosionCooldown: 8
   slamExplosionTimer: 10
   minExplodeDelay: 2
   maxExplodeDelay: 4
-  indicatorBaseSize: 1
+  indicatorBaseSize: 0.85
+  leftHand: {fileID: 6832812227321919053}
+  rightHand: {fileID: 4023416293120169765}
   roarVFXPrefab: {fileID: 8767289172806821397, guid: b5d195e9c48138c49a6a9424b0bd987c,
     type: 3}
   clawVFXPrefab: {fileID: 5444956481936223230, guid: 9c4ed545eb90aeb44a5a897ecec71369,

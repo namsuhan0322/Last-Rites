@@ -1548,7 +1548,7 @@ public class WolfBoss : Enemy
 
 
     //데미지 받는 함수
-    public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false)
+    public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
     {
         if (isInvincible || isPhaseChanging) return;
 

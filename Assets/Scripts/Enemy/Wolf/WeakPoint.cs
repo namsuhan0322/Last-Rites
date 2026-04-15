@@ -10,6 +10,16 @@ public class WeakPoint : Actor
         InitActor(hp);
     }
 
+    public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
+    {
+        base.TakeDamage(damage, severityOverride, isHeavyAttack, false);
+
+         if (boss != null)
+         {
+             boss.TakeDamage(damage, severityOverride, isHeavyAttack, false);
+         }
+    }
+
     protected override void Die()
     {
         base.Die();

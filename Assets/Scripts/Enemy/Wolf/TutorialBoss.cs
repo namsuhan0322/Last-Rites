@@ -307,7 +307,7 @@ public class TutorialBoss : Enemy
     }
 
     //데미지 받기
-    public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false)
+    public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
     {
         if (isHit || _isDead) return;
         base.TakeDamage(damage, severityOverride);

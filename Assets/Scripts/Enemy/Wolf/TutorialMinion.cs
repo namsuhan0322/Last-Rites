@@ -36,7 +36,7 @@ public class TutorialMinion : Enemy
         skillTutorial?.OnEnemyStunned();
     }
 
-    public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false)
+    public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
     {
         if (_isDead) return;
 

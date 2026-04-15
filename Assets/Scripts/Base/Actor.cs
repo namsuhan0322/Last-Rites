@@ -84,7 +84,7 @@ public class Actor : MonoBehaviour
         OnHPChanged?.Invoke(_currentHP, _maxHP);
     }
 
-    public virtual void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false)
+    public virtual void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
     {
         if (_isDead) return;
         if (_isInvincible)
@@ -102,6 +102,14 @@ public class Actor : MonoBehaviour
 
         HitFlashEffect hitFlash = GetComponentInChildren<HitFlashEffect>();
         if (hitFlash != null) hitFlash.PlayFlash();
+
+        bool isPlayer = GetComponent<PlayerController>() != null;
+
+        if (!isPlayer && DamageEffectManager.Instance != null)
+        {
+            Vector3 textSpawnPos = transform.position + (Vector3.up * 1.5f);
+            DamageEffectManager.Instance.ShowDamage(textSpawnPos, damage);
+        }
 
         float poiseDamage = damage * 0.5f;
         TakePoiseDamage(poiseDamage);

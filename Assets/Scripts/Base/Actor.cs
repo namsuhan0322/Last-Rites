@@ -105,9 +105,20 @@ public class Actor : MonoBehaviour
 
         bool isPlayer = GetComponent<PlayerController>() != null;
 
-        if (!isPlayer && DamageEffectManager.Instance != null)
+        if (!isPlayer && showDamageText && DamageEffectManager.Instance != null)
         {
-            Vector3 textSpawnPos = transform.position + (Vector3.up * 1.5f);
+            Vector3 textSpawnPos;
+            Collider col = GetComponent<Collider>();
+
+            if (col != null)
+            {
+                textSpawnPos = col.bounds.center;
+            }
+            else
+            {
+                textSpawnPos = transform.position + (Vector3.up * 1f);
+            }
+
             DamageEffectManager.Instance.ShowDamage(textSpawnPos, damage);
         }
 

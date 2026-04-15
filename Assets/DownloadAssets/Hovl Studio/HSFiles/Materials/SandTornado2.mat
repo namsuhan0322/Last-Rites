@@ -21,7 +21,8 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: SandTornado2
-  m_Shader: {fileID: -6465566751694194690, guid: 31ef343e8ea80a648bf98b53fda8f277, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 31ef343e8ea80a648bf98b53fda8f277,
+    type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -114,7 +115,7 @@ Material:
     - _DstBlend: 10
     - _DstBlend2: 0
     - _Emission: 1.5
-    - _Emissionpower: 1
+    - _Emissionpower: -0.8
     - _EnableBlendModePreserveSpecularLighting: 0
     - _EnableFogOnTransparent: 1
     - _ExcludeFromTUAndAA: 0

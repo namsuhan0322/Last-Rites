@@ -63,7 +63,8 @@ public class WolfBoss : Enemy
     public float slashBaseAngle = 90f;
 
     [Header("1페이지 불 독 던지기")]
-    public GameObject projectilePrefab;
+    public GameObject fireballPrefab;
+    public GameObject poisonBallPrefab;
     public Transform throwPoint;
     public int fireDamage = 20;
     public int poisonDamage = 15;
@@ -570,14 +571,17 @@ public class WolfBoss : Enemy
     void SpawnThrowProjectiles()
     {
         int count = 7;
-
         activeProjectiles = count;
 
         for (int i = 0; i < count; i++)
         {
             Vector3 targetPos = GetRandomPointAroundPlayer(throwRadius);
 
-            GameObject proj = Instantiate(projectilePrefab, throwPoint.position, Quaternion.identity);
+            GameObject prefab = (currentThrowType == ThrowType.Fire)
+                ? fireballPrefab
+                : poisonBallPrefab;
+
+            GameObject proj = Instantiate(prefab, throwPoint.position, Quaternion.identity);
 
             StartCoroutine(MoveProjectile(proj, targetPos));
         }
@@ -650,7 +654,8 @@ public class WolfBoss : Enemy
         if (indicator != null)
             Destroy(indicator);
 
-        Instantiate(fireVFX, pos, Quaternion.identity);
+        GameObject vfx = Instantiate(fireVFX, pos, Quaternion.identity);
+        Destroy(vfx, 2f);
 
         Collider[] hits = Physics.OverlapSphere(pos, radius, targetLayer);
 
@@ -686,7 +691,8 @@ public class WolfBoss : Enemy
         if (indicator != null)
             Destroy(indicator);
 
-        Instantiate(poisonVFX, pos, Quaternion.identity);
+        GameObject vfx = Instantiate(poisonVFX, pos, Quaternion.identity);
+        Destroy(vfx, 2f);
 
         activeProjectiles--;
     }
@@ -1653,7 +1659,14 @@ public class WolfBoss : Enemy
     {
         stompIndicator.SetActive(true);
 
-        stompIndicator.transform.position = transform.position + Vector3.up * 0.05f;
+        Vector3 origin = transform.position + Vector3.up * 1f;
+        RaycastHit hit;
+
+        if (Physics.Raycast(origin, Vector3.down, out hit, 10f, groundLayer))
+        {
+            stompIndicator.transform.position = hit.point + Vector3.up * 0.05f;
+        }
+
         stompIndicator.transform.rotation = Quaternion.identity;
 
         StartCoroutine(FillStompVFX(stompIndicator));

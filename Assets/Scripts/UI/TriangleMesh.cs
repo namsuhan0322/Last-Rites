@@ -89,7 +89,6 @@ public class TriangleMesh : MonoBehaviour
             yield return null;
         }
 
-        // 🔥 VFX
         int vfxCount = 20;
 
         for (int i = 0; i < vfxCount; i++)
@@ -99,7 +98,6 @@ public class TriangleMesh : MonoBehaviour
             Destroy(vfx, 2f);
         }
 
-        // 🔥 데미지
         Collider[] hits = Physics.OverlapSphere(transform.position, triLength, targetLayer);
 
         foreach (var hit in hits)
@@ -113,7 +111,6 @@ public class TriangleMesh : MonoBehaviour
             }
         }
 
-        // 🔥 마지막에 파괴
         Destroy(gameObject);
     }
 

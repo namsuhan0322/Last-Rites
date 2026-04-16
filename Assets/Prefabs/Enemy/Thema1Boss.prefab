@@ -2959,7 +2959,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6816740159054058565}
-  - component: {fileID: 54862015166613751}
+  - component: {fileID: 6113384012153769630}
   m_Layer: 6
   m_Name: spine_03
   m_TagString: Untagged
@@ -2987,7 +2987,7 @@ Transform:
   - {fileID: 4724621431976231945}
   m_Father: {fileID: 5798660760822884729}
   m_LocalEulerAnglesHint: {x: -12.143268, y: 0.0005642212, z: -0.0019955034}
---- !u!65 &54862015166613751
+--- !u!65 &6113384012153769630
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -3006,8 +3006,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1.5574778, z: 0.96824646}
-  m_Center: {x: 5.850282e-11, y: -0.07466195, z: -0.043390602}
+  m_Size: {x: 1, y: 1.5574778, z: 1.5397506}
+  m_Center: {x: 0.0000000013454705, y: -0.07466202, z: 0.24236524}
 --- !u!1 &5859049862962952226
 GameObject:
   m_ObjectHideFlags: 0
@@ -3595,8 +3595,8 @@ MonoBehaviour:
   tornadoDuration: 10
   tornadoDamage: 20
   tornadoCooldown: 10
-  tornadoPullRadius: 8
-  tornadoPullForce: 15
+  tornadoPullRadius: 5
+  tornadoPullForce: 13
   tornadoMinDistance: 2
   spinAttackRange: 7
   spinAttackDamage: 35

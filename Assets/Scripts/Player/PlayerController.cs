@@ -188,6 +188,18 @@ public class PlayerController : MonoBehaviour
         {
             Agent.nextPosition = transform.position;
         }
+
+        if (transform.position.y < -2f)
+        {
+            _verticalVelocity = 0f;
+
+            if (NavMesh.SamplePosition(transform.position + (Vector3.up * 10f), out NavMeshHit hit, 20f, NavMesh.AllAreas))
+            {
+                if (CC != null) CC.enabled = false;
+                transform.position = hit.position;
+                if (CC != null) CC.enabled = true;
+            }
+        }
     }
 
     private void FixedUpdate()

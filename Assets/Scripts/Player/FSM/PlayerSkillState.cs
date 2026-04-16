@@ -67,5 +67,7 @@ public class PlayerSkillState : PlayerState
     public override void Exit()
     {
         _player.Anim.ResetTrigger(_player.CurrentSkillAnim);
+
+        _player.DisableWeaponCollider();
     }
 }

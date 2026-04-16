@@ -384,13 +384,16 @@ public class PlayerController : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, 100f, EnemyLayer))
         {
-            Vector3 targetPoint = hit.collider.transform.position;
+            Vector3 targetPoint = hit.point;
             targetPoint.y = transform.position.y;
 
-            Vector3 dir = (targetPoint - transform.position).normalized;
-            if (dir != Vector3.zero)
+            if (Vector3.Distance(transform.position, targetPoint) > 0.5f)
             {
-                transform.rotation = Quaternion.LookRotation(dir);
+                Vector3 dir = (targetPoint - transform.position).normalized;
+                if (dir != Vector3.zero)
+                {
+                    transform.rotation = Quaternion.LookRotation(dir);
+                }
             }
             return;
         }
@@ -483,6 +486,9 @@ public class PlayerController : MonoBehaviour
     #region 공격 판정
     public void EnableWeaponCollider()
     {
+        if (StateMachine.CurrentState != AttackState 
+            && StateMachine.CurrentState != SkillState) return;
+
         if (Hitbox == null || CurrentWeapon == null) return;
 
         int damageToDeal = CurrentWeapon.Combo_1;

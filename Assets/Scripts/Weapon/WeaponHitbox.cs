@@ -16,6 +16,7 @@ public class WeaponHitbox : MonoBehaviour
 
     private int _damage;
     private List<Actor> _hitActors = new List<Actor>();
+    private bool _isAttackActive = false;
 
     private void Awake()
     {
@@ -52,6 +53,7 @@ public class WeaponHitbox : MonoBehaviour
     // 공격 시 켜기
     public void EnableHitbox(int damage)
     {
+        _isAttackActive = true;
         _damage = damage;
         _hitActors.Clear(); 
 
@@ -64,6 +66,7 @@ public class WeaponHitbox : MonoBehaviour
     // 공격 종료 시 끄기
     public void DisableHitbox()
     {
+        _isAttackActive = false;
         foreach (var col in _activeColliders)
         {
             if (col != null) col.enabled = false;
@@ -83,6 +86,8 @@ public class WeaponHitbox : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (!_isAttackActive) return;
+
         Actor enemy = other.GetComponentInParent<Actor>();
 
         if (enemy != null && !enemy.IsDead && !_hitActors.Contains(enemy))

@@ -16,7 +16,7 @@ public class PlayerIdleState : PlayerState
         {
             _stateMachine.ChangeState(_player.MoveState);
         }
-        if (Input.GetMouseButton(0)) // ÁÂÅ¬¸¯ -> °ø°Ý
+        if (Input.GetMouseButtonDown(0)) // ÁÂÅ¬¸¯ -> °ø°Ý
         {
             if (_player.InCombat && _player.postRollAttackTimer <= 0f)
             {

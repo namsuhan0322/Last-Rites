@@ -9,6 +9,8 @@ public class PlayerAttackState : PlayerState
 
     public override void Enter()
     {
+        _player.Anim.ResetTrigger("Attack");
+
         _player.Stats.SetInvincible(false);
         _player.TogglePlayerOutline(false);
 
@@ -37,7 +39,7 @@ public class PlayerAttackState : PlayerState
 
     public override void HandleInput()
     {
-        if (Input.GetMouseButton(0)) _nextComboBuffered = true;
+        if (Input.GetMouseButtonDown(0)) _nextComboBuffered = true;
 
         if (Input.GetMouseButtonDown(1))
         {
@@ -76,7 +78,7 @@ public class PlayerAttackState : PlayerState
             // [공격 중] 콤보 연결 또는 종료 (95% 이상 진행 시)
             if (normalizedTime >= 0.95f)
             {
-                if (_nextComboBuffered)
+                if (_nextComboBuffered || Input.GetMouseButton(0))
                 {
                     _stateMachine.ChangeState(_player.AttackState);
                 }
@@ -99,7 +101,7 @@ public class PlayerAttackState : PlayerState
     {
         _player.Anim.ResetTrigger("Attack");
         _player.TogglePlayerOutline(true);
-
+        _player.DisableWeaponCollider();
         _player.ForceDisableAllActionEffects();
     }
 }

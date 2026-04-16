@@ -85,10 +85,13 @@ public class BossHealthUI : MonoBehaviour
 
         bossActor = newBoss;
 
-        if (bossUIPanel != null && bossUIPanel.activeSelf && bossActor != null)
+        if (bossActor != null)
         {
             bossActor.OnHPChanged += UpdateHealthBar;
-            UpdateHealthBar(bossActor.CurrentHP, bossActor.MaxHP);
+            if (bossUIPanel != null && bossUIPanel.activeSelf)
+            {
+                UpdateHealthBar(bossActor.CurrentHP, bossActor.MaxHP);
+            }
         }
     }
 }

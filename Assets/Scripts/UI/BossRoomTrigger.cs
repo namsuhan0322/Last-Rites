@@ -30,7 +30,6 @@ public class BossRoomTrigger : MonoBehaviour
         }
     }
 
-    // GameManager의 리스폰 루틴에서 호출됩니다.
     public void ResetRoom()
     {
         gameObject.SetActive(true);
@@ -38,18 +37,18 @@ public class BossRoomTrigger : MonoBehaviour
         if (doorObj != null) doorObj.SetActive(false);
         if (currentBoss != null)
         {
-            Destroy(currentBoss); // 꼬여버린 낡은 보스 삭제
+            Destroy(currentBoss);
         }
 
         if (bossPrefab != null && bossSpawnPoint != null)
         {
-            // 완전 새삥 보스 스폰!
-            currentBoss = Instantiate(bossPrefab, bossSpawnPoint.position, bossSpawnPoint.rotation);
+            GameObject newBossObj = Instantiate(bossPrefab, bossSpawnPoint.position, bossSpawnPoint.rotation);
+            currentBoss = newBossObj;
 
-            // 새로 태어난 보스의 체력을 UI에 다시 연결해줍니다.
             if (bossHealthUI != null)
             {
-                bossHealthUI.UpdateBossReference(currentBoss.GetComponent<Actor>());
+                Actor newBossActor = newBossObj.GetComponent<Actor>();
+                bossHealthUI.UpdateBossReference(newBossActor);
             }
         }
     }

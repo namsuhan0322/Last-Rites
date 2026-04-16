@@ -6,7 +6,7 @@ AnimationClip:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: SK_ShadowWerewolf_lv3_Attack_Punch
+  m_Name: SK_ShadowWerewolf_lv3_Attack_Punch claw1
   serializedVersion: 7
   m_Legacy: 0
   m_Compressed: 0
@@ -74271,7 +74271,7 @@ AnimationClip:
     intParameter: 0
     messageOptions: 0
   - time: 0.3
-    functionName: SpawnClawVFX
+    functionName: TriangleClawVFX
     data: 
     objectReferenceParameter: {fileID: 0}
     floatParameter: 0

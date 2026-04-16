@@ -225,6 +225,7 @@ public class WolfBoss : Enemy
     float triTimer = 0f;
     List<Vector3> poisonZones = new List<Vector3>();
     HashSet<Actor> hitActors = new HashSet<Actor>();
+    Vector3 finalAttackDir;
     enum ThrowType
     {
         Fire,
@@ -448,7 +449,7 @@ public class WolfBoss : Enemy
                 patterns.Add(() => StartCoroutine(SlamExplosionPattern()));
 
             if (triTimer <= 0f)
-                patterns.Add(() => StartCoroutine(GroundSmash()));
+                patterns.Add(() => StartCoroutine(SmashCombo()));
 
             int index = Random.Range(0, patterns.Count);
             patterns[index].Invoke();
@@ -1862,50 +1863,7 @@ public class WolfBoss : Enemy
         }
 
         activeExplosions--;
-    } 
-
-
-    //삼각형 공격
-    IEnumerator GroundSmash()
-    {
-        if (isPhaseChanging) yield break;
-
-        isAttacking = true;
-        isComboAttacking = true;
-
-        agent.isStopped = true;
-        agent.updateRotation = false;
-
-        // 타겟 바라보기
-        if (currentTarget != null)
-        {
-            Vector3 dir = currentTarget.position - transform.position;
-            dir.y = 0;
-
-            if (dir.sqrMagnitude > 0.01f)
-            {
-                transform.rotation = Quaternion.LookRotation(dir);
-                attackDirection = dir.normalized;
-            }
-        }
-
-        animator.SetTrigger("Down");
-
-        yield return new WaitForSeconds(0.8f);
-
-        yield return new WaitForSeconds(0.7f);
-
-        triTimer = triCooldown;
-
-        attackTimer = attackCooldown;
-        isComboAttacking = false;
-
-        EndAttack();
-
-        agent.isStopped = false;
-        agent.updateRotation = true;
     }
-
 
     //손에서 생성
     void SpawnTrianglesFromHand(Transform hand)
@@ -1930,7 +1888,7 @@ public class WolfBoss : Enemy
             }
             else
             {
-                spawnPos.y = 0f; // fallback
+                spawnPos.y = 0f;
             }
 
             spawnPos.y += 0.05f;
@@ -1940,12 +1898,119 @@ public class WolfBoss : Enemy
             TriangleMesh aoe = tri.GetComponent<TriangleMesh>();
             if (aoe != null)
             {
-                aoe.Init(spawnPos, rot * Vector3.forward, triangleLength, triangleWidth);
+                aoe.Init(spawnPos, tri.transform.forward, triangleLength, triangleWidth);
             }
         }
     }
 
+    //그 삼각형 콤보
+    IEnumerator SmashCombo()
+    {
+        isAttacking = true;
+        isComboAttacking = true;
 
+        agent.isStopped = true;
+        agent.updateRotation = false;
+
+        yield return StartCoroutine(GroundSmashPattern());
+        yield return new WaitForSeconds(0.5f);
+
+        yield return StartCoroutine(RotateLikeSlash(1f));
+        animator.SetTrigger("Claw1");
+        yield return new WaitForSeconds(2.0f);
+
+        yield return StartCoroutine(RotateLikeSlash(1f));
+        animator.SetTrigger("Claw2");
+        yield return new WaitForSeconds(2.0f);
+
+        yield return StartCoroutine(RotateLikeSlash(1f));
+
+        animator.SetTrigger("Down_Final");
+
+        yield return new WaitForSeconds(3.2f);
+
+        triTimer = triCooldown;
+        attackTimer = attackCooldown;
+        isComboAttacking = false;
+        EndAttack();
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+    }
+    IEnumerator GroundSmashPattern()
+    {
+        animator.SetTrigger("Down");
+
+        yield return new WaitForSeconds(0.8f); 
+    }
+
+    //슬래쉬처럼 바라보기 사용
+    IEnumerator RotateLikeSlash(float duration)
+    {
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+
+            if (currentTarget != null)
+            {
+                Vector3 dir = currentTarget.position - transform.position;
+                dir.y = 0;
+
+                if (dir.sqrMagnitude > 0.01f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(dir);
+                    transform.rotation = Quaternion.Slerp(
+                        transform.rotation,
+                        targetRot,
+                        Time.deltaTime * 5f
+                    );
+
+                    finalAttackDir = dir.normalized; 
+                }
+            }
+
+            yield return null;
+        }
+    }
+
+    //마지막 삼각형 공격
+   public void SpawnFinalTriangle()
+    {
+        Debug.DrawRay(transform.position, transform.forward * 5f, Color.red, 2f);
+        Vector3 dir = transform.forward;
+        dir.y = 0f;
+        dir.Normalize();
+
+        Quaternion rot = Quaternion.LookRotation(dir);
+
+        Vector3 spawnPos = transform.position;
+
+        if (Physics.Raycast(transform.position + Vector3.up * 0.5f, Vector3.down, out RaycastHit hit, 50f, groundLayer))
+        {
+            spawnPos = hit.point;
+        }
+
+        spawnPos.y += 0.05f;
+
+        GameObject tri = Instantiate(trianglePrefab, spawnPos, rot);
+
+        TriangleMesh aoe = tri.GetComponent<TriangleMesh>();
+        if (aoe != null)
+        {
+            aoe.Init(spawnPos, dir, triangleLength, triangleWidth, 1f);
+        }
+    }
+
+    IEnumerator TripleSpawnRoutine()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            SpawnFinalTriangle(); 
+            yield return new WaitForSeconds(0.7f); 
+        }
+    }
 
     //데미지 받는 함수
     public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
@@ -2001,6 +2066,35 @@ public class WolfBoss : Enemy
         Destroy(vfx, 1.5f / vfxSpeed);
     }
 
+    public void TriangleClawVFX()
+    {
+        if (clawVFXPrefab == null) return;
+
+        Vector3 spawnPos = clawSpawnPoint != null
+            ? clawSpawnPoint.position
+            : transform.position;
+
+        Vector3 dir = transform.forward;
+        dir.y = 0f;
+        dir.Normalize();
+
+        Quaternion rot = Quaternion.LookRotation(dir);
+        rot *= Quaternion.AngleAxis(180f, Vector3.forward);
+
+        GameObject vfx = Instantiate(clawVFXPrefab, spawnPos, rot);
+
+        vfx.transform.localScale = Vector3.one * 1.4f;
+
+        ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
+        if (ps != null)
+        {
+            var main = ps.main;
+            main.simulationSpeed = 1f; 
+            ps.Play();
+        }
+
+        Destroy(vfx, 1.5f);
+    }
     public void SpawnClawDdongVFX()
     {
         if (clawDdongVFXPrefab == null) return;
@@ -2218,6 +2312,11 @@ public class WolfBoss : Enemy
     {
         SpawnTrianglesFromHand(leftHand);
         SpawnTrianglesFromHand(rightHand);
+    }
+
+    public void StartFinalTripleAttack()
+    {
+        StartCoroutine(TripleSpawnRoutine());
     }
     public override void ResetEnemy()
     {

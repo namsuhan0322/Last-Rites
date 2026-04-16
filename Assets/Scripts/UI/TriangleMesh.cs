@@ -14,23 +14,22 @@ public class TriangleMesh : MonoBehaviour
     float triWidth;
     float triLength;
 
-    public void Init(Vector3 origin, Vector3 dir, float length, float width)
+    public void Init(Vector3 origin, Vector3 dir, float length, float width, float life = 2f)
     {
+        lifeTime = life;
         Mesh mesh = new Mesh();
         triLength = length;
         triWidth = width;
-        dir.Normalize();
-        Vector3 right = Vector3.Cross(Vector3.up, dir);
+
+        Vector3 forward = Vector3.forward;
+        Vector3 right = Vector3.right;
 
         Vector3 v0 = Vector3.zero;
-        Vector3 v1 = dir * length + right * (width * 0.5f);
-        Vector3 v2 = dir * length - right * (width * 0.5f);
+        Vector3 v1 = forward * length + right * (width * 0.5f);
+        Vector3 v2 = forward * length - right * (width * 0.5f);
 
-        Vector3[] vertices = new Vector3[] { v0, v1, v2 };
-        int[] triangles = new int[] { 0, 1, 2 };
-
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
+        mesh.vertices = new Vector3[] { v0, v1, v2 };
+        mesh.triangles = new int[] { 0, 1, 2 };
         mesh.RecalculateNormals();
 
         GetComponent<MeshFilter>().mesh = mesh;

@@ -169,14 +169,21 @@ public class WolfBoss : Enemy
     public Transform rightHand;
 
     [Header("2페이지 세르카 버전 삼각형")]
-    [SerializeField] private GameObject trianglePrefab;
-    [SerializeField] private Transform trileftHand;
-    [SerializeField] private Transform trirightHand;
-    [SerializeField] private int triangleCountPerHand = 3;
-    [SerializeField] private float triangleLength = 8f;
-    [SerializeField] private float triangleWidth = 2f;
-    [SerializeField] private float triCooldown = 20f;
-    [SerializeField] private LayerMask groundLayer;
+    public GameObject trianglePrefab;
+    public Transform trileftHand;
+    public Transform trirightHand;
+    public int triangleCountPerHand = 3;
+    public float triangleLength = 8f;
+    public  float triangleWidth = 2f;
+    public  float triCooldown = 20f;
+    public  LayerMask groundLayer;
+
+    [Header("능지패턴")]
+    [SerializeField] float lineCooldown = 10f;
+    [SerializeField] float lineWarningTime = 1f;
+    [SerializeField] float lineSpacing = 3f;
+    [SerializeField] float lineDelay = 0.5f;
+    [SerializeField] GameObject lineIndicatorPrefab;
 
     [Header("Vfx")]
     public GameObject roarVFXPrefab;
@@ -230,6 +237,10 @@ public class WolfBoss : Enemy
     bool hasUsedCharge60 = false;
     bool hasUsedJump70 = false;
     bool hasUsedJump50 = false;
+    float lineTimer = 0f;
+
+    int[] pattern = new int[] { 3, 4, 3, 4 };
+    int patternIndex = 0;
     enum ThrowType
     {
         Fire,
@@ -271,6 +282,7 @@ public class WolfBoss : Enemy
         slamExplosionTimer -= Time.deltaTime;
         throwTimer -= Time.deltaTime;
         triTimer -= Time.deltaTime;
+        lineTimer -= Time.deltaTime;
 
         if (_isDead) return;
 
@@ -477,6 +489,9 @@ public class WolfBoss : Enemy
 
             if (triTimer <= 0f)
                 patterns.Add(() => StartCoroutine(SmashCombo()));
+
+            if (lineTimer <= 0f)
+                patterns.Add(() => StartCoroutine(LinePatternAttack()));
 
             int index = Random.Range(0, patterns.Count);
             patterns[index].Invoke();
@@ -2039,6 +2054,144 @@ public class WolfBoss : Enemy
         }
     }
 
+    //능지 패턴
+    IEnumerator LinePatternAttack()
+    {
+        if (isPhaseChanging) yield break;
+
+        isAttacking = true;
+        isComboAttacking = true;
+
+        agent.isStopped = true;
+        agent.updateRotation = false;
+
+        Vector3 dir = currentTarget.position - transform.position;
+        dir.y = 0;
+
+        float rotateTime = 0.3f;
+        float t = 0f;
+
+        Quaternion startRot = transform.rotation;
+        Quaternion targetRot = Quaternion.LookRotation(dir);
+
+        while (t < rotateTime)
+        {
+            t += Time.deltaTime;
+            transform.rotation = Quaternion.Slerp(startRot, targetRot, t / rotateTime);
+            yield return null;
+        }
+
+        attackDirection = dir.normalized;
+
+        yield return new WaitForSeconds(lineWarningTime);
+
+        animator.SetTrigger("Line");
+
+        yield return StartCoroutine(LinePatternRoutine());
+
+        animator.speed = 1f;
+
+        lineTimer = lineCooldown;
+
+        attackTimer = attackCooldown;
+
+        isComboAttacking = false;
+
+        EndAttack();
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+    }
+    //능지패턴루틴
+    IEnumerator LinePatternRoutine()
+    {
+        float spacing = 7f;
+        float delay = 0.8f;
+        float radius = 10f; 
+
+        PatternStep[] steps = new PatternStep[]
+        {
+        new PatternStep(true, 3),
+        new PatternStep(false, 4),
+        new PatternStep(true, 4),
+        new PatternStep(false, 3),
+        };
+
+        Vector3 basePos = transform.position;
+
+        foreach (var step in steps)
+        {
+            Vector3 center = GetRandomAroundBoss(basePos, radius);
+
+            if (step.isHorizontal)
+                SpawnHorizontalLines(center, spacing);
+            else
+                SpawnVerticalLines(center, spacing);
+
+            yield return new WaitForSeconds(delay);
+        }
+
+        yield return new WaitForSeconds(3f);
+    }
+    List<Vector2Int> usedCells = new List<Vector2Int>();
+    struct PatternStep
+    {
+        public bool isHorizontal;
+        public int count;
+
+        public PatternStep(bool isHorizontal, int count)
+        {
+            this.isHorizontal = isHorizontal;
+            this.count = count;
+        }
+    }
+
+    //가로라인
+    void SpawnVerticalLines(Vector3 center, float spacing)
+    {
+        Vector3 dir = transform.forward;
+
+        for (int i = -1; i <= 1; i++)
+        {
+            Vector3 pos = center + transform.right * (i * spacing);
+            SpawnLineIndicator(pos, dir);
+        }
+    }
+
+    //세로라인
+    void SpawnHorizontalLines(Vector3 center, float spacing)
+    {
+        Vector3 dir = transform.right;
+
+        for (int i = -1; i <= 1; i++)
+        {
+            Vector3 pos = center + transform.forward * (i * spacing);
+            SpawnLineIndicator(pos, dir);
+        }
+    }
+    //능지패턴생성
+    void SpawnLineIndicator(Vector3 pos, Vector3 dir)
+    {
+        Quaternion rot = Quaternion.LookRotation(dir) * Quaternion.Euler(90f, 0f, 0f);
+
+        GameObject obj = Instantiate(lineIndicatorPrefab, pos, rot);
+
+        LineAOE aoe = obj.GetComponent<LineAOE>();
+        if (aoe != null)
+        {
+            aoe.Init(3f); // 3초 후 터짐
+        }
+    }
+
+    //보스근처에서 생성
+    Vector3 GetRandomAroundBoss(Vector3 basePos, float radius)
+    {
+        Vector2 randomCircle = Random.insideUnitCircle * radius;
+
+        return basePos +
+               transform.right * randomCircle.x +
+               transform.forward * randomCircle.y;
+    }
     //데미지 받는 함수
     public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
     {
@@ -2049,7 +2202,6 @@ public class WolfBoss : Enemy
 
         EndHit();
     }
-
 
 
     //----------------멍떄리는 코드
@@ -2110,7 +2262,7 @@ public class WolfBoss : Enemy
 
         GameObject vfx = Instantiate(clawVFXPrefab, spawnPos, rot);
 
-        vfx.transform.localScale = Vector3.one * 1.4f;
+        vfx.transform.localScale = Vector3.one * 1.3f;
 
         ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
         if (ps != null)
@@ -2135,7 +2287,7 @@ public class WolfBoss : Enemy
 
         GameObject vfx = Instantiate(clawDdongVFXPrefab, spawnPos, rot);
 
-        vfx.transform.localScale = Vector3.one * 1.7f;
+        vfx.transform.localScale = Vector3.one * 1.3f;
 
         Destroy(vfx, 2f);
     }
@@ -2344,6 +2496,11 @@ public class WolfBoss : Enemy
     public void StartFinalTripleAttack()
     {
         StartCoroutine(TripleSpawnRoutine());
+    }
+
+    public void OnLineStop()
+    {
+        animator.speed = 0f;
     }
     public override void ResetEnemy()
     {

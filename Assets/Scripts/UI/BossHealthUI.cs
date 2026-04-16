@@ -75,4 +75,20 @@ public class BossHealthUI : MonoBehaviour
             bossUIPanel.SetActive(false);
         }
     }
+
+    public void UpdateBossReference(Actor newBoss)
+    {
+        if (bossActor != null)
+        {
+            bossActor.OnHPChanged -= UpdateHealthBar;
+        }
+
+        bossActor = newBoss;
+
+        if (bossUIPanel != null && bossUIPanel.activeSelf && bossActor != null)
+        {
+            bossActor.OnHPChanged += UpdateHealthBar;
+            UpdateHealthBar(bossActor.CurrentHP, bossActor.MaxHP);
+        }
+    }
 }

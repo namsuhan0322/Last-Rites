@@ -2511,6 +2511,12 @@ public class WolfBoss : Enemy
         // 진행 중인 보스 패턴 코루틴 강제 종료
         StopAllCoroutines();
 
+        if (agent != null)
+        {
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+        }
+
         // 보스 전용 플래그 초기화
         isComboAttacking = false;
         isPhaseChanging = false;
@@ -2524,14 +2530,14 @@ public class WolfBoss : Enemy
 
         // 보스 전용 스킬 타이머 초기화 
         attackTimer = 2f;
-        slashTimer = 0f;
-        jumpTimer = 0f;
-        chargeTimer = 0f;
-        spinTimer = 0f;
-        darkShotTimer = 0f;
-        stompTimer = 0f;
-        tornadoTimer = 0f;
-        slamExplosionTimer = 0f;
+        slashTimer = 3f;
+        jumpTimer = 6f;
+        chargeTimer = 9f;
+        spinTimer = 12f;
+        darkShotTimer = 5f;
+        stompTimer = 8f;
+        tornadoTimer = 15f;
+        slamExplosionTimer = 10f;
 
         animator.speed = 1f;
         animator.Rebind();

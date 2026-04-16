@@ -26,4 +26,14 @@ public class GameProgressManager : SingletonMono<GameProgressManager>
         progressData.clearedThemeLevel = themeLevel;
         DataManager.Instance.SaveAllData();
     }
+
+    public void SaveRespawnPoint(Vector3 position)
+    {
+        progressData.hasSavedRespawn = true;
+        progressData.respawnPosX = position.x;
+        progressData.respawnPosY = position.y;
+        progressData.respawnPosZ = position.z;
+
+        DataManager.Instance.SaveAllData();
+    }
 }

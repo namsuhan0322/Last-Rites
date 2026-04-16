@@ -1,5 +1,6 @@
-using UnityEngine;
+using BansheeGz.BGDatabase;
 using System.Collections;
+using UnityEngine;
 
 public enum GameState
 {
@@ -205,29 +206,39 @@ public class GameManager : SingletonMono<GameManager>
 
     private IEnumerator RespawnRoutine()
     {
-        yield return new WaitForSeconds(respawnDelay);
+        yield return new WaitForSecondsRealtime(respawnDelay);
 
         if (ScenesManager.Instance != null)
-        {
             yield return ScenesManager.Instance.StartCoroutine(ScenesManager.Instance.FadeIn());
-        }
 
         PlayerController player = FindObjectOfType<PlayerController>();
 
-        if (player != null && respawnPoint != null)
+        if (player != null)
         {
-            player.Revive(respawnPoint);
+            if (GameProgressManager.Instance != null && GameProgressManager.Instance.progressData.hasSavedRespawn)
+            {
+                Vector3 savedPos = new Vector3(
+                    GameProgressManager.Instance.progressData.respawnPosX,
+                    GameProgressManager.Instance.progressData.respawnPosY,
+                    GameProgressManager.Instance.progressData.respawnPosZ
+                );
+
+                player.Revive(savedPos);
+            }
+            else if (respawnPoint != null)
+            {
+                player.Revive(respawnPoint.position);
+            }
+
             ResetAllEnemies();
             ResetAllBossRooms();
             ChangeGameState(GameState.Playing);
         }
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSecondsRealtime(0.5f);
 
         if (ScenesManager.Instance != null)
-        {
             yield return ScenesManager.Instance.StartCoroutine(ScenesManager.Instance.FadeOut());
-        }
     }
 
     private void ResetAllEnemies()
@@ -240,10 +251,10 @@ public class GameManager : SingletonMono<GameManager>
             {
                 actor.InitActor(actor.MaxHP);
 
-                WolfBoss wolfBoss = actor.GetComponent<WolfBoss>();
-                if (wolfBoss != null)
+                Enemy enemy = actor.GetComponent<Enemy>();
+                if (enemy != null)
                 {
-                    wolfBoss.ResetEnemy();
+                    enemy.ResetEnemy();
                 }
             }
         }

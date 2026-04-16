@@ -879,7 +879,7 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region 부활 처리 (리스폰)
-    public void Revive(Transform spawnPoint)
+    public void Revive(Vector3 spawnPosition)
     {
         if (CC != null) CC.enabled = false;
         if (RB != null)
@@ -888,11 +888,7 @@ public class PlayerController : MonoBehaviour
             RB.useGravity = true;
         }
 
-        if (spawnPoint != null)
-        {
-            transform.position = spawnPoint.position;
-            transform.rotation = spawnPoint.rotation;
-        }
+        transform.position = spawnPosition;
 
         if (CC != null) CC.enabled = true;
 
@@ -902,6 +898,19 @@ public class PlayerController : MonoBehaviour
             currentPotionCount = currentPotionData.Max_Count;
             OnPotionCountChanged?.Invoke(currentPotionCount);
         }
+
+        Q_Timer = 0f;
+        W_Timer = 0f;
+        E_Timer = 0f;
+        R_Timer = 0f;
+        V_Timer = 0f;
+        Potion_Timer = 0f;
+        globalSkillTimer = 0f;
+        _dashTimer = 0f;
+        postRollAttackTimer = 0f;
+
+        DisableWeaponCollider();
+        ForceDisableAllActionEffects();
 
         Anim.ResetTrigger("IsDead");
         Anim.ResetTrigger("IsHit");
@@ -926,7 +935,6 @@ public class PlayerController : MonoBehaviour
         Anim.Play("Idle", 0, 0f);
 
         StateMachine.ChangeState(IdleState);
-        ForceDisableAllActionEffects();
     }
 
     #endregion

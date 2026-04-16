@@ -218,6 +218,7 @@ public class GameManager : SingletonMono<GameManager>
         {
             player.Revive(respawnPoint);
             ResetAllEnemies();
+            ResetAllBossRooms();
             ChangeGameState(GameState.Playing);
         }
 
@@ -245,6 +246,16 @@ public class GameManager : SingletonMono<GameManager>
                     wolfBoss.ResetEnemy();
                 }
             }
+        }
+    }
+
+    private void ResetAllBossRooms()
+    {
+        BossRoomTrigger[] triggers = FindObjectsByType<BossRoomTrigger>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+        foreach (var trigger in triggers)
+        {
+            trigger.ResetRoom();
         }
     }
 

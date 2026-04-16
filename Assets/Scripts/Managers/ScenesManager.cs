@@ -225,6 +225,11 @@ public class ScenesManager : SingletonMono<ScenesManager>
         if (GameProgressManager.Instance.progressData.isTutorialCleared) LoadScene(LobbySceneName);
         else LoadScene(tutorialSceneName);
     }
+
+    public void LoadTestGameScene()
+    {
+        LoadScene(Thema1SceneName);
+    }
     public void LoadLobbyScene() => LoadScene(LobbySceneName);
     public void ReloadCurrentScene() => LoadScene(currentSceneName);
 

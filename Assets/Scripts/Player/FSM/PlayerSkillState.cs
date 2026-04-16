@@ -3,7 +3,7 @@ using UnityEngine;
 public class PlayerSkillState : PlayerState
 {
     private float _stateTimer;
-
+    private bool _attackBuffered;
     public PlayerSkillState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
 
     public override void Enter()
@@ -26,8 +26,17 @@ public class PlayerSkillState : PlayerState
         _player.Anim.SetFloat("AttackSpd", baseAtkSpd * _player.AtkSpeedModifier);
 
         _stateTimer = 0f;
+        _attackBuffered = false;
 
         _player.globalSkillTimer = _player.globalSkillDelay;
+    }
+
+    public override void HandleInput()
+    {
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
+        {
+            _attackBuffered = true;
+        }
     }
 
     public override void LogicUpdate()
@@ -52,6 +61,12 @@ public class PlayerSkillState : PlayerState
                 }
             }
 
+            if (normalizedTime >= 0.75f && _attackBuffered)
+            {
+                _stateMachine.ChangeState(_player.AttackState);
+                return;
+            }
+
             // 아무것도 안 누르고 가만히 있으면 95%에서 대기 상태로 복귀
             if (normalizedTime >= 0.95f)
             {
@@ -67,7 +82,8 @@ public class PlayerSkillState : PlayerState
     public override void Exit()
     {
         _player.Anim.ResetTrigger(_player.CurrentSkillAnim);
-
         _player.DisableWeaponCollider();
+
+        _attackBuffered = false;
     }
 }

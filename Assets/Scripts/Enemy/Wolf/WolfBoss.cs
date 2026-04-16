@@ -2102,6 +2102,7 @@ public class WolfBoss : Enemy
         agent.isStopped = false;
         agent.updateRotation = true;
     }
+
     //능지패턴루틴
     IEnumerator LinePatternRoutine()
     {

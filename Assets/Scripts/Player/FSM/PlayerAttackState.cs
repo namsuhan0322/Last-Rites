@@ -41,6 +41,8 @@ public class PlayerAttackState : PlayerState
     {
         if (Input.GetMouseButtonDown(0)) _nextComboBuffered = true;
 
+        if (_player.CheckSkillAndDashInput()) return;
+
         if (Input.GetMouseButtonDown(1))
         {
             _player.Anim.ResetTrigger("Attack");

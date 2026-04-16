@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class PlayerRollState : PlayerState
 {
+    private bool _attackBuffered;
     private float _stateTimer;
 
     public PlayerRollState(PlayerController player, PlayerStateMachine stateMachine) : base(player, stateMachine) { }
@@ -19,6 +20,16 @@ public class PlayerRollState : PlayerState
 
         _player.Anim.SetTrigger("Roll");
         _player.Agent.ResetPath();
+
+        _attackBuffered = false;
+    }
+
+    public override void HandleInput()
+    {
+        if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0))
+        {
+            _attackBuffered = true;
+        }
     }
 
     public override void LogicUpdate()
@@ -28,6 +39,14 @@ public class PlayerRollState : PlayerState
         AnimatorStateInfo stateInfo = _player.Anim.GetCurrentAnimatorStateInfo(0);
         if (stateInfo.IsName("Roll") || stateInfo.IsTag("Roll"))
         {
+            float normalizedTime = stateInfo.normalizedTime;
+            if (normalizedTime >= 0.85f && _attackBuffered)
+            {
+                _player.Stats.SetInvincible(false);
+                _stateMachine.ChangeState(_player.AttackState);
+                return;
+            }
+
             if (stateInfo.normalizedTime >= 0.9f)
             {
                 if (Input.GetMouseButton(1))
@@ -60,6 +79,8 @@ public class PlayerRollState : PlayerState
         _player.TogglePlayerOutline(true);
 
         _player.ResetDashTimer();
-        _player.postRollAttackTimer = _player.postRollAttackDelay;
+        _attackBuffered = false;
+
+        _player.postRollAttackTimer = 0f;
     }
 }

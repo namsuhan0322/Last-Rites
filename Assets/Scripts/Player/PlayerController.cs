@@ -380,32 +380,17 @@ public class PlayerController : MonoBehaviour
     public void RotateToMouseImmediate()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
+        Plane groundPlane = new Plane(Vector3.up, new Vector3(0, transform.position.y, 0));
+        float rayDistance;
 
-        if (Physics.Raycast(ray, out hit, 100f, EnemyLayer))
+        if (groundPlane.Raycast(ray, out rayDistance))
         {
-            Vector3 targetPoint = hit.point;
-            targetPoint.y = transform.position.y;
-
+            Vector3 targetPoint = ray.GetPoint(rayDistance);
             if (Vector3.Distance(transform.position, targetPoint) > 0.5f)
             {
                 Vector3 dir = (targetPoint - transform.position).normalized;
-                if (dir != Vector3.zero)
-                {
-                    transform.rotation = Quaternion.LookRotation(dir);
-                }
-            }
-            return;
-        }
+                dir.y = 0;
 
-        if (Physics.Raycast(ray, out hit, 100f, GroundLayer))
-        {
-            Vector3 targetPoint = hit.point;
-            targetPoint.y = transform.position.y;
-
-            if (Vector3.Distance(transform.position, targetPoint) > 0.5f)
-            {
-                Vector3 dir = (targetPoint - transform.position).normalized;
                 if (dir != Vector3.zero)
                 {
                     transform.rotation = Quaternion.LookRotation(dir);

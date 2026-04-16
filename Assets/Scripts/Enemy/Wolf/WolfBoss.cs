@@ -1835,7 +1835,8 @@ public class WolfBoss : Enemy
         if (indicator != null)
             Destroy(indicator);
 
-        Instantiate(explosionVFXPrefab, pos, Quaternion.identity);
+        GameObject vfx = Instantiate(explosionVFXPrefab, pos, Quaternion.identity);
+        Destroy(vfx, 2f); 
 
         Collider[] hits = Physics.OverlapSphere(pos, explosionRadius, targetLayer);
 
@@ -1848,7 +1849,7 @@ public class WolfBoss : Enemy
         }
 
         activeExplosions--;
-    } //vfx역할
+    } 
 
 
     //삼각형 공격

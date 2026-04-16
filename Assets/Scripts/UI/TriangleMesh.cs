@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using System.Collections;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer))]
 public class TriangleMesh : MonoBehaviour
@@ -8,36 +10,15 @@ public class TriangleMesh : MonoBehaviour
     [SerializeField] private int damage = 10;
     [SerializeField] private LayerMask targetLayer;
     private bool hasHit = false;
-
-    void Update()
-    {
-        if (hasHit) return;
-
-        Collider[] hits = Physics.OverlapSphere(transform.position, 10f, targetLayer);
-
-        foreach (var hit in hits)
-        {
-            Actor actor = hit.GetComponent<Actor>();
-            if (actor == null || actor.IsDead) continue;
-
-            if (IsInsideTriangle(actor.transform.position))
-            {
-                actor.TakeDamage(damage, 1f);
-                hasHit = true; 
-                break;
-            }
-        }
-    }
-
-    void Start()
-    {
-        Destroy(gameObject, lifeTime);
-    }
+    [SerializeField] private GameObject vfxPrefab;
+    float triWidth;
+    float triLength;
 
     public void Init(Vector3 origin, Vector3 dir, float length, float width)
     {
         Mesh mesh = new Mesh();
-
+        triLength = length;
+        triWidth = width;
         dir.Normalize();
         Vector3 right = Vector3.Cross(Vector3.up, dir);
 
@@ -59,6 +40,8 @@ public class TriangleMesh : MonoBehaviour
         worldV0 = transform.TransformPoint(v0);
         worldV1 = transform.TransformPoint(v1);
         worldV2 = transform.TransformPoint(v2);
+
+        StartCoroutine(GrowAndExplode());
     }
 
     bool IsInsideTriangle(Vector3 p)
@@ -82,5 +65,70 @@ public class TriangleMesh : MonoBehaviour
         float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
 
         return (u >= 0) && (v >= 0) && (u + v < 1);
+    }
+
+    IEnumerator GrowAndExplode()
+    {
+        float timer = 0f;
+        float duration = lifeTime;
+
+        MeshRenderer renderer = GetComponent<MeshRenderer>();
+        Color color = renderer.material.color;
+
+        color.a = 0f;
+        renderer.material.color = color;
+
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            float t = timer / duration;
+
+            color.a = Mathf.Lerp(0f, 1f, t);
+            renderer.material.color = color;
+
+            yield return null;
+        }
+
+        // 🔥 VFX
+        int vfxCount = 20;
+
+        for (int i = 0; i < vfxCount; i++)
+        {
+            Vector3 randomPos = GetRandomPointInTriangle();
+            GameObject vfx = Instantiate(vfxPrefab, randomPos, Quaternion.identity);
+            Destroy(vfx, 2f);
+        }
+
+        // 🔥 데미지
+        Collider[] hits = Physics.OverlapSphere(transform.position, triLength, targetLayer);
+
+        foreach (var hit in hits)
+        {
+            Actor actor = hit.GetComponent<Actor>();
+            if (actor == null || actor.IsDead) continue;
+
+            if (IsInsideTriangle(actor.transform.position))
+            {
+                actor.TakeDamage(damage, 1f);
+            }
+        }
+
+        // 🔥 마지막에 파괴
+        Destroy(gameObject);
+    }
+
+    Vector3 GetRandomPointInTriangle()
+    {
+        float r1 = Random.value;
+        float r2 = Random.value;
+
+        // 삼각형 내부 균일 분포
+        if (r1 + r2 > 1f)
+        {
+            r1 = 1f - r1;
+            r2 = 1f - r2;
+        }
+
+        return worldV0 + (worldV1 - worldV0) * r1 + (worldV2 - worldV0) * r2;
     }
 }

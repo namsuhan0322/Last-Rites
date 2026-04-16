@@ -226,6 +226,10 @@ public class WolfBoss : Enemy
     List<Vector3> poisonZones = new List<Vector3>();
     HashSet<Actor> hitActors = new HashSet<Actor>();
     Vector3 finalAttackDir;
+    bool hasUsedCharge80 = false;
+    bool hasUsedCharge60 = false;
+    bool hasUsedJump70 = false;
+    bool hasUsedJump50 = false;
     enum ThrowType
     {
         Fire,
@@ -389,7 +393,6 @@ public class WolfBoss : Enemy
     {
         if (isPhaseChanging || isComboAttacking || isStuned) return;
         if (currentTarget == null) return;
-
         if (!hasStartedCombat)
         {
             hasStartedCombat = true;
@@ -405,14 +408,38 @@ public class WolfBoss : Enemy
         {
             List<System.Action> patterns = new List<System.Action>();
 
+            float hpPercent = (float)_currentHP / _maxHP;
+
             if (jumpTimer <= 0f)
-                patterns.Add(() => StartCoroutine(JumpAttack()));
+            {
+                if (!hasUsedJump70 && hpPercent <= 0.7f)
+                {
+                    hasUsedJump70 = true;
+                    patterns.Add(() => StartCoroutine(JumpAttack()));
+                }
+                else if (!hasUsedJump50 && hpPercent <= 0.5f)
+                {
+                    hasUsedJump50 = true;
+                    patterns.Add(() => StartCoroutine(JumpAttack()));
+                }
+            }
+
+            if (chargeTimer <= 0f)
+            {
+                if (!hasUsedCharge80 && hpPercent <= 0.8f)
+                {
+                    hasUsedCharge80 = true;
+                    patterns.Add(() => StartCoroutine(Charge()));
+                }
+                else if (!hasUsedCharge60 && hpPercent <= 0.6f)
+                {
+                    hasUsedCharge60 = true;
+                    patterns.Add(() => StartCoroutine(Charge()));
+                }
+            }
 
             if (slashTimer <= 0f && dist <= slashRange)
                 patterns.Add(() => StartCoroutine(Slash()));
-
-            if (chargeTimer <= 0f)
-                patterns.Add(() => StartCoroutine(Charge()));
 
             if (tornadoTimer <= 0f)
                 patterns.Add(() => StartCoroutine(TornadoSkill()));
@@ -2050,7 +2077,7 @@ public class WolfBoss : Enemy
 
         GameObject vfx = Instantiate(clawVFXPrefab, spawnPos, rot);
 
-        vfx.transform.localScale = Vector3.one * 3.5f;
+        vfx.transform.localScale = Vector3.one * 2.8f;
 
         float vfxSpeed = isRightHandBroken ? brokenHandAnimSpeed : 1f;
 

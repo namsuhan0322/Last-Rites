@@ -182,6 +182,14 @@ public class PlayerController : MonoBehaviour
         CheckItemInput();
     }
 
+    private void LateUpdate()
+    {
+        if (Agent != null && Agent.enabled && Agent.isOnNavMesh)
+        {
+            Agent.nextPosition = transform.position;
+        }
+    }
+
     private void FixedUpdate()
     {
         StateMachine.CurrentState.PhysicsUpdate();
@@ -735,38 +743,6 @@ public class PlayerController : MonoBehaviour
             if (r is ParticleSystemRenderer) continue;
             r.gameObject.layer = targetLayer;
         }
-    }
-
-    #endregion
-
-    #region 충돌 및 트리거 감지
-    private void OnTriggerEnter(Collider other)
-    {
-        if ((EnemyLayer.value & (1 << other.gameObject.layer)) > 0)
-        {
-            if (StateMachine.CurrentState == MoveState)
-            {
-                StopMovementAndIdle();
-            }
-        }
-    }
-
-    private void OnControllerColliderHit(ControllerColliderHit hit)
-    {
-        if ((EnemyLayer.value & (1 << hit.gameObject.layer)) > 0)
-        {
-            if (StateMachine.CurrentState == MoveState)
-            {
-                StopMovementAndIdle();
-            }
-        }
-    }
-
-    private void StopMovementAndIdle()
-    {
-        Agent.ResetPath();
-        Agent.velocity = Vector3.zero;
-        StateMachine.ChangeState(IdleState);
     }
 
     #endregion

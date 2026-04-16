@@ -83,17 +83,14 @@ public class WeaponHitbox : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (!other.CompareTag("Enemy")) return;
+        Actor enemy = other.GetComponentInParent<Actor>();
 
-        if (other.CompareTag("Enemy"))
+        if (enemy != null && !enemy.IsDead && !_hitActors.Contains(enemy))
         {
-            Actor enemy = other.GetComponentInParent<Actor>();
-            if (enemy != null && !enemy.IsDead && !_hitActors.Contains(enemy))
-            {
-                enemy.TakeDamage(_damage);
-                _hitActors.Add(enemy);
-                Debug.Log($"[Hit] {_damage} 데미지!");
-            }
+            if (enemy.GetComponent<PlayerController>() != null) return;
+
+            enemy.TakeDamage(_damage);
+            _hitActors.Add(enemy);
         }
     }
 }

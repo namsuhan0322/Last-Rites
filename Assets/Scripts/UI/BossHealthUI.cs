@@ -41,15 +41,17 @@ public class BossHealthUI : MonoBehaviour
 
     private void UpdateHealthBar(int currentHp, int maxHp)
     {
+        int displayHp = Mathf.Max(0, currentHp);
+
         if (hpSlider != null)
         {
             hpSlider.maxValue = maxHp;
-            hpSlider.value = currentHp;
+            hpSlider.value = displayHp;
         }
 
         if (currentHpText != null)
         {
-            currentHpText.text = currentHp.ToString();
+            currentHpText.text = displayHp.ToString();
         }
 
         if (maxHpText != null)

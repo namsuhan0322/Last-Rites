@@ -290,6 +290,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6764799035139232018, guid: b6d4a1c44719b5942b5d381d9636fe29,
+        type: 3}
+      propertyPath: currentPhase
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7143477529762470578, guid: b6d4a1c44719b5942b5d381d9636fe29,
         type: 3}
       propertyPath: m_Name
@@ -3683,7 +3688,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Project.Scripts.Fractures.FractureThis
   anchor: 0
-  chunks: 20
+  chunks: 10
   density: 10
   internalStrength: 5
   insideMaterial: {fileID: 2100000, guid: 2f6c83ad0f8e92d4396c60c9186cd087, type: 2}
@@ -7766,7 +7771,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Project.Scripts.Fractures.FractureThis
   anchor: 0
-  chunks: 20
+  chunks: 10
   density: 10
   internalStrength: 5
   insideMaterial: {fileID: 2100000, guid: 2f6c83ad0f8e92d4396c60c9186cd087, type: 2}
@@ -11559,7 +11564,7 @@ PrefabInstance:
     - target: {fileID: 5140861623352715782, guid: ac561670bee70034aaad27663f90a334,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -47.8
+      value: -47.80005
       objectReference: {fileID: 0}
     - target: {fileID: 5140861623352715782, guid: ac561670bee70034aaad27663f90a334,
         type: 3}

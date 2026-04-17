@@ -470,7 +470,7 @@ public class Enemy : Actor
         StartCoroutine(DieRoutine());
     }
 
-    IEnumerator DieRoutine()
+    protected virtual IEnumerator DieRoutine()
     {
         yield return new WaitForSeconds(2f);
 

@@ -2564,4 +2564,37 @@ public class WolfBoss : Enemy
 
         currentPhase = BossPhase.Phase1;
     }
+
+    protected override void Die()
+    {
+        if (_isDead) return;
+
+        StopAllCoroutines();
+
+        if (animator != null)
+            animator.speed = 1f;
+
+        if (slashIndicator != null) slashIndicator.SetActive(false);
+        if (jumpIndicator != null) jumpIndicator.SetActive(false);
+        if (chargeIndicator != null) chargeIndicator.SetActive(false);
+        if (spinIndicator != null) spinIndicator.SetActive(false);
+        if (stompIndicator != null) stompIndicator.SetActive(false);
+        if (tornadoVFX != null) tornadoVFX.SetActive(false);
+        if (RightHandPointCollider != null) RightHandPointCollider.SetActive(false);
+
+        if (myCollider != null)
+            myCollider.enabled = false;
+
+        base.Die();
+    }
+
+    protected override IEnumerator DieRoutine()
+    {
+        yield return new WaitForSeconds(3f);
+
+        if (agent != null)
+            agent.enabled = false;
+
+        Destroy(gameObject);
+    }
 }

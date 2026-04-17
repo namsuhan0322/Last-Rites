@@ -427,12 +427,14 @@ public class WolfBoss : Enemy
                 if (!hasUsedJump70 && hpPercent <= 0.7f)
                 {
                     hasUsedJump70 = true;
-                    patterns.Add(() => StartCoroutine(JumpAttack()));
+                    StartCoroutine(JumpAttack());
+                    return;
                 }
                 else if (!hasUsedJump50 && hpPercent <= 0.5f)
                 {
                     hasUsedJump50 = true;
-                    patterns.Add(() => StartCoroutine(JumpAttack()));
+                    StartCoroutine(JumpAttack());
+                    return;
                 }
             }
 
@@ -441,12 +443,14 @@ public class WolfBoss : Enemy
                 if (!hasUsedCharge80 && hpPercent <= 0.8f)
                 {
                     hasUsedCharge80 = true;
-                    patterns.Add(() => StartCoroutine(Charge()));
+                    StartCoroutine(Charge());
+                    return;
                 }
                 else if (!hasUsedCharge60 && hpPercent <= 0.6f)
                 {
                     hasUsedCharge60 = true;
-                    patterns.Add(() => StartCoroutine(Charge()));
+                    StartCoroutine(Charge());
+                    return;
                 }
             }
 

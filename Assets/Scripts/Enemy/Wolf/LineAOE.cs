@@ -57,18 +57,23 @@ public class LineAOE : MonoBehaviour
 
         for (int i = 0; i < vfxCount; i++)
         {
-            Vector3 randomPos = GetRandomPointInBox();
-            GameObject vfx = Instantiate(vfxPrefab, randomPos, Quaternion.identity);
+            float randX = Random.Range(-width * 0.5f, width * 0.5f);
+            float randZ = Random.Range(-length * 0.5f, length * 0.5f);
+
+            Vector3 pos = transform.position +
+                          transform.right * randX +
+                          transform.up * randZ; 
+
+            GameObject vfx = Instantiate(vfxPrefab, pos, Quaternion.identity);
             Destroy(vfx, 2f);
         }
 
         Collider[] hits = Physics.OverlapBox(
-            transform.position,
-            halfExtents,
-            transform.rotation * Quaternion.Euler(-90f, 0f, 0f),
-            targetLayer
-        );
-
+      transform.position,
+      new Vector3(width * 0.5f, 1f, length * 0.5f),
+      transform.rotation,
+      targetLayer
+  );
         foreach (var hit in hits)
         {
             Actor actor = hit.GetComponent<Actor>();
@@ -82,12 +87,14 @@ public class LineAOE : MonoBehaviour
 
     Vector3 GetRandomPointInBox()
     {
-        Vector3 local = new Vector3(
-            Random.Range(-width * 0.5f, width * 0.5f),
-            0f,
-            Random.Range(-length * 0.5f, length * 0.5f)
-        );
+        Vector3 right = transform.right.normalized;
+        Vector3 forward = transform.forward.normalized;
 
-        return transform.TransformPoint(local);
+        float randX = Random.Range(-width * 0.5f, width * 0.5f);
+        float randZ = Random.Range(-length * 0.5f, length * 0.5f);
+
+        return transform.position
+             + right * randX
+             + forward * randZ;
     }
 }

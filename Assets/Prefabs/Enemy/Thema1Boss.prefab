@@ -3509,7 +3509,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 173e48f9ee169d449a02ead2256b05e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WolfBoss
-  _currentHP: 1000
+  _currentHP: 1
   _maxPoise: 20
   _currentPoise: 0
   _poiseRecoveryRate: 0
@@ -3651,8 +3651,8 @@ MonoBehaviour:
     type: 3}
   slamExplosionCooldown: 8
   slamExplosionTimer: 10
-  minExplodeDelay: 2
-  maxExplodeDelay: 4
+  minExplodeDelay: 2.5
+  maxExplodeDelay: 3.5
   indicatorBaseSize: 0.85
   leftHand: {fileID: 6832812227321919053}
   rightHand: {fileID: 4023416293120169765}

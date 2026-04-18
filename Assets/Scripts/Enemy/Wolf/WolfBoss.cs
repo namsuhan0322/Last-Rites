@@ -1709,7 +1709,7 @@ public class WolfBoss : Enemy
 
         if (Physics.Raycast(origin, Vector3.down, out hit, 10f, groundLayer))
         {
-            stompIndicator.transform.position = hit.point + Vector3.up * 0.05f;
+            stompIndicator.transform.position = hit.point + Vector3.up * -0.01f;
         }
 
         stompIndicator.transform.rotation = Quaternion.identity;
@@ -2369,10 +2369,7 @@ public class WolfBoss : Enemy
     IEnumerator FillStompVFX(GameObject vfx)
     {
         float timer = 0f;
-
-        float maxScale = stompRange * 2f;
-
-        ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
+        float maxScale = stompRange * 0.41f;
         Renderer rend = vfx.GetComponentInChildren<Renderer>();
 
         Color start = new Color(1, 1, 1, 0.2f);
@@ -2383,24 +2380,29 @@ public class WolfBoss : Enemy
         {
             timer += Time.deltaTime;
             float t = timer / stompGrowTime;
-
             float curved = stompFillCurve.Evaluate(t);
 
             float size = Mathf.Lerp(0.1f, maxScale, curved);
+
             vfx.transform.localScale = new Vector3(size, size, size);
 
             if (rend != null)
             {
-                Color c;
-                if (t < 0.5f)
-                    c = Color.Lerp(start, mid, t * 2f);
-                else
-                    c = Color.Lerp(mid, end, (t - 0.5f) * 2f);
-
+                Color c = (t < 0.5f) ? Color.Lerp(start, mid, t * 2f) : Color.Lerp(mid, end, (t - 0.5f) * 2f);
                 rend.material.color = c;
             }
-
             yield return null;
+        }
+
+        int explosionVfxCount = 80;
+        for (int i = 0; i < explosionVfxCount; i++)
+        {
+            Vector2 randomCircle = Random.insideUnitCircle * stompRange;
+
+            Vector3 spawnPos = vfx.transform.position + new Vector3(randomCircle.x, 0.5f, randomCircle.y);
+
+            GameObject explosion = Instantiate(fireVFX, spawnPos, Quaternion.identity);
+            Destroy(explosion, 2f);
         }
 
         StartCoroutine(FlashVFX(vfx));

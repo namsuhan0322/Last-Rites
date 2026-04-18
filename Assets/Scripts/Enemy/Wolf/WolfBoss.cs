@@ -973,7 +973,7 @@ public class WolfBoss : Enemy
 
         float upTime = 0.6f;
         float airTime = jumpDelay;
-        float downTime = 1f;
+        float downTime = 0.5f;
         float jumpHeight = 7f;
 
         Vector3 startPos = transform.position;
@@ -1072,8 +1072,7 @@ public class WolfBoss : Enemy
         yield return new WaitForSeconds(1f);
 
         ShowModel();
-        animator.speed = 1f;
-        myCollider.enabled = true;
+        animator.speed = 1.4f;
         timer = 0f;
 
         float startY = startPos.y + jumpHeight;
@@ -1104,7 +1103,7 @@ public class WolfBoss : Enemy
         }
 
         yield return new WaitForSeconds(0.05f);
-
+        myCollider.enabled = true;
         OnJumpImpact();
 
         isInvincible = false;
@@ -2481,7 +2480,6 @@ public class WolfBoss : Enemy
 
         DealJumpDamage();
     }
-
     public void OnThrowProjectile()
     {
         SpawnThrowProjectiles();

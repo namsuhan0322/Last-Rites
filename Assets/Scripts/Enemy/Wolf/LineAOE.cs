@@ -76,19 +76,33 @@ public class LineAOE : MonoBehaviour
 
             if (((1 << actor.gameObject.layer) & targetLayer) == 0) continue;
 
-            Vector3 checkPos = actor.transform.position;
+            Collider col = actor.GetComponentInChildren<Collider>();
+            if (col == null) continue;
 
+            Vector3 checkPos = col.bounds.center;
+          
+            float backOffset = 30f; 
 
-            Vector3 localPos = transform.InverseTransformPoint(checkPos);
-            float hitWidth = width * 0.4f;
+            Vector3 origin = transform.position - transform.up * backOffset; 
+
+            Vector3 toTarget = checkPos - origin;
+
+            Vector3 forward = transform.up;
+            Vector3 right = transform.right;
+
+            float z = Vector3.Dot(toTarget, forward);
+            float x = Vector3.Dot(toTarget, right);
+
+            float hitWidth = width * 0.45f;
+            float radius = col.bounds.extents.x;
 
             bool isInside =
-                Mathf.Abs(localPos.x) <= hitWidth &&
-                localPos.z >= 0f &&
-                localPos.z <= length;
+                Mathf.Abs(x) <= (hitWidth + radius * 0.5f) &&
+                z >= 0f &&          
+                z <= length;        
 
-            Debug.DrawLine(transform.position, checkPos, isInside ? Color.green : Color.red, 2f);
-
+            Debug.DrawRay(origin, forward * length, Color.blue, 2f);
+            Debug.DrawRay(origin, right * width, Color.yellow, 2f);
             if (isInside)
             {
                 actor.TakeDamage(damage, 1f);

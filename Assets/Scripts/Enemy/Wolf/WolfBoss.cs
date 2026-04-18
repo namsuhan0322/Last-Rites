@@ -1125,7 +1125,7 @@ public class WolfBoss : Enemy
     {
         jumpIndicator.SetActive(true);
 
-        float diameter = jumpAttackRange * 2f * jumpIndicatorScaleMultiplier;
+        float diameter = jumpAttackRange * 1.9f * jumpIndicatorScaleMultiplier;
 
         jumpIndicator.transform.localScale = Vector3.one * diameter;
 

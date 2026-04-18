@@ -14,13 +14,23 @@ public class UICooldown : MonoBehaviour
     [SerializeField] private Image _RSkillImage;
     [SerializeField] private Image _VSkillImage;
     [SerializeField] private Image _PotionImage;
+    [SerializeField] private Image _RollImage;
+
+    [SerializeField] private GameObject _rollBg;
 
     [Header("아이템 텍스트")]
     [SerializeField] private TextMeshProUGUI _potionCountText;
+    [SerializeField] private TextMeshProUGUI _rollCoolTimeText;
 
     [Header("쿨타임 색상 설정")]
     [SerializeField] private Color _normalCooldownColor = new Color(0f, 0f, 0f, 0.7f);
     [SerializeField] private Color _emptyPotionColor = new Color(1f, 0f, 0f, 0.5f);
+
+    private void Start()
+    {
+        if (_rollBg != null) 
+            _rollBg.SetActive(false);
+    }
 
     private void Update()
     {
@@ -41,6 +51,21 @@ public class UICooldown : MonoBehaviour
         }
 
         UpdateSkillUI(_PotionImage, Player.Potion_Timer, Player.potionCooldown);
+
+        if (Player.DashTimer > 0f)
+        {
+            if (!_rollBg.activeSelf) _rollBg.SetActive(true);
+            UpdateSkillUI(_RollImage, Player.DashTimer, Player.dashCooldown);
+
+            if (_rollCoolTimeText != null)
+            {
+                _rollCoolTimeText.text = $"{Mathf.CeilToInt(Player.DashTimer)}s";
+            }
+        }
+        else
+        {
+            if (_rollBg.activeSelf) _rollBg.SetActive(false);
+        }
 
         if (_potionCountText != null && _PotionImage != null)
         {

@@ -43,8 +43,9 @@ public class PlayerController : MonoBehaviour
 
     [Header("이동 및 회피")]
     [Tooltip("회피 후 다음 회피를 할 수 있을 때까지의 최소 지연 시간")]
-    public float dashCooldown = 0.2f;
+    public float dashCooldown = 10f;
     private float _dashTimer = 0f;
+    public float DashTimer => _dashTimer;
     [Tooltip("회피 후 평타 공격을 할 수 있을 때까지의 지연 시간")]
     public float postRollAttackDelay = 0.3f;
     [HideInInspector] public float postRollAttackTimer = 0f;
@@ -403,17 +404,10 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            if (Stats.CurrentStamina >= Stats.DashCost)
+            if (_dashTimer <= 0)
             {
-                if (_dashTimer <= 0)
-                {
-                    StateMachine.ChangeState(RollState);
-                    return true;
-                }
-                else
-                {
-                    Debug.Log($"<color=orange>[회피 불가] 쿨타임 중입니다! 남은 시간: {_dashTimer:F2}초</color>");
-                }
+                StateMachine.ChangeState(RollState);
+                return true;
             }
         }
 

@@ -183,7 +183,7 @@ public class Actor : MonoBehaviour
     public virtual void TakePoiseDamage(float amount)
     {
         _currentPoise -= amount;
-        Debug.Log($"[강인도] {_currentPoise} / {_maxPoise}");
+        //Debug.Log($"[강인도] {_currentPoise} / {_maxPoise}");
 
         if (_currentPoise <= 0)
         {

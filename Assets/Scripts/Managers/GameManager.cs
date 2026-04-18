@@ -204,6 +204,7 @@ public class GameManager : SingletonMono<GameManager>
 
     #endregion
 
+    #region 리스폰 관련
     private IEnumerator RespawnRoutine()
     {
         yield return new WaitForSecondsRealtime(respawnDelay);
@@ -232,6 +233,7 @@ public class GameManager : SingletonMono<GameManager>
 
             ResetAllEnemies();
             ResetAllBossRooms();
+            ResetAllFractures();
             ChangeGameState(GameState.Playing);
         }
 
@@ -269,6 +271,18 @@ public class GameManager : SingletonMono<GameManager>
             trigger.ResetRoom();
         }
     }
+
+    private void ResetAllFractures()
+    {
+        FractureThis[] fractures = FindObjectsByType<FractureThis>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+        foreach (var f in fractures)
+        {
+            f.ResetFracture();
+        }
+    }
+
+    #endregion
 
     #region Score & Stats Management
 

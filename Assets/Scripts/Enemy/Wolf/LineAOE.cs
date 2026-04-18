@@ -38,8 +38,6 @@ public class LineAOE : MonoBehaviour
     {
         float timer = 0f;
 
-        Vector3 halfExtents = new Vector3(width * 0.5f, 1f, length * 0.5f);
-
         while (timer < lifeTime)
         {
             timer += Time.deltaTime;
@@ -68,33 +66,35 @@ public class LineAOE : MonoBehaviour
             Destroy(vfx, 2f);
         }
 
-        Collider[] hits = Physics.OverlapBox(
-      transform.position,
-      new Vector3(width * 0.5f, 1f, length * 0.5f),
-      transform.rotation,
-      targetLayer
-  );
-        foreach (var hit in hits)
+        Vector3 center = transform.position + transform.forward * (length * 0.5f);
+
+        Actor[] actors = FindObjectsByType<Actor>(FindObjectsSortMode.None);
+
+        foreach (var actor in actors)
         {
-            Actor actor = hit.GetComponent<Actor>();
             if (actor == null || actor.IsDead) continue;
 
-            actor.TakeDamage(damage, 1f);
+            if (((1 << actor.gameObject.layer) & targetLayer) == 0) continue;
+
+            Vector3 checkPos = actor.transform.position;
+
+
+            Vector3 localPos = transform.InverseTransformPoint(checkPos);
+            float hitWidth = width * 0.4f;
+
+            bool isInside =
+                Mathf.Abs(localPos.x) <= hitWidth &&
+                localPos.z >= 0f &&
+                localPos.z <= length;
+
+            Debug.DrawLine(transform.position, checkPos, isInside ? Color.green : Color.red, 2f);
+
+            if (isInside)
+            {
+                actor.TakeDamage(damage, 1f);
+            }
         }
 
         Destroy(gameObject);
-    }
-
-    Vector3 GetRandomPointInBox()
-    {
-        Vector3 right = transform.right.normalized;
-        Vector3 forward = transform.forward.normalized;
-
-        float randX = Random.Range(-width * 0.5f, width * 0.5f);
-        float randZ = Random.Range(-length * 0.5f, length * 0.5f);
-
-        return transform.position
-             + right * randX
-             + forward * randZ;
     }
 }

@@ -1270,8 +1270,6 @@ public class WolfBoss : Enemy
                     {
                         f.FractureAndDestroy();
 
-                        // 만약 f.gameObject가 hit.gameObject와 다르다면 (부모-자식 관계라면)
-                        // hit 오브젝트도 같이 꺼줘야 확실합니다.
                         if (f.gameObject != hit.gameObject)
                         {
                             hit.gameObject.SetActive(false);

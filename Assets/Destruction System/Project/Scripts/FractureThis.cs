@@ -1,75 +1,57 @@
 using UnityEngine;
-using Random = System.Random;
+using Project.Scripts.Fractures;
 
-namespace Project.Scripts.Fractures
+public class FractureThis : MonoBehaviour
 {
-    public class FractureThis : MonoBehaviour
+    [Header("오브젝트 스와핑 세팅")]
+    [Tooltip("멀쩡한 상태의 원본 메쉬 (자기 자신의 MeshRenderer를 넣어도 됩니다)")]
+    public GameObject originalModel;
+
+    [Tooltip("미리 부셔둔 파편들이 모여있는 최상위 부모 객체 (Fracture)")]
+    public GameObject fractureRoot;
+
+    private void Start()
     {
-        [SerializeField] private Anchor anchor = Anchor.Bottom;
-        [SerializeField] private int chunks = 500;
-        [SerializeField] private float density = 50;
-        [SerializeField] private float internalStrength = 100;
-            
-        [SerializeField] private Material insideMaterial;
-        [SerializeField] private Material outsideMaterial;
+        // 1. 게임 시작 시: 부서진 파편들은 숨기고, 원본만 보여줍니다.
+        if (fractureRoot != null)
+            fractureRoot.SetActive(false);
 
-        private Random rng = new Random();
+        // 변수가 비어있다면 자기 자신(원본 바위)을 할당합니다.
+        if (originalModel == null)
+            originalModel = gameObject;
+    }
 
-        private void Start()
+    // WolfBoss.cs의 돌진 패턴에서 타격 시 이 함수를 호출합니다.
+    public void FractureAndDestroy()
+    {
+        // 2. 원본 돌멩이 숨기기 (렌더러와 콜라이더만 끕니다)
+        if (originalModel != null)
         {
-            //FractureGameobject();
-            //gameObject.SetActive(false);
+            MeshRenderer mr = originalModel.GetComponent<MeshRenderer>();
+            if (mr) mr.enabled = false;
+
+            Collider col = originalModel.GetComponent<Collider>();
+            if (col) col.enabled = false;
         }
 
-        public ChunkGraphManager FractureGameobject()
+        // 3. 숨겨뒀던 부서진 파편들 등장!
+        if (fractureRoot != null)
         {
-            var seed = rng.Next();
-            return Fracture.FractureGameObject(
-                gameObject,
-                anchor,
-                seed,
-                chunks,
-                insideMaterial,
-                outsideMaterial,
-                internalStrength,
-                density
-            );
-        }
+            fractureRoot.SetActive(true);
 
-        public void FractureAndDestroy()
-        {
-            Debug.Log($"{gameObject.name} 파괴 시퀀스 시작");
-
-            // 1. 파괴 실행
-            var graphManager = FractureGameobject();
-
-            // 2. 원본을 즉시 완전히 숨기고 물리 연산에서 제외
-            if (TryGetComponent<MeshRenderer>(out var mr)) mr.enabled = false;
-            if (TryGetComponent<Collider>(out var col)) col.enabled = false;
-
-            gameObject.SetActive(false);
-
-            if (graphManager != null)
+            // 팁: 켜지자마자 파편들이 자연스럽게 무너지게 하려면
+            // 보스가 부딪힌 방향으로 파편의 조인트(FixedJoint)에 물리적 충격을 주면 더 멋집니다.
+            foreach (Transform chunk in fractureRoot.transform)
             {
-                int debrisLayer = LayerMask.NameToLayer("Debris");
+                Rigidbody rb = chunk.GetComponent<Rigidbody>();
+                ChunkNode node = chunk.GetComponent<ChunkNode>();
 
-                foreach (Transform child in graphManager.transform)
+                if (rb != null && node != null && !node.IsStatic)
                 {
-                    if (debrisLayer != -1)
-                    {
-                        child.gameObject.layer = debrisLayer;
-                    }
-
-                    if (child.TryGetComponent<Rigidbody>(out var rb))
-                    {
-
-                        rb.AddExplosionForce(500f, transform.position, 5f);
-                    }
-
-                    Destroy(child.gameObject, 5f);
+                    // 파편들을 강제로 속박 해제하고 살짝 바깥으로 튕겨나가게 폭발력 추가
+                    node.Unfreeze();
+                    rb.AddExplosionForce(500f, transform.position, 5f);
                 }
-
-                Destroy(graphManager.gameObject, 6f);
             }
         }
     }

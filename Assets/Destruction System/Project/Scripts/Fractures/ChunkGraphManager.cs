@@ -10,6 +10,15 @@ namespace Project.Scripts.Fractures
     {
         private ChunkNode[] nodes;
 
+        private void Awake()
+        {
+            if (nodes == null || nodes.Length == 0)
+            {
+                Rigidbody[] bodies = GetComponentsInChildren<Rigidbody>();
+                Setup(bodies);
+            }
+        }
+
         public void Setup(Rigidbody[] bodies)
         {
             nodes = new ChunkNode[bodies.Length];
@@ -27,32 +36,34 @@ namespace Project.Scripts.Fractures
                 }
             }
         }
-        
+
         private void FixedUpdate()
         {
+            if (nodes == null || nodes.Length == 0) return;
+
             var runSearch = false;
             foreach (var brokenNodes in nodes.Where(n => n.HasBrokenLinks))
             {
                 brokenNodes.CleanBrokenLinks();
                 runSearch = true;
             }
-            
-            if(runSearch)
+
+            if (runSearch)
                 SearchGraph(nodes);
         }
 
         private Color[] colors =
         {
-            Color.blue, 
-            Color.green, 
-            Color.magenta, 
+            Color.blue,
+            Color.green,
+            Color.magenta,
             Color.yellow
         };
-        
+
         public void SearchGraph(ChunkNode[] objects)
         {
             var anchors = objects.Where(o => o.IsStatic).ToList();
-                
+
             ISet<ChunkNode> search = new HashSet<ChunkNode>(objects);
             var index = 0;
             foreach (var o in anchors)

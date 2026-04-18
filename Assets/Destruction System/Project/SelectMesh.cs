@@ -27,12 +27,10 @@ namespace Project
             {
                 if (Input.GetKeyDown(keyCode))
                 {
-                    foreach (var chunkGraphManager in FindObjectsOfType<ChunkGraphManager>())
+                    if (fractureThis != null)
                     {
-                        DestroyImmediate(chunkGraphManager.gameObject);
+                        fractureThis.FractureAndDestroy();
                     }
-
-                    fractureThis.FractureGameobject();
                 }
             }
         }

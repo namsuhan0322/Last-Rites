@@ -74,6 +74,9 @@ public class WolfBoss : Enemy
     [Tooltip("불독 터지기 대기시간")]
     public float throwWarningTime = 1.5f;
     public GameObject throwIndicatorPrefab;
+    public float poisonOuterRadius = 12f;
+
+
 
     [Header("1페이지 점프 공격")]
     [Tooltip("점프공격범위")]
@@ -238,6 +241,9 @@ public class WolfBoss : Enemy
     bool hasUsedJump70 = false;
     bool hasUsedJump50 = false;
     float lineTimer = 0f;
+    bool isInsideBigCircle;
+    bool isInsideSafeCircle;
+
 
     int[] pattern = new int[] { 3, 4, 3, 4 };
     int patternIndex = 0;
@@ -722,57 +728,91 @@ public class WolfBoss : Enemy
     //독 장판
     IEnumerator PoisonExplosion(Vector3 pos)
     {
-        float radius = 5f;
-
         poisonZones.Add(pos);
 
-        GameObject indicator = Instantiate(throwIndicatorPrefab, pos, Quaternion.Euler(-90f, 0f, 0f));
-        indicator.transform.localScale = Vector3.zero;
+        GameObject bigIndicator = Instantiate(throwIndicatorPrefab, pos, Quaternion.Euler(-90, 0, 0));
+        bigIndicator.transform.localScale = Vector3.one * poisonOuterRadius * 2f;
 
-        SetIndicatorColor(indicator, Color.green);
+        bigIndicator.transform.position += Vector3.up * 0.01f;
 
-        StartCoroutine(GrowIndicator(indicator, radius, throwWarningTime));
+        SetIndicatorColor(bigIndicator, Color.green);
+        Destroy(bigIndicator, throwWarningTime);
+
+        GameObject safeIndicator = Instantiate(throwIndicatorPrefab, pos, Quaternion.Euler(-90, 0, 0));
+        safeIndicator.transform.localScale = Vector3.one * 4f * 2f; 
+
+        var mat = safeIndicator.GetComponent<Renderer>().material;
+        mat.renderQueue = 3100;
+
+        safeIndicator.transform.position += Vector3.up * 0.08f;
+
+        SetIndicatorColor(safeIndicator, Color.white);
+        Destroy(safeIndicator, throwWarningTime);
 
         yield return new WaitForSeconds(throwWarningTime);
 
-        if (indicator != null)
-            Destroy(indicator);
 
-        GameObject vfx = Instantiate(poisonVFX, pos, Quaternion.identity);
-        Destroy(vfx, 2f);
+        int vfxCount = 15;
+
+        for (int i = 0; i < vfxCount; i++)
+        {
+            Vector3 randomPos = GetRandomPointInDonut(pos, 4f, poisonOuterRadius);
+
+            GameObject vfx = Instantiate(poisonVFX, randomPos, Quaternion.identity);
+            Destroy(vfx, 2f);
+        }
+
 
         activeProjectiles--;
+    }
+
+    Vector3 GetRandomPointInDonut(Vector3 center, float innerRadius, float outerRadius)
+    {
+        float angle = Random.Range(0f, 360f);
+        float dist = Random.Range(innerRadius, outerRadius);
+
+        Vector3 dir = Quaternion.Euler(0, angle, 0) * Vector3.forward;
+        Vector3 pos = center + dir * dist;
+
+        pos.y = 0.05f;
+
+        return pos;
     }
 
     //독 장판 데미지 주기
     void ApplyPoisonDamage()
     {
-        float radius = 5f;
+        float safeRadius = 4f;
 
-        foreach (var actor in FindObjectsByType<Actor>(FindObjectsSortMode.None))
+        foreach (var zone in poisonZones)
         {
-            if (actor == null || actor.IsDead) continue;
+            Collider[] hits = Physics.OverlapSphere(zone, poisonOuterRadius, targetLayer);
 
-            bool isSafe = false;
-
-            foreach (var zone in poisonZones)
+            foreach (var hit in hits)
             {
-                float dist = Vector3.Distance(actor.transform.position, zone);
+                Actor actor = hit.GetComponent<Actor>();
+                if (actor == null || actor.IsDead) continue;
 
-                if (dist <= radius)
+                bool isInsideSafeCircle = false;
+
+                foreach (var safeZone in poisonZones)
                 {
-                    isSafe = true;
-                    break;
+                    float safeDist = Vector3.Distance(actor.transform.position, safeZone);
+
+                    if (safeDist <= safeRadius)
+                    {
+                        isInsideSafeCircle = true;
+                        break;
+                    }
                 }
-            }
 
-            if (!isSafe)
-            {
-                if (hitActors.Contains(actor)) continue;
+                if (!isInsideSafeCircle)
+                {
+                    if (hitActors.Contains(actor)) continue;
 
-                hitActors.Add(actor);
-
-                actor.TakeDamage(poisonDamage, 1f);
+                    hitActors.Add(actor);
+                    actor.TakeDamage(poisonDamage, 1f);
+                }
             }
         }
     }
@@ -1370,6 +1410,8 @@ public class WolfBoss : Enemy
         animator.SetTrigger("GetUp");
 
         yield return new WaitForSecondsRealtime(getUpTime);
+
+        yield return new WaitForSeconds(2f);
 
         animator.speed = 1f;
         isAttacking = false;

@@ -132,13 +132,13 @@ public class Enemy : Actor
         if (isStunned) { stunTimer -= Time.deltaTime;
         if (stunTimer <= 0f) EndStun();  return; } 
         if (isAttacking || IsRecovering()) return;
-        HandleForcedTarget();
-        HandleMovement(); 
-        TryAttack(); 
         if (agent.velocity.magnitude < 0.1f) { animator?.SetBool("Walk", false); animator?.SetBool("Run", false); } 
         if (actionLockTimer > 0f) { actionLockTimer -= Time.deltaTime; return; } if (forcedTimer > 0) { 
         if (forcedTimer <= 0) forcedTarget = null; } 
-        if (Rank != EnemyRank.Boss && isHit) return; 
+        if (Rank != EnemyRank.Boss && isHit) return;
+        HandleForcedTarget();
+        HandleMovement();
+        TryAttack();
     }
 
     //도발 걸린 상태

@@ -243,6 +243,7 @@ public class WolfBoss : Enemy
     float lineTimer = 0f;
     bool isInsideBigCircle;
     bool isInsideSafeCircle;
+    bool isUsingSkill = false;
 
 
     int[] pattern = new int[] { 3, 4, 3, 4 };
@@ -409,6 +410,7 @@ public class WolfBoss : Enemy
     //공격시도 (스킬 포함)
     protected override void TryAttack()
     {
+        if (isUsingSkill) return;
         if (isPhaseChanging || isComboAttacking || isStuned) return;
         if (currentTarget == null) return;
         if (!hasStartedCombat)
@@ -521,6 +523,8 @@ public class WolfBoss : Enemy
     //기본 콤보
     IEnumerator ComboAttack()
     {
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
         if (isPhaseChanging) yield break;
 
         isAttacking = true;
@@ -571,13 +575,15 @@ public class WolfBoss : Enemy
 
         isComboAttacking = false;
         EndAttack();
-
+        isUsingSkill = false;
         attackTimer = attackCooldown;
     }
 
     //불독 스킬 
     IEnumerator ThrowPattern()
     {
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
         if (isPhaseChanging) yield break;
 
         hitActors.Clear(); 
@@ -615,7 +621,7 @@ public class WolfBoss : Enemy
         isComboAttacking = false;
 
         EndAttack();
-
+        isUsingSkill = false;
         agent.isStopped = false;
         agent.updateRotation = true;
     }
@@ -850,6 +856,8 @@ public class WolfBoss : Enemy
     //오른쪽 할퀴기
     IEnumerator Slash()
     {
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
         if (isPhaseChanging) yield break;
 
         isAttacking = true;
@@ -927,7 +935,7 @@ public class WolfBoss : Enemy
         ResetAnimSpeed();
 
         EndAttack();
-
+        isUsingSkill = false;
         agent.isStopped = false;
         agent.updateRotation = true;
     }
@@ -990,6 +998,8 @@ public class WolfBoss : Enemy
     //점프 어택
     IEnumerator JumpAttack()
     {
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
         if (isPhaseChanging) yield break;
 
         isLocked = false;
@@ -1154,7 +1164,7 @@ public class WolfBoss : Enemy
 
         isComboAttacking = false;
         EndAttack();
-
+        isUsingSkill = false;
         attackTimer = attackCooldown;
 
         agent.isStopped = false;
@@ -1189,6 +1199,8 @@ public class WolfBoss : Enemy
     //돌진 
     IEnumerator Charge()
     {
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
         if (isPhaseChanging) yield break;
         isAttacking = true;
         isComboAttacking = true;
@@ -1332,7 +1344,7 @@ public class WolfBoss : Enemy
         isCharging = false;
         isComboAttacking = false;
         EndAttack();
-
+        isUsingSkill = false;
         agent.isStopped = false;
         agent.updateRotation = true;
     }
@@ -1444,6 +1456,8 @@ public class WolfBoss : Enemy
     //회오리 스킬
     IEnumerator TornadoSkill()
     {
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
         if (isPhaseChanging) yield break;
 
         isAttacking = true;
@@ -1488,7 +1502,7 @@ public class WolfBoss : Enemy
         EndAttack();
 
         tornadoTimer = tornadoCooldown;
-
+        isUsingSkill = false;
         agent.isStopped = false;
         agent.updateRotation = true;
     }
@@ -1559,7 +1573,8 @@ public class WolfBoss : Enemy
     //휘두르기
     IEnumerator SpinAttack()
     {
-
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
         if (isPhaseChanging) yield break;
         isAttacking = true;
         isComboAttacking = true;
@@ -1583,7 +1598,7 @@ public class WolfBoss : Enemy
 
         isComboAttacking = false;
         EndAttack();
-
+        isUsingSkill = false;
         agent.isStopped = false;
         agent.updateRotation = true;
     }
@@ -1624,6 +1639,8 @@ public class WolfBoss : Enemy
     //암흑 공 샷
     IEnumerator DarkShot()
     {
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
         if (isPhaseChanging) yield break;
 
         isAttacking = true;
@@ -1658,7 +1675,7 @@ public class WolfBoss : Enemy
 
         isComboAttacking = false;
         EndAttack();
-
+        isUsingSkill = false;
         agent.isStopped = false;
         agent.updateRotation = true;
     }
@@ -1692,6 +1709,8 @@ public class WolfBoss : Enemy
     //내려찍기 공격
     IEnumerator StompAttack()
     {
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
         if (isPhaseChanging) yield break;
 
         isAttacking = true;
@@ -1733,7 +1752,7 @@ public class WolfBoss : Enemy
         attackTimer = attackCooldown;
 
         EndAttack();
-
+        isUsingSkill = false;
         agent.isStopped = false;
         agent.updateRotation = true;
 
@@ -1792,6 +1811,8 @@ public class WolfBoss : Enemy
     //양팔 - 내려찍기 - 똥 패턴
     IEnumerator SlamExplosionPattern()
     {
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
         if (isPhaseChanging) yield break;
 
         isAttacking = true;
@@ -1829,7 +1850,7 @@ public class WolfBoss : Enemy
 
         isComboAttacking = false;
         EndAttack();
-
+        isUsingSkill = false;
         agent.isStopped = false;
         agent.updateRotation = true;
     }
@@ -1991,6 +2012,8 @@ public class WolfBoss : Enemy
     //그 삼각형 콤보
     IEnumerator SmashCombo()
     {
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
         isAttacking = true;
         isComboAttacking = true;
 
@@ -2018,7 +2041,7 @@ public class WolfBoss : Enemy
         attackTimer = attackCooldown;
         isComboAttacking = false;
         EndAttack();
-
+        isUsingSkill = false;
         agent.isStopped = false;
         agent.updateRotation = true;
     }
@@ -2100,6 +2123,8 @@ public class WolfBoss : Enemy
     //능지 패턴
     IEnumerator LinePatternAttack()
     {
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
         if (isPhaseChanging) yield break;
 
         isAttacking = true;
@@ -2141,7 +2166,7 @@ public class WolfBoss : Enemy
         isComboAttacking = false;
 
         EndAttack();
-
+        isUsingSkill = false;
         agent.isStopped = false;
         agent.updateRotation = true;
     }

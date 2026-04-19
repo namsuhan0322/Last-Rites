@@ -1,18 +1,18 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 
 public class MouseOutlineManager : MonoBehaviour
 {
-    [Header("Àû ¾Æ¿ô¶óÀÎ ¼³Á¤")]
+    [Header("ì  ì•„ì›ƒë¼ì¸ ì„¤ì •")]
     public LayerMask EnemyLayer;
     public string EnemyOutlineLayerName = "Outline";
 
-    [Header("ÆÄ±« ±â¹Í ¾Æ¿ô¶óÀÎ ¼³Á¤")]
-    public LayerMask BreakableLayer;
-    public string BreakableOutlineLayerName = "Outline_Breakable";
+    [Header("ìƒì /ì •ë¹„ì†Œ(ìƒí˜¸ì‘ìš©) ì•„ì›ƒë¼ì¸ ì„¤ì •")]
+    public LayerMask InteractableLayer;
+    public string InteractableOutlineLayerName = "Outline_Interactable";
 
     private int _enemyOutlineIndex;
-    private int _breakableOutlineIndex;
+    private int _interactableOutlineIndex;
     private int _combinedLayerMask;
 
     private GameObject _currentTarget;
@@ -21,15 +21,11 @@ public class MouseOutlineManager : MonoBehaviour
     private void Start()
     {
         _enemyOutlineIndex = LayerMask.NameToLayer(EnemyOutlineLayerName);
-        _breakableOutlineIndex = LayerMask.NameToLayer(BreakableOutlineLayerName);
+        _interactableOutlineIndex = LayerMask.NameToLayer(InteractableOutlineLayerName);
 
-        if (_enemyOutlineIndex == -1 || _breakableOutlineIndex == -1)
-        {
-            Debug.LogError("[°æ°í] ¾Æ¿ô¶óÀÎ Àü¿ë ·¹ÀÌ¾î ÀÌ¸§ÀÌ Á¤È®ÇÑÁö È®ÀÎÇØÁÖ¼¼¿ä!");
-            return;
-        }
+        if (_enemyOutlineIndex == -1 || _interactableOutlineIndex == -1) return;
 
-        _combinedLayerMask = EnemyLayer | BreakableLayer | (1 << _enemyOutlineIndex) | (1 << _breakableOutlineIndex);
+        _combinedLayerMask = EnemyLayer | InteractableLayer | (1 << _enemyOutlineIndex) | (1 << _interactableOutlineIndex);
     }
 
     void Update()
@@ -38,7 +34,7 @@ public class MouseOutlineManager : MonoBehaviour
 
         if (Physics.Raycast(ray, out RaycastHit hit, 100f, _combinedLayerMask))
         {
-            GameObject hitObject = hit.collider.transform.root.gameObject;
+            GameObject hitObject = FindSafeTargetRoot(hit.collider.gameObject);
 
             if (_currentTarget != hitObject)
             {
@@ -53,18 +49,43 @@ public class MouseOutlineManager : MonoBehaviour
         }
     }
 
+    private GameObject FindSafeTargetRoot(GameObject startObj)
+    {
+        Transform current = startObj.transform;
+        Transform safeRoot = current;
+
+        while (current.parent != null)
+        {
+            int parentLayer = current.parent.gameObject.layer;
+
+            bool isEnemy = (EnemyLayer.value & (1 << parentLayer)) != 0;
+            bool isInteractable = (InteractableLayer.value & (1 << parentLayer)) != 0;
+            bool isOutline = (parentLayer == _enemyOutlineIndex || parentLayer == _interactableOutlineIndex);
+
+            if (isEnemy || isInteractable || isOutline)
+            {
+                current = current.parent;
+                safeRoot = current;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        return safeRoot.gameObject;
+    }
+
     private void ApplyOutline(GameObject target)
     {
         _originalLayers.Clear();
         Renderer[] renderers = target.GetComponentsInChildren<Renderer>();
 
-        // ÇöÀç ¸¶¿ì½º°¡ ¿Ã¶ó°£ Å¸°ÙÀÌ Àû±ºÀÎÁö, ÆÄ±«¹°ÀÎÁö ÆÇ´ÜÇØ¼­ ¾Ë¸ÂÀº ¾Æ¿ô¶óÀÎ ·¹ÀÌ¾î¸¦ °í¸¨´Ï´Ù.
-        int targetOutlineIndex = _enemyOutlineIndex; // ±âº»°ªÀº Àû±º ¾Æ¿ô¶óÀÎ
+        int targetOutlineIndex = _enemyOutlineIndex;
 
-        // ´ë»óÀÇ ¿ø·¡ ·¹ÀÌ¾î°¡ ÆÄ±«¹° ·¹ÀÌ¾î¿¡ Æ÷ÇÔµÇ¾î ÀÖ°Å³ª, ÀÌ¹Ì ÆÄ±«¹° ¾Æ¿ô¶óÀÎ »óÅÂ¶ó¸é
-        if ((BreakableLayer.value & (1 << target.layer)) > 0 || target.layer == _breakableOutlineIndex)
+        if ((InteractableLayer.value & (1 << target.layer)) > 0 || target.layer == _interactableOutlineIndex)
         {
-            targetOutlineIndex = _breakableOutlineIndex;
+            targetOutlineIndex = _interactableOutlineIndex;
         }
 
         foreach (Renderer r in renderers)
@@ -72,7 +93,6 @@ public class MouseOutlineManager : MonoBehaviour
             if (r is ParticleSystemRenderer) continue;
             if (r.gameObject.layer == targetOutlineIndex) continue;
 
-            // ¿ø·¡ ·¹ÀÌ¾î ¹øÈ£ ÀúÀå ÈÄ ¾Æ¿ô¶óÀÎ ·¹ÀÌ¾î·Î º¯°æ
             _originalLayers.Add(r.gameObject, r.gameObject.layer);
             r.gameObject.layer = targetOutlineIndex;
         }

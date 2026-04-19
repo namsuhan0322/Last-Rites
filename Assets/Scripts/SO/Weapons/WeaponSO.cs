@@ -12,14 +12,19 @@ public class WeaponSO : ScriptableObject
     public int Combo_3;
     public int Q_Dmg;
     public float Q_Cool;
+    public int Q_Stamina;
     public int W_Dmg;
     public float W_Cool;
+    public int W_Stamina;
     public int E_Dmg;
     public float E_Cool;
+    public int E_Stamina;
     public float R_Val;
     public float R_Cool;
+    public int R_Stamina;
     public int V_Dmg;
     public float V_Cool;
+    public int V_Stamina;
 
     public BuffSkill_SO R_Skill_Logic;
     public AnimatorOverrideController weaponAnimator;

@@ -53,7 +53,7 @@ public class SkillTutorial : MonoBehaviour
         {
             PlayerController pc = FindFirstObjectByType<PlayerController>();
 
-            if (pc.TryUseSkill(KeyCode.Q, "Skill_Q", 20, 5f))
+            if (pc.TryUseSkill(KeyCode.Q, "Skill_Q", 20, 5f, 10))
             {
                 pc.Anim.SetTrigger("Skill_Q");
 

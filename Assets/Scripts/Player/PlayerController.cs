@@ -415,7 +415,7 @@ public class PlayerController : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Q))
             {
-                if (TryUseSkill(KeyCode.Q, "Skill_Q", CurrentWeapon.Q_Dmg, CurrentWeapon.Q_Cool))
+                if (TryUseSkill(KeyCode.Q, "Skill_Q", CurrentWeapon.Q_Dmg, CurrentWeapon.Q_Cool, CurrentWeapon.Q_Stamina))
                 {
                     StateMachine.ChangeState(SkillState);
 
@@ -426,22 +426,22 @@ public class PlayerController : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.W))
             {
-                if (TryUseSkill(KeyCode.W, "Skill_W", CurrentWeapon.W_Dmg, CurrentWeapon.W_Cool))
+                if (TryUseSkill(KeyCode.W, "Skill_W", CurrentWeapon.W_Dmg, CurrentWeapon.W_Cool, CurrentWeapon.W_Stamina))
                 { StateMachine.ChangeState(SkillState); return true; }
             }
             if (Input.GetKeyDown(KeyCode.E))
             {
-                if (TryUseSkill(KeyCode.E, "Skill_E", CurrentWeapon.E_Dmg, CurrentWeapon.E_Cool))
+                if (TryUseSkill(KeyCode.E, "Skill_E", CurrentWeapon.E_Dmg, CurrentWeapon.E_Cool, CurrentWeapon.E_Stamina))
                 { StateMachine.ChangeState(SkillState); return true; }
             }
             if (Input.GetKeyDown(KeyCode.R))
             {
-                if (TryUse_RSkill(KeyCode.R, "Skill_R", CurrentWeapon.R_Val, CurrentWeapon.R_Cool))
+                if (TryUse_RSkill(KeyCode.R, "Skill_R", CurrentWeapon.R_Val, CurrentWeapon.R_Cool, CurrentWeapon.R_Stamina))
                 { StateMachine.ChangeState(SkillState); return true; }
             }
             if (Input.GetKeyDown(KeyCode.V))
             {
-                if (TryUseSkill(KeyCode.V, "Skill_V", CurrentWeapon.V_Dmg, CurrentWeapon.V_Cool))
+                if (TryUseSkill(KeyCode.V, "Skill_V", CurrentWeapon.V_Dmg, CurrentWeapon.V_Cool, CurrentWeapon.V_Stamina))
                 { StateMachine.ChangeState(SkillState); return true; }
             }
         }
@@ -584,32 +584,37 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public bool TryUseSkill(KeyCode key, string animName, int damage, float maxCool)
+    public bool TryUseSkill(KeyCode key, string animName, int damage, float maxCool, int staminaCost)
     {
-        if (globalSkillTimer > 0f)
-        {
-            Debug.Log($"스킬 전환 딜레이 중입니다! ({globalSkillTimer:F1}초 남음)");
-            return false;
-        }
+        if (globalSkillTimer > 0f) return false;
+        if (Stats.CurrentStamina < staminaCost) return false;
 
         CurrentSkillAnim = animName;
         CurrentSkillDamage = damage;
 
         // 쿨타임이 다 돌았다면(0 이하라면) 스킬 사용 승인 및 쿨타임 초기화
+        bool canUse = false;
         switch (key)
         {
-            case KeyCode.Q: if (Q_Timer <= 0) { Q_Timer = maxCool; return true; } break;
-            case KeyCode.W: if (W_Timer <= 0) { W_Timer = maxCool; return true; } break;
-            case KeyCode.E: if (E_Timer <= 0) { E_Timer = maxCool; return true; } break;
-            case KeyCode.V: if (V_Timer <= 0) { V_Timer = maxCool; return true; } break;
+            case KeyCode.Q: if (Q_Timer <= 0) { Q_Timer = maxCool; canUse = true; } break;
+            case KeyCode.W: if (W_Timer <= 0) { W_Timer = maxCool; canUse = true; } break;
+            case KeyCode.E: if (E_Timer <= 0) { E_Timer = maxCool; canUse = true; } break;
+            case KeyCode.V: if (V_Timer <= 0) { V_Timer = maxCool; canUse = true; } break;
         }
 
-        Debug.Log($"{key} 스킬 쿨타임 중입니다!");
+        if (canUse)
+        {
+            Stats.UseStamina(staminaCost);
+            return true;
+        }
+
         return false;
     }
 
-    public bool TryUse_RSkill(KeyCode key, string animName, float val, float maxCool)
+    public bool TryUse_RSkill(KeyCode key, string animName, float val, float maxCool, int staminaCost)
     {
+        if (Stats.CurrentStamina < staminaCost) return false;
+
         CurrentSkillAnim = animName;
         CurrentSkillVal = val;
 
@@ -619,22 +624,15 @@ public class PlayerController : MonoBehaviour
                 if (R_Timer <= 0)
                 {
                     R_Timer = maxCool;
-
+                    Stats.UseStamina(staminaCost);
                     if (CurrentWeapon != null && CurrentWeapon.R_Skill_Logic != null)
                     {
                         CurrentWeapon.R_Skill_Logic.Execute(this, val);
                     }
-                    else
-                    {
-                        Debug.LogWarning("경고: 현재 무기에 R 스킬(BuffSkill_SO)이 할당되지 않았습니다!");
-                    }
-
                     return true;
                 }
                 break;
         }
-
-        Debug.Log($"{key} 스킬 쿨타임 중입니다!");
         return false;
     }
 

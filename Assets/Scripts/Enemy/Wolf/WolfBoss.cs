@@ -111,7 +111,6 @@ public class WolfBoss : Enemy
     [SerializeField] float tornadoSpeed = 3f;
     [Tooltip("토네이도 시간")]
     [SerializeField] float tornadoDuration = 5f;
-    [SerializeField] int tornadoDamage = 20;
     [SerializeField] float tornadoCooldown = 10f;
     [Tooltip("토네이도 당기는 범위")]
     [SerializeField] float tornadoPullRadius = 8f;
@@ -410,6 +409,7 @@ public class WolfBoss : Enemy
     //공격시도 (스킬 포함)
     protected override void TryAttack()
     {
+        if (attackTimer > 0f || isAttacking) return;
         if (isUsingSkill) return;
         if (isPhaseChanging || isComboAttacking || isStuned) return;
         if (currentTarget == null) return;
@@ -1201,7 +1201,11 @@ public class WolfBoss : Enemy
     {
         if (isUsingSkill) yield break;
         isUsingSkill = true;
-        if (isPhaseChanging) yield break;
+        if (isPhaseChanging)
+        {
+            isUsingSkill = false;
+            yield break;
+        }
         isAttacking = true;
         isComboAttacking = true;
         isCharging = true;
@@ -1223,6 +1227,7 @@ public class WolfBoss : Enemy
             {
                 chargeIndicator.SetActive(false);
                 EndAttack();
+                isUsingSkill = false;
                 yield break;
             }
 
@@ -1331,6 +1336,7 @@ public class WolfBoss : Enemy
                 }
 
                 StartCoroutine(StunRoutine());
+                isUsingSkill = false;
                 yield break;
             }
 
@@ -1377,7 +1383,6 @@ public class WolfBoss : Enemy
         isComboAttacking = false;
 
         EndAttack();
-
         agent.isStopped = false;
         agent.updateRotation = true;
 
@@ -1399,6 +1404,7 @@ public class WolfBoss : Enemy
     //스턴 후 부위파괴
     IEnumerator BreakRoutine()
     {
+        attackTimer = 999f;
         isStuned = false;
         isAttacking = true;
         isComboAttacking = false;
@@ -1422,16 +1428,13 @@ public class WolfBoss : Enemy
         animator.SetTrigger("GetUp");
 
         yield return new WaitForSecondsRealtime(getUpTime);
-
-        yield return new WaitForSeconds(2f);
-
+        attackTimer = 4f;
         animator.speed = 1f;
         isAttacking = false;
-
+        EndAttack();
         agent.isStopped = false;
         agent.updateRotation = true;
 
-        attackTimer = 2f;
     }
 
     //점프 데미지 주기

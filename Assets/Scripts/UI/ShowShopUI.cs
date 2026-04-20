@@ -24,21 +24,17 @@ public class ShowShopUI : MonoBehaviour
 
     private void Start()
     {
-        // 1. 초기 UI 및 프롬프트 숨기기
         if (shopUI != null) shopUI.SetActive(false);
         if (interactionPrompt != null) interactionPrompt.SetActive(false);
 
-        // 2. 아웃라인 레이어 인덱스 가져오기
         _outlineLayerIndex = LayerMask.NameToLayer(outlineLayerName);
         if (_outlineLayerIndex == -1)
         {
             Debug.LogError($"[경고] '{outlineLayerName}' 레이어가 존재하지 않습니다!");
         }
 
-        // 3. 타겟 오브젝트 지정 (비워뒀다면 자기 자신을 타겟으로 잡음)
         GameObject outlineTarget = targetOutlineObject != null ? targetOutlineObject : gameObject;
 
-        // 4. 타겟의 원래 머티리얼 레이어들을 미리 백업해둡니다.
         Renderer[] renderers = outlineTarget.GetComponentsInChildren<Renderer>();
         foreach (Renderer r in renderers)
         {

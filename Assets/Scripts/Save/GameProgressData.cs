@@ -13,6 +13,9 @@ public class GameProgressData
     public float respawnPosY;
     public float respawnPosZ;
 
+    [Header("장비 상태")]
+    public int equippedWeaponID;
+
     public GameProgressData()
     {
         isTutorialCleared = false;
@@ -22,5 +25,7 @@ public class GameProgressData
         respawnPosX = 0f;
         respawnPosY = 0f;
         respawnPosZ = 0f;
+
+        equippedWeaponID = 1;
     }
 }

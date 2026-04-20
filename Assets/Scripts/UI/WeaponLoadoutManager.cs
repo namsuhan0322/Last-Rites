@@ -18,12 +18,12 @@ public class WeaponLoadoutManager : MonoBehaviour
     public TextMeshProUGUI rightWeaponDesc;
 
     [Header("팝업 UI (교체 확인)")]
-    public GameObject popupPanel;             // Popup Panel 전체
-    public Image popupWeaponImage;            // 팝업 안의 무기 아이콘
-    public TextMeshProUGUI popupWeaponName;   // 팝업 안의 무기 이름
-    public TextMeshProUGUI popupWeaponDesc;   // 팝업 안의 안내 텍스트 (예: "이 무기로 교체하시겠습니까?")
-    public Button confirmBtn;                 // 수락 버튼
-    public Button cancelBtn;                  // 거절 버튼
+    public GameObject popupPanel;
+    public Image popupWeaponImage;
+    public TextMeshProUGUI popupWeaponName;
+    public TextMeshProUGUI popupWeaponDesc;
+    public Button confirmBtn;
+    public Button cancelBtn;
 
     private PlayerController _player;
     private ShopItemSlot _currentSelectedSlot;

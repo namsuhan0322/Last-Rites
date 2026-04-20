@@ -7,7 +7,6 @@ public class GameProgressManager : SingletonMono<GameProgressManager>
     [Header("Data")]
     public GameProgressData progressData { get; private set; }
 
-    // DataManager가 게임 시작 시 이 함수를 호출해 데이터를 주입해 줍니다.
     public void InitializeData(GameProgressData data)
     {
         progressData = data ?? new GameProgressData();
@@ -35,5 +34,12 @@ public class GameProgressManager : SingletonMono<GameProgressManager>
         progressData.respawnPosZ = position.z;
 
         DataManager.Instance.SaveAllData();
+    }
+
+    public void SaveEquippedWeapon(int weaponID)
+    {
+        progressData.equippedWeaponID = weaponID;
+        DataManager.Instance.SaveAllData();
+        Debug.Log($"[GameProgressManager] 무기 ID 저장 완료: {weaponID}");
     }
 }

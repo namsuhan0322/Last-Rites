@@ -9,11 +9,13 @@ public class InventoryManager : SingletonMono<InventoryManager>
     protected override void Awake()
     {
         base.Awake();
-        holder = GetComponent<InventoryHolder>();
+        if (holder == null) holder = GetComponent<InventoryHolder>();
     }
 
     public void InitializeData(InventoryData loadedData)
     {
+        if (holder == null) holder = GetComponent<InventoryHolder>();
+
         holder.InitializeData(loadedData);
         Debug.Log("[InventoryManager] 인벤토리 데이터 초기화 완료");
     }
@@ -41,13 +43,21 @@ public class InventoryManager : SingletonMono<InventoryManager>
         }
     }
 
-    // 인벤토리 변경사항 저장 트리거
+    public void SaveEquippedWeapon(int weaponID)
+    {
+        if (holder != null && holder.CurrentData != null)
+        {
+            holder.CurrentData.equippedWeaponID = weaponID;
+            SaveGame();
+            Debug.Log($"[InventoryManager] 무기 ID 저장 완료: {weaponID}");
+        }
+    }
+
     public void SaveGame()
     {
         DataManager.Instance.SaveAllData();
     }
 
-    // 필요 시 외부에서 데이터를 읽기만 할 때 제공하는 Getter
     public InventoryData GetCurrentData()
     {
         return holder.CurrentData;

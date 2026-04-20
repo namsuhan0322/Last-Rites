@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: "13_\uBB18\uBE44\uC758 \uC410\uAE30"
   m_EditorClassIdentifier: 
   WeaponID: 13
-  name: "\uBB18\uBE44\uC758 \uC410\uAE30"
+  name: "\uD3F4\uC554"
   weaponType: 3
   Atk_Spd: 1.2
   Combo_1: 9
@@ -21,13 +21,27 @@ MonoBehaviour:
   Combo_3: 12
   Q_Dmg: 25
   Q_Cool: 6
+  Q_Stamina: 0
   W_Dmg: 30
   W_Cool: 9
+  W_Stamina: 0
   E_Dmg: 20
   E_Cool: 10
+  E_Stamina: 0
   R_Val: 2.5
   R_Cool: 12
+  R_Stamina: 0
   V_Dmg: 130
   V_Cool: 110
+  V_Stamina: 0
+  weaponIcon: {fileID: 21300000, guid: f3999869285865f4c8ba6304e873ded9, type: 3}
+  description: "\uC801\uC758 \uADFC\uC811 \uC0AC\uAC70\uB9AC \uBC16\uC5D0\uC11C \uC548\uC804\uD558\uACE0
+    \uC815\uAD50\uD558\uAC8C \uC57D\uC810\uC744 \uD0C0\uACA9\uD560 \uC218 \uC788\uB294
+    \uAE34 \uC790\uB8E8 \uBB34\uAE30\uC785\uB2C8\uB2E4.\n\uCC3D\uB05D\uC758 \uD55C
+    \uC810\uC5D0 \uD798\uC744 \uBAA8\uC544 \uCC0C\uB974\uB294 \uACF5\uACA9\uC740
+    \uB2E8\uB2E8\uD55C \uC678\uAC11\uC744 \uB450\uB978 \uB808\uC774\uB4DC \uBCF4\uC2A4\uC758
+    \uBC29\uC5B4\uB825\uC744 \uAD00\uD1B5\uD558\uC5EC \uBF08\uC544\uD508 \uC2E4\uC9C8
+    \uD53C\uD574\uB97C \uC785\uD788\uB294 \uB370 \uD0C1\uC6D4\uD55C \uC704\uB825\uC744
+    \uBC1C\uD718\uD569\uB2C8\uB2E4."
   R_Skill_Logic: {fileID: 11400000, guid: 47441336deaa0e24582bd56a696e916f, type: 2}
   weaponAnimator: {fileID: 22100000, guid: 88d0f957d05fa6745a41dfd3dc491ccb, type: 2}

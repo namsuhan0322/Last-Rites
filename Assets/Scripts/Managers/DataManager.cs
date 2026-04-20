@@ -16,12 +16,12 @@ public class DataManager : SingletonMono<DataManager>
         saveFilePath = Path.Combine(Application.persistentDataPath, "LastRites_SaveData.json");
 
         LoadAllData();
-    }
 
-    private void Start()
-    {
-        GameProgressManager.Instance.InitializeData(CurrentGameData.progressData);
-        InventoryManager.Instance.InitializeData(CurrentGameData.inventoryData);
+        if (GameProgressManager.Instance != null)
+            GameProgressManager.Instance.InitializeData(CurrentGameData.progressData);
+
+        if (InventoryManager.Instance != null)
+            InventoryManager.Instance.InitializeData(CurrentGameData.inventoryData);
     }
 
     public void SaveAllData()

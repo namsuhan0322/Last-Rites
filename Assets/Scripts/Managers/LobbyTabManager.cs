@@ -23,9 +23,13 @@ public class LobbyTabManager : MonoBehaviour
     public Color activeColor = Color.white;
     public Color inactiveColor = new Color(0.6f, 0.6f, 0.6f, 1f);
 
-    void Start()
+    void Awake()
     {
         InitializeTabs();
+    }
+
+    void OnEnable()
+    {
         SelectTab(defaultTabIndex);
     }
 
@@ -53,13 +57,11 @@ public class LobbyTabManager : MonoBehaviour
                 btn.transition = Selectable.Transition.None;
             }
 
-            // 버튼 클릭 시 SelectTab 함수 호출하도록 연결
             btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => SelectTab(index));
         }
     }
 
-    // 탭 선택 함수
     public void SelectTab(int index)
     {
         for (int i = 0; i < tabs.Count; i++)

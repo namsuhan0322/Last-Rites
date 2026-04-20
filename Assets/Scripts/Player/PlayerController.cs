@@ -930,4 +930,31 @@ public class PlayerController : MonoBehaviour
     }
 
     #endregion
+
+    public void ChangeWeapon(WeaponSO newWeapon)
+    {
+        if (newWeapon == null || CurrentWeapon == newWeapon) return;
+
+        // 1. 데이터 교체
+        CurrentWeapon = newWeapon;
+
+        // 2. 콜라이더(히트박스) 재설정
+        if (Hitbox != null) Hitbox.SetupColliders(CurrentWeapon.weaponType);
+
+        // 3. 외형 스킨 재설정 (칼집에 넣은 상태로 초기화)
+        if (VisualManager != null) VisualManager.SetupVisuals(CurrentWeapon.weaponType);
+
+        // 4. 애니메이터 컨트롤러(모션) 재설정 및 초기화
+        if (CurrentWeapon.weaponAnimator != null)
+        {
+            Anim.runtimeAnimatorController = CurrentWeapon.weaponAnimator;
+            Anim.Rebind();
+            Anim.Update(0f);
+        }
+
+        // 5. 스킬 쿨타임 초기화 (무기가 바뀌었으므로)
+        Q_Timer = 0f; W_Timer = 0f; E_Timer = 0f; R_Timer = 0f; V_Timer = 0f;
+
+        Debug.Log($"<color=green>[무기 교체 완료] {CurrentWeapon.name} 장착!</color>");
+    }
 }

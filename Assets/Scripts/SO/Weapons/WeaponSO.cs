@@ -26,6 +26,9 @@ public class WeaponSO : ScriptableObject
     public float V_Cool;
     public int V_Stamina;
 
+    public Sprite weaponIcon;
+    [TextArea(3, 5)] public string description;
+
     public BuffSkill_SO R_Skill_Logic;
     public AnimatorOverrideController weaponAnimator;
 }

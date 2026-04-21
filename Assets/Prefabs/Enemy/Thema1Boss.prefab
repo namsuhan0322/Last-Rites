@@ -3921,6 +3921,8 @@ MonoBehaviour:
   chargeSpeed: 20
   chargeStartDelay: 0.5
   chargeLockTime: 3.5
+  firstChargeStunDuration: 4
+  secondChargeStunDuration: 7
   chargeIndicatorBaseLength: 4
   chargeIndicatorPrefab: {fileID: 5004172382952367341, guid: ce727b4aaaaa80343a7c9de5d5930749,
     type: 3}
@@ -4010,7 +4012,7 @@ MonoBehaviour:
     type: 3}
   enhancedChargeProjectilePrefab: {fileID: 4451188901321450200, guid: ff258ae1a0627a943b22063c5949c674,
     type: 3}
-  enhancedChargeSpeedNormal: 20
+  enhancedChargeSpeedNormal: 15
   enhancedChargeSpeedFast: 40
   lineCooldown: 10
   lineWarningTime: 2.5
@@ -5388,7 +5390,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a19957c2b3d81e143bdf15c3c44e410f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WeakPoint
-  _currentHP: 100
+  _currentHP: 300
   _maxPoise: 20
   _currentPoise: 0
   _poiseRecoveryRate: 0

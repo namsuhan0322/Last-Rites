@@ -100,10 +100,13 @@ public class WolfBoss : Enemy
     public float chargeDistance = 10f;
     [Tooltip("돌진속도")]
     public float chargeSpeed = 20f;
-    [Header("돌진 전 딜레이(후)")]
+    [Tooltip("돌진 하기 전 기다리는 시간")]
     [SerializeField] float chargeStartDelay = 0.5f;
-    [Tooltip("돌진하기전기다리는시간")]
     public float chargeLockTime = 2f;
+    [SerializeField] float firstChargeStunDuration = 2f;
+    [SerializeField] float secondChargeStunDuration = 5f;
+    [Tooltip("돌진 1차때 만약에 부셔졌다면 2차 돌진때")]
+    [SerializeField] float secondChargeBrokenSpeed = 12f;
     [SerializeField] float chargeIndicatorBaseLength = 7f;
     public GameObject chargeIndicatorPrefab;
 
@@ -289,6 +292,7 @@ public class WolfBoss : Enemy
     bool hasUsedEnhancedCharge20 = false;
     bool hasUsedLine25 = false;
     bool hasUsedLine10 = false;
+    int phase1ChargeCount = 0;
 
     int[] pattern = new int[] { 3, 4, 3, 4 };
     int patternIndex = 0;
@@ -1304,6 +1308,16 @@ public class WolfBoss : Enemy
         isComboAttacking = true;
         isCharging = true;
 
+        phase1ChargeCount++;
+
+        float currentChargeSpeed = chargeSpeed;
+
+        // 2번째 돌진이고, 1번째 돌진 때 부위가 이미 부서졌다면 느리게
+        if (phase1ChargeCount == 2 && isRightHandBroken)
+        {
+            currentChargeSpeed = secondChargeBrokenSpeed;
+        }
+
         agent.isStopped = true;
         agent.updateRotation = false;
         agent.velocity = Vector3.zero;
@@ -1375,7 +1389,7 @@ public class WolfBoss : Enemy
 
         while (moved < chargeDistance)
         {
-            float step = chargeSpeed * Time.deltaTime;
+            float step = currentChargeSpeed * Time.deltaTime;
 
             transform.position += finalDir * step;
             moved += step;
@@ -1429,10 +1443,12 @@ public class WolfBoss : Enemy
                     }
                 }
 
-                StartCoroutine(StunRoutine());
+                float currentStun = (phase1ChargeCount == 1) ? firstChargeStunDuration : secondChargeStunDuration;
+
+                StartCoroutine(StunRoutine(currentStun));
                 isUsingSkill = false;
                 yield break;
-            }
+            } 
 
             yield return null;
         }
@@ -1449,7 +1465,7 @@ public class WolfBoss : Enemy
         agent.updateRotation = true;
     }
     //스턴
-    IEnumerator StunRoutine()
+    IEnumerator StunRoutine(float duration)
     {
         isStuned = true;
         isAttacking = true;
@@ -1466,7 +1482,7 @@ public class WolfBoss : Enemy
         WeakPoint wp = RightHandPointCollider.GetComponent<WeakPoint>();
         wp.Init(RightHandPointHP, this);
 
-        yield return new WaitForSeconds(stunDuration);
+        yield return new WaitForSeconds(duration);
 
         RightHandPointCollider.SetActive(false);
 

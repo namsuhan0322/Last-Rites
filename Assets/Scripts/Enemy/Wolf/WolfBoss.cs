@@ -160,11 +160,16 @@ public class WolfBoss : Enemy
 
     [Header("2페이지 원형똥 할퀴기")]
     public int explosionDamage = 15;
+    [Tooltip("원형똥 터지는 범위")]
     public float explosionRadius = 8f;
     public GameObject circleIndicatorPrefab;
+    [Tooltip("쿨타임")]
     public float slamExplosionCooldown = 8f;
+    [Tooltip("터지는 타이머")]
     public float slamExplosionTimer = 0f;
+    [Tooltip("터지는 최소 딜레이")]
     public float minExplodeDelay = 1.2f;
+    [Tooltip("터지는 최대 딜레이")]
     public float maxExplodeDelay = 2.0f;
     public float indicatorBaseSize = 1f;
     public Transform leftHand;
@@ -174,32 +179,52 @@ public class WolfBoss : Enemy
     public GameObject trianglePrefab;
     public Transform trileftHand;
     public Transform trirightHand;
+    [Tooltip("손에서 나오는 삼각형 갯수")]
     public int triangleCountPerHand = 3;
+    [Tooltip("삼각형 길이")]
     public float triangleLength = 8f;
+    [Tooltip("삼각형 폭")]
     public  float triangleWidth = 2f;
+    [Tooltip("삼각형 공격 쿨타임")]
     public  float triCooldown = 20f;
     public  LayerMask groundLayer;
 
     [Header("2페이지 강화 돌진")]
-    [SerializeField] float enhancedChargeCooldown = 12f;
-    [SerializeField] int enhancedChargeDamage = 30;
-    [SerializeField] float enhancedChargeProjectileInterval = 0.25f;
-    [SerializeField] int enhancedChargeProjectileCount = 6;
-    [SerializeField] float enhancedChargeThrowRadius = 6f;
-    [SerializeField] float enhancedChargeProjectileDuration = 0.55f;
-    [SerializeField] float enhancedChargeExplosionRadius = 4f;
-    [SerializeField] int enhancedChargeExplosionDamage = 20;
-    [SerializeField] Transform upperBodyThrowPoint;   // 상체/입/등 쪽 포인트
-    [SerializeField] GameObject enhancedChargeReadyIndicator;
-    [SerializeField] GameObject enhancedChargeProjectilePrefab; // 불덩이
+    [Tooltip("강화 돌진 쿨타임")]
+    public float enhancedChargeCooldown = 12f;
+    [Tooltip("강화 돌진 데미지")]
+    public int enhancedChargeDamage = 30;
+    [Tooltip("강화 돌진 똥장판 몇초씩 나가는가?")]
+    public float enhancedChargeProjectileInterval = 0.25f;
+    [Tooltip("강화 돌진 똥장판 갯수")]
+    public int enhancedChargeProjectileCount = 6;
+    [Tooltip("강화 돌진 똥 던지는 범위")]
+    public float enhancedChargeThrowRadius = 6f;
+    [Tooltip("강화 돌진 시간")]
+    public float enhancedChargeProjectileDuration = 0.55f;
+    [Tooltip("강화 돌진 똥장판 터지는 범위")]
+    public float enhancedChargeExplosionRadius = 4f;
+    [Tooltip("강화 돌진 똥장판 데미지")]
+    public int enhancedChargeExplosionDamage = 20;
+    public Transform upperBodyThrowPoint;   
+    public GameObject enhancedChargeReadyIndicator;
+    public GameObject enhancedChargeProjectilePrefab;
+    [Tooltip("강화 돌진 부위파괴 성공시 속도")]
+    public float enhancedChargeSpeedNormal = 20f;
+    [Tooltip("강화 돌진 부위파괴 실패시 속도")]
+    public float enhancedChargeSpeedFast = 35f;
 
 
     [Header("능지패턴")]
-    [SerializeField] float lineCooldown = 10f;
-    [SerializeField] float lineWarningTime = 1f;
-    [SerializeField] float lineSpacing = 3f;
-    [SerializeField] float lineDelay = 0.5f;
-    [SerializeField] GameObject lineIndicatorPrefab;
+    [Tooltip("능지패턴 쿨타임")]
+    public float lineCooldown = 10f;
+    [Tooltip("능지패턴 라인 보여주는 시간")]
+    public float lineWarningTime = 1f;
+    [Tooltip("능지패턴 라인간격")]
+    public float lineSpacing = 3f;
+    [Tooltip("능지패턴 나오는 딜레이")]
+    public float lineDelay = 0.5f;
+    public GameObject lineIndicatorPrefab;
 
     [Header("Vfx")]
     public GameObject roarVFXPrefab;
@@ -213,6 +238,8 @@ public class WolfBoss : Enemy
     public GameObject clawDdongVFXPrefab;
     public GameObject fireVFX;
     public GameObject poisonVFX;
+
+
     //변수들
     float jumpTimer = 0f;
     GameObject jumpIndicator;
@@ -258,6 +285,10 @@ public class WolfBoss : Enemy
     bool isInsideSafeCircle;
     bool isUsingSkill = false;
     float enhancedChargeTimer = 0f;
+    bool hasUsedEnhancedCharge30 = false;
+    bool hasUsedEnhancedCharge20 = false;
+    bool hasUsedLine25 = false;
+    bool hasUsedLine10 = false;
 
     int[] pattern = new int[] { 3, 4, 3, 4 };
     int patternIndex = 0;
@@ -500,6 +531,40 @@ public class WolfBoss : Enemy
         {
             List<System.Action> patterns = new List<System.Action>();
 
+            float hpPercent = (float)_currentHP / _maxHP;
+
+            if (enhancedChargeTimer <= 0f)
+            {
+                if (!hasUsedEnhancedCharge30 && hpPercent <= 0.30f)
+                {
+                    hasUsedEnhancedCharge30 = true;
+                    StartCoroutine(EnhancedCharge());
+                    return;
+                }
+                else if (!hasUsedEnhancedCharge20 && hpPercent <= 0.20f)
+                {
+                    hasUsedEnhancedCharge20 = true;
+                    StartCoroutine(EnhancedCharge());
+                    return;
+                }
+            }
+
+            if (lineTimer <= 0f)
+            {
+                if (!hasUsedLine25 && hpPercent <= 0.25f)
+                {
+                    hasUsedLine25 = true;
+                    StartCoroutine(LinePatternAttack());
+                    return;
+                }
+                else if (!hasUsedLine10 && hpPercent <= 0.10f)
+                {
+                    hasUsedLine10 = true;
+                    StartCoroutine(LinePatternAttack());
+                    return;
+                }
+            }
+
             if (spinTimer <= 0f)
                 patterns.Add(() => StartCoroutine(SpinAttack()));
 
@@ -516,12 +581,6 @@ public class WolfBoss : Enemy
 
             if (triTimer <= 0f)
                 patterns.Add(() => StartCoroutine(SmashCombo()));
-
-            if (lineTimer <= 0f)
-                patterns.Add(() => StartCoroutine(LinePatternAttack()));
-
-            if (enhancedChargeTimer <= 0f)
-                patterns.Add(() => StartCoroutine(EnhancedCharge()));
 
             int index = Random.Range(0, patterns.Count);
             patterns[index].Invoke();
@@ -2307,7 +2366,11 @@ public class WolfBoss : Enemy
         agent.velocity = Vector3.zero;
         agent.ResetPath();
 
-        animator.SetTrigger("EnhancedChargeReady"); 
+        float currentEnhancedChargeSpeed = isRightHandBroken
+            ? enhancedChargeSpeedNormal
+            : enhancedChargeSpeedFast;
+
+        animator.SetTrigger("EnhancedChargeReady");
 
         chargeIndicator.SetActive(true);
 
@@ -2356,7 +2419,7 @@ public class WolfBoss : Enemy
 
         yield return new WaitForSeconds(chargeStartDelay);
 
-        animator.SetTrigger("EnhancedCharge"); 
+        animator.SetTrigger("EnhancedCharge");
 
         yield return new WaitForSeconds(0.2f);
 
@@ -2367,7 +2430,7 @@ public class WolfBoss : Enemy
 
         while (moved < chargeDistance)
         {
-            float step = chargeSpeed * Time.deltaTime;
+            float step = currentEnhancedChargeSpeed * Time.deltaTime;
 
             transform.position += finalDir * step;
             moved += step;
@@ -2413,14 +2476,8 @@ public class WolfBoss : Enemy
         }
 
         yield return new WaitForSeconds(0.3f);
-
-        //스핀연계
         yield return StartCoroutine(SpinAttackAfterCharge());
-
-        //기다리는 시간
         yield return new WaitForSeconds(0.7f);
-
-        //삼각형 연계
         yield return StartCoroutine(FinalTriangleAfterCharge());
 
         yield return new WaitForSeconds(chargeDelay);

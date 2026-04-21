@@ -239,8 +239,10 @@ public class WolfBoss : Enemy
     public GameObject sandstormVFXPrefab;
     public GameObject explosionVFXPrefab;
     public GameObject clawDdongVFXPrefab;
+    public GameObject rightleftVFXPrefab;
     public GameObject fireVFX;
     public GameObject poisonVFX;
+    public GameObject updownVFXPrefab;
 
 
     //변수들
@@ -293,6 +295,8 @@ public class WolfBoss : Enemy
     bool hasUsedLine25 = false;
     bool hasUsedLine10 = false;
     int phase1ChargeCount = 0;
+    bool isBreaking = false;
+    Coroutine stunRoutineCoroutine;
 
     int[] pattern = new int[] { 3, 4, 3, 4 };
     int patternIndex = 0;
@@ -1445,7 +1449,7 @@ public class WolfBoss : Enemy
 
                 float currentStun = (phase1ChargeCount == 1) ? firstChargeStunDuration : secondChargeStunDuration;
 
-                StartCoroutine(StunRoutine(currentStun));
+                stunRoutineCoroutine = StartCoroutine(StunRoutine(currentStun));
                 isUsingSkill = false;
                 yield break;
             } 
@@ -1484,6 +1488,8 @@ public class WolfBoss : Enemy
 
         yield return new WaitForSeconds(duration);
 
+        if (isBreaking) yield break;
+
         RightHandPointCollider.SetActive(false);
 
         animator.SetBool("Stun", false);
@@ -1497,6 +1503,7 @@ public class WolfBoss : Enemy
         agent.updateRotation = true;
 
         attackTimer = 2f;
+        stunRoutineCoroutine = null;
     }
 
     //스턴 후 부위파괴
@@ -1505,6 +1512,13 @@ public class WolfBoss : Enemy
         if (isRightHandBroken || _isDead) return;
 
         isRightHandBroken = true;
+        isBreaking = true;
+
+        if (stunRoutineCoroutine != null)
+        {
+            StopCoroutine(stunRoutineCoroutine);
+            stunRoutineCoroutine = null;
+        }
 
         animator.SetBool("Stun", false);
 
@@ -1538,13 +1552,15 @@ public class WolfBoss : Enemy
         animator.SetTrigger("GetUp");
 
         yield return new WaitForSecondsRealtime(getUpTime);
+
         attackTimer = 4f;
         animator.speed = 1f;
         isAttacking = false;
+        isBreaking = false;
+
         EndAttack();
         agent.isStopped = false;
         agent.updateRotation = true;
-
     }
 
     //점프 데미지 주기
@@ -2694,35 +2710,6 @@ public class WolfBoss : Enemy
         Destroy(vfx, 1.5f / vfxSpeed);
     }
 
-    public void TriangleClawVFX()
-    {
-        if (clawVFXPrefab == null) return;
-
-        Vector3 spawnPos = clawSpawnPoint != null
-            ? clawSpawnPoint.position
-            : transform.position;
-
-        Vector3 dir = transform.forward;
-        dir.y = 0f;
-        dir.Normalize();
-
-        Quaternion rot = Quaternion.LookRotation(dir);
-        rot *= Quaternion.AngleAxis(180f, Vector3.forward);
-
-        GameObject vfx = Instantiate(clawVFXPrefab, spawnPos, rot);
-
-        vfx.transform.localScale = Vector3.one * 1.3f;
-
-        ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
-        if (ps != null)
-        {
-            var main = ps.main;
-            main.simulationSpeed = 1f; 
-            ps.Play();
-        }
-
-        Destroy(vfx, 1.5f);
-    }
     public void SpawnClawDdongVFX()
     {
         if (clawDdongVFXPrefab == null) return;
@@ -2736,7 +2723,43 @@ public class WolfBoss : Enemy
 
         GameObject vfx = Instantiate(clawDdongVFXPrefab, spawnPos, rot);
 
-        vfx.transform.localScale = Vector3.one * 1.3f;
+        vfx.transform.localScale = Vector3.one * 1.2f;
+
+        Destroy(vfx, 2f);
+    }
+
+    public void RightLeftClasVFX()
+    {
+        if (rightleftVFXPrefab == null) return;
+
+        Vector3 spawnPos = clawSpawnPoint != null
+            ? clawSpawnPoint.position
+            : transform.position;
+
+        Quaternion rot = Quaternion.LookRotation(attackDirection);
+        rot *= Quaternion.AngleAxis(180f, Vector3.forward);
+
+        GameObject vfx = Instantiate(rightleftVFXPrefab, spawnPos, rot);
+
+        vfx.transform.localScale = Vector3.one * 1.25f;
+
+        Destroy(vfx, 2f);
+    }
+
+    public void UptoDownClasVFX()
+    {
+        if (updownVFXPrefab == null) return;
+
+        Vector3 spawnPos = clawSpawnPoint != null
+            ? clawSpawnPoint.position
+            : transform.position;
+
+        Quaternion rot = Quaternion.LookRotation(attackDirection);
+        rot *= Quaternion.AngleAxis(180f, Vector3.forward);
+
+        GameObject vfx = Instantiate(updownVFXPrefab, spawnPos, rot);
+
+        vfx.transform.localScale = Vector3.one * 1.25f;
 
         Destroy(vfx, 2f);
     }

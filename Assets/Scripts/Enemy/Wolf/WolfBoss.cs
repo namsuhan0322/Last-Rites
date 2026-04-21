@@ -2896,7 +2896,7 @@ public class WolfBoss : Enemy
 
         GameObject vfx = Instantiate(jumpVFXPrefab, pos, Quaternion.identity);
 
-        vfx.transform.localScale = Vector3.one * 7f;
+        vfx.transform.localScale = Vector3.one * 8.5f;
 
         Destroy(vfx, 2f);
     }

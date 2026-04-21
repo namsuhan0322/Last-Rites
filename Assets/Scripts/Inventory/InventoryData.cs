@@ -6,7 +6,7 @@ public class InventoryData
     public int currencyAmount = 0; // 망자의 유물
     public int equippedWeaponID = 1;
     public string equippedAISoulID = "AI_001";
-
+    public string equippedAttributeID = "";
     public int weaponEnhancementLevel = 0;
     public float soulPityGauge = 0f;
 

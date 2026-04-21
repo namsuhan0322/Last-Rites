@@ -9,4 +9,6 @@ public class BlacksmithInfusionSO : ScriptableObject
     public string Target_Weapon;
     public string Effect_Value;
     public string Effect_Desc;
+
+    public Sprite infusionIcon;
 }

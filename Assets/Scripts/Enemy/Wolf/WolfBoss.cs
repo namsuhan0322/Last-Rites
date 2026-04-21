@@ -295,6 +295,8 @@ public class WolfBoss : Enemy
     bool hasUsedLine25 = false;
     bool hasUsedLine10 = false;
     int phase1ChargeCount = 0;
+    bool isBreaking = false;
+    Coroutine stunRoutineCoroutine;
 
     int[] pattern = new int[] { 3, 4, 3, 4 };
     int patternIndex = 0;
@@ -1447,7 +1449,7 @@ public class WolfBoss : Enemy
 
                 float currentStun = (phase1ChargeCount == 1) ? firstChargeStunDuration : secondChargeStunDuration;
 
-                StartCoroutine(StunRoutine(currentStun));
+                stunRoutineCoroutine = StartCoroutine(StunRoutine(currentStun));
                 isUsingSkill = false;
                 yield break;
             } 
@@ -1486,6 +1488,8 @@ public class WolfBoss : Enemy
 
         yield return new WaitForSeconds(duration);
 
+        if (isBreaking) yield break;
+
         RightHandPointCollider.SetActive(false);
 
         animator.SetBool("Stun", false);
@@ -1499,6 +1503,7 @@ public class WolfBoss : Enemy
         agent.updateRotation = true;
 
         attackTimer = 2f;
+        stunRoutineCoroutine = null;
     }
 
     //스턴 후 부위파괴
@@ -1507,6 +1512,13 @@ public class WolfBoss : Enemy
         if (isRightHandBroken || _isDead) return;
 
         isRightHandBroken = true;
+        isBreaking = true;
+
+        if (stunRoutineCoroutine != null)
+        {
+            StopCoroutine(stunRoutineCoroutine);
+            stunRoutineCoroutine = null;
+        }
 
         animator.SetBool("Stun", false);
 
@@ -1540,13 +1552,15 @@ public class WolfBoss : Enemy
         animator.SetTrigger("GetUp");
 
         yield return new WaitForSecondsRealtime(getUpTime);
+
         attackTimer = 4f;
         animator.speed = 1f;
         isAttacking = false;
+        isBreaking = false;
+
         EndAttack();
         agent.isStopped = false;
         agent.updateRotation = true;
-
     }
 
     //점프 데미지 주기

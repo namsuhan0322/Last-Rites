@@ -8,45 +8,50 @@ public class WolfBoss : Enemy
 {
     [Header("멍때리는 시간")]
     [Tooltip("내려찍기 멍때리기")]
-    [SerializeField] float stompDelay = 3f;
+    public float stompDelay = 3f;
     [Tooltip("점프공격 멍때리기")]
-    [SerializeField] float jump2Delay = 12f;
+    public float jump2Delay = 12f;
     [Tooltip("일반공격 멍때리기")]
-    [SerializeField] float normalDelay = 2f;
+    public float normalDelay = 2f;
     [Tooltip("할퀴기 멍때리기")]
-    [SerializeField] float slashDelay = 2f;
+    public float slashDelay = 2f;
     [Tooltip("돌진 멍때리기")]
-    [SerializeField] float chargeDelay = 2f;
+    public float chargeDelay = 2f;
     [Tooltip("암흑탄 공격 멍때리기")]
-    [SerializeField] float darkDelay = 2f;
+    public float darkDelay = 2f;
     [Tooltip("스핀 멍때리기")]
-    [SerializeField] float spinDelay = 2f;
+    public float spinDelay = 2f;
     [Tooltip("포효후 멍때리기")]
-    [SerializeField] float RoarDelay = 2f;
+    public float RoarDelay = 2f;
     [Tooltip("토네이도 멍때리기")]
-    [SerializeField] float tornadoDelay = 2f;
+    public float tornadoDelay = 2f;
     [Tooltip("똥장판 멍때리기")]
-    [SerializeField] float explosionDelay = 2f;
+    public float explosionDelay = 2f;
     [Tooltip("던지기 멍때리기")]
-    [SerializeField] float throwDelay = 2f;
+    public float throwDelay = 2f;
+    [Tooltip("2단콤보 멍때리기")]
+    public float twoComboDelay;
 
 
     [Header("부위파괴")]
     [Header("오른팔 부위파괴 설정")]
-    [SerializeField] GameObject RightHandPointCollider;
-    [SerializeField] int RightHandPointHP = 100;
-    [SerializeField] float breakDownTime = 5f;   // 눕고 있는 시간
-    [SerializeField] float breakAnimTime = 1.5f; // 넘어지는 시간
-    [SerializeField] float getUpTime = 2f;       // 일어나는 시간
+    public GameObject RightHandPointCollider;
+    public int RightHandPointHP = 100;
+    public float breakDownTime = 5f;   // 눕고 있는 시간
+    public float breakAnimTime = 1.5f; // 넘어지는 시간
+    public float getUpTime = 2f;       // 일어나는 시간
     [Header("부위파괴 할퀴기 디버프")]
-    [SerializeField] float brokenHandAnimSpeed = 0.6f;
-    [SerializeField] float brokenHandAttackSpeedMultiplier = 0.6f;
+    public float brokenHandAnimSpeed = 0.6f;
+    public float brokenHandAttackSpeedMultiplier = 0.6f;
 
 
     [Header("보스 페이즈")]
     public BossPhase currentPhase = BossPhase.Phase1;
     [Tooltip("페이즈2변환 hp퍼센트")]
     public float phase2HpPercent = 0.6f;
+
+    [Header("1페이지 이단콤보 공격")]
+    public float comboAttackCooldown = 6f;
 
     [Header("1페이지 할퀴기 스킬")]
     [Tooltip("할퀴기 앞쪽 범위")]
@@ -88,9 +93,9 @@ public class WolfBoss : Enemy
     [Tooltip("점프공격 대기시간")]
     public float jumpCooldown = 8f;
     [Tooltip("점프공격 이펙트 보정값")]
-    [SerializeField] float jumpIndicatorScaleMultiplier = 0.7f;
+    public float jumpIndicatorScaleMultiplier = 0.7f;
     public GameObject jumpIndicatorPrefab;
-    [SerializeField] GameObject modelRoot;
+    public GameObject modelRoot;
 
 
     [Header("1페이지 돌진 스킬")]
@@ -101,26 +106,26 @@ public class WolfBoss : Enemy
     [Tooltip("돌진속도")]
     public float chargeSpeed = 20f;
     [Tooltip("돌진 하기 전 기다리는 시간")]
-    [SerializeField] float chargeStartDelay = 0.5f;
+    public float chargeStartDelay = 0.5f;
     public float chargeLockTime = 2f;
-    [SerializeField] float firstChargeStunDuration = 2f;
-    [SerializeField] float secondChargeStunDuration = 5f;
+    public float firstChargeStunDuration = 2f;
+    public float secondChargeStunDuration = 5f;
     [Tooltip("돌진 1차때 만약에 부셔졌다면 2차 돌진때")]
-    [SerializeField] float secondChargeBrokenSpeed = 12f;
-    [SerializeField] float chargeIndicatorBaseLength = 7f;
+    public float secondChargeBrokenSpeed = 12f;
+    public float chargeIndicatorBaseLength = 7f;
     public GameObject chargeIndicatorPrefab;
 
     [Header("1페이지 회오리 스킬")]
-    [SerializeField] float tornadoSpeed = 3f;
+    public float tornadoSpeed = 3f;
     [Tooltip("토네이도 시간")]
-    [SerializeField] float tornadoDuration = 5f;
-    [SerializeField] float tornadoCooldown = 10f;
+    public float tornadoDuration = 5f;
+    public float tornadoCooldown = 10f;
     [Tooltip("토네이도 당기는 범위")]
-    [SerializeField] float tornadoPullRadius = 8f;
+    public float tornadoPullRadius = 8f;
     [Tooltip("토네이도 당기는 힘")]
-    [SerializeField] float tornadoPullForce = 15f;
+    public float tornadoPullForce = 15f;
     [Tooltip("토네이도 당기는 최소거리")]
-    [SerializeField] float tornadoMinDistance = 1.5f;
+    public float tornadoMinDistance = 1.5f;
 
 
     [Header("2페이지 휘두르기")]
@@ -297,6 +302,7 @@ public class WolfBoss : Enemy
     int phase1ChargeCount = 0;
     bool isBreaking = false;
     Coroutine stunRoutineCoroutine;
+    float comboAttackTimer = 0f;
 
     int[] pattern = new int[] { 3, 4, 3, 4 };
     int patternIndex = 0;
@@ -343,6 +349,7 @@ public class WolfBoss : Enemy
         triTimer -= Time.deltaTime;
         lineTimer -= Time.deltaTime;
         enhancedChargeTimer -= Time.deltaTime;
+        comboAttackTimer -= Time.deltaTime;
 
         if (_isDead) return;
 
@@ -525,6 +532,9 @@ public class WolfBoss : Enemy
             if (throwTimer <= 0f)
                 patterns.Add(() => StartCoroutine(ThrowPattern()));
 
+            if (comboAttackTimer <= 0f)
+                patterns.Add(() => StartCoroutine(DoubleComboAttack()));
+
             patterns.Add(() => base.TryAttack());
 
             if (patterns.Count == 0) return;
@@ -679,6 +689,51 @@ public class WolfBoss : Enemy
         EndAttack();
         isUsingSkill = false;
         attackTimer = attackCooldown;
+    }
+
+    //2단 콤보 
+    IEnumerator DoubleComboAttack()
+    {
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
+
+        if (isPhaseChanging || _isDead)
+        {
+            isUsingSkill = false;
+            yield break;
+        }
+
+        isAttacking = true;
+        isComboAttacking = true;
+
+        agent.isStopped = true;
+        agent.updateRotation = false;
+        agent.velocity = Vector3.zero;
+
+        yield return StartCoroutine(RotateLikeSlash(0.4f));
+        attackDirection = transform.forward;
+        animator.SetTrigger("ComboStomp");
+
+        yield return new WaitForSeconds(0.8f);
+
+        yield return StartCoroutine(RotateLikeSlash(0.4f));
+        attackDirection = transform.forward;
+        animator.SetTrigger("ComboClaw");
+
+
+        yield return new WaitForSeconds(1.5f); 
+        yield return new WaitForSeconds(twoComboDelay);
+
+        comboAttackTimer = comboAttackCooldown; 
+        attackTimer = attackCooldown;
+
+        isComboAttacking = false;
+        EndAttack();
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+
+        isUsingSkill = false;
     }
 
     //불독 스킬 
@@ -2754,12 +2809,23 @@ public class WolfBoss : Enemy
             ? clawSpawnPoint.position
             : transform.position;
 
-        Quaternion rot = Quaternion.LookRotation(attackDirection);
-        rot *= Quaternion.AngleAxis(180f, Vector3.forward);
+        Vector3 dir = attackDirection;
+        dir.y = 0f;
 
-        GameObject vfx = Instantiate(updownVFXPrefab, spawnPos, rot);
+        if (dir.sqrMagnitude < 0.001f)
+            dir = transform.forward;
 
-        vfx.transform.localScale = Vector3.one * 1.25f;
+        dir.Normalize();
+
+        Quaternion prefabRotation = updownVFXPrefab.transform.rotation;
+
+        Quaternion lookRot = Quaternion.LookRotation(dir);
+
+        Quaternion finalRot = lookRot * prefabRotation;
+
+        GameObject vfx = Instantiate(updownVFXPrefab, spawnPos, finalRot);
+
+        vfx.transform.localScale = Vector3.one * 1.6f;
 
         Destroy(vfx, 2f);
     }

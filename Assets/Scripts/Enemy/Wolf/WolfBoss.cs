@@ -239,8 +239,10 @@ public class WolfBoss : Enemy
     public GameObject sandstormVFXPrefab;
     public GameObject explosionVFXPrefab;
     public GameObject clawDdongVFXPrefab;
+    public GameObject rightleftVFXPrefab;
     public GameObject fireVFX;
     public GameObject poisonVFX;
+    public GameObject updownVFXPrefab;
 
 
     //변수들
@@ -2694,35 +2696,6 @@ public class WolfBoss : Enemy
         Destroy(vfx, 1.5f / vfxSpeed);
     }
 
-    public void TriangleClawVFX()
-    {
-        if (clawVFXPrefab == null) return;
-
-        Vector3 spawnPos = clawSpawnPoint != null
-            ? clawSpawnPoint.position
-            : transform.position;
-
-        Vector3 dir = transform.forward;
-        dir.y = 0f;
-        dir.Normalize();
-
-        Quaternion rot = Quaternion.LookRotation(dir);
-        rot *= Quaternion.AngleAxis(180f, Vector3.forward);
-
-        GameObject vfx = Instantiate(clawVFXPrefab, spawnPos, rot);
-
-        vfx.transform.localScale = Vector3.one * 1.3f;
-
-        ParticleSystem ps = vfx.GetComponent<ParticleSystem>();
-        if (ps != null)
-        {
-            var main = ps.main;
-            main.simulationSpeed = 1f; 
-            ps.Play();
-        }
-
-        Destroy(vfx, 1.5f);
-    }
     public void SpawnClawDdongVFX()
     {
         if (clawDdongVFXPrefab == null) return;
@@ -2736,7 +2709,43 @@ public class WolfBoss : Enemy
 
         GameObject vfx = Instantiate(clawDdongVFXPrefab, spawnPos, rot);
 
-        vfx.transform.localScale = Vector3.one * 1.3f;
+        vfx.transform.localScale = Vector3.one * 1.2f;
+
+        Destroy(vfx, 2f);
+    }
+
+    public void RightLeftClasVFX()
+    {
+        if (rightleftVFXPrefab == null) return;
+
+        Vector3 spawnPos = clawSpawnPoint != null
+            ? clawSpawnPoint.position
+            : transform.position;
+
+        Quaternion rot = Quaternion.LookRotation(attackDirection);
+        rot *= Quaternion.AngleAxis(180f, Vector3.forward);
+
+        GameObject vfx = Instantiate(rightleftVFXPrefab, spawnPos, rot);
+
+        vfx.transform.localScale = Vector3.one * 1.25f;
+
+        Destroy(vfx, 2f);
+    }
+
+    public void UptoDownClasVFX()
+    {
+        if (updownVFXPrefab == null) return;
+
+        Vector3 spawnPos = clawSpawnPoint != null
+            ? clawSpawnPoint.position
+            : transform.position;
+
+        Quaternion rot = Quaternion.LookRotation(attackDirection);
+        rot *= Quaternion.AngleAxis(180f, Vector3.forward);
+
+        GameObject vfx = Instantiate(updownVFXPrefab, spawnPos, rot);
+
+        vfx.transform.localScale = Vector3.one * 1.25f;
 
         Destroy(vfx, 2f);
     }

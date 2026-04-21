@@ -3879,7 +3879,7 @@ MonoBehaviour:
   explosionDelay: 4
   throwDelay: 3.5
   RightHandPointCollider: {fileID: 9042115551629583037}
-  RightHandPointHP: 100
+  RightHandPointHP: 300
   breakDownTime: 5
   breakAnimTime: 1.5
   getUpTime: 2
@@ -3923,6 +3923,7 @@ MonoBehaviour:
   chargeLockTime: 3.5
   firstChargeStunDuration: 4
   secondChargeStunDuration: 7
+  secondChargeBrokenSpeed: 12
   chargeIndicatorBaseLength: 4
   chargeIndicatorPrefab: {fileID: 5004172382952367341, guid: ce727b4aaaaa80343a7c9de5d5930749,
     type: 3}

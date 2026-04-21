@@ -180,6 +180,20 @@ public class WolfBoss : Enemy
     public  float triCooldown = 20f;
     public  LayerMask groundLayer;
 
+    [Header("2페이지 강화 돌진")]
+    [SerializeField] float enhancedChargeCooldown = 12f;
+    [SerializeField] int enhancedChargeDamage = 30;
+    [SerializeField] float enhancedChargeProjectileInterval = 0.25f;
+    [SerializeField] int enhancedChargeProjectileCount = 6;
+    [SerializeField] float enhancedChargeThrowRadius = 6f;
+    [SerializeField] float enhancedChargeProjectileDuration = 0.55f;
+    [SerializeField] float enhancedChargeExplosionRadius = 4f;
+    [SerializeField] int enhancedChargeExplosionDamage = 20;
+    [SerializeField] Transform upperBodyThrowPoint;   // 상체/입/등 쪽 포인트
+    [SerializeField] GameObject enhancedChargeReadyIndicator;
+    [SerializeField] GameObject enhancedChargeProjectilePrefab; // 불덩이
+
+
     [Header("능지패턴")]
     [SerializeField] float lineCooldown = 10f;
     [SerializeField] float lineWarningTime = 1f;
@@ -243,7 +257,7 @@ public class WolfBoss : Enemy
     bool isInsideBigCircle;
     bool isInsideSafeCircle;
     bool isUsingSkill = false;
-
+    float enhancedChargeTimer = 0f;
 
     int[] pattern = new int[] { 3, 4, 3, 4 };
     int patternIndex = 0;
@@ -289,6 +303,7 @@ public class WolfBoss : Enemy
         throwTimer -= Time.deltaTime;
         triTimer -= Time.deltaTime;
         lineTimer -= Time.deltaTime;
+        enhancedChargeTimer -= Time.deltaTime;
 
         if (_isDead) return;
 
@@ -504,6 +519,9 @@ public class WolfBoss : Enemy
 
             if (lineTimer <= 0f)
                 patterns.Add(() => StartCoroutine(LinePatternAttack()));
+
+            if (enhancedChargeTimer <= 0f)
+                patterns.Add(() => StartCoroutine(EnhancedCharge()));
 
             int index = Random.Range(0, patterns.Count);
             patterns[index].Invoke();
@@ -1746,7 +1764,11 @@ public class WolfBoss : Enemy
 
         animator.SetTrigger("Stomp");
 
+        yield return new WaitForSeconds(3f);
+        DoStompDamage();
+
         yield return new WaitForSeconds(stompDelay);
+
 
         stompTimer = stompCooldown;
 
@@ -1786,21 +1808,19 @@ public class WolfBoss : Enemy
         if (stompIndicator != null)
             stompIndicator.SetActive(false);
 
-        Collider[] hits = Physics.OverlapSphere(
-            transform.position,
-            stompRange,
-            targetLayer
-        );
+        animator.speed = 1f;
+    }
+    void DoStompDamage()
+    {
+        Collider[] hits = Physics.OverlapSphere(transform.position, stompRange, targetLayer);
 
         foreach (var hit in hits)
         {
             Actor actor = hit.GetComponent<Actor>();
-            if (actor == null || actor == this) continue;
+            if (actor == null || actor == this || actor.IsDead) continue;
 
             actor.TakeDamage(stompDamage, 1f);
         }
-
-        animator.speed = 1f;
     }
 
     IEnumerator StompResumeRoutine()
@@ -2264,6 +2284,273 @@ public class WolfBoss : Enemy
                transform.right * randomCircle.x +
                transform.forward * randomCircle.y;
     }
+
+
+    //강화 돌진 패턴
+    IEnumerator EnhancedCharge()
+    {
+        if (isUsingSkill) yield break;
+        isUsingSkill = true;
+
+        if (isPhaseChanging || _isDead)
+        {
+            isUsingSkill = false;
+            yield break;
+        }
+
+        isAttacking = true;
+        isComboAttacking = true;
+        isCharging = true;
+
+        agent.isStopped = true;
+        agent.updateRotation = false;
+        agent.velocity = Vector3.zero;
+        agent.ResetPath();
+
+        animator.SetTrigger("EnhancedChargeReady"); 
+
+        chargeIndicator.SetActive(true);
+
+        float timer = 0f;
+
+        while (timer < chargeLockTime)
+        {
+            if (isPhaseChanging || _isDead)
+            {
+                chargeIndicator.SetActive(false);
+                EndAttack();
+                isCharging = false;
+                isComboAttacking = false;
+                isUsingSkill = false;
+                yield break;
+            }
+
+            timer += Time.deltaTime;
+
+            if (currentTarget != null)
+            {
+                Vector3 dir = currentTarget.position - transform.position;
+                dir.y = 0f;
+
+                if (dir.sqrMagnitude > 0.01f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(dir);
+                    transform.rotation = Quaternion.Slerp(transform.rotation, targetRot, Time.deltaTime * 6f);
+
+                    Vector3 forwardOffset = transform.forward * (chargeDistance * 0.5f);
+                    chargeIndicator.transform.position = transform.position + forwardOffset;
+                    chargeIndicator.transform.rotation = Quaternion.LookRotation(transform.forward);
+
+                    float scaleZ = chargeDistance / chargeIndicatorBaseLength;
+                    chargeIndicator.transform.localScale = new Vector3(2f, 1f, scaleZ);
+                }
+            }
+
+            yield return null;
+        }
+
+        Vector3 finalDir = transform.forward;
+        attackDirection = finalDir;
+
+        chargeIndicator.SetActive(false);
+
+        yield return new WaitForSeconds(chargeStartDelay);
+
+        animator.SetTrigger("EnhancedCharge"); 
+
+        yield return new WaitForSeconds(0.2f);
+
+        bool hasHit = false;
+        float moved = 0f;
+
+        StartCoroutine(SpawnChargeFireProjectiles());
+
+        while (moved < chargeDistance)
+        {
+            float step = chargeSpeed * Time.deltaTime;
+
+            transform.position += finalDir * step;
+            moved += step;
+
+            if (!hasHit)
+            {
+                Collider[] hits = Physics.OverlapSphere(transform.position, 1.5f, targetLayer);
+
+                foreach (var hit in hits)
+                {
+                    Actor actor = hit.GetComponent<Actor>();
+                    if (actor == null || actor == this || actor.IsDead) continue;
+
+                    actor.TakeDamage(enhancedChargeDamage, 1f);
+                    hasHit = true;
+                    break;
+                }
+            }
+
+            Collider[] envHits = Physics.OverlapSphere(transform.position, 1.2f, LayerMask.GetMask("Environment"));
+
+            if (envHits.Length > 0)
+            {
+                foreach (var hit in envHits)
+                {
+                    FractureThis f = hit.GetComponentInParent<FractureThis>();
+
+                    if (f != null && f.gameObject.activeSelf)
+                    {
+                        f.FractureAndDestroy();
+
+                        if (f.gameObject != hit.gameObject)
+                            hit.gameObject.SetActive(false);
+
+                        break;
+                    }
+                }
+
+                break;
+            }
+
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(0.3f);
+
+        //스핀연계
+        yield return StartCoroutine(SpinAttackAfterCharge());
+
+        //기다리는 시간
+        yield return new WaitForSeconds(0.7f);
+
+        //삼각형 연계
+        yield return StartCoroutine(FinalTriangleAfterCharge());
+
+        yield return new WaitForSeconds(chargeDelay);
+
+        enhancedChargeTimer = enhancedChargeCooldown;
+
+        isCharging = false;
+        isComboAttacking = false;
+        EndAttack();
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+        isUsingSkill = false;
+    }
+
+    //2연계 스핀공격
+    IEnumerator SpinAttackAfterCharge()
+    {
+        isAttacking = true;
+        isComboAttacking = true;
+
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.updateRotation = false;
+
+        ShowSpinIndicator();
+
+        yield return new WaitForSeconds(0.5f); 
+
+        spinIndicator.SetActive(false);
+
+        animator.SetTrigger("Spin");
+
+        yield return new WaitForSeconds(0.6f); 
+                                          
+        spinTimer = spinCooldown;
+    }
+
+    //3연계 삼각형공격
+
+    IEnumerator FinalTriangleAfterCharge()
+    {
+        yield return new WaitForSeconds(0.3f);
+
+        yield return StartCoroutine(RotateLikeSlash(1f));
+
+        animator.SetTrigger("Down_Triangle");
+
+        yield return new WaitForSeconds(0.8f);
+    }
+
+    IEnumerator SpawnChargeFireProjectiles()
+    {
+        for (int i = 0; i < enhancedChargeProjectileCount; i++)
+        {
+            if (!isCharging || _isDead) yield break;
+
+            Vector3 targetPos = GetRandomPointAroundPlayer(enhancedChargeThrowRadius);
+
+            GameObject proj = Instantiate(
+                enhancedChargeProjectilePrefab != null ? enhancedChargeProjectilePrefab : fireballPrefab,
+                upperBodyThrowPoint.position,
+                Quaternion.identity
+            );
+
+            StartCoroutine(MoveChargeProjectile(proj, targetPos));
+
+            yield return new WaitForSeconds(enhancedChargeProjectileInterval);
+        }
+    }
+
+    IEnumerator MoveChargeProjectile(GameObject proj, Vector3 targetPos)
+    {
+        Vector3 start = proj.transform.position;
+
+        float time = 0f;
+        float duration = enhancedChargeProjectileDuration;
+
+        while (time < duration)
+        {
+            if (proj == null) yield break;
+
+            time += Time.deltaTime;
+            float t = time / duration;
+
+            Vector3 pos = Vector3.Lerp(start, targetPos, t);
+            pos.y += Mathf.Sin(t * Mathf.PI) * 3f;
+
+            proj.transform.position = pos;
+
+            yield return null;
+        }
+
+        if (proj != null)
+            Destroy(proj);
+
+        StartCoroutine(ChargeFireExplosion(targetPos));
+    }
+
+    IEnumerator ChargeFireExplosion(Vector3 pos)
+    {
+        float radius = enhancedChargeExplosionRadius;
+
+        GameObject indicator = Instantiate(throwIndicatorPrefab, pos, Quaternion.Euler(-90f, 0f, 0f));
+        indicator.transform.localScale = Vector3.zero;
+
+        SetIndicatorColor(indicator, Color.red);
+
+        StartCoroutine(GrowIndicator(indicator, radius, throwWarningTime));
+
+        yield return new WaitForSeconds(throwWarningTime);
+
+        if (indicator != null)
+            Destroy(indicator);
+
+        GameObject vfx = Instantiate(explosionVFXPrefab, pos, Quaternion.identity);
+        Destroy(vfx, 2f);
+
+        Collider[] hits = Physics.OverlapSphere(pos, radius, targetLayer);
+
+        foreach (var hit in hits)
+        {
+            Actor actor = hit.GetComponent<Actor>();
+            if (actor == null || actor.IsDead) continue;
+
+            actor.TakeDamage(enhancedChargeExplosionDamage, 1f);
+        }
+    }
+
+
     //데미지 받는 함수
     public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
     {

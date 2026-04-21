@@ -22,6 +22,8 @@ public class ShowShopUI : MonoBehaviour
 
     private bool _isPlayerInRange = false;
 
+    private EnhancementUIManager enhancementUIManager;
+
     private void Start()
     {
         if (shopUI != null) shopUI.SetActive(false);
@@ -41,6 +43,11 @@ public class ShowShopUI : MonoBehaviour
             if (r is ParticleSystemRenderer) continue;
             _originalLayers.Add(r.gameObject, r.gameObject.layer);
         }
+
+        if (enhancementUIManager == null)
+        {
+            enhancementUIManager = FindAnyObjectByType<EnhancementUIManager>();
+        }
     }
 
     private void Update()
@@ -55,6 +62,7 @@ public class ShowShopUI : MonoBehaviour
 
         if (shopUI != null && shopUI.activeSelf && Input.GetKeyDown(KeyCode.Escape))
         {
+            if (enhancementUIManager.resultPanel.activeSelf) return;
             CloseShop();
         }
     }

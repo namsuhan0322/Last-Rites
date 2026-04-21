@@ -221,9 +221,21 @@ public class ScenesManager : SingletonMono<ScenesManager>
     public void LoadMainMenu() => LoadScene(mainMenuSceneName);
     public void LoadGameScene()
     {
-        // GameProgressManager의 진행도를 확인합니다.
-        if (GameProgressManager.Instance.progressData.isTutorialCleared) LoadScene(LobbySceneName);
-        else LoadScene(tutorialSceneName);
+        if (GameProgressManager.Instance == null || GameProgressManager.Instance.progressData == null)
+        {
+            Debug.LogWarning("[ScenesManager] GameProgressData를 찾을 수 없어 기본 튜토리얼 씬으로 이동합니다.");
+            LoadScene(tutorialSceneName);
+            return;
+        }
+
+        if (GameProgressManager.Instance.progressData.isTutorialCleared)
+        {
+            LoadScene(LobbySceneName);
+        }
+        else
+        {
+            LoadScene(tutorialSceneName);
+        }
     }
 
     public void LoadTestGameScene()

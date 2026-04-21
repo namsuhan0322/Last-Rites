@@ -181,6 +181,7 @@ public class PlayerController : MonoBehaviour
         }
         StateMachine.CurrentState.HandleInput();
         StateMachine.CurrentState.LogicUpdate();
+        StateMachine.CurrentState.PhysicsUpdate();
 
         CheckEnemyInSight();
         ManageUpperBodyWeight();
@@ -206,11 +207,6 @@ public class PlayerController : MonoBehaviour
                 if (CC != null) CC.enabled = true;
             }
         }
-    }
-
-    private void FixedUpdate()
-    {
-        StateMachine.CurrentState.PhysicsUpdate();
     }
 
     private void OnDestroy()
@@ -881,8 +877,8 @@ public class PlayerController : MonoBehaviour
         if (CC != null) CC.enabled = false;
         if (RB != null)
         {
-            RB.isKinematic = false;
-            RB.useGravity = true;
+            RB.isKinematic = true;
+            RB.useGravity = false;
         }
 
         transform.position = spawnPosition;

@@ -425,55 +425,72 @@ public class TutorialSystem : MonoBehaviour
             yield return StartCoroutine(ScenesManager.Instance.FadeIn());
         }
 
-        // UI 끄기 및 상태 초기화
-        startPanel.SetActive(false);
-        battlePanel.SetActive(false);
-        EnterClickUI.SetActive(false);
-        tutorialCompleteText.gameObject.SetActive(false);
-
-        waitingForEnter = false;
-        waitingForBattleStart = false;
-        waitingForEnterClick = false;
-        tutorialPlaying = false;
-        bossPhaseStarted = true;
-
-        tutorialCam.Priority = 5;
-        playerCam.Priority = 20;
-
-        // 플레이어 순간이동
-        if (playerController != null && bossFightLocation != null)
+        try
         {
-            playerController.enabled = false;
-            playerController.Agent.enabled = false;
-            playerController.CC.enabled = false;
+            if (startPanel != null) startPanel.SetActive(false);
+            if (battlePanel != null) battlePanel.SetActive(false);
+            if (EnterClickUI != null) EnterClickUI.SetActive(false);
+            if (tutorialCompleteText != null) tutorialCompleteText.gameObject.SetActive(false);
 
-            playerController.transform.position = bossFightLocation.position;
-            playerController.transform.rotation = bossFightLocation.rotation;
+            waitingForEnter = false;
+            waitingForBattleStart = false;
+            waitingForEnterClick = false;
+            tutorialPlaying = false;
+            bossPhaseStarted = true;
 
-            playerController.CC.enabled = true;
-            playerController.Agent.enabled = true;
-            playerController.enabled = true;
+            if (tutorialCam != null) tutorialCam.Priority = 5;
+            if (playerCam != null) playerCam.Priority = 20;
 
-            playerController.Anim.SetFloat("Move", 0f);
+            if (playerController != null && bossFightLocation != null)
+            {
+                playerController.enabled = false;
+                if (playerController.CC != null) playerController.CC.enabled = false;
+
+                if (playerController.Agent != null && playerController.Agent.isOnNavMesh)
+                {
+                    playerController.Agent.Warp(bossFightLocation.position);
+                }
+                else
+                {
+                    playerController.transform.position = bossFightLocation.position;
+                }
+
+                playerController.transform.rotation = bossFightLocation.rotation;
+
+                if (playerController.CC != null) playerController.CC.enabled = true;
+                if (playerController.Agent != null) playerController.Agent.enabled = true;
+                playerController.enabled = true;
+
+                if (playerController.Anim != null) playerController.Anim.SetFloat("Move", 0f);
+            }
+
+            if (GameProgressManager.Instance != null)
+            {
+                GameProgressManager.Instance.CompleteTutorial();
+            }
+
+            if (InventoryManager.Instance != null)
+            {
+                InventoryManager.Instance.AddItem("S_000", 1);
+                InventoryManager.Instance.AddItem("R_001", 99);
+                InventoryManager.Instance.AddItem("P_001", 99);
+                InventoryManager.Instance.AddItem("P_002", 99);
+                InventoryManager.Instance.AddItem("P_003", 99);
+                InventoryManager.Instance.AddCurrency(999999);
+            }
+
+            if (DataManager.Instance != null)
+            {
+                DataManager.Instance.SaveAllData();
+            }
+
+            if (directionArrow != null) directionArrow.SetActive(true);
+            ShowMission("포탈을 통해 로비로 이동하세요");
         }
-
-        // 보상 지급 및 마스터 세이브
-        GameProgressManager.Instance.CompleteTutorial();
-        if (InventoryManager.Instance != null)
+        catch (System.Exception e)
         {
-            // 테스트 용
-            InventoryManager.Instance.AddItem("S_000", 1);
-            InventoryManager.Instance.AddItem("R_001", 99);
-            InventoryManager.Instance.AddCurrency(9999);
+            Debug.LogError($"[TutorialSystem] 스킵 도중 에러가 발생했지만 강제 복구합니다.\n원인: {e.Message}\n위치: {e.StackTrace}");
         }
-        if (DataManager.Instance != null)
-        {
-            DataManager.Instance.SaveAllData();
-        }
-
-        // 다음 미션 안내 띄우기
-        directionArrow.SetActive(true);
-        ShowMission("포탈을 통해 로비로 이동하세요");
 
         yield return new WaitForSecondsRealtime(0.5f);
 

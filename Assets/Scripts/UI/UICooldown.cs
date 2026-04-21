@@ -41,6 +41,8 @@ public class UICooldown : MonoBehaviour
 
     private void UpdateUI()
     {
+        if (Player == null || Player.CurrentWeapon == null) return;
+
         if (Player.CurrentWeapon != null)
         {
             UpdateSkillUI(_QSkillImage, Player.Q_Timer, Player.CurrentWeapon.Q_Cool);
@@ -64,7 +66,7 @@ public class UICooldown : MonoBehaviour
         }
         else
         {
-            if (_rollBg.activeSelf) _rollBg.SetActive(false);
+            if (_rollBg != null && _rollBg.activeSelf) _rollBg.SetActive(false);
         }
 
         if (_potionCountText != null && _PotionImage != null)

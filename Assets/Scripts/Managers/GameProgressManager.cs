@@ -16,6 +16,11 @@ public class GameProgressManager : SingletonMono<GameProgressManager>
 
     public void CompleteTutorial()
     {
+        if (progressData == null)
+        {
+            progressData = new GameProgressData();
+        }
+
         progressData.isTutorialCleared = true;
         DataManager.Instance.SaveAllData();
     }

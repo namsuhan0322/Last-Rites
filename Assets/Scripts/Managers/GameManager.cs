@@ -61,39 +61,47 @@ public class GameManager : SingletonMono<GameManager>
 
     private IEnumerator InitializeManagers()
     {
+        // 모든 스크립트의 Awake와 Start가 완전히 끝날 때까지 1프레임 대기합니다.
         yield return new WaitForEndOfFrame();
 
-        Debug.Log("=== 매니저 초기화 시작 ===");
+        Debug.Log("<color=cyan>=== 시스템 매니저 초기화 및 점검 시작 ===</color>");
 
+        if (DataManager.Instance != null) Debug.Log("DataManager 준비 완료");
+        else Debug.LogWarning("DataManager가 씬에 없습니다!");
+
+        if (GameProgressManager.Instance != null) Debug.Log("GameProgressManager 준비 완료");
+        if (InventoryManager.Instance != null) Debug.Log("InventoryManager 준비 완료");
+
+        // (기존 세이브 시스템을 병행 사용 중이시라면 유지)
         if (SaveDataHolder.Instance != null)
         {
-            // 혹시 데이터가 없다면 여기서 강제 로드
             if (SaveDataHolder.Instance.currentData == null)
                 SaveDataHolder.Instance.Load();
-
             Debug.Log("SaveDataHolder 준비 완료");
         }
+        if (SaveManager.Instance != null) Debug.Log("SaveManager 준비 완료");
+
         if (ScenesManager.Instance != null) Debug.Log("ScenesManager 준비 완료");
+        else Debug.LogError("ScenesManager가 없습니다! 씬 이동이 불가능합니다.");
+
         if (SoundManager.Instance != null) Debug.Log("SoundManager 준비 완료");
         if (EffectManager.Instance != null) Debug.Log("EffectManager 준비 완료");
 
-        var graphicsManager = FindObjectOfType<GraphicsSettingsManager>();
+        var graphicsManager = FindFirstObjectByType<GraphicsSettingsManager>();
         if (graphicsManager != null)
         {
             graphicsManager.InitUI();
             Debug.Log("GraphicsSettings 적용 완료");
         }
 
-        var soundSettings = FindObjectOfType<MixerController>();
+        var soundSettings = FindFirstObjectByType<MixerController>();
         if (soundSettings != null)
         {
             soundSettings.InitUI();
             Debug.Log("SoundSettings 적용 완료");
         }
 
-        if (SaveManager.Instance != null) Debug.Log("SaveManager 준비 완료");
-
-        Debug.Log("=== 모든 매니저 초기화 완료 ===");
+        Debug.Log("<color=cyan>=== 모든 매니저 초기화 완료! ===</color>");
     }
 
     private void HandleInput()

@@ -43,6 +43,13 @@ public class InventoryManager : SingletonMono<InventoryManager>
         }
     }
 
+    public int GetItemAmount(string itemID)
+    {
+        if (holder == null || holder.CurrentData == null) return 0;
+        ItemSlot slot = holder.CurrentData.items.Find(x => x.itemID == itemID);
+        return slot != null ? slot.amount : 0;
+    }
+
     public void SaveEquippedWeapon(int weaponID)
     {
         if (holder != null && holder.CurrentData != null)

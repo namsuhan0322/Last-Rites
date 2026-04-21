@@ -10,6 +10,16 @@ public class DataManager : SingletonMono<DataManager>
     // 게임 전체 데이터
     public PlaythroughSaveData CurrentGameData { get; private set; }
 
+    private void OnEnable()
+    {
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    private void OnDisable()
+    {
+        UnityEngine.SceneManagement.SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
     protected override void Awake()
     {
         base.Awake();
@@ -63,5 +73,19 @@ public class DataManager : SingletonMono<DataManager>
         // 초기화된 데이터를 다시 매니저들에게 뿌림
         GameProgressManager.Instance.InitializeData(CurrentGameData.progressData);
         InventoryManager.Instance.InitializeData(CurrentGameData.inventoryData);
+    }
+
+    private void OnSceneLoaded(UnityEngine.SceneManagement.Scene scene, UnityEngine.SceneManagement.LoadSceneMode mode)
+    {
+        if (CurrentGameData != null)
+        {
+            if (GameProgressManager.Instance != null)
+                GameProgressManager.Instance.InitializeData(CurrentGameData.progressData);
+
+            if (InventoryManager.Instance != null)
+                InventoryManager.Instance.InitializeData(CurrentGameData.inventoryData);
+
+            Debug.Log($"[DataManager] {scene.name} 씬 로드 완료. 데이터를 매니저들에게 다시 동기화했습니다.");
+        }
     }
 }

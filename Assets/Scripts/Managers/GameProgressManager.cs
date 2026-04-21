@@ -13,7 +13,6 @@ public class GameProgressManager : SingletonMono<GameProgressManager>
         Debug.Log("[GameProgressManager] 진행도 데이터 초기화 완료");
     }
 
-
     public void CompleteTutorial()
     {
         if (progressData == null)

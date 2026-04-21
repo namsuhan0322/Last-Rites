@@ -40,24 +40,15 @@ public class EnhancementUIManager : MonoBehaviour
     private bool _isEnhancing = false;
     private int _lastWeaponID = -1;
 
-    private void OnEnable()
-    {
-        if (InventoryManager.Instance != null)
-            _invData = InventoryManager.Instance.GetCurrentData();
-
-        if (enhanceDB != null) enhanceDB.Initialize(); // 딕셔너리 초기화
-
-        UpdateMainUI();
-
-        progressPanel.SetActive(false);
-        resultPanel.SetActive(false);
-        mainPanel.SetActive(true);
-    }
-
     private void Start()
     {
         enhanceButton.onClick.AddListener(OnEnhanceButtonClicked);
         resultButton.onClick.AddListener(OnResultButtonClicked);
+
+        if (enhanceDB != null) enhanceDB.Initialize(); // 딕셔너리 초기화
+
+        progressPanel.SetActive(false);
+        resultPanel.SetActive(false);
 
         UpdateMainUI();
     }
@@ -72,20 +63,11 @@ public class EnhancementUIManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (_invData != null && _invData.equippedWeaponID != _lastWeaponID)
+            if (resultPanel != null && resultPanel.activeSelf)
             {
-                _lastWeaponID = _invData.equippedWeaponID;
+                resultPanel.SetActive(false);
+                mainPanel.SetActive(true);
                 UpdateMainUI();
-            }
-
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                if (resultPanel != null && resultPanel.activeSelf)
-                {
-                    resultPanel.SetActive(false);
-                    mainPanel.SetActive(true);
-                    UpdateMainUI();
-                }
             }
         }
     }

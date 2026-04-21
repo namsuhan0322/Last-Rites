@@ -2464,7 +2464,7 @@ GameObject:
   - component: {fileID: 7860484521354937456}
   - component: {fileID: 8614345786565771589}
   m_Layer: 8
-  m_Name: Canvas
+  m_Name: Prompt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3153,6 +3153,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 772da044b5895c944b1a4f781807fa4f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  weaponDatabase: {fileID: 11400000, guid: d36219aa124225d4f88d35cdb5092b8a, type: 2}
   RotateSpeed: 10
   AnimationSmoothTime: 0.1
   CurrentWeapon: {fileID: 11400000, guid: ba6fba7b65ee8a24eb638b2fd717bf27, type: 2}

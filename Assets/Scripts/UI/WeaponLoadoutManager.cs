@@ -49,6 +49,8 @@ public class WeaponLoadoutManager : MonoBehaviour
 
     void Update()
     {
+        if (contentContainer != null && !contentContainer.gameObject.activeInHierarchy) return;
+
         if (_currentSelectedSlot != null && popupPanel != null && !popupPanel.activeSelf)
         {
             WeaponSO weaponData = _currentSelectedSlot.myData as WeaponSO;

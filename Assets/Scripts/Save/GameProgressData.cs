@@ -26,6 +26,6 @@ public class GameProgressData
         respawnPosY = 0f;
         respawnPosZ = 0f;
 
-        equippedWeaponID = 1;
+        equippedWeaponID = 10;
     }
 }

@@ -7,7 +7,7 @@ public class PlayerMoveState : PlayerState
     public override void Enter()
     {
         _player.Stats.SetInvincible(false);
-        _player.Agent.stoppingDistance = 0f;
+        _player.Agent.stoppingDistance = 0.5f;
         _player.ForceDisableAllActionEffects();
         SetDestinationToMouse();
     }

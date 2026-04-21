@@ -566,21 +566,38 @@ public class WolfBoss : Enemy
             }
 
             if (spinTimer <= 0f)
+            {
                 patterns.Add(() => StartCoroutine(SpinAttack()));
+                patterns.Add(() => StartCoroutine(SpinAttack()));
+            }
 
             if (darkShotTimer <= 0f && dist >= darkShotMinDistance)
+            {
                 patterns.Add(() => StartCoroutine(DarkShot()));
-
-            patterns.Add(() => base.TryAttack());
+                patterns.Add(() => StartCoroutine(DarkShot()));
+            }
 
             if (stompTimer <= 0f)
-                patterns.Add(() => StartCoroutine(StompAttack()));
+            {
+                patterns.Add(() => StartCoroutine(StompAttack())); // 1칸만 -> 다른 스킬들보다 덜 나오게
+            }
 
             if (slamExplosionTimer <= 0f)
+            {
                 patterns.Add(() => StartCoroutine(SlamExplosionPattern()));
+                patterns.Add(() => StartCoroutine(SlamExplosionPattern()));
+            }
 
             if (triTimer <= 0f)
+            {
                 patterns.Add(() => StartCoroutine(SmashCombo()));
+                patterns.Add(() => StartCoroutine(SmashCombo()));
+            }
+
+            patterns.Add(() => base.TryAttack());
+            patterns.Add(() => base.TryAttack());
+
+            if (patterns.Count == 0) return;
 
             int index = Random.Range(0, patterns.Count);
             patterns[index].Invoke();

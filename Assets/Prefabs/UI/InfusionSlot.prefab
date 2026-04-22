@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 1000093779563803097}
   - component: {fileID: 993752066788260362}
   m_Layer: 0
-  m_Name: Ep_01
+  m_Name: InfusionSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -165,7 +165,7 @@ RectTransform:
   m_GameObject: {fileID: 3340218683031986938}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.13376, y: 0.13376, z: 0.13376}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2143464205047240280}
@@ -173,7 +173,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -0.00012016, y: -0.000054359}
-  m_SizeDelta: {x: 173.9, y: 171.5}
+  m_SizeDelta: {x: 2816.2288, y: 1535.9999}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &486960529860215637
 CanvasRenderer:
@@ -198,7 +198,7 @@ MonoBehaviour:
   m_Material: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_RaycastPadding: {x: 701.97, y: 0, z: 701.97, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:

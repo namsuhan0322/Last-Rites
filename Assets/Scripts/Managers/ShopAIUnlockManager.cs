@@ -48,7 +48,7 @@ public class ShopAIUnlockManager : MonoBehaviour
 
     void Update()
     {
-        if (shopPanel != null && !shopPanel.activeInHierarchy) return;
+        if (slotContainer != null && !slotContainer.gameObject.activeInHierarchy) return;
 
         if (popupPanel != null && popupPanel.activeSelf)
         {

@@ -334,17 +334,21 @@ public class GameManager : SingletonMono<GameManager>
 
     private void OnApplicationPause(bool pauseStatus)
     {
+#if !UNITY_EDITOR
         if (pauseStatus && currentGameState == GameState.Playing)
         {
             PauseGame();
         }
+#endif
     }
 
     private void OnApplicationFocus(bool hasFocus)
     {
+#if !UNITY_EDITOR
         if (!hasFocus && currentGameState == GameState.Playing)
         {
             PauseGame();
         }
+#endif
     }
 }

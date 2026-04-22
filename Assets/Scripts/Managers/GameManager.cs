@@ -28,6 +28,8 @@ public class GameManager : SingletonMono<GameManager>
 
     private GameState previousGameState;
 
+    public bool isInteractUIOpen = false;
+
     protected override void Awake()
     {
         base.Awake();
@@ -46,8 +48,6 @@ public class GameManager : SingletonMono<GameManager>
         {
             gameTime += Time.deltaTime;
         }
-
-        HandleInput();
     }
 
     private void InitializeGame()
@@ -104,22 +104,6 @@ public class GameManager : SingletonMono<GameManager>
         Debug.Log("<color=cyan>=== 모든 매니저 초기화 완료! ===</color>");
     }
 
-    private void HandleInput()
-    {
-        // ESC 키로 게임 일시정지/재개
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (currentGameState == GameState.Playing)
-            {
-                PauseGame();
-            }
-            else if (currentGameState == GameState.Paused)
-            {
-                ResumeGame();
-            }
-        }
-    }
-
     #region Game State Management
 
     public void ChangeGameState(GameState newState)
@@ -168,6 +152,8 @@ public class GameManager : SingletonMono<GameManager>
         if (currentGameState != GameState.Playing) return;
 
         isGamePaused = true;
+        Time.timeScale = 0f;
+
         ChangeGameState(GameState.Paused);
         GameEvents.GamePaused();
 
@@ -180,6 +166,8 @@ public class GameManager : SingletonMono<GameManager>
         if (currentGameState != GameState.Paused) return;
 
         isGamePaused = false;
+        Time.timeScale = 1f;
+
         ChangeGameState(GameState.Playing);
         GameEvents.GameResumed();
 

@@ -24,6 +24,8 @@ public class WeaponLoadoutManager : MonoBehaviour
     public TextMeshProUGUI popupWeaponDesc;
     public Button confirmBtn;
     public Button cancelBtn;
+    public TextMeshProUGUI confirmBtnText;
+    public TextMeshProUGUI cancelBtnText;
 
     private PlayerController _player;
     private ShopItemSlot _currentSelectedSlot;
@@ -50,6 +52,15 @@ public class WeaponLoadoutManager : MonoBehaviour
     void Update()
     {
         if (contentContainer != null && !contentContainer.gameObject.activeInHierarchy) return;
+
+        if (popupPanel != null && popupPanel.activeSelf)
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                ClosePopup();
+                return;
+            }
+        }
 
         if (_currentSelectedSlot != null && popupPanel != null && !popupPanel.activeSelf)
         {
@@ -115,7 +126,8 @@ public class WeaponLoadoutManager : MonoBehaviour
     private void OpenPopup(WeaponSO data)
     {
         if (data == null) return;
-
+        if (confirmBtnText != null) confirmBtnText.text = "장착하기";
+        if (cancelBtnText != null) cancelBtnText.text = "취소";
         if (popupWeaponName != null) popupWeaponName.text = data.name;
         if (popupWeaponDesc != null) popupWeaponDesc.text = "이 무기로 장착하시겠습니까?";
         if (popupWeaponImage != null) popupWeaponImage.sprite = data.weaponIcon;

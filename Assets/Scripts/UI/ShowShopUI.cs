@@ -1,28 +1,30 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections.Generic;
 
+[DefaultExecutionOrder(-50)]
 public class ShowShopUI : MonoBehaviour
 {
-    [Header("UI ¹× ÇÁ·ÒÇÁÆ® ¼³Á¤")]
-    [Tooltip("½ÇÁ¦ È­¸é¿¡ ¶ç¿ï »óÁ¡ UI Äµ¹ö½º ÆĞ³Î")]
+    [Header("UI ë° í”„ë¡¬í”„íŠ¸ ì„¤ì •")]
+    [Tooltip("ì‹¤ì œ í™”ë©´ì— ë„ìš¸ ìƒì  UI ìº”ë²„ìŠ¤ íŒ¨ë„")]
     public GameObject shopUI;
 
-    [Tooltip("¹Ì¸® ¹èÄ¡ÇØµĞ 3D 'F' ¹öÆ° ¿ÀºêÁ§Æ®")]
+    [Tooltip("ë¯¸ë¦¬ ë°°ì¹˜í•´ë‘” 3D 'F' ë²„íŠ¼ ì˜¤ë¸Œì íŠ¸")]
     public GameObject interactionPrompt;
 
-    [Header("ÀÚµ¿ ¾Æ¿ô¶óÀÎ ¼³Á¤")]
-    [Tooltip("¾Æ¿ô¶óÀÎÀ» Àû¿ëÇÒ ½ÇÁ¦ 3D ¸ğµ¨ (¿©±â¿¡ ¿ÀºêÁ§Æ®¸¦ ³ÖÀ¸¼¼¿ä!)")]
+    [Header("ë°©ì–´ë§‰ íŒì—… ë¦¬ìŠ¤íŠ¸")]
+    [Tooltip("ì´ ë¦¬ìŠ¤íŠ¸ì— ë„£ì€ íŒì—…ì°½(GameObject)ì´ í•˜ë‚˜ë¼ë„ ì¼œì ¸ ìˆìœ¼ë©´, ESCë¥¼ ëˆŒëŸ¬ë„ ì „ì²´ ì°½ì´ êº¼ì§€ì§€ ì•ŠìŠµë‹ˆë‹¤.")]
+    public List<GameObject> popupsToBlockClose;
+
+    [Header("ìë™ ì•„ì›ƒë¼ì¸ ì„¤ì •")]
     public GameObject targetOutlineObject;
 
-    [Tooltip("»óÁ¡/Á¤ºñ¼Ò¿¡ ¾º¿ï ¾Æ¿ô¶óÀÎ ·¹ÀÌ¾î ÀÌ¸§")]
+    [Tooltip("ìƒì /ì •ë¹„ì†Œì— ì”Œìš¸ ì•„ì›ƒë¼ì¸ ë ˆì´ì–´ ì´ë¦„")]
     public string outlineLayerName = "Outline_Interactable";
 
     private int _outlineLayerIndex;
     private Dictionary<GameObject, int> _originalLayers = new Dictionary<GameObject, int>();
 
     private bool _isPlayerInRange = false;
-
-    private EnhancementUIManager enhancementUIManager;
 
     private void Start()
     {
@@ -32,7 +34,7 @@ public class ShowShopUI : MonoBehaviour
         _outlineLayerIndex = LayerMask.NameToLayer(outlineLayerName);
         if (_outlineLayerIndex == -1)
         {
-            Debug.LogError($"[°æ°í] '{outlineLayerName}' ·¹ÀÌ¾î°¡ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù!");
+            Debug.LogError($"[ê²½ê³ ] '{outlineLayerName}' ë ˆì´ì–´ê°€ ì¡´ì¬í•˜ì§€ ì•ŠìŠµë‹ˆë‹¤!");
         }
 
         GameObject outlineTarget = targetOutlineObject != null ? targetOutlineObject : gameObject;
@@ -42,11 +44,6 @@ public class ShowShopUI : MonoBehaviour
         {
             if (r is ParticleSystemRenderer) continue;
             _originalLayers.Add(r.gameObject, r.gameObject.layer);
-        }
-
-        if (enhancementUIManager == null)
-        {
-            enhancementUIManager = FindAnyObjectByType<EnhancementUIManager>();
         }
     }
 
@@ -62,7 +59,16 @@ public class ShowShopUI : MonoBehaviour
 
         if (shopUI != null && shopUI.activeSelf && Input.GetKeyDown(KeyCode.Escape))
         {
-            if (enhancementUIManager.resultPanel.activeSelf) return;
+            foreach (GameObject popup in popupsToBlockClose)
+            {
+                // ë‹¨ í•˜ë‚˜ë¼ë„ ì¼œì ¸ ìˆëŠ” íŒì—…ì°½ì„ ë°œê²¬í–ˆë‹¤ë©´?
+                if (popup != null && popup.activeSelf)
+                {
+                    return; // ìƒì  ì „ì²´ë¥¼ ë„ì§€ ì•Šê³  ë¬´ì‹œ! (ë°©ì–´ ì„±ê³µ)
+                }
+            }
+
+            // ëª¨ë“  íŒì—…ì´ êº¼ì ¸ìˆì„ ë•Œë§Œ ìƒì ì„ ë‹«ìŠµë‹ˆë‹¤.
             CloseShop();
         }
     }
@@ -101,8 +107,9 @@ public class ShowShopUI : MonoBehaviour
     private void OpenShop()
     {
         if (shopUI != null) shopUI.SetActive(true);
-
         if (interactionPrompt != null) interactionPrompt.SetActive(false);
+
+        if (GameManager.Instance != null) GameManager.Instance.isInteractUIOpen = true;
     }
 
     private void CloseShop()
@@ -113,6 +120,14 @@ public class ShowShopUI : MonoBehaviour
         {
             interactionPrompt.SetActive(true);
         }
+
+        if (GameManager.Instance != null) GameManager.Instance.isInteractUIOpen = false;
+    }
+
+    private void OnDisable()
+    {
+        // ì•ˆì „ì¥ì¹˜
+        if (GameManager.Instance != null) GameManager.Instance.isInteractUIOpen = false;
     }
 
     private void ApplyOutline()
@@ -121,10 +136,7 @@ public class ShowShopUI : MonoBehaviour
 
         foreach (var kvp in _originalLayers)
         {
-            if (kvp.Key != null)
-            {
-                kvp.Key.layer = _outlineLayerIndex;
-            }
+            if (kvp.Key != null) kvp.Key.layer = _outlineLayerIndex;
         }
     }
 
@@ -132,10 +144,7 @@ public class ShowShopUI : MonoBehaviour
     {
         foreach (var kvp in _originalLayers)
         {
-            if (kvp.Key != null)
-            {
-                kvp.Key.layer = kvp.Value;
-            }
+            if (kvp.Key != null) kvp.Key.layer = kvp.Value;
         }
     }
 }

@@ -48,7 +48,15 @@ public class ShopUIManager : MonoBehaviour
     {
         if (shopPanel != null && !shopPanel.activeInHierarchy) return;
 
-        // 슬롯이 선택되어 있고, 팝업이 안 떠 있을 때 엔터키를 누르면 팝업 열기
+        if (popupPanel != null && popupPanel.activeSelf)
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                ClosePopup();
+                return;
+            }
+        }
+
         if (currentSelectedSlot != null && popupPanel != null && !popupPanel.activeSelf)
         {
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))

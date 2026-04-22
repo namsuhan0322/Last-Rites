@@ -40,6 +40,8 @@ public class EnhancementUIManager : MonoBehaviour
     private bool _isEnhancing = false;
     private int _lastWeaponID = -1;
 
+    private Coroutine _enhanceCoroutine;
+
     private void Start()
     {
         enhanceButton.onClick.AddListener(OnEnhanceButtonClicked);
@@ -63,6 +65,17 @@ public class EnhancementUIManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            if (_isEnhancing && progressPanel != null && progressPanel.activeSelf)
+            {
+                if (_enhanceCoroutine != null) StopCoroutine(_enhanceCoroutine);
+
+                progressPanel.SetActive(false);
+                CalculateAndShowResult(); // 즉시 결과 계산 및 표시
+                _isEnhancing = false;
+
+                return;
+            }
+
             if (resultPanel != null && resultPanel.activeSelf)
             {
                 resultPanel.SetActive(false);
@@ -133,7 +146,6 @@ public class EnhancementUIManager : MonoBehaviour
     {
         if (_isEnhancing || _currentEnhanceData == null) return;
 
-        // 재화 소모 (Req_Mat, Req_Cost_Amt 기준)
         InventoryManager.Instance.AddItem(_currentEnhanceData.Req_Mat.ItemId, -_currentEnhanceData.Req_Mat_Amt);
         InventoryManager.Instance.AddCurrency(-_currentEnhanceData.Req_Cost_Amt);
 
@@ -141,7 +153,7 @@ public class EnhancementUIManager : MonoBehaviour
         progressPanel.SetActive(true);
         progressWeaponIcon.sprite = _equippedWeaponData.weaponIcon;
 
-        StartCoroutine(EnhanceRoutine());
+        _enhanceCoroutine = StartCoroutine(EnhanceRoutine());
     }
 
     private IEnumerator EnhanceRoutine()

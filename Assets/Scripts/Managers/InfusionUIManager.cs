@@ -38,10 +38,6 @@ public class InfusionUIManager : MonoBehaviour
         if (infusionDB != null) infusionDB.Initialize();
         if (confirmBtn != null) confirmBtn.onClick.AddListener(OnConfirmImbue);
         if (cancelBtn != null) cancelBtn.onClick.AddListener(ClosePopup);
-
-        if (confirmBtnText != null) confirmBtnText.text = "부여하기";
-        if (cancelBtnText != null) cancelBtnText.text = "부여 안하기";
-
         if (popupPanel != null) popupPanel.SetActive(false);
 
         GenerateSlots();
@@ -60,6 +56,15 @@ public class InfusionUIManager : MonoBehaviour
     void Update()
     {
         if (slotContainer != null && !slotContainer.gameObject.activeInHierarchy) return;
+
+        if (popupPanel != null && popupPanel.activeSelf)
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                ClosePopup();
+                return; // 팝업만 끄고 여기서 멈춤!
+            }
+        }
 
         if (_currentSelectedSlot != null && popupPanel != null && !popupPanel.activeSelf)
         {
@@ -155,6 +160,9 @@ public class InfusionUIManager : MonoBehaviour
 
     private void OpenPopup()
     {
+        if (confirmBtnText != null) confirmBtnText.text = "부여하기";
+        if (cancelBtnText != null) cancelBtnText.text = "부여 안하기";
+
         BlacksmithInfusionSO infusion = _currentSelectedSlot.myData as BlacksmithInfusionSO;
         if (infusion == null) return;
 

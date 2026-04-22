@@ -50,6 +50,15 @@ public class ShopAIUnlockManager : MonoBehaviour
     {
         if (shopPanel != null && !shopPanel.activeInHierarchy) return;
 
+        if (popupPanel != null && popupPanel.activeSelf)
+        {
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                ClosePopup();
+                return;
+            }
+        }
+
         if (currentSelectedSlot != null && popupPanel != null && !popupPanel.activeSelf)
         {
             if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.KeypadEnter))

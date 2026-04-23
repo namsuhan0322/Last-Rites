@@ -1,4 +1,4 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
 
@@ -14,7 +14,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
     public string Thema3SceneName = "Thema3Scene";
 
     [Header("Loading Settings")]
-    [Tooltip("·ÎµùÀ» ÃÖ¼Ò ¸î ÃÊ µ¿¾È À¯ÁöÇÒÁö ¼³Á¤ÇÕ´Ï´Ù.")]
+    [Tooltip("ë¡œë”©ì„ ìµœì†Œ ëª‡ ì´ˆ ë™ì•ˆ ìœ ì§€í• ì§€ ì„¤ì •í•©ë‹ˆë‹¤.")]
     public float minimumLoadingTime = 5f;
     public bool useLoadingScreen = true;
     public bool useFadeEffect = true;
@@ -69,14 +69,14 @@ public class ScenesManager : SingletonMono<ScenesManager>
 
         GameManager.Instance?.ChangeGameState(GameState.Loading);
 
-        // ÆäÀÌµå ÀÎ
+        // í˜ì´ë“œ ì¸
         if (useFadeEffect) yield return StartCoroutine(FadeIn());
 
-        // ·Îµù ¾À ·Îµå
+        // ë¡œë”© ì”¬ ë¡œë“œ
         SceneManager.LoadScene(loadingSceneName);
         yield return null;
 
-        // ÆäÀÌµå ¾Æ¿ô
+        // í˜ì´ë“œ ì•„ì›ƒ
         if (useFadeEffect) yield return StartCoroutine(FadeOut());
 
         AsyncOperation op = SceneManager.LoadSceneAsync(targetScene);
@@ -84,7 +84,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
 
         float timer = 0.0f;
 
-        // ·Îµù ·çÇÁ
+        // ë¡œë”© ë£¨í”„
         while (!op.isDone)
         {
             timer += Time.deltaTime;
@@ -110,7 +110,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
             }
         }
 
-        // »õ ¾À ·Îµå ÈÄ ÆäÀÌµå ¾Æ¿ô
+        // ìƒˆ ì”¬ ë¡œë“œ í›„ í˜ì´ë“œ ì•„ì›ƒ
         if (useFadeEffect) yield return StartCoroutine(FadeOut());
 
         isLoading = false;
@@ -188,7 +188,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
 
         PlaySceneBGM(scene.name);
 
-        Debug.Log($"¾À ·Îµå : {scene.name}");
+        Debug.Log($"ì”¬ ë¡œë“œ : {scene.name}");
     }
 
     private void PlaySceneBGM(string sceneName)
@@ -221,9 +221,39 @@ public class ScenesManager : SingletonMono<ScenesManager>
     public void LoadMainMenu() => LoadScene(mainMenuSceneName);
     public void LoadGameScene()
     {
+        Debug.Log("<color=yellow>[í…ŒìŠ¤íŠ¸ ë¹Œë“œ] íŠœí† ë¦¬ì–¼ì„ ìŠ¤í‚µí•˜ê³  ë°”ë¡œ ë¡œë¹„ë¡œ ì´ë™í•˜ë©°, í…ŒìŠ¤íŠ¸ìš© ì•„ì´í…œì„ ì§€ê¸‰í•©ë‹ˆë‹¤!</color>");
+
+        if (InventoryManager.Instance != null)
+        {
+            InventoryManager.Instance.AddItem("S_000", 1);
+            InventoryManager.Instance.AddItem("R_001", 99);
+            InventoryManager.Instance.AddItem("P_001", 99);
+            InventoryManager.Instance.AddItem("P_002", 99);
+            InventoryManager.Instance.AddItem("P_003", 99);
+            InventoryManager.Instance.AddCurrency(999999);
+
+            InventoryData invData = InventoryManager.Instance.GetCurrentData();
+            if (invData != null)
+            {
+                invData.equippedWeaponID = 10;
+            }
+
+            if (DataManager.Instance != null)
+            {
+                DataManager.Instance.SaveAllData();
+            }
+        }
+        else
+        {
+            Debug.LogWarning("[í…ŒìŠ¤íŠ¸ ë¹Œë“œ] InventoryManagerë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´ ì•„ì´í…œ ì§€ê¸‰ì— ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤.");
+        }
+
+        LoadScene(LobbySceneName);
+
+        /* ê¸°ì¡´ ì½”ë“œëŠ” ë‚˜ì¤‘ì„ ìœ„í•´ ì£¼ì„ ì²˜ë¦¬
         if (GameProgressManager.Instance == null || GameProgressManager.Instance.progressData == null)
         {
-            Debug.LogWarning("[ScenesManager] GameProgressData¸¦ Ã£À» ¼ö ¾ø¾î ±âº» Æ©Åä¸®¾ó ¾ÀÀ¸·Î ÀÌµ¿ÇÕ´Ï´Ù.");
+            Debug.LogWarning("[ScenesManager] GameProgressDataë¥¼ ì°¾ì„ ìˆ˜ ì—†ì–´ ê¸°ë³¸ íŠœí† ë¦¬ì–¼ ì”¬ìœ¼ë¡œ ì´ë™í•©ë‹ˆë‹¤.");
             LoadScene(tutorialSceneName);
             return;
         }
@@ -236,6 +266,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
         {
             LoadScene(tutorialSceneName);
         }
+        */
     }
 
     public void LoadTestGameScene()

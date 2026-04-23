@@ -5,6 +5,8 @@ using System;
 
 public class UISystemPopup : SingletonMono<UISystemPopup>
 {
+    protected override bool DontDestroy => false;
+
     [Header("UI References")]
     public GameObject popupPanel;
     public TextMeshProUGUI titleText;

@@ -467,6 +467,12 @@ public class Enemy : Actor
 
         manager?.OnEnemyDead();
 
+        BossClearManager bossClearManager = FindAnyObjectByType<BossClearManager>();
+        if (bossClearManager != null)
+        {
+            bossClearManager.ShowClearSequence();
+        }
+
         StartCoroutine(DieRoutine());
     }
 

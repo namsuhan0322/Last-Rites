@@ -51,6 +51,19 @@ public class PauseMenuManager : MonoBehaviour
                 HidePauseMenu();
             }
         }
+
+        if (settingPanel != null && settingPanel.activeSelf)
+        {
+            if (Input.GetKeyDown(KeyCode.Y))
+            {
+                SaveManager.Instance.TrySave();
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                SaveManager.Instance.TryReset();
+            }
+        }
     }
 
     public void ShowPauseMenu()

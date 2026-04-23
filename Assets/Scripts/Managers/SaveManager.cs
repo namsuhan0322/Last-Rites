@@ -4,19 +4,6 @@ public class SaveManager : SingletonMono<SaveManager>
 {
     protected override bool DontDestroy => true;
 
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            TrySave();
-        }
-
-        if (Input.GetKeyDown(KeyCode.R))
-        {
-            TryReset();
-        }
-    }
-
     public void TrySave()
     {
         UISystemPopup.Instance.ShowPopup(

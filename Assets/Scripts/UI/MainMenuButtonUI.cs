@@ -9,9 +9,9 @@ public class MainMenuButtonUI : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (settingMenu != null && settingMenu.activeSelf)
         {
-            if (settingMenu != null && settingMenu.activeSelf)
+            if (Input.GetKeyDown(KeyCode.Escape))
             {
                 if (UISystemPopup.Instance.popupPanel.activeSelf)
                 {
@@ -22,6 +22,16 @@ public class MainMenuButtonUI : MonoBehaviour
                     // ¼³Á¤Ã¢ ´Ý±â ½Ãµµ (ÆË¾÷ ¶ç¿ì±â)
                     TryCloseSettings();
                 }
+            }
+
+            if (Input.GetKeyDown(KeyCode.Y))
+            {
+                SaveManager.Instance.TrySave();
+            }
+
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                SaveManager.Instance.TryReset();
             }
         }
     }

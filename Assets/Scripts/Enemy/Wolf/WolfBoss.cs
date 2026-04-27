@@ -894,26 +894,26 @@ public class WolfBoss : Enemy
         poisonZones.Add(pos);
 
         GameObject bigIndicator = Instantiate(throwIndicatorPrefab, pos, Quaternion.Euler(-90, 0, 0));
-        bigIndicator.transform.localScale = Vector3.one * poisonOuterRadius * 2f;
-
+        bigIndicator.transform.localScale = Vector3.zero;
         bigIndicator.transform.position += Vector3.up * 0.01f;
 
-        SetIndicatorColor(bigIndicator, Color.green);
+        SetIndicatorColor(bigIndicator, new Color(0f, 1f, 0f, 0.35f));
+        StartCoroutine(GrowIndicator(bigIndicator, poisonOuterRadius, throwWarningTime));
         Destroy(bigIndicator, throwWarningTime);
 
         GameObject safeIndicator = Instantiate(throwIndicatorPrefab, pos, Quaternion.Euler(-90, 0, 0));
-        safeIndicator.transform.localScale = Vector3.one * 4f * 2f; 
+        safeIndicator.transform.localScale = Vector3.zero;
+        safeIndicator.transform.position += Vector3.up * 0.08f;
+
+        SetIndicatorColor(safeIndicator, new Color(1f, 1f, 1f, 0.8f));
 
         var mat = safeIndicator.GetComponent<Renderer>().material;
         mat.renderQueue = 3100;
 
-        safeIndicator.transform.position += Vector3.up * 0.08f;
-
-        SetIndicatorColor(safeIndicator, Color.white);
+        StartCoroutine(GrowIndicator(safeIndicator, 4f, throwWarningTime));
         Destroy(safeIndicator, throwWarningTime);
 
         yield return new WaitForSeconds(throwWarningTime);
-
 
         int vfxCount = 15;
 
@@ -924,7 +924,6 @@ public class WolfBoss : Enemy
             GameObject vfx = Instantiate(poisonVFX, randomPos, Quaternion.identity);
             Destroy(vfx, 2f);
         }
-
 
         activeProjectiles--;
     }
@@ -987,12 +986,14 @@ public class WolfBoss : Enemy
 
         if (rend != null)
         {
-            // 머티리얼 복사해서 색 변경 (공유 방지)
             rend.material = new Material(rend.material);
             rend.material.color = color;
+
+            // 알파 적용용
+            rend.material.SetFloat("_Mode", 3);
+            rend.material.renderQueue = 3000;
         }
     }
-
     //장판 자라나는 코드
     IEnumerator GrowIndicator(GameObject indicator, float radius, float duration)
     {
@@ -1000,6 +1001,8 @@ public class WolfBoss : Enemy
 
         while (timer < duration)
         {
+            if (indicator == null) yield break; 
+
             timer += Time.deltaTime;
             float t = timer / duration;
 

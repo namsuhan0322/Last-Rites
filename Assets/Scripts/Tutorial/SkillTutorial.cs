@@ -150,6 +150,7 @@ public class SkillTutorial : MonoBehaviour
         StartCoroutine(SlowMotionBeforeTutorial());
     }
 
+    //q스킬 쓰고나서 딜레이 (미션용)
     IEnumerator UseQSkillAfterTutorialDelay()
     {
         qSkillDelayRunning = true;
@@ -246,6 +247,7 @@ public class SkillTutorial : MonoBehaviour
         }
     }
 
+    //q스킬을 썼나?
     public void OnPlayerUsedQSkill()
     {
         if (!playing) return;
@@ -285,6 +287,8 @@ public class SkillTutorial : MonoBehaviour
         tutorialSystem.EnterClickUI.SetActive(false);
     }
 
+
+    //회피 튜토리얼 끝
     void EndBossDodgeTutorial()
     {
         dodgeTutorialPlaying = false;
@@ -299,6 +303,7 @@ public class SkillTutorial : MonoBehaviour
         StartCoroutine(StartStaminaTutorialDelay());
     }
 
+    //스테미나 튜토리얼 딜레이
     IEnumerator StartStaminaTutorialDelay()
     {
         if (staminaTutorialShown) yield break;
@@ -310,6 +315,8 @@ public class SkillTutorial : MonoBehaviour
         StartStaminaTutorial();
     }
 
+
+    //스테미나 튜토리얼 시작
     void StartStaminaTutorial()
     {
         staminaTutorialPlaying = true;
@@ -327,6 +334,8 @@ public class SkillTutorial : MonoBehaviour
         tutorialSystem.EnterClickUI.SetActive(true);
         tutorialSystem.waitingForEnterClick = true;
     }
+
+    //스테미나 튜토리얼 끝
 
     void EndStaminaTutorial()
     {

@@ -27,9 +27,10 @@ public class SkillTutorial : MonoBehaviour
     float defaultFOV;
     bool dodgeTutorialPlaying = false;
     bool dodgeTutorialShown = false;
-
+    bool qSkillDelayRunning = false;
+    [SerializeField] float qSkillStartDelay = 0.2f;  //q스킬 나가는 딜레이
     public RectTransform staminaHighlight;
-
+    public bool IsQSkillMissionPlaying => playing;
     bool staminaTutorialPlaying = false;
     bool staminaTutorialShown = false;
     Vector3 staminaBaseScale;
@@ -51,15 +52,9 @@ public class SkillTutorial : MonoBehaviour
 
         if (playing && Input.GetKeyDown(KeyCode.Q))
         {
-            PlayerController pc = FindFirstObjectByType<PlayerController>();
+            if (qSkillDelayRunning) return;
 
-            if (pc.TryUseSkill(KeyCode.Q, "Skill_Q", 20, 5f, 10))
-            {
-                pc.Anim.SetTrigger("Skill_Q");
-
-                firstQUsed = true;
-                EndTutorial();
-            }
+            StartCoroutine(UseQSkillAfterTutorialDelay());
         }
 
         float scale = 1 + Mathf.Sin(Time.unscaledTime * 5f) * 0.12f;
@@ -105,7 +100,7 @@ public class SkillTutorial : MonoBehaviour
         VSkill.color = grayColor;
 
         QSkill.color = normalColor;
-
+        tutorialSystem.canUseSkills = true;
         qHighlight.gameObject.SetActive(true);
     }
 
@@ -153,6 +148,28 @@ public class SkillTutorial : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         StartCoroutine(SlowMotionBeforeTutorial());
+    }
+
+    IEnumerator UseQSkillAfterTutorialDelay()
+    {
+        qSkillDelayRunning = true;
+
+        PlayerController pc = FindFirstObjectByType<PlayerController>();
+        if (pc == null)
+        {
+            qSkillDelayRunning = false;
+            yield break;
+        }
+
+        firstQUsed = true;
+
+        EndTutorial();
+
+        yield return new WaitForSeconds(qSkillStartDelay);
+
+        pc.TryUseSkill(KeyCode.Q, "Skill_Q", 20, 5f, 10);
+
+        qSkillDelayRunning = false;
     }
 
     IEnumerator SlowMotionBeforeTutorial()

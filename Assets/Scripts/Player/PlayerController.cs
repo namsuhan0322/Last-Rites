@@ -412,6 +412,22 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        //튜토리얼용 q막기 함수
+        if (tutorialSystem != null && !tutorialSystem.canUseSkills)
+        {
+            bool qMissionPlaying = skillTutorial != null && skillTutorial.IsQSkillMissionPlaying;
+
+            // Q 미션 중이면 SkillTutorial 쪽에서 Q를 처리하니까 여기서는 막음
+            if (Input.GetKeyDown(KeyCode.Q) ||
+                Input.GetKeyDown(KeyCode.W) ||
+                Input.GetKeyDown(KeyCode.E) ||
+                Input.GetKeyDown(KeyCode.R) ||
+                Input.GetKeyDown(KeyCode.V))
+            {
+                return false;
+            }
+        }
+
         if (InCombat)
         {
             if (Input.GetKeyDown(KeyCode.Q))

@@ -17,9 +17,6 @@ public class TutorialSystem : MonoBehaviour
     [Header("공격 튜토리얼 범위")]
     public float attackMissionRange = 6f;
 
-    TutorialBoss spawnedBoss;
-    bool checkingAttackMissionRange = false;
-
     [Header("전투 튜토리얼")]
     public GameObject battlePanel;
     public TMP_Text battleText;
@@ -53,13 +50,15 @@ public class TutorialSystem : MonoBehaviour
     bool waitingForEnter = false;
     public GameObject directionArrow;
 
-
+    public bool canUseSkills = false;
     bool battleTutorialShown = false;
     public bool tutorialPlaying = false;
     Coroutine missionRoutine;
     bool bossPhaseStarted = false;
     SkillTutorial skillTutorial;
     public bool canPlayerCombat = false;
+    TutorialBoss spawnedBoss;
+    bool checkingAttackMissionRange = false;
 
     [Header("스킵 기능")]
     public Transform bossFightLocation;

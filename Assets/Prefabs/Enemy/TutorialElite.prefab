@@ -2017,6 +2017,9 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 0
   isHit: 0
   attackRange: 2
   attackCooldown: 3
@@ -2029,6 +2032,14 @@ MonoBehaviour:
   stompCooldown: 5
   doubleStompCooldown: 8
   stompIndicatorPrefab: {fileID: 1949041719786370152}
+  chargeIndicatorPrefab: {fileID: 5004172382952367341, guid: ce727b4aaaaa80343a7c9de5d5930749,
+    type: 3}
+  chargeDistance: 10
+  chargeSpeed: 15
+  chargeLockTime: 2.5
+  chargeStartDelay: 0.3
+  chargeIndicatorBaseLength: 7
+  chargeDamage: 0
 --- !u!1 &6720238812539994233
 GameObject:
   m_ObjectHideFlags: 0

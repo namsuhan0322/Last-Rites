@@ -21,6 +21,17 @@ public class TutorialBoss : Enemy
     public float stompCooldown = 5f;
     public float doubleStompCooldown = 8f;
     public GameObject stompIndicatorPrefab;
+    [Header("돌진 패턴")]
+    public GameObject chargeIndicatorPrefab;
+    public float chargeDistance = 10f;
+    public float chargeSpeed = 15f;
+    public float chargeLockTime = 1.2f;
+    public float chargeStartDelay = 0.3f;
+    public float chargeIndicatorBaseLength = 7f;
+    public int chargeDamage = 25;
+
+    GameObject chargeIndicator;
+    bool isCharging = false;
 
     float stompTimer = 0f;
     float doubleStompTimer = 0f;
@@ -28,7 +39,7 @@ public class TutorialBoss : Enemy
     bool isSkillAttacking = false;
     bool isPhaseChanging = false;
     GameObject stompIndicator;
-
+    bool skillTutorialTriggered = false;
 
     //플레이어를 바라보고 있나?
     bool IsFacingTarget()
@@ -61,6 +72,9 @@ public class TutorialBoss : Enemy
 
         stompIndicator = Instantiate(stompIndicatorPrefab, transform);
         stompIndicator.SetActive(false);
+
+        chargeIndicator = Instantiate(chargeIndicatorPrefab, transform);
+        chargeIndicator.SetActive(false);
     }
 
     IEnumerator IntroRoutine()
@@ -89,10 +103,19 @@ public class TutorialBoss : Enemy
     //업데이트
     protected override void Update()
     {
-        base.Update();
-
         if (_isDead) return;
         if (!introFinished) return;
+
+        // 스킬 중이면 부모 이동 AI 실행 금지
+        if (isAttacking || isSkillAttacking || isPhaseChanging || isCharging)
+        {
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+            UpdateIdleState();
+            return;
+        }
+
+        base.Update();
 
         attackTimer -= Time.deltaTime;
 
@@ -156,6 +179,13 @@ public class TutorialBoss : Enemy
 
         float dist = Vector3.Distance(transform.position, currentTarget.position);
         if (dist > attackRange) return;
+
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.ResetPath();
+
+        animator.SetBool("Walk", false);
+        animator.SetBool("Run", false);
 
         if (!IsFacingTarget())
         {
@@ -252,6 +282,8 @@ public class TutorialBoss : Enemy
         stompIndicator.SetActive(false);
         yield return new WaitForSeconds(2f);
 
+        yield return StartCoroutine(TutorialCharge());
+
         attackTimer = 2.0f;
         isAttacking = false;
         isSkillAttacking = false;
@@ -259,11 +291,128 @@ public class TutorialBoss : Enemy
 
 
     }
+
+    //튜토리얼 전용 돌진
+    IEnumerator TutorialCharge()
+    {
+        if (_isDead || isPhaseChanging) yield break;
+
+        isCharging = true;
+        isAttacking = true;
+        isSkillAttacking = true;
+
+        agent.isStopped = true;
+        agent.updateRotation = false;
+        agent.velocity = Vector3.zero;
+        agent.ResetPath();
+
+        animator.SetBool("Walk", false);
+        animator.SetBool("Run", false);
+
+        animator.SetTrigger("ChargeReady");
+
+        chargeIndicator.SetActive(true);
+
+        float timer = 0f;
+
+        while (timer < chargeLockTime)
+        {
+            if (_isDead || isPhaseChanging)
+            {
+                chargeIndicator.SetActive(false);
+                isCharging = false;
+                yield break;
+            }
+
+            agent.isStopped = true;
+            agent.velocity = Vector3.zero;
+            agent.ResetPath();
+
+            timer += Time.deltaTime;
+
+            if (currentTarget != null)
+            {
+                Vector3 dir = currentTarget.position - transform.position;
+                dir.y = 0f;
+
+                if (dir.sqrMagnitude > 0.01f)
+                {
+                    Quaternion targetRot = Quaternion.LookRotation(dir);
+
+                    transform.rotation = Quaternion.Slerp(
+                        transform.rotation,
+                        targetRot,
+                        Time.deltaTime * 6f
+                    );
+
+                    Vector3 forwardOffset = transform.forward * (chargeDistance * 0.5f);
+                    chargeIndicator.transform.position = transform.position + forwardOffset;
+                    chargeIndicator.transform.rotation = Quaternion.LookRotation(transform.forward);
+
+                    float scaleZ = chargeDistance / chargeIndicatorBaseLength;
+                    chargeIndicator.transform.localScale = new Vector3(2f, 1f, scaleZ);
+                }
+            }
+
+            yield return null;
+        }
+
+        Vector3 finalDir = transform.forward;
+
+        chargeIndicator.SetActive(false);
+
+        yield return new WaitForSeconds(chargeStartDelay);
+
+        animator.SetTrigger("Charge");
+
+        yield return new WaitForSeconds(0.2f);
+
+        float moved = 0f;
+        bool hasHit = false;
+
+        while (moved < chargeDistance)
+        {
+            float step = chargeSpeed * Time.deltaTime;
+
+            transform.position += finalDir * step;
+            moved += step;
+
+            if (!hasHit)
+            {
+                Collider[] hits = Physics.OverlapSphere(
+                    transform.position,
+                    1.5f,
+                    targetLayer
+                );
+
+                foreach (var hit in hits)
+                {
+                    Actor actor = hit.GetComponent<Actor>();
+                    if (actor == null || actor == this || actor.IsDead) continue;
+
+                    actor.TakeDamage(chargeDamage, 1f);
+                    hasHit = true;
+                    break;
+                }
+            }
+
+            yield return null;
+        }
+
+        isCharging = false;
+        agent.updateRotation = true;
+    }
+
     //Idle 변환 스테이트
     void UpdateIdleState()
     {
         if (agent == null) return;
-        if (isAttacking || isSkillAttacking || isPhaseChanging) return;
+        if (isAttacking || isSkillAttacking || isPhaseChanging)
+        {
+            animator.SetBool("Walk", false);
+            animator.SetBool("Run", false);
+            return;
+        }
 
         bool isMoving = agent.velocity.magnitude > 0.1f;
 
@@ -310,7 +459,16 @@ public class TutorialBoss : Enemy
     public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
     {
         if (isHit || _isDead) return;
+
         base.TakeDamage(damage, severityOverride);
+
+        if (!skillTutorialTriggered)
+        {
+            skillTutorialTriggered = true;
+
+            SkillTutorial skillTutorial = FindFirstObjectByType<SkillTutorial>();
+            skillTutorial?.OnFirstHitEnemy();
+        }
 
         EndHit();
     }
@@ -340,6 +498,58 @@ public class TutorialBoss : Enemy
     {
         if (stompIndicator != null)
             stompIndicator.SetActive(false);
+    }
+
+    public void OnDoubleStompHit()
+    {
+        Collider[] hits = Physics.OverlapSphere(
+            transform.position,
+            attackRange,
+            targetLayer
+        );
+
+        foreach (var hit in hits)
+        {
+            Actor actor = hit.GetComponent<Actor>();
+            if (actor == null || actor == this || actor.IsDead) continue;
+
+            actor.TakeDamage(attackDamage, 1f);
+        }
+    }
+
+    public void SetTutorialFreeze(bool freeze)
+    {
+        agent.isStopped = freeze;
+
+        if (freeze)
+        {
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+
+            isAttacking = true;
+            isSkillAttacking = true;
+            isCharging = false;
+
+            animator.SetBool("Walk", false);
+            animator.SetBool("Run", false);
+
+            if (currentPhase == BossPhase.Phase1)
+            {
+                animator.SetBool("Phase1Idle", true);
+                animator.SetBool("Phase2Idle", false);
+            }
+            else
+            {
+                animator.SetBool("Phase1Idle", false);
+                animator.SetBool("Phase2Idle", true);
+            }
+        }
+        else
+        {
+            isAttacking = false;
+            isSkillAttacking = false;
+            agent.isStopped = false;
+        }
     }
 }
 

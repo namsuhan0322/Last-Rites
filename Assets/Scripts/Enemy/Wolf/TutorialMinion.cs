@@ -28,17 +28,13 @@ public class TutorialMinion : Enemy
         if (tutorialSystem == null)
             tutorialSystem = FindFirstObjectByType<TutorialSystem>();
 
-        OnStun += HandleStunTutorial;
     }
 
-    void HandleStunTutorial()
-    {
-        skillTutorial?.OnEnemyStunned();
-    }
 
     public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
     {
         if (_isDead) return;
+
 
         if (tutorialSystem != null && tutorialSystem.tutorialPlaying)
             return;

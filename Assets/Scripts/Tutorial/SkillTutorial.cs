@@ -70,11 +70,6 @@ public class SkillTutorial : MonoBehaviour
             staminaHighlight.localScale = staminaBaseScale * scale;
         }
 
-        if (stunTutorialPlaying && Input.GetKeyDown(KeyCode.Return))
-        {
-            EndStunTutorial();
-        }
-
         if (dodgeTutorialPlaying && Input.GetKeyDown(KeyCode.Space))
         {
             EndBossDodgeTutorial();
@@ -91,6 +86,9 @@ public class SkillTutorial : MonoBehaviour
     public void StartTutorial()
     {
         playing = true;
+
+        TutorialBoss boss = FindFirstObjectByType<TutorialBoss>();
+        boss?.SetTutorialFreeze(true);
 
         StartCoroutine(FadeGray());
         StartCoroutine(ZoomCamera());
@@ -116,6 +114,9 @@ public class SkillTutorial : MonoBehaviour
     void EndTutorial()
     {
         playing = false;
+
+        TutorialBoss boss = FindFirstObjectByType<TutorialBoss>();
+        boss?.SetTutorialFreeze(false);
 
         Time.timeScale = 1f;
 
@@ -226,50 +227,6 @@ public class SkillTutorial : MonoBehaviour
             playerCam.m_Lens.FieldOfView = Mathf.Lerp(start, target, t);
             yield return null;
         }
-    }
-
-    public void OnEnemyStunned()
-    {
-        if (stunTutorialPlaying || stunTutorialShown) return;
-
-        stunTutorialPlaying = true;
-        playing = true;   
-
-        StartCoroutine(StunTutorial());
-    }
-    IEnumerator StunTutorial()
-    {
-        Time.timeScale = 0.15f;
-        yield return new WaitForSecondsRealtime(2f);
-
-        Time.timeScale = 0f;
-
-        StartCoroutine(FadeGray());
-        StartCoroutine(ZoomCamera());
-
-        battlePanel.SetActive(true);
-        battleText.text = "일정 피해를 누적시키면 기절합니다.";
-
-        tutorialSystem.EnterClickUI.SetActive(true);
-        tutorialSystem.waitingForEnterClick = true;
-    }
-
-    void EndStunTutorial()
-    {
-        stunTutorialPlaying = false;
-        playing = false;  
-
-        Time.timeScale = 1f;
-
-        battlePanel.SetActive(false);
-        tutorialSystem.EnterClickUI.SetActive(false);
-
-        StartCoroutine(FadeOutGray());
-        StartCoroutine(ResetCamera());
-
-        stunTutorialShown = true;
-
-        tutorialSystem.ShowMission("스킬을 사용해 피해량을\n누적시키시오");
     }
 
     public void OnPlayerUsedQSkill()

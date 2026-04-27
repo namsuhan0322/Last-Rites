@@ -171,24 +171,32 @@ public class TutorialSystem : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        yield return StartCoroutine(SpawnWolves());
+        SpawnTutorialBoss();
+        bossPhaseStarted = true;
 
-        yield return new WaitForSeconds(1f);
+        yield return new WaitForSeconds(2f);
 
         tutorialCam.Priority = 5;
         playerCam.Priority = 20;
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(1f);
 
         playerController.enabled = true;
     }
 
-    IEnumerator SpawnWolves()
+    void SpawnTutorialBoss()
     {
-        for (int i = 0; i < spawnPoints.Length; i++)
+        if (spawnPoints.Length > 0)
         {
-            Instantiate(wolfPrefab, spawnPoints[i].position, spawnPoints[i].rotation);
-            yield return new WaitForSeconds(0.4f);
+            Transform spawn = spawnPoints[0];
+
+            GameObject bossObj = Instantiate(tutorialBossPrefab, spawn.position, spawn.rotation);
+
+            TutorialBoss boss = bossObj.GetComponent<TutorialBoss>();
+            if (boss != null)
+            {
+                boss.SetTutorialFreeze(true);
+            }
         }
     }
 
@@ -232,6 +240,9 @@ public class TutorialSystem : MonoBehaviour
         battlePanel.SetActive(false);
         EnterClickUI.SetActive(false);
 
+        TutorialBoss boss = FindFirstObjectByType<TutorialBoss>();
+        boss?.SetTutorialFreeze(false);
+
         tutorialPlaying = false; // 입력 허용
 
         playerController.enabled = true;
@@ -249,6 +260,9 @@ public class TutorialSystem : MonoBehaviour
     IEnumerator ShowBattleMission()
     {
         tutorialPlaying = true;
+
+        TutorialBoss boss = FindFirstObjectByType<TutorialBoss>();
+        boss?.SetTutorialFreeze(true);
 
         playerController.enabled = false;
 

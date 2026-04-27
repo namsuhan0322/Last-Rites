@@ -29,6 +29,7 @@ public class TutorialBoss : Enemy
     public float chargeStartDelay = 0.3f;
     public float chargeIndicatorBaseLength = 7f;
     public int chargeDamage = 25;
+    public float chargeEndDelay = 1.2f;
 
     GameObject chargeIndicator;
     bool isCharging = false;
@@ -114,6 +115,8 @@ public class TutorialBoss : Enemy
             UpdateIdleState();
             return;
         }
+
+
 
         base.Update();
 
@@ -398,6 +401,13 @@ public class TutorialBoss : Enemy
 
             yield return null;
         }
+
+        animator.SetBool("Walk", false);
+        animator.SetBool("Run", false);
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+
+        yield return new WaitForSeconds(chargeEndDelay);
 
         isCharging = false;
         agent.updateRotation = true;

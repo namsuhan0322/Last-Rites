@@ -14,6 +14,12 @@ public class TutorialSystem : MonoBehaviour
     [Header("미션UI")]
     public TMP_Text missionText;
 
+    [Header("공격 튜토리얼 범위")]
+    public float attackMissionRange = 6f;
+
+    TutorialBoss spawnedBoss;
+    bool checkingAttackMissionRange = false;
+
     [Header("전투 튜토리얼")]
     public GameObject battlePanel;
     public TMP_Text battleText;
@@ -53,6 +59,7 @@ public class TutorialSystem : MonoBehaviour
     Coroutine missionRoutine;
     bool bossPhaseStarted = false;
     SkillTutorial skillTutorial;
+    public bool canPlayerCombat = false;
 
     [Header("스킵 기능")]
     public Transform bossFightLocation;
@@ -100,6 +107,21 @@ public class TutorialSystem : MonoBehaviour
                 Time.timeScale = 1f;
             }
         }
+
+        if (checkingAttackMissionRange && !battleTutorialShown && spawnedBoss != null)
+        {
+            float dist = Vector3.Distance(
+                playerController.transform.position,
+                spawnedBoss.transform.position
+            );
+
+            if (dist <= attackMissionRange)
+            {
+                checkingAttackMissionRange = false;
+                ShowAttackMissionFromBossRange();
+            }
+        }
+
     }
 
     //텍스트시작
@@ -161,6 +183,8 @@ public class TutorialSystem : MonoBehaviour
 
     IEnumerator StartBattleTutorial()
     {
+        canPlayerCombat = false;
+
         playerController.Agent.ResetPath();
         playerController.Agent.velocity = Vector3.zero;
         playerController.enabled = false;
@@ -180,8 +204,14 @@ public class TutorialSystem : MonoBehaviour
         playerCam.Priority = 20;
 
         yield return new WaitForSeconds(1f);
+    }
 
-        playerController.enabled = true;
+    public void ShowAttackMissionFromBossRange()
+    {
+        if (battleTutorialShown) return;
+
+        battleTutorialShown = true;
+        StartCoroutine(ShowBattleMission());
     }
 
     void SpawnTutorialBoss()
@@ -192,11 +222,14 @@ public class TutorialSystem : MonoBehaviour
 
             GameObject bossObj = Instantiate(tutorialBossPrefab, spawn.position, spawn.rotation);
 
-            TutorialBoss boss = bossObj.GetComponent<TutorialBoss>();
-            if (boss != null)
+            spawnedBoss = bossObj.GetComponent<TutorialBoss>();
+
+            if (spawnedBoss != null)
             {
-                boss.SetTutorialFreeze(true);
+                spawnedBoss.SetTutorialFreeze(true);
             }
+
+            checkingAttackMissionRange = true;
         }
     }
 
@@ -243,8 +276,9 @@ public class TutorialSystem : MonoBehaviour
         TutorialBoss boss = FindFirstObjectByType<TutorialBoss>();
         boss?.SetTutorialFreeze(false);
 
-        tutorialPlaying = false; // 입력 허용
+        canPlayerCombat = true; 
 
+        tutorialPlaying = false;
         playerController.enabled = true;
     }
 

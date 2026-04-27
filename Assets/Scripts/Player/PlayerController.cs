@@ -646,8 +646,6 @@ public class PlayerController : MonoBehaviour
         if (VisualManager != null)
             VisualManager.DrawWeapon();
 
-        tutorialSystem?.OnPlayerWeaponDraw();
-
     }
 
     // 칼을 칼집에 넣는 애니메이션 도중 손에서 자루를 놓을 때 호출
@@ -663,6 +661,18 @@ public class PlayerController : MonoBehaviour
     #region 적 탐지
     private void CheckEnemyInSight()
     {
+        if (tutorialSystem != null && !tutorialSystem.canPlayerCombat)
+        {
+            _inCombat = false;
+            _combatTimer = 0f;
+            Anim.SetBool("InCombat", false);
+
+            if (VisualManager != null)
+                VisualManager.StowWeapon();
+
+            return;
+        }
+
         // 주변의 적(Collider)들을 모두 찾음
         Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, DetectionRadius, EnemyLayer);
 

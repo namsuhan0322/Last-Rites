@@ -316,6 +316,20 @@ public class TutorialBoss : Enemy
 
         chargeIndicator.SetActive(true);
 
+        SkillTutorial skillTutorial = FindFirstObjectByType<SkillTutorial>();
+
+        bool tutorialDone = false;
+
+        if (skillTutorial != null)
+        {
+            skillTutorial.StartChargeTutorial(() =>
+            {
+                tutorialDone = true;
+            });
+
+            yield return new WaitUntil(() => tutorialDone);
+        }
+
         float timer = 0f;
 
         while (timer < chargeLockTime)

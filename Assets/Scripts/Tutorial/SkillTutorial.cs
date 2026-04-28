@@ -34,6 +34,10 @@ public class SkillTutorial : MonoBehaviour
     bool staminaTutorialPlaying = false;
     bool staminaTutorialShown = false;
     Vector3 staminaBaseScale;
+    bool chargeTutorialPlaying = false;
+    bool chargeTutorialShown = false;
+    System.Action afterChargeTutorialAction;
+
     void Start()
     {
         defaultFOV = playerCam.m_Lens.FieldOfView;
@@ -48,7 +52,7 @@ public class SkillTutorial : MonoBehaviour
 
     void Update()
     {
-        if (!playing && !stunTutorialPlaying && !dodgeTutorialPlaying && !staminaTutorialPlaying) return;
+        if (!playing && !stunTutorialPlaying && !dodgeTutorialPlaying && !staminaTutorialPlaying && !chargeTutorialPlaying) return;
 
         if (playing && Input.GetKeyDown(KeyCode.Q))
         {
@@ -73,6 +77,11 @@ public class SkillTutorial : MonoBehaviour
         if (staminaTutorialPlaying && Input.GetKeyDown(KeyCode.Return))
         {
             EndStaminaTutorial();
+        }
+
+        if (chargeTutorialPlaying && Input.GetKeyDown(KeyCode.Return))
+        {
+            EndChargeTutorial();
         }
     }
 
@@ -353,5 +362,48 @@ public class SkillTutorial : MonoBehaviour
 
         StartCoroutine(FadeOutGray());
         StartCoroutine(ResetCamera());
+    }
+
+    public void StartChargeTutorial(System.Action afterTutorial)
+    {
+        if (chargeTutorialShown)
+        {
+            afterTutorial?.Invoke();
+            return;
+        }
+
+        chargeTutorialShown = true;
+        chargeTutorialPlaying = true;
+        afterChargeTutorialAction = afterTutorial;
+
+        Time.timeScale = 0f;
+
+        StartCoroutine(FadeGray());
+        StartCoroutine(ZoomCamera());
+
+        battlePanel.SetActive(true);
+        battleText.text = "돌진을 준비합니다\n벽에 부딪히면 기절합니다";
+
+        tutorialSystem.EnterClickUI.SetActive(true);
+        tutorialSystem.waitingForEnterClick = true;
+    }
+
+    void EndChargeTutorial()
+    {
+        chargeTutorialPlaying = false;
+
+        Time.timeScale = 1f;
+
+        battlePanel.SetActive(false);
+        battleText.text = "";
+
+        tutorialSystem.EnterClickUI.SetActive(false);
+        tutorialSystem.waitingForEnterClick = false;
+
+        StartCoroutine(FadeOutGray());
+        StartCoroutine(ResetCamera());
+
+        afterChargeTutorialAction?.Invoke();
+        afterChargeTutorialAction = null;
     }
 }

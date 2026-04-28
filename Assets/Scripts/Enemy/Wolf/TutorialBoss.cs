@@ -31,12 +31,19 @@ public class TutorialBoss : Enemy
     public int chargeDamage = 25;
     public float chargeEndDelay = 1.2f;
 
+    [Header("돌진할때 나오는 벽")]
+    [SerializeField] GameObject chargeWallPrefab;
+    [SerializeField] float chargeWallSideOffset = 3f;
+    [SerializeField] float chargeWallForwardOffset = 2f;
+
+    GameObject spawnedChargeWall;
+
     GameObject chargeIndicator;
     bool isCharging = false;
 
     float stompTimer = 0f;
     float doubleStompTimer = 0f;
-
+    bool isStunned = false;
     bool isSkillAttacking = false;
     bool isPhaseChanging = false;
     GameObject stompIndicator;
@@ -106,7 +113,7 @@ public class TutorialBoss : Enemy
     {
         if (_isDead) return;
         if (!introFinished) return;
-
+        if (isStunned) return;
         // 스킬 중이면 부모 이동 AI 실행 금지
         if (isAttacking || isSkillAttacking || isPhaseChanging || isCharging)
         {
@@ -285,7 +292,7 @@ public class TutorialBoss : Enemy
         stompIndicator.SetActive(false);
         yield return new WaitForSeconds(2f);
 
-        yield return StartCoroutine(TutorialCharge());
+        yield return StartCoroutine(TutorialCharge()); //바로 다음 돌진 패턴 나오게
 
         attackTimer = 2.0f;
         isAttacking = false;
@@ -315,20 +322,9 @@ public class TutorialBoss : Enemy
         animator.SetTrigger("ChargeReady");
 
         chargeIndicator.SetActive(true);
+        SpawnChargeSideWall();
 
-        SkillTutorial skillTutorial = FindFirstObjectByType<SkillTutorial>();
-
-        bool tutorialDone = false;
-
-        if (skillTutorial != null)
-        {
-            skillTutorial.StartChargeTutorial(() =>
-            {
-                tutorialDone = true;
-            });
-
-            yield return new WaitUntil(() => tutorialDone);
-        }
+        yield return StartCoroutine(StartChargeTutorialDelayed());
 
         float timer = 0f;
 
@@ -413,6 +409,25 @@ public class TutorialBoss : Enemy
                 }
             }
 
+            Collider[] envHits = Physics.OverlapSphere(
+      transform.position,
+      1.2f,
+      LayerMask.GetMask("Environment")
+  );
+
+            if (envHits.Length > 0)
+            {
+                isCharging = false;
+                isAttacking = false;
+                isSkillAttacking = false;
+
+                agent.isStopped = true;
+                agent.velocity = Vector3.zero;
+
+                StartCoroutine(TutorialStunRoutine(4f));
+                yield break;
+            }
+
             yield return null;
         }
 
@@ -423,8 +438,93 @@ public class TutorialBoss : Enemy
 
         yield return new WaitForSeconds(chargeEndDelay);
 
+        if (spawnedChargeWall != null)
+        {
+            Destroy(spawnedChargeWall);
+        }
+
         isCharging = false;
         agent.updateRotation = true;
+    }
+
+    //튜토리얼 스턴 루틴
+    IEnumerator TutorialStunRoutine(float duration)
+    {
+        isStunned = true;
+
+        isAttacking = true;
+        isSkillAttacking = false;
+        isCharging = false;
+
+        agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.updateRotation = false;
+
+        animator.SetBool("Stun", true);
+
+        yield return new WaitForSeconds(duration);
+
+        animator.SetBool("Stun", false);
+
+
+        isStunned = false;
+
+        isAttacking = false;
+        isSkillAttacking = false;
+        isCharging = false;
+
+        agent.isStopped = false;
+        agent.updateRotation = true;
+    }
+
+    //튜토리얼 돌진 딜레이
+    IEnumerator StartChargeTutorialDelayed()
+    {
+        yield return new WaitForSeconds(0.9f); 
+
+        SkillTutorial skillTutorial = FindFirstObjectByType<SkillTutorial>();
+
+        bool tutorialDone = false;
+
+        if (skillTutorial != null)
+        {
+            skillTutorial.StartChargeTutorial(() =>
+            {
+                tutorialDone = true;
+            });
+
+            yield return new WaitUntil(() => tutorialDone);
+        }
+    }
+
+    //보스 양옆에 벽 소환
+    void SpawnChargeSideWall()
+    {
+        if (chargeWallPrefab == null || currentTarget == null) return;
+
+        // 기존 벽 있으면 제거
+        if (spawnedChargeWall != null)
+        {
+            Destroy(spawnedChargeWall);
+        }
+
+        Vector3 toPlayer = currentTarget.position - transform.position;
+        toPlayer.y = 0f;
+
+        float sideDot = Vector3.Dot(toPlayer.normalized, transform.right);
+
+        // 플레이어가 오른쪽에 있으면 왼쪽에 소환
+        // 플레이어가 왼쪽에 있으면 오른쪽에 소환
+        Vector3 sideDir = sideDot > 0f ? -transform.right : transform.right;
+
+        Vector3 spawnPos =
+            transform.position +
+            transform.forward * chargeWallForwardOffset +
+            sideDir * chargeWallSideOffset;
+
+        Quaternion spawnRot = Quaternion.LookRotation(transform.forward) * chargeWallPrefab.transform.rotation;
+
+        spawnedChargeWall = Instantiate(chargeWallPrefab, spawnPos, spawnRot);
     }
 
     //Idle 변환 스테이트

@@ -210,7 +210,7 @@ public class SkillTutorial : MonoBehaviour
         }
     }
 
-    IEnumerator FadeOutGray()
+    public IEnumerator FadeOutGray()
     {
         float t = 0;
         Color c = grayOverlay.color;

@@ -31,6 +31,12 @@ public class TutorialSystem : MonoBehaviour
     [Header("튜토리얼 완료 UI")]
     public TMP_Text tutorialCompleteText;
 
+    [Header("튜토리얼 클리어 후 새 목표")]
+    public Transform afterBossGoal;
+    public DirectionArrowUI directionArrowUI;
+    public float completeShowTime = 2.5f;
+    public string afterBossGoalMessage = "목표 지점으로 이동하세요";
+
     public PlayerController playerController; // 추가
     public GameObject wolfPrefab;
 
@@ -421,6 +427,8 @@ public class TutorialSystem : MonoBehaviour
 
         GameProgressManager.Instance.CompleteTutorial();
 
+
+
         // 인벤토리에 튜토리얼 보스 소울(S_000) 1개 지급
         if (InventoryManager.Instance != null)
         {
@@ -453,6 +461,30 @@ public class TutorialSystem : MonoBehaviour
 
             yield return null;
         }
+
+        yield return new WaitForSecondsRealtime(completeShowTime);
+
+        // 튜토리얼 완료 글자 끄기
+        tutorialCompleteText.gameObject.SetActive(false);
+
+        // 회색 화면 페이드아웃
+        if (skillTutorial != null)
+        {
+            StartCoroutine(skillTutorial.FadeOutGray());
+        }
+
+        if (directionArrowUI != null && afterBossGoal != null)
+        {
+            directionArrowUI.goal = afterBossGoal;
+        }
+
+        directionArrow.SetActive(true);
+        ShowMission(afterBossGoalMessage);
+
+        playerController.enabled = true;
+        tutorialPlaying = false;
+        canPlayerCombat = false;
+
     }
 
     public void SkipTutorial()

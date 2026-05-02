@@ -30,8 +30,8 @@ public class SaveData
         displayModeIndex = 0;   // 전체화면 기본
         motionBlurIndex = 0;    // ON 기본
 
-        brightness = 1.0f;
-        contrast = 0.5f;
+        brightness = 0.0f;
+        contrast = 0.0f;
 
         masterVolume = 10;
         bgmVolume = 10;

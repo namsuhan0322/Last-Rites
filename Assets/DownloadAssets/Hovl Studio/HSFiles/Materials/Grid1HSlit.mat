@@ -8,18 +8,18 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Grid1HSlit
-  m_Shader: {fileID: -6465566751694194690, guid: 04a157cda4db57f45a293a0d2991b21d, type: 3}
+  m_Shader: {fileID: -6465566751694194690, guid: 456f62aa2a1d4b7448998cd3cc4f20d1, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
+  m_ValidKeywords:
+  - _DISABLE_SSR_TRANSPARENT
   m_InvalidKeywords: []
   m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2225
   stringTagMap:
     MotionVector: User
-    RenderType: Opaque
   disabledShaderPasses:
   - TransparentDepthPrepass
   - TransparentDepthPostpass
@@ -47,10 +47,6 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Normal:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Opacity:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
@@ -108,7 +104,6 @@ Material:
     - _MaterialTypeMask: 2
     - _Metallic_value: 0
     - _Occlusion: 0.1
-    - _Opacity_value: 0
     - _OpaqueCullMode: 2
     - _PerPixelSorting: 0
     - _QueueControl: 1
@@ -145,7 +140,6 @@ Material:
     - _TransparentWritingMotionVec: 0
     - _TransparentZWrite: 0
     - _UseShadowThreshold: 0
-    - _Use_fresnel: 0
     - _WorkflowMode: 1
     - _ZTest: 4
     - _ZTestDepthEqualForOpaque: 3
@@ -154,11 +148,10 @@ Material:
     - _ZWrite: 1
     - _ZWriteControl: 0
     m_Colors:
-    - _Albedo_Color: {r: 0.38, g: 0.38, b: 0.38, a: 1}
+    - _Albedo_Color: {r: 0.764151, g: 0.764151, b: 0.764151, a: 1}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
     - _Emission_color: {r: 1, g: 1, b: 1, a: 0}
-    - _SpeedXYFresnelEmission: {r: 0, g: 0, b: 2, a: 2}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &436089603915050402

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+ï»¿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -20,11 +20,11 @@ public class GraphicsSettingsManager : MonoBehaviour
 
     private List<string> resolutionOptionStrings = new List<string>();
 
-    private readonly List<string> frameRateOptions = new List<string> { "60", "120", "144", "Á¦ÇÑ ¾øÀ½" };
+    private readonly List<string> frameRateOptions = new List<string> { "60", "120", "144", "ì œí•œ ì—†ìŒ" };
     private readonly List<string> displayModeOptions = new List<string> { "Full Screen", "Borderless", "Windowed" };
     private readonly List<string> motionBlurOptions = new List<string> { "ON", "OFF" };
 
-    // ÇØ»óµµ Å¸°Ù µ¥ÀÌÅÍ
+    // í•´ìƒë„ íƒ€ê²Ÿ ë°ì´í„°
     private (int w, int h)[] resTargets = { (3840, 2160), (2560, 1440), (1920, 1080), (1280, 720) };
 
     void Start()
@@ -40,14 +40,14 @@ public class GraphicsSettingsManager : MonoBehaviour
         {
             int autoIndex = 2;
 
-            // ÇöÀç ½ÇÇà ÁßÀÎ È­¸éÀÇ °¡·Î/¼¼·Î Å©±â
+            // í˜„ì¬ ì‹¤í–‰ ì¤‘ì¸ í™”ë©´ì˜ ê°€ë¡œ/ì„¸ë¡œ í¬ê¸°
             int screenW = Screen.width;
             int screenH = Screen.height;
 
-            // ¿ì¸®°¡ Áö¿øÇÏ´Â ÇØ»óµµ ¸ñ·Ï(resTargets)°ú ºñ±³
+            // ìš°ë¦¬ê°€ ì§€ì›í•˜ëŠ” í•´ìƒë„ ëª©ë¡(resTargets)ê³¼ ë¹„êµ
             for (int i = 0; i < resTargets.Length; i++)
             {
-                // °¡·Î, ¼¼·Î°¡ Á¤È®È÷ ÀÏÄ¡ÇÏ¸é ±× ÀÎµ¦½º ¼±ÅÃ
+                // ê°€ë¡œ, ì„¸ë¡œê°€ ì •í™•íˆ ì¼ì¹˜í•˜ë©´ ê·¸ ì¸ë±ìŠ¤ ì„ íƒ
                 if (resTargets[i].w == screenW && resTargets[i].h == screenH)
                 {
                     autoIndex = i;
@@ -55,19 +55,19 @@ public class GraphicsSettingsManager : MonoBehaviour
                 }
             }
 
-            // Ã£Àº ÀÎµ¦½º¸¦ µ¥ÀÌÅÍ¿¡ Àû¿ëÇÏ°í Áï½Ã ÀúÀå
+            // ì°¾ì€ ì¸ë±ìŠ¤ë¥¼ ë°ì´í„°ì— ì ìš©í•˜ê³  ì¦‰ì‹œ ì €ì¥
             data.resolutionIndex = autoIndex;
             SaveDataHolder.Instance.Save();
         }
 
-        // 1. ÇØ»óµµ ½ºÆ®¸µ ¸¸µé±â
+        // 1. í•´ìƒë„ ìŠ¤íŠ¸ë§ ë§Œë“¤ê¸°
         resolutionOptionStrings.Clear();
         resolutionOptionStrings.Add("3840 x 2160 (4K)");
         resolutionOptionStrings.Add("2560 x 1440 (QHD)");
         resolutionOptionStrings.Add("1920 x 1080 (FHD)");
         resolutionOptionStrings.Add("1280 x 720 (HD)");
 
-        // 2. °¢ ¾ÆÀÌÅÛ ÃÊ±âÈ­
+        // 2. ê° ì•„ì´í…œ ì´ˆê¸°í™”
         resolutionItem.Initialize(resolutionOptionStrings, data.resolutionIndex, OnResolutionChanged);
         frameRateItem.Initialize(frameRateOptions, data.frameRateIndex, OnFrameRateChanged);
         displayModeItem.Initialize(displayModeOptions, data.displayModeIndex, OnDisplayModeChanged);
@@ -76,40 +76,46 @@ public class GraphicsSettingsManager : MonoBehaviour
         brightnessItem.Initialize(data.brightness, OnBrightnessChanged);
         contrastItem.Initialize(data.contrast, OnContrastChanged);
 
-        // È­»ìÇ¥ ¾ÆÀÌÅÛ ¼±ÅÃ ÀÌº¥Æ® ¿¬°á
+        // í™”ì‚´í‘œ ì•„ì´í…œ ì„ íƒ ì´ë²¤íŠ¸ ì—°ê²°
         resolutionItem.onSelected = OnArrowItemSelected;
         frameRateItem.onSelected = OnArrowItemSelected;
         displayModeItem.onSelected = OnArrowItemSelected;
         motionBlurItem.onSelected = OnArrowItemSelected;
 
-        // ½½¶óÀÌ´õ ¾ÆÀÌÅÛ ¼±ÅÃ ÀÌº¥Æ® ¿¬°á
+        // ìŠ¬ë¼ì´ë” ì•„ì´í…œ ì„ íƒ ì´ë²¤íŠ¸ ì—°ê²°
         brightnessItem.onSelected = OnSliderItemSelected;
         contrastItem.onSelected = OnSliderItemSelected;
 
 
-        // UI ¼±ÅÃ »óÅÂ °»½Å
+        // UI ì„ íƒ ìƒíƒœ ê°±ì‹ 
         OnArrowItemSelected(resolutionItem);
 
         ApplyAllSettings(data);
 
-        // ÃÊ±âÈ­ °úÁ¤¿¡¼­ °ªÀÌ ¼¼ÆÃµÇ¸é¼­ HasChanges°¡ true°¡ µÉ ¼ö ÀÖÀ¸¹Ç·Î,
-        // ÃÊ±âÈ­°¡ ³¡³­ ½ÃÁ¡¿¡´Â °­Á¦·Î false
+        // ì´ˆê¸°í™” ê³¼ì •ì—ì„œ ê°’ì´ ì„¸íŒ…ë˜ë©´ì„œ HasChangesê°€ trueê°€ ë  ìˆ˜ ìˆìœ¼ë¯€ë¡œ,
+        // ì´ˆê¸°í™”ê°€ ëë‚œ ì‹œì ì—ëŠ” ê°•ì œë¡œ false
         SaveDataHolder.Instance.HasChanges = false;
     }
 
-    // ·ÎµåµÈ °ªÀ¸·Î ½ÇÁ¦ ±×·¡ÇÈ ¼¼ÆÃ Àû¿ë
+    // ë¡œë“œëœ ê°’ìœ¼ë¡œ ì‹¤ì œ ê·¸ë˜í”½ ì„¸íŒ… ì ìš©
     void ApplyAllSettings(SaveData data)
     {
         OnResolutionChanged(data.resolutionIndex);
         OnFrameRateChanged(data.frameRateIndex);
         OnDisplayModeChanged(data.displayModeIndex);
         OnMotionBlurChanged(data.motionBlurIndex);
+
+        if (BrightnessManager.Instance != null)
+        {
+            BrightnessManager.Instance.UpdateBrightness(data.brightness);
+            BrightnessManager.Instance.UpdateContrast(data.contrast);
+        }
     }
 
-    // --- Äİ¹é ÇÔ¼öµé ---
+    // --- ì½œë°± í•¨ìˆ˜ë“¤ ---
     void OnResolutionChanged(int index)
     {
-        // °ªÀÌ ½ÇÁ¦·Î ´Ù¸¦ ¶§¸¸ true·Î º¯°æ
+        // ê°’ì´ ì‹¤ì œë¡œ ë‹¤ë¥¼ ë•Œë§Œ trueë¡œ ë³€ê²½
         if (SaveDataHolder.Instance.currentData.resolutionIndex != index)
         {
             SaveDataHolder.Instance.currentData.resolutionIndex = index;
@@ -151,7 +157,7 @@ public class GraphicsSettingsManager : MonoBehaviour
         GameEvents.FullscreenChanged(index == 0);
     }
 
-    // --- UI ¼±ÅÃ ·ÎÁ÷ ---
+    // --- UI ì„ íƒ ë¡œì§ ---
     void OnArrowItemSelected(GraphicsOptionItem selectedItem)
     {
         if (resolutionItem != null) resolutionItem.SetSelectedState(resolutionItem == selectedItem);
@@ -184,7 +190,7 @@ public class GraphicsSettingsManager : MonoBehaviour
         if (descriptionContent != null) descriptionContent.text = content;
     }
 
-    // --- ½½¶óÀÌ´õ/±âÅ¸ Äİ¹é ---
+    // --- ìŠ¬ë¼ì´ë”/ê¸°íƒ€ ì½œë°± ---
     void OnMotionBlurChanged(int index)
     {
         if (SaveDataHolder.Instance.currentData.motionBlurIndex != index)
@@ -200,6 +206,11 @@ public class GraphicsSettingsManager : MonoBehaviour
         {
             SaveDataHolder.Instance.currentData.brightness = value;
             SaveDataHolder.Instance.HasChanges = true;
+
+            if (BrightnessManager.Instance != null)
+            {
+                BrightnessManager.Instance.UpdateBrightness(value);
+            }
         }
     }
 
@@ -209,6 +220,11 @@ public class GraphicsSettingsManager : MonoBehaviour
         {
             SaveDataHolder.Instance.currentData.contrast = value;
             SaveDataHolder.Instance.HasChanges = true;
+
+            if (BrightnessManager.Instance != null)
+            {
+                BrightnessManager.Instance.UpdateContrast(value);
+            }
         }
     }
 }

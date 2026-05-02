@@ -4466,6 +4466,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 475020715049840863, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: weaponSpecialEffects.Array.data[0].screenEffectObj
+      value: 
+      objectReference: {fileID: 1819378839}
+    - target: {fileID: 475020715049840863, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: weaponSpecialEffects.Array.data[1].screenEffectObj
+      value: 
+      objectReference: {fileID: 1520306557}
     - target: {fileID: 1070490428555067037, guid: 0f9bab5272d9a794d923441e91c2427c,
         type: 3}
       propertyPath: m_Name
@@ -4900,6 +4910,12 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4681796862414035154, guid: 1d662f75b3aface43970716bd54efbb0,
     type: 3}
   m_PrefabInstance: {fileID: 6913700801901969699}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1520306557 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1494885639347652858, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
+    type: 3}
+  m_PrefabInstance: {fileID: 238689051}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1524619014
 GameObject:
@@ -6008,6 +6024,12 @@ RectTransform:
   m_AnchoredPosition: {x: 459, y: 0}
   m_SizeDelta: {x: 329.3, y: 130}
   m_Pivot: {x: 0, y: 0.5}
+--- !u!1 &1819378839 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6285938262713084210, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
+    type: 3}
+  m_PrefabInstance: {fileID: 238689051}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1849201494
 GameObject:
   m_ObjectHideFlags: 0

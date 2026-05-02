@@ -8187,7 +8187,6 @@ MonoBehaviour:
   canvasGroup: {fileID: 695483031}
   panelTransform: {fileID: 688596407}
   bossHp: {fileID: 1037161773}
-  playerHp: {fileID: 1819447091}
   startDelay: 1.5
   fadeDuration: 2.5
   startScale: 0.85
@@ -10160,12 +10159,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 4798256002257660416, guid: 12db804d18dfd144da99623f845cbbac,
     type: 3}
   m_PrefabInstance: {fileID: 341210779}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &1819447091 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8992792923262582355, guid: fd1cfc5404f519a43b45ecefe997ec68,
-    type: 3}
-  m_PrefabInstance: {fileID: 8129376418264816793}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &1889720314 stripped
 GameObject:
@@ -12184,6 +12177,16 @@ PrefabInstance:
       propertyPath: screenBloodEffect
       value: 
       objectReference: {fileID: 1649458090}
+    - target: {fileID: 475020715049840863, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: weaponSpecialEffects.Array.data[0].screenEffectObj
+      value: 
+      objectReference: {fileID: 412108779}
+    - target: {fileID: 475020715049840863, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: weaponSpecialEffects.Array.data[1].screenEffectObj
+      value: 
+      objectReference: {fileID: 7718113232967503539}
     - target: {fileID: 1070490428555067037, guid: 0f9bab5272d9a794d923441e91c2427c,
         type: 3}
       propertyPath: m_Name
@@ -12795,48 +12798,13 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 826226849741900483, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
         type: 3}
-      propertyPath: m_UpdateMethod
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 826226849741900483, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
-        type: 3}
       propertyPath: m_WorldUpOverride
       value: 
       objectReference: {fileID: 2008560040}
-    - target: {fileID: 5754770391342946623, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
-        type: 3}
-      propertyPath: ShapeModule.m_Scale.x
-      value: 0.6486851
-      objectReference: {fileID: 0}
-    - target: {fileID: 5754770391342946623, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
-        type: 3}
-      propertyPath: ShapeModule.m_Scale.y
-      value: 0.36488536
-      objectReference: {fileID: 0}
-    - target: {fileID: 5754770391342946623, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
-        type: 3}
-      propertyPath: InitialModule.startSize.scalar
-      value: 0.6486851
-      objectReference: {fileID: 0}
-    - target: {fileID: 5754770391342946623, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
-        type: 3}
-      propertyPath: InitialModule.startSizeY.scalar
-      value: 0.36488536
-      objectReference: {fileID: 0}
     - target: {fileID: 6943738225744338893, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
         type: 3}
       propertyPath: m_Name
       value: Main Camera
-      objectReference: {fileID: 0}
-    - target: {fileID: 7163737981764386410, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
-        type: 3}
-      propertyPath: ShapeModule.m_Scale.x
-      value: 0.6486851
-      objectReference: {fileID: 0}
-    - target: {fileID: 7163737981764386410, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
-        type: 3}
-      propertyPath: InitialModule.startSize.scalar
-      value: 0.6486851
       objectReference: {fileID: 0}
     - target: {fileID: 8945471042150667052, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
         type: 3}
@@ -12893,6 +12861,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c67b837bd6a93b944bdeeb56ad2cdeca, type: 3}
+--- !u!1 &7718113232967503539 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1494885639347652858, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
+    type: 3}
+  m_PrefabInstance: {fileID: 7718113232967503538}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7864830537325212857
 PrefabInstance:
   m_ObjectHideFlags: 0

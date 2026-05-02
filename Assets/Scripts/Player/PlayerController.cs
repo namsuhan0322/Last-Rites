@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.ProBuilder;
 
 public class PlayerController : MonoBehaviour
 {
@@ -62,9 +63,13 @@ public class PlayerController : MonoBehaviour
 
     [Header("Effect && Pos")]
     public GameObject HealEffect;
-    public GameObject GreateSwordEffect;
     public Transform bodyEffectPos;
-    private GameObject currentRSkillInstance;
+
+    [Header("무기별 특수(R) 이펙트 매핑")]
+    public List<WeaponEffectMapping> weaponSpecialEffects = new List<WeaponEffectMapping>();
+
+    private GameObject currentRSkillInstance;         // 몸에 생성된 아우라 추적용
+    private GameObject currentScreenEffectInstance;   // 현재 켜진 화면 이펙트 추적용
 
     [Header("낙하형(AoE) 스킬")]
     public GameObject excaliburSkillPrefab;
@@ -72,7 +77,6 @@ public class PlayerController : MonoBehaviour
 
     [Header("카메라 스크린 이펙트")]
     public ScreenBloodController screenBloodEffect;
-    public GameObject screenFireEffect;
 
     [Header("아이템 관리")]
     public ShopPotionSO currentPotionData;          // 장착된 포션 SO
@@ -84,6 +88,9 @@ public class PlayerController : MonoBehaviour
     public float Potion_Timer { get; private set; }
 
     public event Action<int> OnPotionCountChanged;
+
+    [Header("창 버프 전용 투사체")]
+    public GameObject spearBuffProjectilePrefab;
 
     [Header("Action Effects (현재 무기의 액션 이펙트 모음)")]
     public List<ActionEffectMapping> weaponEffects = new List<ActionEffectMapping>();
@@ -495,31 +502,20 @@ public class PlayerController : MonoBehaviour
 
         AnimatorStateInfo stateInfo = Anim.GetCurrentAnimatorStateInfo(0);
 
-        if (stateInfo.IsName("Attack1"))
-        {
-            damageToDeal = CurrentWeapon.Combo_1;
-        }
-        else if (stateInfo.IsName("Attack2"))
-        {
-            damageToDeal = CurrentWeapon.Combo_2;
-        }
-        else if (stateInfo.IsName("Attack3"))
-        {
-            damageToDeal = CurrentWeapon.Combo_3;
-        }
-        else if (stateInfo.IsTag("Skill"))
-        {
-            damageToDeal = CurrentSkillDamage;
-        }
+        if (stateInfo.IsName("Attack1")) damageToDeal = CurrentWeapon.Combo_1;
+        else if (stateInfo.IsName("Attack2")) damageToDeal = CurrentWeapon.Combo_2;
+        else if (stateInfo.IsName("Attack3")) damageToDeal = CurrentWeapon.Combo_3;
+        else if (stateInfo.IsTag("Skill")) damageToDeal = CurrentSkillDamage;
 
         if (HasRBuff)
-        {
-            // 데미지를 CurrentSkillVal 배율만큼 곱해줍니다.
             damageToDeal = Mathf.RoundToInt(damageToDeal * CurrentSkillVal);
-        }
 
-        // 히트박스 켜면서 결정된 데미지 전달
         Hitbox.EnableHitbox(damageToDeal);
+
+        if (HasSpearBuff)
+        {
+            FireSpearBuffProjectile(10);
+        }
     }
 
     // 공격 종료 시 호출
@@ -531,32 +527,61 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void FireSpearBuffProjectile(int damage)
+    {
+        if (spearBuffProjectilePrefab == null || bodyEffectPos == null) return;
+
+        GameObject projObj = Instantiate(spearBuffProjectilePrefab, bodyEffectPos.position, transform.rotation);
+
+        Projectile projectileScript = projObj.GetComponent<Projectile>();
+        if (projectileScript != null)
+        {
+            projectileScript.Initialize(damage, EnemyLayer);
+        }
+    }
+
     // 특정 공격 모션에서 이펙트 끄기 (애니메이션 이벤트용)
     public void DisableREffect()
     {
-        if (HasRBuff) return;
+        if (HasRBuff || HasSpearBuff) return;
 
         if (currentRSkillInstance != null)
         {
             currentRSkillInstance.SetActive(false);
+            Destroy(currentRSkillInstance, 2f);
+            currentRSkillInstance = null;
         }
 
-        if (screenFireEffect != null) screenFireEffect.SetActive(false);
+        if (currentScreenEffectInstance != null)
+        {
+            currentScreenEffectInstance.SetActive(false);
+            currentScreenEffectInstance = null;
+        }
     }
 
     public void EnableREffect()
     {
-        if (GreateSwordEffect == null || bodyEffectPos == null)
+        if (CurrentWeapon == null || bodyEffectPos == null) return;
+
+        WeaponEffectMapping mapping = weaponSpecialEffects.Find(x => x.weaponType == CurrentWeapon.weaponType);
+
+        if (mapping.auraPrefab != null)
         {
-            Debug.LogWarning("[PlayerController] R스킬 아우라 프리팹 또는 생성 위치가 할당되지 않았습니다!");
-            return;
+            if (currentRSkillInstance != null) Destroy(currentRSkillInstance);
+
+            currentRSkillInstance = Instantiate(mapping.auraPrefab, bodyEffectPos.position, Quaternion.identity, bodyEffectPos);
+            currentRSkillInstance.SetActive(true);
+        }
+        else
+        {
+            Debug.LogWarning($"[PlayerController] {CurrentWeapon.weaponType} 타입의 아우라 프리팹이 매핑되지 않았습니다!");
         }
 
-        currentRSkillInstance = Instantiate(GreateSwordEffect, bodyEffectPos.position, Quaternion.identity, bodyEffectPos);
-
-        currentRSkillInstance.SetActive(true);
-
-        if (screenFireEffect != null) screenFireEffect.SetActive(true);
+        if (mapping.screenEffectObj != null)
+        {
+            currentScreenEffectInstance = mapping.screenEffectObj;
+            currentScreenEffectInstance.SetActive(true);
+        }
     }
 
     #endregion
@@ -951,7 +976,9 @@ public class PlayerController : MonoBehaviour
         globalSkillTimer = 0f;
         _dashTimer = 0f;
         postRollAttackTimer = 0f;
+        HasRBuff = false;
 
+        DisableREffect();
         DisableWeaponCollider();
         ForceDisableAllActionEffects();
 

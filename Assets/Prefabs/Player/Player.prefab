@@ -3038,7 +3038,7 @@ Animator:
   m_GameObject: {fileID: 1070490428555067037}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: d49c65de9fce66146b5d0e164b1f9d2d, type: 3}
-  m_Controller: {fileID: 9100000, guid: 30aa3bed4b6317f4f8f6cc796f5f2298, type: 2}
+  m_Controller: {fileID: 22100000, guid: 88d0f957d05fa6745a41dfd3dc491ccb, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -3175,17 +3175,31 @@ MonoBehaviour:
     m_Bits: 64
   CombatCooldown: 5
   HealEffect: {fileID: 1247282762272248, guid: 492df79ed1fc3eb44ab76e0daccd44f9, type: 3}
-  GreateSwordEffect: {fileID: 1679348057962266, guid: 0335b834533bcfa4696fa549573ce169,
-    type: 3}
   bodyEffectPos: {fileID: 7219820817851896826}
+  weaponSpecialEffects:
+  - weaponType: 0
+    auraPrefab: {fileID: 1679348057962266, guid: 0335b834533bcfa4696fa549573ce169,
+      type: 3}
+    screenEffectObj: {fileID: 0}
+  - weaponType: 3
+    auraPrefab: {fileID: 1679348057962266, guid: 79e60a2536bf83c46b53c7a14137aee3,
+      type: 3}
+    screenEffectObj: {fileID: 0}
+  - weaponType: 0
+    auraPrefab: {fileID: 0}
+    screenEffectObj: {fileID: 0}
+  - weaponType: 0
+    auraPrefab: {fileID: 0}
+    screenEffectObj: {fileID: 0}
   excaliburSkillPrefab: {fileID: 5605766444419816317, guid: f6ca45a87367b1b428bdb2e8870764f1,
     type: 3}
   spawnDistance: 5
   screenBloodEffect: {fileID: 0}
-  screenFireEffect: {fileID: 0}
   currentPotionData: {fileID: 11400000, guid: 463921fe6c5a4884785a72e39891abe0, type: 2}
   currentPotionCount: 0
   potionCooldown: 2
+  spearBuffProjectilePrefab: {fileID: 6505721572967687103, guid: eeefef05f5c81034d8ad39177ce9a355,
+    type: 3}
   weaponEffects:
   - actionCode: GS_Attack01
     particles:
@@ -26687,6 +26701,41 @@ PrefabInstance:
       propertyPath: playOnAwake
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 199057218975048044, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 199119478002216748, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 199558831561905776, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 199602163232181782, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 199720500564923422, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 199757795763052390, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 199980546978487382, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: m_Materials.Array.size
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -27271,6 +27320,91 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -26.197
       objectReference: {fileID: 0}
+    - target: {fileID: 198157517556015438, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0.07058823
+      objectReference: {fileID: 0}
+    - target: {fileID: 198157517556015438, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.79504395
+      objectReference: {fileID: 0}
+    - target: {fileID: 198157517556015438, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 198157517556015438, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.b
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198157517556015438, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.g
+      value: 0.86738014
+      objectReference: {fileID: 0}
+    - target: {fileID: 198157517556015438, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 198157517556015438, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.m_ColorSpace
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198271889703459560, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0.18431371
+      objectReference: {fileID: 0}
+    - target: {fileID: 198271889703459560, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 198271889703459560, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.9661281
+      objectReference: {fileID: 0}
+    - target: {fileID: 198321086533307592, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0.07058823
+      objectReference: {fileID: 0}
+    - target: {fileID: 198321086533307592, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.87146044
+      objectReference: {fileID: 0}
+    - target: {fileID: 198321086533307592, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 198321086533307592, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.b
+      value: 0.07843137
+      objectReference: {fileID: 0}
+    - target: {fileID: 198321086533307592, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.g
+      value: 0.72752243
+      objectReference: {fileID: 0}
+    - target: {fileID: 198321086533307592, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.key1.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 198321086533307592, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: ColorModule.gradient.maxGradient.m_ColorSpace
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 198741542255655676, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
         type: 3}
       propertyPath: looping
@@ -27280,6 +27414,21 @@ PrefabInstance:
         type: 3}
       propertyPath: playOnAwake
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 198907911106580028, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0.25882357
+      objectReference: {fileID: 0}
+    - target: {fileID: 198907911106580028, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.6039216
+      objectReference: {fileID: 0}
+    - target: {fileID: 198907911106580028, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.58567667
       objectReference: {fileID: 0}
     - target: {fileID: 199057218975048044, guid: 710b8db99c5cbed48ad2173bee3ff5fc,
         type: 3}

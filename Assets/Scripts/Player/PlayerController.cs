@@ -66,6 +66,10 @@ public class PlayerController : MonoBehaviour
     public Transform bodyEffectPos;
     private GameObject currentRSkillInstance;
 
+    [Header("낙하형(AoE) 스킬")]
+    public GameObject excaliburSkillPrefab;
+    public float spawnDistance = 5f;
+
     [Header("카메라 스크린 이펙트")]
     public ScreenBloodController screenBloodEffect;
     public GameObject screenFireEffect;
@@ -653,6 +657,26 @@ public class PlayerController : MonoBehaviour
         return false;
     }
 
+    public void UseExcaliburSkill()
+    {
+        if (excaliburSkillPrefab == null) return;
+
+        Vector3 spawnPosition = transform.position + transform.forward * spawnDistance;
+
+        GameObject skillInstance = Instantiate(excaliburSkillPrefab, spawnPosition, transform.rotation);
+
+        AoESkillEffect aoeScript = skillInstance.GetComponent<AoESkillEffect>();
+        if (aoeScript != null)
+        {
+            int damageToDeal = CurrentSkillDamage;
+            if (HasRBuff)
+            {
+                damageToDeal = Mathf.RoundToInt(damageToDeal * CurrentSkillVal);
+            }
+
+            aoeScript.Initialize(damageToDeal, EnemyLayer);
+        }
+    }
     #endregion
 
     #region 무기 장착, 해제 이벤트 

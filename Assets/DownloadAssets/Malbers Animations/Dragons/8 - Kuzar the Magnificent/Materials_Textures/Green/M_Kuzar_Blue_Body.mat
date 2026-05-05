@@ -88,11 +88,14 @@ Material:
     m_Floats:
     - _Alpha_Clip: 1
     - _EmissionPower: 1
+    - _HitFlashAmount: 0
     - _QueueControl: 1
+    - _Roughness: 1
     - _Saturation: -0.5
     - _Soft_Mult: 6
     m_Colors:
     - _EmissionColor: {r: 2.6108782, g: 5.5232925, b: 9.95515, a: 1}
+    - _HitFlashColor: {r: 0.025157154, g: 0.025157154, b: 0.025157154, a: 1}
     - _Rough_Max: {r: 0, g: 0.6, b: 0, a: 0}
     - _Rough_Min: {r: 0, g: 1.1, b: 0, a: 0}
     - _Soft_Light_Tint: {r: 0.7531292, g: 0.78012925, b: 0.82641506, a: 0}

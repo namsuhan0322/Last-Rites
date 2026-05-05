@@ -5163,6 +5163,8 @@ GameObject:
   m_Component:
   - component: {fileID: 925633216826566905}
   - component: {fileID: 5060350478542223439}
+  - component: {fileID: 7207453542784150176}
+  - component: {fileID: 7804963564610020852}
   m_Layer: 6
   m_Name: Thema2Boss
   m_TagString: Enemy
@@ -5209,6 +5211,73 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7207453542784150176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8359645455954385577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c4a1267eb60ae3478b14652270e33f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DragonBoss
+  _currentHP: 0
+  _maxPoise: 20
+  _currentPoise: 0
+  _poiseRecoveryRate: 0
+  _isInvincible: 0
+  _invincibleTimer: 0
+  data: {fileID: 11400000, guid: 4437b63f820048e4f940d0ed3333cb4c, type: 2}
+  agent: {fileID: 7804963564610020852}
+  aiLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  currentTarget: {fileID: 0}
+  surroundRadius: 0
+  aggroLockDuration: 3
+  stunMarkDuration: 2
+  stunText: {fileID: 0}
+  tauntText: {fileID: 0}
+  enemyLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 0
+  isHit: 0
+  attackRange: 0
+  attackCooldown: 0
+  attackDamage: 0
+  attackTimer: 0
+  idleTime: 3
+  DragonpatrolRadius: 10
+  DragonpatrolSpeed: 2
+  turnSpeed: 40
+  turnDuration: 2.45
+--- !u!195 &7804963564610020852
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8359645455954385577}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &8379514132061479435
 GameObject:
   m_ObjectHideFlags: 0

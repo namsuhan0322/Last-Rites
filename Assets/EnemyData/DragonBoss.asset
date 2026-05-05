@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5bad62ff640ca5c4f943cf5ebad64133, type: 3}
-  m_Name: TutorialBoss
+  m_Name: DragonBoss
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  prefab: {fileID: 6686470288692599356, guid: db639394867802549a2169d3c1218642, type: 3}
+  prefab: {fileID: 0}
   rank: 2
-  enemyHp: 800
+  enemyHp: 1000
   patrolSpeed: 2
-  chaseSpeed: 2
-  detectRadius: 4
-  patrolRadius: 2
+  chaseSpeed: 4
+  detectRadius: 6
+  patrolRadius: 10
   patrolWaitTime: 2
   attackDamage: 5
-  attackRange: 2.5
-  attackCooldown: 5
+  attackRange: 4.5
+  attackCooldown: 1.5

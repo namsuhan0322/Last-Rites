@@ -23,8 +23,6 @@ public class Enemy : Actor
     [Header("어그로락")]
     public float aggroLockDuration = 3f;
 
-    float targetLockTimer = 0f;
-
     float aggroTimer = 0f;
 
     [SerializeField] float stunMarkDuration = 2f; 
@@ -43,9 +41,11 @@ public class Enemy : Actor
     Transform forcedTarget;
     float forcedTimer = 0f;
     float detectRadius;
-    float patrolRadius;
+    protected float patrolSpeed;
+    protected float patrolRadius;
+    public float PatrolSpeed => patrolSpeed;
+    public float PatrolRadius => patrolRadius;
     float patrolWaitTime;
-    float patrolSpeed;
     float chaseSpeed;
     float waitTimer = 0f;
     public bool isHit = false;
@@ -125,20 +125,57 @@ public class Enemy : Actor
     }
 
     //업데이트 부분
-    protected override void Update() 
-    { 
+    protected override void Update()
+    {
         base.Update();
+
+        EnemyAIUpdate();
+    }
+
+    protected virtual void EnemyAIUpdate()
+    {
         if (_isDead || isHit) return;
-        if (isStunned) { stunTimer -= Time.deltaTime;
-        if (stunTimer <= 0f) EndStun();  return; } 
+
+        if (isStunned)
+        {
+            stunTimer -= Time.deltaTime;
+
+            if (stunTimer <= 0f)
+                EndStun();
+
+            return;
+        }
+
         if (isAttacking || IsRecovering()) return;
-        if (agent.velocity.magnitude < 0.1f) { animator?.SetBool("Walk", false); animator?.SetBool("Run", false); } 
-        if (actionLockTimer > 0f) { actionLockTimer -= Time.deltaTime; return; } if (forcedTimer > 0) { 
-        if (forcedTimer <= 0) forcedTarget = null; } 
+
+        if (agent.velocity.magnitude < 0.1f)
+        {
+            animator?.SetBool("Walk", false);
+            animator?.SetBool("Run", false);
+        }
+
+        if (actionLockTimer > 0f)
+        {
+            actionLockTimer -= Time.deltaTime;
+            return;
+        }
+
+        if (forcedTimer > 0)
+        {
+            if (forcedTimer <= 0)
+                forcedTarget = null;
+        }
+
         if (Rank != EnemyRank.Boss && isHit) return;
+
         HandleForcedTarget();
         HandleMovement();
         TryAttack();
+    }
+
+    protected void ActorUpdateOnly()
+    {
+        base.Update();
     }
 
     //도발 걸린 상태
@@ -617,7 +654,6 @@ public class Enemy : Actor
         // 각종 타이머 초기화
         aggroTimer = 0f;
         forcedTimer = 0f;
-        targetLockTimer = 0f;
         attackTimer = 0f;
         actionLockTimer = 0f;
         stunTimer = 0f;

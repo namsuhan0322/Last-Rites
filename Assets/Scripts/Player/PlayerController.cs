@@ -804,9 +804,9 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region 아웃라인 제어
-    public void TogglePlayerOutline(bool isOn)
+    public void SetBossModeOutline(bool isBossMode)
     {
-        int targetLayer = isOn ? LayerMask.NameToLayer("Player") : LayerMask.NameToLayer("Default");
+        int targetLayer = isBossMode ? LayerMask.NameToLayer("PlayerBossOutline") : LayerMask.NameToLayer("Player");
 
         Renderer[] renderers = GetComponentsInChildren<Renderer>();
         foreach (Renderer r in renderers)

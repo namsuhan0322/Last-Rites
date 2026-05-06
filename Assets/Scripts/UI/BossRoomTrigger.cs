@@ -1,4 +1,5 @@
 using UnityEngine;
+using Cinemachine;
 
 public class BossRoomTrigger : MonoBehaviour
 {
@@ -10,21 +11,30 @@ public class BossRoomTrigger : MonoBehaviour
     public Transform bossSpawnPoint;    // 보스가 생성될 위치 (빈 오브젝트 권장)
     public GameObject currentBoss;      // 현재 맵에 살아있는 보스
 
+    [Header("테마2 보스 카메라 설정")]
+    public CinemachineVirtualCamera bossCamera;
+
+    private PlayerController _player;
+
     private void Start()
     {
-        // 처음 시작할 때 맵에 배치되어 있는 보스 연결 (안 되어있을 경우)
         if (currentBoss == null)
         {
-            currentBoss = GameObject.FindWithTag("Boss"); // 보스에 Boss 태그가 없다면 직접 인스펙터에서 넣어주세요!
+            currentBoss = GameObject.FindWithTag("Boss");
         }
+
+        if (bossCamera != null) bossCamera.Priority = 0;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Player"))
         {
+            _player = other.GetComponent<PlayerController>();
+            if (_player != null) _player.SetBossModeOutline(true);
             if (bossHealthUI != null) bossHealthUI.ShowBossUI();
             if (doorObj != null) doorObj.SetActive(true);
+            if (bossCamera != null) bossCamera.Priority = 20;
 
             gameObject.SetActive(false);
         }
@@ -35,6 +45,9 @@ public class BossRoomTrigger : MonoBehaviour
         gameObject.SetActive(true);
         if (bossHealthUI != null) bossHealthUI.HideBossUI();
         if (doorObj != null) doorObj.SetActive(false);
+
+        if (bossCamera != null) bossCamera.Priority = 0;
+        if (_player != null) _player.SetBossModeOutline(false);
         if (currentBoss != null)
         {
             Destroy(currentBoss);
@@ -51,5 +64,13 @@ public class BossRoomTrigger : MonoBehaviour
                 bossHealthUI.UpdateBossReference(newBossActor);
             }
         }
+    }
+
+    public void OnBossDefeated()
+    {
+        if (bossCamera != null) bossCamera.Priority = 0;
+        if (bossHealthUI != null) bossHealthUI.HideBossUI();
+        if (doorObj != null) doorObj.SetActive(false);
+        if (_player != null) _player.SetBossModeOutline(false);
     }
 }

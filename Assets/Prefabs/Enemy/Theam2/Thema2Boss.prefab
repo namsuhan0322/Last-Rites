@@ -5165,6 +5165,7 @@ GameObject:
   - component: {fileID: 5060350478542223439}
   - component: {fileID: 7207453542784150176}
   - component: {fileID: 7804963564610020852}
+  - component: {fileID: 5936976412975435787}
   m_Layer: 6
   m_Name: Thema2Boss
   m_TagString: Enemy
@@ -5199,7 +5200,7 @@ Animator:
   m_GameObject: {fileID: 8359645455954385577}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 2a86b4dbb710e874dad391f323181505, type: 3}
-  m_Controller: {fileID: 9100000, guid: 02c83182451fba4469baea8331e02707, type: 2}
+  m_Controller: {fileID: 9100000, guid: 78e92576f25993048ae42ddfd9dffd4c, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -5276,6 +5277,24 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &5936976412975435787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8359645455954385577}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 047fae5f98ecc984d84c0e6dfde1cf1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitFlashEffect
+  flashColor: {r: 0.4528302, g: 0.35172656, b: 0.35172656, a: 1}
+  originalColor: {r: 1, g: 1, b: 1, a: 1}
+  maxFlashAmount: 0.7
+  flashDuration: 0.1
+  colorPropertyName: _HitFlashColor
+  amountPropertyName: _HitFlashAmount
 --- !u!1 &8379514132061479435
 GameObject:
   m_ObjectHideFlags: 0

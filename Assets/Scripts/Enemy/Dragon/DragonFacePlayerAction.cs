@@ -39,6 +39,12 @@ public partial class DragonFacePlayerAction : Action
         if (boss == null)
             return Status.Failure;
 
+        if (boss.StateMachine.CurrentState == boss.FaceTargetState)
+            return Status.Running;
+
+        if (boss.StateMachine.CurrentState == boss.RoarState)
+            return Status.Running;
+
         if (boss.StateMachine.CurrentState == boss.IdleState)
             return Status.Success;
 

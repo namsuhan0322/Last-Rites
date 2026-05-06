@@ -52,8 +52,17 @@ public class DragonBossFaceTargetState : DragonBossState
         if (Mathf.Abs(signedAngle) <= boss.faceFinishAngle)
         {
             boss.SetMoveType(0);
-            boss.StartFaceCooldown();
-            stateMachine.ChangeState(boss.IdleState);
+
+            if (!boss.HasRoared)
+            {
+                stateMachine.ChangeState(boss.RoarState);
+            }
+            else
+            {
+                boss.StartFaceCooldown();
+                stateMachine.ChangeState(boss.IdleState);
+            }
+
             return;
         }
 

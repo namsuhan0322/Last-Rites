@@ -10,6 +10,7 @@ public class DragonBoss : Enemy
     public DragonBossTurnLeftState TurnLeftState { get; private set; }
     public DragonBossTurnRightState TurnRightState { get; private set; }
 
+    public DragonBossRoarState RoarState { get; private set; }
     public DragonBossFaceTargetState FaceTargetState { get; private set; }
 
     [Header("Dragon Boss Move")]
@@ -24,7 +25,14 @@ public class DragonBoss : Enemy
     public float faceCooldown = 1.2f;
     public float faceFinishAngle = 5f;
     [Header("Target Lock")]
-    public float targetLoseRange = 25f; 
+    public float targetLoseRange = 25f;
+    [Header("Roar")]
+    public float roarDuration = 2.5f;
+    private bool hasRoared = false;
+
+    public bool HasRoared => hasRoared;
+
+
     //변수들
     private int currentMoveType = -1;
     private float faceCooldownTimer = 0f;
@@ -39,11 +47,12 @@ public class DragonBoss : Enemy
         PatrolState = new DragonBossPatrolState(this, StateMachine);
         TurnLeftState = new DragonBossTurnLeftState(this, StateMachine);
         TurnRightState = new DragonBossTurnRightState(this, StateMachine);
+        RoarState = new DragonBossRoarState(this, StateMachine);
+        FaceTargetState = new DragonBossFaceTargetState(this, StateMachine);
+
+        playerTarget = GameObject.FindGameObjectWithTag("Player")?.transform;
 
         StateMachine.Initialize(IdleState);
-
-        FaceTargetState = new DragonBossFaceTargetState(this, StateMachine);
-        playerTarget = GameObject.FindGameObjectWithTag("Player")?.transform;
     }
 
     protected override void Start()
@@ -113,6 +122,11 @@ public class DragonBoss : Enemy
         return playerTarget;
     }
 
+    //포효
+    public void SetRoared()
+    {
+        hasRoared = true;
+    }
     public bool GetRandomPatrolPoint(out Vector3 result)
     {
         for (int i = 0; i < 30; i++)

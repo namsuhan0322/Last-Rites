@@ -2,6 +2,8 @@
 
 public class DragonBossPatrolState : DragonBossState
 {
+    private Vector3 targetPos;
+
     public DragonBossPatrolState(DragonBoss boss, DragonBossStateMachine stateMachine)
         : base(boss, stateMachine)
     {
@@ -14,9 +16,11 @@ public class DragonBossPatrolState : DragonBossState
         boss.agent.isStopped = false;
         boss.agent.speed = boss.PatrolSpeed;
 
-        if (boss.GetRandomPatrolPoint(out Vector3 point))
+        boss.SetMoveType(1);
+
+        if (boss.GetRandomPatrolPoint(out targetPos))
         {
-            boss.agent.SetDestination(point);
+            boss.agent.SetDestination(targetPos);
         }
         else
         {
@@ -28,50 +32,18 @@ public class DragonBossPatrolState : DragonBossState
     {
         base.LogicUpdate();
 
-        UpdateMoveAnimation();
-        RotateToMoveDirection();
+        RotateToDestination();
 
         if (!boss.agent.pathPending &&
-            boss.agent.remainingDistance <= boss.agent.stoppingDistance + 0.2f)
+            boss.agent.remainingDistance <= boss.agent.stoppingDistance + 0.3f)
         {
             stateMachine.ChangeState(boss.IdleState);
         }
     }
 
-    private void UpdateMoveAnimation()
+    private void RotateToDestination()
     {
-        Vector3 dir = boss.agent.desiredVelocity;
-        dir.y = 0f;
-
-        if (dir.sqrMagnitude < 0.01f)
-        {
-            boss.SetMoveType(0);
-            return;
-        }
-
-        float angle = Vector3.SignedAngle(
-            boss.transform.forward,
-            dir.normalized,
-            Vector3.up
-        );
-
-        if (angle > 15f)
-        {
-            boss.SetMoveType(3); // 오른쪽으로 돌면서 걷기
-        }
-        else if (angle < -15f)
-        {
-            boss.SetMoveType(2); // 왼쪽으로 돌면서 걷기
-        }
-        else
-        {
-            boss.SetMoveType(1); // 앞으로 걷기
-        }
-    }
-
-    private void RotateToMoveDirection()
-    {
-        Vector3 dir = boss.agent.desiredVelocity;
+        Vector3 dir = boss.agent.steeringTarget - boss.transform.position;
         dir.y = 0f;
 
         if (dir.sqrMagnitude < 0.01f) return;
@@ -87,6 +59,8 @@ public class DragonBossPatrolState : DragonBossState
 
     public override void Exit()
     {
+        boss.agent.isStopped = true;
+        boss.agent.ResetPath();
         boss.SetMoveType(0);
     }
 }

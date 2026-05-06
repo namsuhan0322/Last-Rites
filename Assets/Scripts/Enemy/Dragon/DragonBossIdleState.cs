@@ -13,24 +13,14 @@ public class DragonBossIdleState : DragonBossState
 
         boss.agent.isStopped = true;
         boss.agent.ResetPath();
+        boss.agent.velocity = Vector3.zero;
 
-        boss.SetMoveType(0); // Idle
+        boss.SetMoveType(0);
     }
 
     public override void LogicUpdate()
     {
         base.LogicUpdate();
 
-        if (stateTimer >= boss.idleTime)
-        {
-            int rand = Random.Range(0, 3);
-
-            if (rand == 0)
-                stateMachine.ChangeState(boss.PatrolState);
-            else if (rand == 1)
-                stateMachine.ChangeState(boss.TurnLeftState);
-            else
-                stateMachine.ChangeState(boss.TurnRightState);
-        }
     }
 }

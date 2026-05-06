@@ -13,8 +13,9 @@ public class DragonBossTurnRightState : DragonBossState
 
         boss.agent.isStopped = true;
         boss.agent.ResetPath();
+        boss.agent.velocity = Vector3.zero;
 
-        boss.SetMoveType(5); // 제자리 오른쪽 턴
+        boss.SetMoveType(3);
     }
 
     public override void LogicUpdate()

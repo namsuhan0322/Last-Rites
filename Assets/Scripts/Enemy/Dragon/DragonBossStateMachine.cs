@@ -10,7 +10,12 @@ public class DragonBossStateMachine
 
     public void ChangeState(DragonBossState newState)
     {
-        CurrentState.Exit();
+        if (newState == null)
+            return;
+
+        if (CurrentState != null)
+            CurrentState.Exit();
+
         CurrentState = newState;
         CurrentState.Enter();
     }

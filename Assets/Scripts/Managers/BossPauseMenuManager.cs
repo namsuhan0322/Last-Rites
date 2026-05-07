@@ -80,4 +80,16 @@ public class BossPauseMenuManager : MonoBehaviour
                 break;
         }
     }
+
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+        {
+            if (GameManager.Instance != null && GameManager.Instance.currentGameState == GameState.Playing)
+            {
+                if (GameManager.Instance.isInteractUIOpen) return;
+                ShowPauseMenu();
+            }
+        }
+    }
 }

@@ -112,6 +112,18 @@ public class PauseMenuManager : MonoBehaviour
         }
     }
 
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus)
+        {
+            if (GameManager.Instance != null && GameManager.Instance.currentGameState == GameState.Playing)
+            {
+                if (GameManager.Instance.isInteractUIOpen) return;
+                ShowPauseMenu();
+            }
+        }
+    }
+
     #region 설정창 로직 (MainMenuButtonUI에서 이식됨)
 
     public void TryCloseSettings()

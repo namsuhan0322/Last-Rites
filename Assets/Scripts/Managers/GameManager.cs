@@ -332,7 +332,7 @@ public class GameManager : SingletonMono<GameManager>
 
     #endregion
 
-    private void OnApplicationPause(bool pauseStatus)
+/*    private void OnApplicationPause(bool pauseStatus)
     {
 #if !UNITY_EDITOR
         if (pauseStatus && currentGameState == GameState.Playing)
@@ -350,5 +350,5 @@ public class GameManager : SingletonMono<GameManager>
             PauseGame();
         }
 #endif
-    }
+    }*/
 }

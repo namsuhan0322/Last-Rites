@@ -6,6 +6,7 @@ public enum PauseOption
     Continue,   // 계속하기
     Settings,   // 설정
     MainMenu,   // 메인 메뉴
+    Lobby,      // 로비
     QuitGame    // 게임 종료
 }
 

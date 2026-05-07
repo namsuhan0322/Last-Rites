@@ -1,14 +1,16 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using TMPro;
 
 public class DamageEffectManager : SingletonMono<DamageEffectManager>
 {
-    protected override bool DontDestroy => true;
+    protected override bool DontDestroy => false;
 
     [SerializeField] private GameObject textPrefab;
     [SerializeField] private Canvas uiCanvas;
 
-    [Header("±âº» µ¥¹ÌÁö ÅØ½ºÆ® »ö»ó")]
+    [SerializeField] private Transform damageTextContainer;
+
+    [Header("ê¸°ë³¸ ë°ë¯¸ì§€ í…ìŠ¤íŠ¸ ìƒ‰ìƒ")]
     public Color damageColor = Color.white;
 
     protected override void Awake()
@@ -20,23 +22,25 @@ public class DamageEffectManager : SingletonMono<DamageEffectManager>
             uiCanvas = FindObjectOfType<Canvas>();
             if (uiCanvas == null)
             {
-                Debug.LogError("UI Äµ¹ö½º¸¦ Ã£À» ¼ö ¾ø½À´Ï´Ù.");
+                Debug.LogError("UI ìº”ë²„ìŠ¤ë¥¼ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤.");
             }
+        }
+
+        // ì»¨í…Œì´ë„ˆë¥¼ ê¹œë¹¡í•˜ê³  ì•ˆ ë„£ì—ˆë‹¤ë©´ ì„ì‹œë¡œ ìº”ë²„ìŠ¤ë¥¼ ë¶€ëª¨ë¡œ ì‚¬ìš©
+        if (damageTextContainer == null && uiCanvas != null)
+        {
+            damageTextContainer = uiCanvas.transform;
         }
     }
 
-    // ¿ÜºÎ¿¡¼­ ºÎ¸¦ ¶§´Â À§Ä¡¿Í µ¥¹ÌÁö ¾ç¸¸ ³Ñ°ÜÁÖ¸é ³¡³³´Ï´Ù!
     public void ShowDamage(Vector3 worldPosition, int amount)
     {
         if (textPrefab == null || uiCanvas == null) return;
 
-        // ¸ó½ºÅÍÀÇ 3D ¿ùµå ÁÂÇ¥¸¦ 2D È­¸é UI ÁÂÇ¥·Î º¯È¯
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPosition);
-
-        // Ä«¸Ş¶ó µÚ¿¡ ÀÖ´Â ÀûÀ» ¶§·È´Ù¸é ÅØ½ºÆ®¸¦ ¶ç¿ìÁö ¾ÊÀ½
         if (screenPos.z < 0) return;
 
-        GameObject damageText = Instantiate(textPrefab, uiCanvas.transform);
+        GameObject damageText = Instantiate(textPrefab, damageTextContainer);
         RectTransform rect = damageText.GetComponent<RectTransform>();
 
         if (rect != null)

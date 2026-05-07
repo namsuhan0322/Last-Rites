@@ -108,10 +108,13 @@ public class EnhancementUIManager : MonoBehaviour
             return;
         }
 
+        ISword currentSword = CreateDecoratedSword(_equippedWeaponData, currentLevel);
+        ISword nextSword = CreateDecoratedSword(_equippedWeaponData, nextLevel);
+
         leftWeaponIcon.sprite = _equippedWeaponData.weaponIcon;
         rightWeaponIcon.sprite = _equippedWeaponData.weaponIcon;
 
-        leftLevelText.text = $"+ {currentLevel}";
+        leftLevelText.text = $"{currentSword.GetName()}\n공격력: {currentSword.GetAttackPower()}";
 
         if (_currentEnhanceData == null)
         {
@@ -122,7 +125,7 @@ public class EnhancementUIManager : MonoBehaviour
             return;
         }
 
-        rightLevelText.text = $"+ {nextLevel}";
+        rightLevelText.text = $"{nextSword.GetName()}\n<color=#00FF00><size=80%>공격력: {nextSword.GetAttackPower()}</size></color>";
 
         float displayProb = _invData.soulPityGauge >= 100f ? 100f : _currentEnhanceData.Success_Rate;
         probText.text = $"강화 확률 : {displayProb}% (기운: {_invData.soulPityGauge}%)";
@@ -140,6 +143,18 @@ public class EnhancementUIManager : MonoBehaviour
                                $"<color={curColor}>{costName} : {myCurrency} / {_currentEnhanceData.Req_Cost_Amt}</color>";
 
         enhanceButton.interactable = (myMatAmount >= _currentEnhanceData.Req_Mat_Amt && myCurrency >= _currentEnhanceData.Req_Cost_Amt);
+    }
+
+    private ISword CreateDecoratedSword(WeaponSO weaponData, int enhanceLevel)
+    {
+        ISword sword = new BaseWeapon(weaponData);
+
+        if (enhanceLevel > 0)
+        {
+            sword = new EnhancementDecorator(sword, enhanceLevel, enhanceLevel * 5);
+        }
+
+        return sword;
     }
 
     private void OnEnhanceButtonClicked()
@@ -211,19 +226,24 @@ public class EnhancementUIManager : MonoBehaviour
             }
         }
 
+        ISword resultSword = CreateDecoratedSword(_equippedWeaponData, _invData.weaponEnhancementLevel);
+
         if (isSuccess)
         {
             _invData.weaponEnhancementLevel++;
 
+            // 성공했으니 레벨업된 스펙으로 다시 포장
+            resultSword = CreateDecoratedSword(_equippedWeaponData, _invData.weaponEnhancementLevel);
+
             resultTitleText.text = "<color=#FFD700>강화 성공</color>";
-            resultLevelText.text = $"+ {_invData.weaponEnhancementLevel}";
+            resultLevelText.text = $"{resultSword.GetName()}\n<size=80%>공격력: {resultSword.GetAttackPower()}</size>";
             resultPityText.text = "";
             resultButtonText.text = "돌아가기";
         }
         else
         {
             resultTitleText.text = "<color=#FF4500>강화 실패</color>";
-            resultLevelText.text = $"+ {_invData.weaponEnhancementLevel}";
+            resultLevelText.text = $"{resultSword.GetName()}\n<size=80%>공격력: {resultSword.GetAttackPower()}</size>";
             resultPityText.text = $"진혼의 기운 증가! (현재: {_invData.soulPityGauge}%)";
             resultButtonText.text = "다시하기";
         }

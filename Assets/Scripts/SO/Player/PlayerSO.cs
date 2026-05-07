@@ -6,6 +6,7 @@ public class PlayerSO : ScriptableObject
     public int PlayerID;
     public string name;
     public int HP;
+    public int Base_Atk;
     public float Move_Spd;
     public float Dash_Spd;
     public float Dash_Time;

@@ -6,6 +6,7 @@ public class PlayerStats : Actor
     [Header("Data")]
     [SerializeField] private PlayerSO _playerData;
 
+    public int BaseAttackPower => _playerData.Base_Atk;
     public float MoveSpeed => _playerData.Move_Spd;
     public float DashSpeed => _playerData.Dash_Spd; 
     public int DashCost => _playerData.Dash_Cost;

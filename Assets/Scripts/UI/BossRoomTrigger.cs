@@ -1,5 +1,6 @@
-using UnityEngine;
 using Cinemachine;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BossRoomTrigger : MonoBehaviour
 {
@@ -31,7 +32,10 @@ public class BossRoomTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             _player = other.GetComponent<PlayerController>();
-            if (_player != null) _player.SetBossModeOutline(true);
+            if (SceneManager.GetActiveScene().name == ScenesManager.Instance.Thema2SceneName)
+            {
+                if (_player != null) _player.SetBossModeOutline(true);
+            }
             if (bossHealthUI != null) bossHealthUI.ShowBossUI();
             if (doorObj != null) doorObj.SetActive(true);
             if (bossCamera != null) bossCamera.Priority = 20;
@@ -47,7 +51,10 @@ public class BossRoomTrigger : MonoBehaviour
         if (doorObj != null) doorObj.SetActive(false);
 
         if (bossCamera != null) bossCamera.Priority = 0;
-        if (_player != null) _player.SetBossModeOutline(false);
+        if (SceneManager.GetActiveScene().name == ScenesManager.Instance.Thema2SceneName)
+        {
+            if (_player != null) _player.SetBossModeOutline(false);
+        }
         if (currentBoss != null)
         {
             Destroy(currentBoss);
@@ -71,6 +78,9 @@ public class BossRoomTrigger : MonoBehaviour
         if (bossCamera != null) bossCamera.Priority = 0;
         if (bossHealthUI != null) bossHealthUI.HideBossUI();
         if (doorObj != null) doorObj.SetActive(false);
-        if (_player != null) _player.SetBossModeOutline(false);
+        if (SceneManager.GetActiveScene().name == ScenesManager.Instance.Thema2SceneName)
+        {
+            if (_player != null) _player.SetBossModeOutline(false);
+        }
     }
 }

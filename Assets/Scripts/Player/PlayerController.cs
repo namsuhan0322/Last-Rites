@@ -61,6 +61,9 @@ public class PlayerController : MonoBehaviour
     public LayerMask EnemyLayer;           
     public float CombatCooldown = 5.0f;
 
+    [Header("데코레이터 무기")]
+    public ISword CurrentDecoratedWeapon;
+
     [Header("Effect && Pos")]
     public GameObject HealEffect;
     public Transform bodyEffectPos;
@@ -493,28 +496,41 @@ public class PlayerController : MonoBehaviour
     #region 공격 판정
     public void EnableWeaponCollider()
     {
-        if (StateMachine.CurrentState != AttackState 
-            && StateMachine.CurrentState != SkillState) return;
-
+        if (StateMachine.CurrentState != AttackState && StateMachine.CurrentState != SkillState) return;
         if (Hitbox == null || CurrentWeapon == null) return;
 
-        int damageToDeal = CurrentWeapon.Combo_1;
+        int baseAtk = Stats != null ? Stats.BaseAttackPower : 0;
+        int weaponAtk = CurrentDecoratedWeapon != null ? CurrentDecoratedWeapon.GetAttackPower() : CurrentWeapon.Combo_1;
+
+        float skillMultiplier = 1.0f;
+        int fixedBonus = 0;
 
         AnimatorStateInfo stateInfo = Anim.GetCurrentAnimatorStateInfo(0);
 
-        if (stateInfo.IsName("Attack1")) damageToDeal = CurrentWeapon.Combo_1;
-        else if (stateInfo.IsName("Attack2")) damageToDeal = CurrentWeapon.Combo_2;
-        else if (stateInfo.IsName("Attack3")) damageToDeal = CurrentWeapon.Combo_3;
-        else if (stateInfo.IsTag("Skill")) damageToDeal = CurrentSkillDamage;
+        // 평타일 경우 (계수 1.0배, 고정 데미지 콤보수치)
+        if (stateInfo.IsName("Attack1")) { skillMultiplier = 1.0f; fixedBonus = CurrentWeapon.Combo_1; }
+        else if (stateInfo.IsName("Attack2")) { skillMultiplier = 1.0f; fixedBonus = CurrentWeapon.Combo_2; }
+        else if (stateInfo.IsName("Attack3")) { skillMultiplier = 1.2f; fixedBonus = CurrentWeapon.Combo_3; } // 막타는 1.2배!
 
+        else if (stateInfo.IsTag("Skill"))
+        {
+            skillMultiplier = 2.0f;
+            fixedBonus = CurrentSkillDamage;
+        }
+
+        float finalDamageFloat = ((baseAtk + weaponAtk) * skillMultiplier) + fixedBonus;
+        int damageToDeal = Mathf.RoundToInt(finalDamageFloat);
+
+        // R 버프(증폭) 적용
         if (HasRBuff)
             damageToDeal = Mathf.RoundToInt(damageToDeal * CurrentSkillVal);
 
+        // 히트박스 켜기
         Hitbox.EnableHitbox(damageToDeal);
 
         if (HasSpearBuff)
         {
-            FireSpearBuffProjectile(10);
+            FireSpearBuffProjectile(Mathf.RoundToInt(damageToDeal * 0.5f)); // 창기는 데미지의 50%만
         }
     }
 
@@ -584,6 +600,22 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void RefreshDecoratedWeapon()
+    {
+        if (CurrentWeapon == null || InventoryManager.Instance == null) return;
+
+        InventoryData invData = InventoryManager.Instance.GetCurrentData();
+
+        ISword sword = new BaseWeapon(CurrentWeapon);
+
+        if (invData.weaponEnhancementLevel > 0)
+        {
+            sword = new EnhancementDecorator(sword, invData.weaponEnhancementLevel, invData.weaponEnhancementLevel * 5);
+        }
+
+        CurrentDecoratedWeapon = sword;
+        Debug.Log($"무기 갱신 완료! 이름: {CurrentDecoratedWeapon.GetName()}, 최종 공격력: {CurrentDecoratedWeapon.GetAttackPower()}");
+    }
     #endregion
 
     #region 스킬 관련
@@ -1058,6 +1090,8 @@ public class PlayerController : MonoBehaviour
             Anim.Rebind();
             Anim.Update(0f);
         }
+
+        RefreshDecoratedWeapon();
     }
 
     #endregion

@@ -17,12 +17,9 @@ public partial class DragonIdleAction : Action
     protected override Status OnStart()
     {
         DragonBoss boss = Self.Value.GetComponent<DragonBoss>();
+        if (boss == null) return Status.Failure;
 
-        if (boss == null)
-            return Status.Failure;
-
-        boss.BT_Idle();
-
+        boss.Idle();
         return Status.Success;
     }
 }

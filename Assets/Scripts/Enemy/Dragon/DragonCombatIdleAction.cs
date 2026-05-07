@@ -26,7 +26,7 @@ public partial class DragonCombatIdleAction : Action
         if (!boss.HasLockedTarget())
             return Status.Failure;
 
-        boss.BT_Idle();
+        boss.Idle();
         return Status.Running;
     }
 

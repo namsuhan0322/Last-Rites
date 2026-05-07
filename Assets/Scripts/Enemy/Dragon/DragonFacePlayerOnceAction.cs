@@ -6,11 +6,11 @@ using Action = Unity.Behavior.Action;
 
 [Serializable, GeneratePropertyBag]
 [NodeDescription(
-    name: "Dragon Face Player",
-    story: "[Self] faces player",
+    name: "Dragon Face Player Once",
+    story: "[Self] faces player once",
     category: "Action/Dragon",
-    id: "dragon_face_player_action")]
-public partial class DragonFacePlayerAction : Action
+    id: "dragon_face_player_once_action")]
+public partial class DragonFacePlayerOnceAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Self;
 
@@ -23,7 +23,9 @@ public partial class DragonFacePlayerAction : Action
         if (boss == null)
             return Status.Failure;
 
-        // 플레이어가 감지/락온되지 않으면 실패
+        if (boss.HasRoared)
+            return Status.Failure;
+
         if (!boss.HasPlayerInRange())
             return Status.Failure;
 
@@ -34,20 +36,6 @@ public partial class DragonFacePlayerAction : Action
 
     protected override Status OnUpdate()
     {
-        if (boss == null)
-            return Status.Failure;
-
-        // 락온이 완전히 끊겼을 때만 실패
-        if (!boss.HasLockedTarget())
-            return Status.Failure;
-
-        // 쿨타임 중이면 Patrol로 빠지지 말고 전투 Idle로 대기
-        if (!boss.CanFacePlayer())
-        {
-            boss.Idle();
-            return Status.Running;
-        }
-
         Transform target = boss.GetLockedTarget();
 
         if (target == null)
@@ -55,12 +43,6 @@ public partial class DragonFacePlayerAction : Action
 
         Vector3 dir = target.position - boss.transform.position;
         dir.y = 0f;
-
-        if (dir.sqrMagnitude < 0.01f)
-        {
-            boss.Idle();
-            return Status.Running;
-        }
 
         float signedAngle = Vector3.SignedAngle(
             boss.transform.forward,
@@ -71,9 +53,7 @@ public partial class DragonFacePlayerAction : Action
         if (Mathf.Abs(signedAngle) <= boss.faceFinishAngle)
         {
             boss.Idle();
-            boss.StartFaceCooldown();
-
-            return Status.Running;
+            return Status.Success; // 포효로 넘어가기 위해 Success
         }
 
         if (signedAngle > 0f)
@@ -92,4 +72,3 @@ public partial class DragonFacePlayerAction : Action
         return Status.Running;
     }
 }
-

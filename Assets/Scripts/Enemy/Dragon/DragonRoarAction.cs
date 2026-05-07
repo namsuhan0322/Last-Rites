@@ -1,16 +1,16 @@
 using System;
 using Unity.Behavior;
+using Unity.Properties;
 using UnityEngine;
 using Action = Unity.Behavior.Action;
-using Unity.Properties;
 
 [Serializable, GeneratePropertyBag]
 [NodeDescription(
-    name: "Dragon Turn Left",
-    story: "[Self] changes to dragon turn left state",
+    name: "Dragon Roar",
+    story: "[Self] roars",
     category: "Action/Dragon",
-    id: "dragon_turn_left_action")]
-public partial class DragonTurnLeftAction : Action
+    id: "dragon_roar_action")]
+public partial class DragonRoarAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Self;
 
@@ -20,11 +20,18 @@ public partial class DragonTurnLeftAction : Action
     protected override Status OnStart()
     {
         boss = Self.Value.GetComponent<DragonBoss>();
-        if (boss == null) return Status.Failure;
+
+        if (boss == null)
+            return Status.Failure;
+
+        if (boss.HasRoared)
+            return Status.Failure;
 
         timer = 0f;
+
         boss.StopMove();
-        boss.SetMoveType(2);
+        boss.SetMoveType(4);
+        boss.SetRoared();
 
         return Status.Running;
     }
@@ -33,14 +40,14 @@ public partial class DragonTurnLeftAction : Action
     {
         timer += Time.deltaTime;
 
-        boss.transform.Rotate(Vector3.up, -boss.turnSpeed * Time.deltaTime);
-
-        if (timer >= boss.turnDuration)
+        if (timer >= boss.roarDuration)
         {
-            boss.SetMoveType(0);
+            boss.Idle();
+            boss.StartFaceCooldown();
             return Status.Success;
         }
 
         return Status.Running;
     }
 }
+

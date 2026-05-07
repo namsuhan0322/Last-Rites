@@ -15,27 +15,31 @@ public partial class DragonTurnRightAction : Action
     [SerializeReference] public BlackboardVariable<GameObject> Self;
 
     private DragonBoss boss;
+    private float timer;
 
     protected override Status OnStart()
     {
         boss = Self.Value.GetComponent<DragonBoss>();
+        if (boss == null) return Status.Failure;
 
-        if (boss == null)
-            return Status.Failure;
-
-        boss.BT_TurnRight();
+        timer = 0f;
+        boss.StopMove();
+        boss.SetMoveType(3);
 
         return Status.Running;
     }
 
     protected override Status OnUpdate()
     {
-        if (boss == null)
-            return Status.Failure;
+        timer += Time.deltaTime;
 
-        // TurnRightState가 끝나서 IdleState로 돌아가면 성공
-        if (boss.StateMachine.CurrentState == boss.IdleState)
+        boss.transform.Rotate(Vector3.up, boss.turnSpeed * Time.deltaTime);
+
+        if (timer >= boss.turnDuration)
+        {
+            boss.SetMoveType(0);
             return Status.Success;
+        }
 
         return Status.Running;
     }

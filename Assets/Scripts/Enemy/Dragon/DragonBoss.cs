@@ -15,12 +15,14 @@ public class DragonBoss : Enemy
     public float playerDetectRange = 15f;
     public float targetLoseRange = 25f;
     public float faceFinishAngle = 5f;
+    public float faceCooldown = 1.2f;
 
     [Header("Roar")]
     public float roarDuration = 2.5f;
 
     private int currentMoveType = -1;
     private Transform lockedTarget;
+    private float faceCooldownTimer = 0f;
     private bool hasRoared = false;
 
 
@@ -73,6 +75,9 @@ public class DragonBoss : Enemy
     protected override void EnemyAIUpdate()
     {
         if (_isDead) return;
+
+        if (faceCooldownTimer > 0f)
+            faceCooldownTimer -= Time.deltaTime;
 
         if (biteCooldownTimer > 0f)
             biteCooldownTimer -= Time.deltaTime;
@@ -149,6 +154,16 @@ public class DragonBoss : Enemy
     public Transform GetLockedTarget()
     {
         return lockedTarget;
+    }
+
+    public bool CanFacePlayer()
+    {
+        return faceCooldownTimer <= 0f;
+    }
+
+    public void StartFaceCooldown()
+    {
+        faceCooldownTimer = faceCooldown;
     }
 
     public void SetRoared()

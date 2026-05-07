@@ -102,6 +102,11 @@ public class GameManager : SingletonMono<GameManager>
         }
 
         Debug.Log("<color=cyan>=== 모든 매니저 초기화 완료! ===</color>");
+
+        if (ScenesManager.Instance != null)
+        {
+            ScenesManager.Instance.DataLoadCompleted();
+        }
     }
 
     #region Game State Management

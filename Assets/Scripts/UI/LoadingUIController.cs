@@ -1,10 +1,18 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 public class LoadingUIController : MonoBehaviour
 {
     [Header("UI Components")]
     public Slider progressBar;
+
+    private void Start()
+    {
+        if (progressBar != null)
+        {
+            progressBar.value = 0f;
+        }
+    }
 
     private void Update()
     {

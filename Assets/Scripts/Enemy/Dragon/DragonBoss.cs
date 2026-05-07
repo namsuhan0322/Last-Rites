@@ -3,6 +3,10 @@ using UnityEngine.AI;
 
 public class DragonBoss : Enemy
 {
+
+    [Header("스킬후 공통 현타시간")]
+    public float combatIdleTime = 2f;
+
     [Header("Dragon Boss Move")]
     public float turnSpeed = 80f;
     public float turnDuration = 1.2f;
@@ -11,17 +15,52 @@ public class DragonBoss : Enemy
     public float playerDetectRange = 15f;
     public float targetLoseRange = 25f;
     public float faceFinishAngle = 5f;
-    public float faceCooldown = 1.2f;
 
     [Header("Roar")]
     public float roarDuration = 2.5f;
 
     private int currentMoveType = -1;
     private Transform lockedTarget;
-    private float faceCooldownTimer = 0f;
     private bool hasRoared = false;
 
+
+    [Header("전방 깨물기 패턴")]
+    public float biteRange = 4f;
+    public float biteDuration = 1.5f;
+    public float biteCooldown = 2f;
+    [SerializeField] private DragonHeadHitbox headHitbox;
+
     public bool HasRoared => hasRoared;
+    private float biteCooldownTimer = 0f;
+    private Vector3 lockedAttackPosition;
+
+
+    //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
+    public void LockAttackPosition()
+    {
+        Transform target = GetLockedTarget();
+
+        if (target == null)
+            return;
+
+        lockedAttackPosition = target.position;
+    }
+
+    public Vector3 GetLockedAttackPosition()
+    {
+        return lockedAttackPosition;
+    }
+
+    public bool CanBite()
+    {
+        return biteCooldownTimer <= 0f;
+    }
+
+    public void StartBiteCooldown()
+    {
+        biteCooldownTimer = biteCooldown;
+    }
+
 
     protected override void Start()
     {
@@ -35,8 +74,8 @@ public class DragonBoss : Enemy
     {
         if (_isDead) return;
 
-        if (faceCooldownTimer > 0f)
-            faceCooldownTimer -= Time.deltaTime;
+        if (biteCooldownTimer > 0f)
+            biteCooldownTimer -= Time.deltaTime;
     }
 
     public void SetMoveType(int type)
@@ -112,18 +151,96 @@ public class DragonBoss : Enemy
         return lockedTarget;
     }
 
-    public bool CanFacePlayer()
-    {
-        return faceCooldownTimer <= 0f;
-    }
-
-    public void StartFaceCooldown()
-    {
-        faceCooldownTimer = faceCooldown;
-    }
-
     public void SetRoared()
     {
         hasRoared = true;
+    }
+
+
+    //깨물기 패턴 
+    public int GetBiteMoveType()
+    {
+        Transform target = GetLockedTarget();
+
+        if (target == null)
+        {
+            Debug.Log("GetBiteMoveType 실패: target null");
+            return -1;
+        }
+
+        float dist = Vector3.Distance(transform.position, target.position);
+        Debug.Log($"Bite 거리: {dist}");
+
+        if (dist > biteRange)
+        {
+            Debug.Log($"Bite 실패: 거리 밖 dist={dist}, range={biteRange}");
+            return -1;
+        }
+
+        int rand = Random.Range(0, 3);
+
+        if (rand == 0)
+            return 5; // 정면 물기
+
+        if (rand == 1)
+            return 6; // 왼쪽 물기
+
+        return 7; // 오른쪽 물기
+    }
+    //꺠물고 난 후 현타시간
+    public void StartBiteCooldownWithRecovery()
+    {
+        biteCooldownTimer = biteCooldown + combatIdleTime;
+    }
+
+    //꺠물기 범위에 있나
+    public bool IsLockedTargetInBiteRange()
+    {
+        Transform target = GetLockedTarget();
+        if (target == null) return false;
+
+        float dist = Vector3.Distance(transform.position, target.position);
+        return dist <= biteRange;
+    }
+
+    public void PlayBite(int moveType)
+    {
+        animator.ResetTrigger("BiteFront");
+        animator.ResetTrigger("BiteLeft");
+        animator.ResetTrigger("BiteRight");
+
+        if (moveType == 5)
+            animator.SetTrigger("BiteFront");
+        else if (moveType == 6)
+            animator.SetTrigger("BiteLeft");
+        else if (moveType == 7)
+            animator.SetTrigger("BiteRight");
+    }
+
+    //랜덤으로 깨물기 공격 
+    public int GetRandomBiteMoveType()
+    {
+        int rand = Random.Range(0, 3);
+
+        if (rand == 0) return 5;
+        if (rand == 1) return 6;
+        return 7;
+    }
+
+
+
+
+
+
+
+    // 애니메이션 이벤트
+    public void EnableBiteHitbox()
+    {
+        headHitbox.EnableHitbox();
+    }
+
+    public void DisableBiteHitbox()
+    {
+        headHitbox.DisableHitbox();
     }
 }

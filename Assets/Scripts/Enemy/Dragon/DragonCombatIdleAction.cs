@@ -7,7 +7,7 @@ using Action = Unity.Behavior.Action;
 [Serializable, GeneratePropertyBag]
 [NodeDescription(
     name: "Dragon Combat Idle",
-    story: "[Self] waits while target is locked",
+    story: "[Self] waits during combat",
     category: "Action/Dragon",
     id: "dragon_combat_idle_action")]
 public partial class DragonCombatIdleAction : Action
@@ -15,6 +15,7 @@ public partial class DragonCombatIdleAction : Action
     [SerializeReference] public BlackboardVariable<GameObject> Self;
 
     private DragonBoss boss;
+    private float timer;
 
     protected override Status OnStart()
     {
@@ -26,7 +27,9 @@ public partial class DragonCombatIdleAction : Action
         if (!boss.HasLockedTarget())
             return Status.Failure;
 
+        timer = 0f;
         boss.Idle();
+
         return Status.Running;
     }
 
@@ -38,7 +41,9 @@ public partial class DragonCombatIdleAction : Action
         if (!boss.HasLockedTarget())
             return Status.Failure;
 
-        if (boss.CanFacePlayer())
+        timer += Time.deltaTime;
+
+        if (timer >= boss.combatIdleTime)
             return Status.Success;
 
         return Status.Running;

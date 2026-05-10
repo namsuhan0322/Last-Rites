@@ -14846,6 +14846,8 @@ GameObject:
   - component: {fileID: 8392620470651161106}
   - component: {fileID: 8392620470651161107}
   - component: {fileID: 8392620470651161116}
+  - component: {fileID: 1967335101050061648}
+  - component: {fileID: 2880032677723750999}
   m_Layer: 15
   m_Name: HCFX_Fire_01
   m_TagString: Untagged
@@ -14863,7 +14865,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2.5, y: 2.5, z: 2.5}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4162186000981332305}
@@ -19753,3 +19755,48 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
+--- !u!114 &1967335101050061648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8392620470651161117}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73c4d092b6e44174f838e2d6048ceaa3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DragonFireballProjectile
+  explosionDamage: 25
+  speed: 9
+  lifeTime: 5
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  explosionEffect: {fileID: 2917385618030906396, guid: 18d62313ad6d42d4285419c7a5cafffa,
+    type: 3}
+  explosionRadius: 5
+--- !u!135 &2880032677723750999
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8392620470651161117}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 0.6820178
+  m_Center: {x: 0.069327116, y: 0.54000014, z: 0.06532556}

@@ -7,17 +7,17 @@ public class DragonBoss : Enemy
     [Header("스킬후 공통 현타시간")]
     public float combatIdleTime = 2f;
 
-    [Header("Dragon Boss Move")]
+    [Header("용 움직임")]
     public float turnSpeed = 80f;
     public float turnDuration = 1.2f;
 
-    [Header("Target")]
+    [Header("타겟")]
     public float playerDetectRange = 15f;
     public float targetLoseRange = 25f;
     public float faceFinishAngle = 5f;
     public float faceCooldown = 1.2f;
 
-    [Header("Roar")]
+    [Header("포효")]
     public float roarDuration = 2.5f;
 
     private int currentMoveType = -1;
@@ -49,13 +49,24 @@ public class DragonBoss : Enemy
     [SerializeField] private DragonAttackHitbox leftTailHitbox;
     [SerializeField] private DragonAttackHitbox rightTailHitbox;
 
+    [Header("파이어볼 패턴")]
+    public float fireballMinRange = 8f;
+    public float fireballMaxRange = 25f;
+    public float fireballDuration = 2f;
+    public float fireballCooldown = 6f;
+    [SerializeField] private GameObject fireballPrefab;
+    [SerializeField] private Transform fireballSpawnPoint;
+
+    //변수들
     public bool HasRoared => hasRoared;
     private float biteCooldownTimer = 0f;
     private Vector3 lockedAttackPosition;
     private float wingSlamCooldownTimer = 0f;
     private float globalAttackRecoveryTimer = 0f;
     private float tailAttackCooldownTimer = 0f;
-
+    private float fireballCooldownTimer = 0f;
+    private Vector3 lockedFireballTargetPosition;
+    private bool roarRequested = false;
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
     {
@@ -109,6 +120,9 @@ public class DragonBoss : Enemy
 
         if (tailAttackCooldownTimer > 0f)
             tailAttackCooldownTimer -= Time.deltaTime;
+
+        if (fireballCooldownTimer > 0f)
+            fireballCooldownTimer -= Time.deltaTime;
     }
 
     public void SetMoveType(int type)
@@ -398,6 +412,97 @@ public class DragonBoss : Enemy
         rightTailHitbox.DisableHitbox();
     }
 
+    public bool CanFireball()
+    {
+        return fireballCooldownTimer <= 0f;
+    }
+
+    public void StartFireballCooldown()
+    {
+        fireballCooldownTimer = fireballCooldown;
+    }
+    //타겟이 파이어볼 범위에 있나?
+    public bool IsTargetInFireballRange()
+    {
+        Transform target = GetLockedTarget();
+        if (target == null) return false;
+
+        float dist = Vector3.Distance(transform.position, target.position);
+
+        return dist >= fireballMinRange && dist <= fireballMaxRange;
+    }
+    //파이어볼 위치 고정
+    public void LockFireballTargetPosition()
+    {
+        Transform target = GetLockedTarget();
+
+        if (target == null) return;
+
+        lockedFireballTargetPosition = target.position;
+    }
+
+    public Vector3 GetLockedFireballTargetPosition()
+    {
+        return lockedFireballTargetPosition;
+    }
+
+    public void PlayFireball()
+    {
+        animator.ResetTrigger("Fireball");
+        animator.SetTrigger("Fireball");
+    }
+    //파이어볼 쏘기
+    public void ShootFireball()
+    {
+        if (fireballPrefab == null || fireballSpawnPoint == null)
+            return;
+
+        Vector3 targetPos = GetLockedFireballTargetPosition();
+
+        Vector3 dir = targetPos - fireballSpawnPoint.position;
+
+        if (dir.sqrMagnitude < 0.01f)
+            dir = transform.forward;
+
+        GameObject fireball = Instantiate(
+            fireballPrefab,
+            fireballSpawnPoint.position,
+            Quaternion.LookRotation(dir.normalized)
+        );
+
+        DragonFireballProjectile projectile =
+            fireball.GetComponent<DragonFireballProjectile>();
+
+        if (projectile != null)
+            projectile.Init(dir, this);
+    }
+
+
+
+    //포효하기
+    public bool ShouldRoar()
+    {
+        return !HasRoared || roarRequested;
+    }
+
+    public void ClearRoarRequest()
+    {
+        roarRequested = false;
+    }
+    //죽음
+    public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
+    {
+        base.TakeDamage(damage, severityOverride, isHeavyAttack, showDamageText);
+
+        if (_isDead) return;
+
+        if (!HasRoared)
+        {
+            roarRequested = true;
+            StopMove();
+            Idle();
+        }
+    }
 
     // 애니메이션 이벤트
     public void EnableBiteHitbox()

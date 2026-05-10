@@ -6,11 +6,11 @@ using Action = Unity.Behavior.Action;
 
 [Serializable, GeneratePropertyBag]
 [NodeDescription(
-    name: "Dragon Roar",
-    story: "[Self] roars",
+    name: "Dragon Fireball",
+    story: "[Self] uses fireball",
     category: "Action/Dragon",
-    id: "dragon_roar_action")]
-public partial class DragonRoarAction : Action
+    id: "dragon_fireball_action")]
+public partial class DragonFireballAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Self;
 
@@ -24,15 +24,22 @@ public partial class DragonRoarAction : Action
         if (boss == null)
             return Status.Failure;
 
-        if (!boss.ShouldRoar())
+        if (!boss.HasLockedTarget())
+            return Status.Failure;
+
+        if (!boss.CanUseAnyAttack())
+            return Status.Failure;
+
+        if (!boss.CanFireball())
+            return Status.Failure;
+
+        if (!boss.IsTargetInFireballRange())
             return Status.Failure;
 
         timer = 0f;
 
         boss.StopMove();
-        boss.SetMoveType(4);
-        boss.SetRoared();
-        boss.ClearRoarRequest();
+        boss.PlayFireball();
 
         return Status.Running;
     }
@@ -41,14 +48,16 @@ public partial class DragonRoarAction : Action
     {
         timer += Time.deltaTime;
 
-        if (timer >= boss.roarDuration)
+        if (timer >= boss.fireballDuration)
         {
+            boss.StartFireballCooldown();
+            boss.StartGlobalAttackRecovery();
+
             boss.Idle();
-            boss.StartFaceCooldown();
+
             return Status.Success;
         }
 
         return Status.Running;
     }
 }
-

@@ -1145,17 +1145,13 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region 마법사 스킬 파티클 생성 (애니메이션 이벤트용)
-
-    // 🚨 [W스킬 방어용] 중복 호출 방지를 위한 타이머 변수 추가
     private float _lastMagicFireTime = 0f;
 
-    // 🚨 [E스킬 방어용] 마지막에 true/false로 '몸에 부착할지' 여부를 넘겨줍니다!
     public void FireWizardSkill_Q() { SpawnMagicSkill(wizardSkillQPrefab, wizardQSpawnPoint, false); }
     public void FireWizardSkill_W() { SpawnMagicSkill(wizardSkillWPrefab, wizardWSpawnPoint, false); }
-    public void FireWizardSkill_E() { SpawnMagicSkill(wizardSkillEPrefab, wizardESpawnPoint, true); } // E스킬(보호막)만 몸에 부착!
+    public void FireWizardSkill_E() { SpawnMagicSkill(wizardSkillEPrefab, wizardESpawnPoint, true); }
     public void FireWizardSkill_V() { SpawnMagicSkill(wizardSkillVPrefab, wizardVSpawnPoint, false); }
 
-    // 매개변수에 bool isAttached가 추가되었습니다.
     private void SpawnMagicSkill(GameObject skillPrefab, Transform spawnPoint, bool isAttached)
     {
         if (skillPrefab == null || spawnPoint == null) return;
@@ -1167,12 +1163,10 @@ public class PlayerController : MonoBehaviour
 
         if (isAttached)
         {
-            // Instantiate의 4번째 매개변수로 spawnPoint를 넘겨주면, 그 위치의 자식으로 쏙 들어가서 평생 따라다닙니다.
             skillInstance = Instantiate(skillPrefab, spawnPoint.position, spawnPoint.rotation, spawnPoint);
         }
         else
         {
-            // 투사체나 장판은 기존처럼 허공에 생성 (안 따라다님)
             skillInstance = Instantiate(skillPrefab, spawnPoint.position, spawnPoint.rotation);
         }
 

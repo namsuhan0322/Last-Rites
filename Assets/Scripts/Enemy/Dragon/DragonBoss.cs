@@ -57,6 +57,13 @@ public class DragonBoss : Enemy
     [SerializeField] private GameObject fireballPrefab;
     [SerializeField] private Transform fireballSpawnPoint;
 
+    [Header("강화 날개 스윙 콤보")]
+    public float wingComboDuration = 3.5f;
+    public float rightWingStartDelay = 1.4f;
+    public float wingComboCooldown = 12f;
+
+
+
     //변수들
     public bool HasRoared => hasRoared;
     private float biteCooldownTimer = 0f;
@@ -67,6 +74,8 @@ public class DragonBoss : Enemy
     private float fireballCooldownTimer = 0f;
     private Vector3 lockedFireballTargetPosition;
     private bool roarRequested = false;
+    private float wingComboCooldownTimer = 0f;
+
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
     {
@@ -123,6 +132,9 @@ public class DragonBoss : Enemy
 
         if (fireballCooldownTimer > 0f)
             fireballCooldownTimer -= Time.deltaTime;
+
+        if (wingComboCooldownTimer > 0f)
+            wingComboCooldownTimer -= Time.deltaTime;
     }
 
     public void SetMoveType(int type)
@@ -337,6 +349,29 @@ public class DragonBoss : Enemy
         leftWingHitbox.DisableHitbox();
         rightWingHitbox.DisableHitbox();
     }
+
+    public bool CanWingCombo()
+    {
+        return wingComboCooldownTimer <= 0f;
+    }
+
+    public void StartWingComboCooldown()
+    {
+        wingComboCooldownTimer = wingComboCooldown;
+    }
+    public void PlayLeftWingSlam()
+    {
+        animator.ResetTrigger("LeftWingSlam");
+        animator.SetTrigger("LeftWingSlam");
+    }
+
+    public void PlayRightWingSlam()
+    {
+        animator.ResetTrigger("RightWingSlam");
+        animator.SetTrigger("RightWingSlam");
+    }
+
+
 
     //랜덤으로 깨물기 공격 
     public int GetRandomBiteMoveType()

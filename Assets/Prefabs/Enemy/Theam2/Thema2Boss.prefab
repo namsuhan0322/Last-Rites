@@ -2552,7 +2552,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6896717735079017393}
-  - component: {fileID: 6647909774730312075}
+  - component: {fileID: 3899574750100241142}
   - component: {fileID: 1144641065990520349}
   m_Layer: 6
   m_Name: R Hand
@@ -2581,7 +2581,7 @@ Transform:
   - {fileID: 371687274960377451}
   m_Father: {fileID: 260097768424091581}
   m_LocalEulerAnglesHint: {x: 13.557263, y: -5.146937, z: -12.792152}
---- !u!65 &6647909774730312075
+--- !u!65 &3899574750100241142
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2600,8 +2600,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4.4722295, y: 5.838474, z: 1.660021}
-  m_Center: {x: 0.22905017, y: 1.8722544, z: 0.15367675}
+  m_Size: {x: 5.230025, y: 2.9383006, z: 0.19310373}
+  m_Center: {x: -0.14985916, y: 1.4994555, z: 0.021547008}
 --- !u!114 &1144641065990520349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5733,8 +5733,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 4.85546, y: 5.8384733, z: 1.6600211}
-  m_Center: {x: 0.03742974, y: 1.8722695, z: 0.15367468}
+  m_Size: {x: 5.230025, y: 2.9383006, z: 0.19310373}
+  m_Center: {x: -0.14985916, y: 1.4994555, z: 0.021547008}
 --- !u!114 &1715169422762636062
 MonoBehaviour:
   m_ObjectHideFlags: 0

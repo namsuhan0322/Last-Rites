@@ -45,11 +45,13 @@ public class VFXProjectile : MonoBehaviour
         if (((1 << other.gameObject.layer) & _enemyLayer) != 0)
         {
             Actor enemy = other.GetComponentInParent<Actor>();
-
-            if (enemy != null && !enemy.IsDead)
+            if (enemy != null)
             {
-                enemy.TakeDamage(_damage);
-                TriggerHitEffect();
+                if (!enemy.IsDead)
+                {
+                    enemy.TakeDamage(_damage);
+                    TriggerHitEffect();
+                }
             }
         }
     }

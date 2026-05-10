@@ -30,20 +30,31 @@ public class DragonBoss : Enemy
     public float biteRange = 4f;
     public float biteDuration = 1.5f;
     public float biteCooldown = 2f;
-    [SerializeField] private DragonHeadHitbox headHitbox;
+    [SerializeField] private DragonAttackHitbox headHitbox;
 
     [Header("날개 내려찍기 패턴")]
     public float wingSlamRange = 7f;
     public float wingSlamDuration = 2f;
     public float wingSlamCooldown = 8f;
     [Header("날개 히트박스")]
-    [SerializeField] private DragonWingHitbox leftWingHitbox;
-    [SerializeField] private DragonWingHitbox rightWingHitbox;
+    [SerializeField] private DragonAttackHitbox leftWingHitbox;
+    [SerializeField] private DragonAttackHitbox rightWingHitbox;
+
+    [Header("꼬리 공격 패턴")]
+    public float tailAttackRange = 8f;
+    public float tailAttackDuration = 2f;
+    public float tailAttackCooldown = 7f;
+    public float tailBackAngle = 120f;
+    [Header("꼬리 히트박스")]
+    [SerializeField] private DragonAttackHitbox leftTailHitbox;
+    [SerializeField] private DragonAttackHitbox rightTailHitbox;
+
     public bool HasRoared => hasRoared;
     private float biteCooldownTimer = 0f;
     private Vector3 lockedAttackPosition;
     private float wingSlamCooldownTimer = 0f;
     private float globalAttackRecoveryTimer = 0f;
+    private float tailAttackCooldownTimer = 0f;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -95,6 +106,9 @@ public class DragonBoss : Enemy
 
         if (wingSlamCooldownTimer > 0f)
             wingSlamCooldownTimer -= Time.deltaTime;
+
+        if (tailAttackCooldownTimer > 0f)
+            tailAttackCooldownTimer -= Time.deltaTime;
     }
 
     public void SetMoveType(int type)
@@ -303,16 +317,6 @@ public class DragonBoss : Enemy
         else if (moveType == 9)
             animator.SetTrigger("RightWingSlam");
     }
-    
-    public void EnableRightWingHitbox()
-    {
-        rightWingHitbox.EnableHitbox();
-    }
-
-    public void DisableRightWingHitbox()
-    {
-        rightWingHitbox.DisableHitbox();
-    }
 
     public void DisableAllWingHitboxes()
     {
@@ -331,9 +335,68 @@ public class DragonBoss : Enemy
     }
 
 
+    //꼬리 공격가능?
+    public bool CanTailAttack()
+    {
+        return tailAttackCooldownTimer <= 0f;
+    }
 
+    public void StartTailAttackCooldown()
+    {
+        tailAttackCooldownTimer = tailAttackCooldown;
+    }
 
+    //꼬리 공격 패턴 
+    public int GetTailAttackMoveType()
+    {
+        Transform target = GetLockedTarget();
 
+        if (target == null)
+            return -1;
+
+        float dist = Vector3.Distance(transform.position, target.position);
+
+        if (dist > tailAttackRange)
+            return -1;
+
+        Vector3 dir = target.position - transform.position;
+        dir.y = 0f;
+
+        if (dir.sqrMagnitude < 0.01f)
+            return -1;
+
+        float angle = Vector3.SignedAngle(
+            transform.forward,
+            dir.normalized,
+            Vector3.up
+        );
+
+        // 뒤쪽이 아니면 꼬리 공격 안 함
+        if (Mathf.Abs(angle) < tailBackAngle)
+            return -1;
+
+        if (angle < 0f)
+            return 10; // 왼쪽 꼬리 공격
+
+        return 11; // 오른쪽 꼬리 공격
+    }
+
+    public void PlayTailAttack(int moveType)
+    {
+        animator.ResetTrigger("LeftTailAttack");
+        animator.ResetTrigger("RightTailAttack");
+
+        if (moveType == 10)
+            animator.SetTrigger("LeftTailAttack");
+        else if (moveType == 11)
+            animator.SetTrigger("RightTailAttack");
+    }
+
+    public void DisableAllTailHitboxes()
+    {
+        leftTailHitbox.DisableHitbox();
+        rightTailHitbox.DisableHitbox();
+    }
 
 
     // 애니메이션 이벤트
@@ -355,6 +418,36 @@ public class DragonBoss : Enemy
     public void DisableLeftWingHitbox()
     {
         leftWingHitbox.DisableHitbox();
+    }
+
+    public void EnableLeftTailHitbox()
+    {
+        leftTailHitbox.EnableHitbox();
+    }
+
+    public void DisableLeftTailHitbox()
+    {
+        leftTailHitbox.DisableHitbox();
+    }
+
+    public void EnableRightTailHitbox()
+    {
+        rightTailHitbox.EnableHitbox();
+    }
+
+    public void DisableRightTailHitbox()
+    {
+        rightTailHitbox.DisableHitbox();
+    }
+
+    public void EnableRightWingHitbox()
+    {
+        rightWingHitbox.EnableHitbox();
+    }
+
+    public void DisableRightWingHitbox()
+    {
+        rightWingHitbox.DisableHitbox();
     }
 
 }

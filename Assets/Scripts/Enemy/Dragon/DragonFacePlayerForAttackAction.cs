@@ -27,11 +27,7 @@ public partial class DragonFacePlayerForAttackAction : Action
         if (!boss.HasLockedTarget())
             return Status.Failure;
 
-        // 추가: 공격 쿨타임 중이면 방향 돌리지 않음
-        if (!boss.CanBite())
-            return Status.Failure;
-
-        if (!boss.IsLockedTargetInBiteRange())
+        if (!boss.CanUseAnyAttack())
             return Status.Failure;
 
         boss.StopMove();

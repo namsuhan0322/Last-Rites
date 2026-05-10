@@ -6,11 +6,11 @@ using Action = Unity.Behavior.Action;
 
 [Serializable, GeneratePropertyBag]
 [NodeDescription(
-    name: "Dragon Bite",
-    story: "[Self] uses bite attack",
+    name: "Dragon Wing Slam",
+    story: "[Self] uses wing slam",
     category: "Action/Dragon",
-    id: "dragon_bite_action")]
-public partial class DragonBiteAction : Action
+    id: "dragon_wing_slam_action")]
+public partial class DragonWingSlamAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Self;
 
@@ -24,16 +24,16 @@ public partial class DragonBiteAction : Action
         if (boss == null)
             return Status.Failure;
 
+        if (!boss.CanUseAnyAttack())
+            return Status.Failure;
+
         if (!boss.HasLockedTarget())
             return Status.Failure;
 
-        if (!boss.CanBite())
+        if (!boss.CanWingSlam())
             return Status.Failure;
 
-        if (!boss.IsLockedTargetInBiteRange())
-            return Status.Failure;
-
-        int moveType = boss.GetRandomBiteMoveType();
+        int moveType = boss.GetWingSlamMoveType();
 
         if (moveType == -1)
             return Status.Failure;
@@ -41,8 +41,8 @@ public partial class DragonBiteAction : Action
         timer = 0f;
 
         boss.StopMove();
-        boss.DisableBiteHitbox();
-        boss.PlayBite(moveType);
+        boss.DisableAllWingHitboxes();
+        boss.PlayWingSlam(moveType);
 
         return Status.Running;
     }
@@ -51,12 +51,12 @@ public partial class DragonBiteAction : Action
     {
         timer += Time.deltaTime;
 
-        if (timer >= boss.biteDuration)
+        if (timer >= boss.wingSlamDuration)
         {
-            boss.DisableBiteHitbox();
+            boss.DisableAllWingHitboxes();
 
-            boss.StartBiteCooldown();          // Bite만 쿨타임
-            boss.StartGlobalAttackRecovery();  // 모든 공격 공통 현타
+            boss.StartWingSlamCooldown();
+            boss.StartGlobalAttackRecovery();
 
             boss.Idle();
 
@@ -69,7 +69,7 @@ public partial class DragonBiteAction : Action
     protected override void OnEnd()
     {
         if (boss != null)
-            boss.DisableBiteHitbox();
+            boss.DisableAllWingHitboxes();
     }
 }
 

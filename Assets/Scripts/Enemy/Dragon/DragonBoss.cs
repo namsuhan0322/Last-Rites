@@ -62,7 +62,18 @@ public class DragonBoss : Enemy
     public float rightWingStartDelay = 1.4f;
     public float wingComboCooldown = 12f;
 
-
+    [Header("점프 공격 패턴")]
+    public float jumpAttackCooldown = 15f;
+    public float jumpUpHeight = 8f;
+    public float jumpUpTime = 1f;
+    public float skyLoopTime = 1.5f;
+    public float warningShowTime = 1f;
+    public float fallTime = 0.8f;
+    public float jumpDamageRadius = 5f;
+    public int jumpDamage = 40;
+    public float fallAnimDelay = 0.25f;
+    public float afterWarningDelay = 0.5f; //점프 공격 알려주고 난 다음 타임
+    [SerializeField] private GameObject jumpWarningPrefab;
 
     //변수들
     public bool HasRoared => hasRoared;
@@ -75,6 +86,7 @@ public class DragonBoss : Enemy
     private Vector3 lockedFireballTargetPosition;
     private bool roarRequested = false;
     private float wingComboCooldownTimer = 0f;
+    private float jumpAttackCooldownTimer = 0f;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -135,6 +147,9 @@ public class DragonBoss : Enemy
 
         if (wingComboCooldownTimer > 0f)
             wingComboCooldownTimer -= Time.deltaTime;
+
+        if (jumpAttackCooldownTimer > 0f)
+            jumpAttackCooldownTimer -= Time.deltaTime;
     }
 
     public void SetMoveType(int type)
@@ -512,6 +527,77 @@ public class DragonBoss : Enemy
             projectile.Init(dir, this);
     }
 
+    public bool CanJumpAttack()
+    {
+        return jumpAttackCooldownTimer <= 0f;
+    }
+
+    public void StartJumpAttackCooldown()
+    {
+        jumpAttackCooldownTimer = jumpAttackCooldown;
+    }
+
+    public void PlayJumpStart()
+    {
+        animator.SetTrigger("JumpStart");
+    }
+
+    public void PlaySkyLoop()
+    {
+        animator.SetTrigger("SkyLoop");
+    }
+
+    public void PlayJumpFall()
+    {
+        animator.SetTrigger("JumpFall");
+    }
+
+    //점프 위험장판 표시
+    public GameObject CreateJumpWarning(Vector3 position)
+    {
+        if (jumpWarningPrefab == null)
+            return null;
+
+        GameObject warning = Instantiate(
+            jumpWarningPrefab,
+            position + Vector3.up * 0.05f,
+            Quaternion.Euler(90f, 0f, 0f)
+        );
+
+        float size = jumpDamageRadius * 2f;
+
+        JumpWarningFill fill = warning.GetComponent<JumpWarningFill>();
+
+        if (fill != null)
+            fill.Init(size, warningShowTime);
+        else
+            warning.transform.localScale = new Vector3(size, size, 1f);
+
+        return warning;
+    }
+
+    //점프 데미지 주기
+    public void DoJumpDamage(Vector3 center)
+    {
+        Collider[] hits = Physics.OverlapSphere(
+            center,
+            jumpDamageRadius,
+            targetLayer
+        );
+
+        foreach (Collider hit in hits)
+        {
+            Actor target = hit.GetComponentInParent<Actor>();
+
+            if (target == null)
+                continue;
+
+            if (target == this)
+                continue;
+
+            target.TakeDamage(jumpDamage);
+        }
+    }
 
 
     //포효하기
@@ -588,6 +674,15 @@ public class DragonBoss : Enemy
     public void DisableRightWingHitbox()
     {
         rightWingHitbox.DisableHitbox();
+    }
+
+    public void SetManualMoveMode(bool value)
+    {
+        if (agent != null)
+        {
+            agent.updatePosition = !value;
+            agent.updateRotation = !value;
+        }
     }
 
 }

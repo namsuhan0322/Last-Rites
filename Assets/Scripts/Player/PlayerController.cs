@@ -92,8 +92,9 @@ public class PlayerController : MonoBehaviour
 
     public event Action<int> OnPotionCountChanged;
 
-    [Header("창 버프 전용 투사체")]
+    [Header("무기 별 투사체")]
     public GameObject spearBuffProjectilePrefab;
+    public GameObject wizardVfxProjectilePrefab;
 
     [Header("Action Effects (현재 무기의 액션 이펙트 모음)")]
     public List<ActionEffectMapping> weaponEffects = new List<ActionEffectMapping>();
@@ -526,7 +527,14 @@ public class PlayerController : MonoBehaviour
             damageToDeal = Mathf.RoundToInt(damageToDeal * CurrentSkillVal);
 
         // 히트박스 켜기
-        Hitbox.EnableHitbox(damageToDeal);
+        if (CurrentWeapon.weaponType == WeaponType.Wizard)
+        {
+            FireWizardMagic(damageToDeal);
+        }
+        else
+        {
+            if (Hitbox != null) Hitbox.EnableHitbox(damageToDeal);
+        }
 
         if (HasSpearBuff)
         {
@@ -553,6 +561,19 @@ public class PlayerController : MonoBehaviour
         if (projectileScript != null)
         {
             projectileScript.Initialize(damage, EnemyLayer);
+        }
+    }
+
+    private void FireWizardMagic(int damage)
+    {
+        if (wizardVfxProjectilePrefab == null) return;
+
+        GameObject projObj = Instantiate(wizardVfxProjectilePrefab, bodyEffectPos.position, transform.rotation);
+
+        VFXProjectile vfxProjectile = projObj.GetComponent<VFXProjectile>();
+        if (vfxProjectile != null)
+        {
+            vfxProjectile.Initialize(damage, EnemyLayer);
         }
     }
 

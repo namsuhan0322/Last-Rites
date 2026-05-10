@@ -1087,7 +1087,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6756a046ca287134697f50b1711c95d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _currentHP: 100
+  _currentHP: 9999
   _maxPoise: 20
   _currentPoise: 0
   _poiseRecoveryRate: 0
@@ -2008,6 +2008,12 @@ PrefabInstance:
       propertyPath: screenBloodEffect
       value: 
       objectReference: {fileID: 61714345}
+    - target: {fileID: 475020715049840863, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: wizardVfxProjectilePrefab
+      value: 
+      objectReference: {fileID: 3758603421219867773, guid: 24f0ebfecfa6d8f4089de451d9b99b81,
+        type: 3}
     - target: {fileID: 475020715049840863, guid: 0f9bab5272d9a794d923441e91c2427c,
         type: 3}
       propertyPath: weaponSpecialEffects.Array.data[0].screenEffectObj

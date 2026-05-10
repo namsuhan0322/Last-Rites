@@ -121,6 +121,17 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public bool HasSpearBuff = false;     // 창 (방어력 관통)
     [HideInInspector] public bool HasShieldBuff = false;    // 검방 (피해 70% 감소/반격)
 
+    [Header("마법사 스킬 파티클 프리팹 (Q, W, E, V)")]
+    public GameObject wizardSkillQPrefab;
+    public GameObject wizardSkillWPrefab;
+    public GameObject wizardSkillEPrefab;
+    public GameObject wizardSkillVPrefab;
+
+    [SerializeField] private Transform wizardQSpawnPoint;
+    [SerializeField] private Transform wizardWSpawnPoint;
+    [SerializeField] private Transform wizardESpawnPoint;
+    [SerializeField] private Transform wizardVSpawnPoint;
+
     public float Q_Timer { get; private set; }
     public float W_Timer { get; private set; }
     public float E_Timer { get; private set; }
@@ -1113,6 +1124,81 @@ public class PlayerController : MonoBehaviour
         }
 
         RefreshDecoratedWeapon();
+    }
+
+    #endregion
+
+    #region 공격 속도 계산 로직
+    public float GetEffectiveAttackSpeed(bool isSkill)
+    {
+        if (AtkSpeedModifier <= 1.0f) return AtkSpeedModifier;
+
+        if (CurrentWeapon != null && CurrentWeapon.weaponType == WeaponType.Wizard && isSkill)
+        {
+            float bonusSpeed = AtkSpeedModifier - 1.0f;
+            return 1.0f + (bonusSpeed * 0.0f);
+        }
+
+        return AtkSpeedModifier;
+    }
+
+    #endregion
+
+    #region 마법사 스킬 파티클 생성 (애니메이션 이벤트용)
+
+    // 🚨 [W스킬 방어용] 중복 호출 방지를 위한 타이머 변수 추가
+    private float _lastMagicFireTime = 0f;
+
+    // 🚨 [E스킬 방어용] 마지막에 true/false로 '몸에 부착할지' 여부를 넘겨줍니다!
+    public void FireWizardSkill_Q() { SpawnMagicSkill(wizardSkillQPrefab, wizardQSpawnPoint, false); }
+    public void FireWizardSkill_W() { SpawnMagicSkill(wizardSkillWPrefab, wizardWSpawnPoint, false); }
+    public void FireWizardSkill_E() { SpawnMagicSkill(wizardSkillEPrefab, wizardESpawnPoint, true); } // E스킬(보호막)만 몸에 부착!
+    public void FireWizardSkill_V() { SpawnMagicSkill(wizardSkillVPrefab, wizardVSpawnPoint, false); }
+
+    // 매개변수에 bool isAttached가 추가되었습니다.
+    private void SpawnMagicSkill(GameObject skillPrefab, Transform spawnPoint, bool isAttached)
+    {
+        if (skillPrefab == null || spawnPoint == null) return;
+
+        if (Time.time - _lastMagicFireTime < 0.1f) return;
+        _lastMagicFireTime = Time.time;
+
+        GameObject skillInstance;
+
+        if (isAttached)
+        {
+            // Instantiate의 4번째 매개변수로 spawnPoint를 넘겨주면, 그 위치의 자식으로 쏙 들어가서 평생 따라다닙니다.
+            skillInstance = Instantiate(skillPrefab, spawnPoint.position, spawnPoint.rotation, spawnPoint);
+        }
+        else
+        {
+            // 투사체나 장판은 기존처럼 허공에 생성 (안 따라다님)
+            skillInstance = Instantiate(skillPrefab, spawnPoint.position, spawnPoint.rotation);
+        }
+
+        skillInstance.SetActive(true);
+
+        int damageToDeal = CurrentSkillDamage;
+
+        if (HasRBuff)
+        {
+            damageToDeal = Mathf.RoundToInt(damageToDeal * CurrentSkillVal);
+        }
+
+        AoESkillEffect aoeScript = skillInstance.GetComponent<AoESkillEffect>();
+        if (aoeScript != null)
+        {
+            aoeScript.Initialize(damageToDeal, EnemyLayer);
+            return;
+        }
+
+        LaserSkillEffect laserScript = skillInstance.GetComponent<LaserSkillEffect>();
+        if (laserScript != null)
+        {
+            laserScript.Initialize(damageToDeal, EnemyLayer);
+            return;
+        }
+        Debug.LogWarning($"[Skill] {skillPrefab.name} 데미지 스크립트 없음");
     }
 
     #endregion

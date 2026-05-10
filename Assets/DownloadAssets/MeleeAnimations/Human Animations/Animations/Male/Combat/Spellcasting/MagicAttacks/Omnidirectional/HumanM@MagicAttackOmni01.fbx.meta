@@ -1,7 +1,14 @@
 fileFormatVersion: 2
 guid: b98582042c1292a4e81193a2e417a4d2
+AssetOrigin:
+  serializedVersion: 1
+  productId: 156596
+  packageName: Human Spellcasting Animations
+  packageVersion: 2.0
+  assetPath: Assets/DownloadAssets/MeleeAnimations/Human Animations/Animations/Male/Combat/Spellcasting/MagicAttacks/Omnidirectional/HumanM@MagicAttackOmni01.fbx
+  uploadId: 824672
 ModelImporter:
-  serializedVersion: 22200
+  serializedVersion: 24200
   internalIDToNameTable: []
   externalObjects: {}
   materials:
@@ -17,12 +24,7 @@ ModelImporter:
     removeConstantScaleCurves: 0
     motionNodeName: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'Untitled' has import animation warnings that
-      might lower retargeting quality:\nNote: Activate translation DOF on avatar
-      to improve retargeting quality.\n\t'B-thigh.R' has scale animation that will
-      be discarded.\n\t'B-shin.R' has scale animation that will be discarded.\n\t'B-foot.R'
-      has scale animation that will be discarded.\n\t'B-toe.R' has scale animation
-      that will be discarded.\n"
+    animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -59,7 +61,14 @@ ModelImporter:
       mirror: 0
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
-      events: []
+      events:
+      - time: 0.24867442
+        functionName: FireWizardSkill_E
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       transformMask:
       - path: 
         weight: 1
@@ -208,6 +217,9 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
+    generateMeshLods: 0
+    meshLodGenerationFlags: 0
+    maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
@@ -969,10 +981,3 @@ ModelImporter:
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 156596
-  packageName: Human Spellcasting Animations
-  packageVersion: 2.0
-  assetPath: Assets/DownloadAssets/MeleeAnimations/Human Animations/Animations/Male/Combat/Spellcasting/MagicAttacks/Omnidirectional/HumanM@MagicAttackOmni01.fbx
-  uploadId: 824672

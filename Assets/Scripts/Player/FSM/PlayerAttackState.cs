@@ -30,8 +30,10 @@ public class PlayerAttackState : PlayerState
         _player.Anim.ResetTrigger("Attack");
         _player.Anim.SetTrigger("Attack");
 
-        float atkSpd = _player.CurrentWeapon != null ? _player.CurrentWeapon.Atk_Spd : 1f;
-        _player.Anim.SetFloat("AttackSpd", atkSpd);
+        float baseAtkSpd = _player.CurrentWeapon != null ? _player.CurrentWeapon.Atk_Spd : 1f;
+        float finalAtkSpd = baseAtkSpd * _player.GetEffectiveAttackSpeed(false);
+
+        _player.Anim.SetFloat("AttackSpd", finalAtkSpd);
 
         _stateTimer = 0f;
     }

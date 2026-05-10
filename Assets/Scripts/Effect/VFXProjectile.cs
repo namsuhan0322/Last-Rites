@@ -5,18 +5,20 @@ using UnityEngine.VFX;
 public class VFXProjectile : MonoBehaviour
 {
     [Header("VFX 설정")]
-    public VisualEffect vfx;                    // 인스펙터에서 연결할 VFX 컴포넌트
-    public string createEventName = "create";   // 생성 시 보낼 이벤트 이름
-    public string hitEventName = "hit";         // 적중 시 보낼 이벤트 이름
+    public VisualEffect vfx;
+    public string createEventName = "create";
+    public string hitEventName = "hit";
 
     [Header("투사체 설정")]
-    public float speed = 15f;                   // 날아가는 속도
-    public float lifeTime = 5f;                 // 빗나갔을 때 자동 소멸 시간
-    public float destroyDelayAfterHit = 2f;     // 이펙트가 재생될 시간을 벌어주는 딜레이
+    public float speed = 15f;
+    [Tooltip("투사체가 날아갈 수 있는 최대 사거리")]
+    public float maxDistance = 10f;
+    public float destroyDelayAfterHit = 2f;
 
     private int _damage;
     private LayerMask _enemyLayer;
     private bool _isHit = false;
+    private Vector3 _startPosition;
 
     public void Initialize(int damage, LayerMask enemyLayer)
     {
@@ -24,18 +26,26 @@ public class VFXProjectile : MonoBehaviour
         _enemyLayer = enemyLayer;
         _isHit = false;
 
+        _startPosition = transform.position;
+
         if (vfx != null)
         {
             vfx.SendEvent(createEventName);
         }
 
-        Destroy(gameObject, lifeTime);
+        Destroy(gameObject, 10f);
     }
 
     private void Update()
     {
         if (_isHit) return;
+
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
+
+        if (Vector3.Distance(_startPosition, transform.position) >= maxDistance)
+        {
+            TriggerHitEffect();
+        }
     }
 
     private void OnTriggerEnter(Collider other)
@@ -45,13 +55,11 @@ public class VFXProjectile : MonoBehaviour
         if (((1 << other.gameObject.layer) & _enemyLayer) != 0)
         {
             Actor enemy = other.GetComponentInParent<Actor>();
-            if (enemy != null)
+
+            if (enemy != null && !enemy.IsDead)
             {
-                if (!enemy.IsDead)
-                {
-                    enemy.TakeDamage(_damage);
-                    TriggerHitEffect();
-                }
+                enemy.TakeDamage(_damage);
+                TriggerHitEffect();
             }
         }
     }
@@ -69,5 +77,15 @@ public class VFXProjectile : MonoBehaviour
         if (col != null) col.enabled = false;
 
         Destroy(gameObject, destroyDelayAfterHit);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+
+        Gizmos.DrawRay(transform.position, transform.forward * maxDistance);
+
+        Vector3 endPosition = transform.position + transform.forward * maxDistance;
+        Gizmos.DrawWireSphere(endPosition, 0.5f);
     }
 }

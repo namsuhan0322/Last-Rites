@@ -1,7 +1,7 @@
 public enum WeaponType
 {
     GreatSword,
-    SwordShield,
+    Wizard,
     DualBlade,
     Spear
 }

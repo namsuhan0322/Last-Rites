@@ -5,15 +5,14 @@ public class WeaponVisualManager : MonoBehaviour
     [Header("무기 스킨 메쉬 오브젝트")]
     [SerializeField] private GameObject _greatSwordModel;
     [SerializeField] private GameObject _spearModel;
-    [SerializeField] private GameObject _swordModel;
+    [SerializeField] private GameObject _wizardModel;
     [SerializeField] private GameObject _dualBladeModel;
 
     [Header("손에 든 무기 스킨")]
     [SerializeField] private GameObject _greatSwordSkin;
     [SerializeField] private GameObject _LdualBladeSkin;
     [SerializeField] private GameObject _RdualBladeSkin;
-    [SerializeField] private GameObject _swordSkin;
-    [SerializeField] private GameObject _shieldSkin;
+    [SerializeField] private GameObject _wizardSkin;
     [SerializeField] private GameObject _spearSkin;
 
     [Header("칼집/등에 맨 스킨")]
@@ -23,8 +22,8 @@ public class WeaponVisualManager : MonoBehaviour
     [SerializeField] private GameObject _daggerScabbard_L;
     [SerializeField] private GameObject _daggerScabbard_R_Empty;
     [SerializeField] private GameObject _daggerScabbard_R;
-    [SerializeField] private GameObject _swordScabbard;
-    [SerializeField] private GameObject _swordScabbardEmpty;
+    [SerializeField] private GameObject _wizardScabbard;
+    [SerializeField] private GameObject _wizardScabbardEmpty;
     [SerializeField] private GameObject _spearScabbard;
 
     private WeaponType _currentWeaponType;
@@ -50,9 +49,8 @@ public class WeaponVisualManager : MonoBehaviour
                 if (_spearModel) _spearModel.SetActive(true);
                 break;
 
-            case WeaponType.SwordShield:
-                if (_swordModel) _swordModel.SetActive(true);
-                if (_shieldSkin) _shieldSkin.SetActive(true);
+            case WeaponType.Wizard:
+                if (_wizardModel) _wizardModel.SetActive(true);
                 break;
         }
     }
@@ -61,14 +59,13 @@ public class WeaponVisualManager : MonoBehaviour
     {
         if (_greatSwordModel) _greatSwordModel.SetActive(false);
         if (_spearModel) _spearModel.SetActive(false);
-        if (_swordModel) _swordModel.SetActive(false);
+        if (_wizardModel) _wizardModel.SetActive(false);
         if (_dualBladeModel) _dualBladeModel.SetActive(false);
   
         if (_greatSwordSkin) _greatSwordSkin.SetActive(false);
         if (_LdualBladeSkin) _LdualBladeSkin.SetActive(false);
         if (_RdualBladeSkin) _RdualBladeSkin.SetActive(false);
-        if (_swordSkin) _swordSkin.SetActive(false);
-        if (_shieldSkin) _shieldSkin.SetActive(false);
+        if (_wizardSkin) _wizardSkin.SetActive(false);
         if (_spearSkin) _spearSkin.SetActive(false);
         if (_greatSwordSheathed) _greatSwordSheathed.SetActive(false);
         if (_greatSwordSheathedEmpty) _greatSwordSheathedEmpty.SetActive(false);
@@ -76,8 +73,8 @@ public class WeaponVisualManager : MonoBehaviour
         if (_daggerScabbard_L_Empty) _daggerScabbard_L.SetActive(false);
         if (_daggerScabbard_R_Empty) _daggerScabbard_R_Empty.SetActive(false);
         if (_daggerScabbard_R_Empty) _daggerScabbard_R.SetActive(false);
-        if (_swordScabbard) _swordScabbard.SetActive(false);
-        if (_swordScabbardEmpty) _swordScabbardEmpty.SetActive(false);
+        if (_wizardScabbard) _wizardScabbard.SetActive(false);
+        if (_wizardScabbardEmpty) _wizardScabbardEmpty.SetActive(false);
         if (_spearScabbard) _spearScabbard.SetActive(false);
     }
 
@@ -99,10 +96,10 @@ public class WeaponVisualManager : MonoBehaviour
                 if (_LdualBladeSkin) _LdualBladeSkin.SetActive(true);        
                 if (_RdualBladeSkin) _RdualBladeSkin.SetActive(true);         
                 break;
-            case WeaponType.SwordShield:
-                if (_swordScabbard) _swordScabbard.SetActive(false);
-                if (_swordScabbardEmpty) _swordScabbardEmpty.SetActive(true);
-                if (_swordSkin) _swordSkin.SetActive(true);
+            case WeaponType.Wizard:
+                if (_wizardScabbard) _wizardScabbard.SetActive(false);
+                if (_wizardScabbardEmpty) _wizardScabbardEmpty.SetActive(true);
+                if (_wizardSkin) _wizardSkin.SetActive(true);
                 break;
             case WeaponType.Spear:
                 if (_spearScabbard) _spearScabbard.SetActive(false);
@@ -129,10 +126,10 @@ public class WeaponVisualManager : MonoBehaviour
                 if (_LdualBladeSkin) _LdualBladeSkin.SetActive(false);
                 if (_RdualBladeSkin) _RdualBladeSkin.SetActive(false);
                 break;
-            case WeaponType.SwordShield:
-                if (_swordSkin) _swordSkin.SetActive(false);
-                if (_swordScabbard) _swordScabbard.SetActive(true);
-                if (_swordScabbardEmpty) _swordScabbardEmpty.SetActive(false);
+            case WeaponType.Wizard:
+                if (_wizardSkin) _wizardSkin.SetActive(false);
+                if (_wizardScabbard) _wizardScabbard.SetActive(true);
+                if (_wizardScabbardEmpty) _wizardScabbardEmpty.SetActive(false);
                 break;
             case WeaponType.Spear:
                 if (_spearSkin) _spearSkin.SetActive(false);

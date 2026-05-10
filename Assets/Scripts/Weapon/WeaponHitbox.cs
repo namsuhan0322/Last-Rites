@@ -6,10 +6,8 @@ public class WeaponHitbox : MonoBehaviour
     [Header("연결할 콜라이더들 (인스펙터에서 할당)")]
     [SerializeField] private BoxCollider _greatSwordCol; // 대검
     [SerializeField] private BoxCollider _spearCol;      // 창
-    [SerializeField] private BoxCollider _swordCol;      // 한손검
     [SerializeField] private BoxCollider _dualBladeRCol; // 쌍검(우)
     [SerializeField] private BoxCollider _dualBladeLCol; // 쌍검(좌)
-    [SerializeField] private BoxCollider _shieldCol;     // 방패
 
     // 실제로 사용할 콜라이더 목록
     private List<BoxCollider> _activeColliders = new List<BoxCollider>();
@@ -42,11 +40,6 @@ public class WeaponHitbox : MonoBehaviour
             case WeaponType.Spear:
                 if (_spearCol) _activeColliders.Add(_spearCol);
                 break;
-
-            case WeaponType.SwordShield:
-                if (_swordCol) _activeColliders.Add(_swordCol);
-                if (_shieldCol) _activeColliders.Add(_shieldCol);
-                break;
         }
     }
 
@@ -78,10 +71,8 @@ public class WeaponHitbox : MonoBehaviour
     {
         if (_greatSwordCol) _greatSwordCol.enabled = false;
         if (_spearCol) _spearCol.enabled = false;
-        if (_swordCol) _swordCol.enabled = false;
         if (_dualBladeRCol) _dualBladeRCol.enabled = false;
         if (_dualBladeLCol) _dualBladeLCol.enabled = false;
-        if (_shieldCol) _shieldCol.enabled = false;
     }
 
     private void OnTriggerEnter(Collider other)

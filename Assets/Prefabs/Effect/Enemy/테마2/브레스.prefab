@@ -24577,6 +24577,8 @@ GameObject:
   - component: {fileID: 4817473213869908}
   - component: {fileID: 198959507799202196}
   - component: {fileID: 199436734649930510}
+  - component: {fileID: 5166555083972984054}
+  - component: {fileID: 2898695153075513341}
   m_Layer: 0
   m_Name: "\uBE0C\uB808\uC2A4"
   m_TagString: Untagged
@@ -24593,7 +24595,7 @@ Transform:
   m_GameObject: {fileID: 1326818236535208}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 2}
+  m_LocalPosition: {x: 0, y: -1.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -29543,6 +29545,42 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
+--- !u!65 &5166555083972984054
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1326818236535208}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 3.4698634, y: 5.637826, z: 19.143085}
+  m_Center: {x: 0.033540487, y: -0.5184603, z: 8.297462}
+--- !u!114 &2898695153075513341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1326818236535208}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e083216e3a42a144885b9735719f4404, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DragonBreathDamage
+  damage: 5
+  tickInterval: 0.3
+  lifeTime: 2
 --- !u!1 &1475651077030148
 GameObject:
   m_ObjectHideFlags: 0

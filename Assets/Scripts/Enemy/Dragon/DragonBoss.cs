@@ -75,6 +75,17 @@ public class DragonBoss : Enemy
     public float afterWarningDelay = 0.5f; //점프 공격 알려주고 난 다음 타임
     [SerializeField] private GameObject jumpWarningPrefab;
 
+    [Header("날개 내려찍기 + 브레스 콤보")]
+    public float wingCrushBreathDuration = 5f;
+    public float secondCrushDelay = 1.3f;
+    public float breathStartDelay = 2.8f;
+    public float wingCrushBreathCooldown = 12f;
+    public GameObject breathPrefab;
+    public Transform breathSpawnPoint;
+    public DragonAttackHitbox leftWingCrushHitbox;
+    public DragonAttackHitbox rightWingCrushHitbox;
+
+
     //변수들
     public bool HasRoared => hasRoared;
     private float biteCooldownTimer = 0f;
@@ -87,6 +98,7 @@ public class DragonBoss : Enemy
     private bool roarRequested = false;
     private float wingComboCooldownTimer = 0f;
     private float jumpAttackCooldownTimer = 0f;
+    private float wingCrushBreathCooldownTimer = 0f;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -150,6 +162,9 @@ public class DragonBoss : Enemy
 
         if (jumpAttackCooldownTimer > 0f)
             jumpAttackCooldownTimer -= Time.deltaTime;
+
+        if (wingCrushBreathCooldownTimer > 0f)
+            wingCrushBreathCooldownTimer -= Time.deltaTime;
     }
 
     public void SetMoveType(int type)
@@ -599,6 +614,63 @@ public class DragonBoss : Enemy
         }
     }
 
+    public bool CanWingCrushBreathCombo()
+    {
+        return wingCrushBreathCooldownTimer <= 0f;
+    }
+
+    public void StartWingCrushBreathComboCooldown()
+    {
+        wingCrushBreathCooldownTimer = wingCrushBreathCooldown;
+    }
+
+    public void PlayLeftWingCrush()
+    {
+        animator.ResetTrigger("LeftWingCrush");
+        animator.SetTrigger("LeftWingCrush");
+    }
+
+    public void PlayRightWingCrush()
+    {
+        animator.ResetTrigger("RightWingCrush");
+        animator.SetTrigger("RightWingCrush");
+    }
+
+    public void PlayFireBreath()
+    {
+        animator.ResetTrigger("FireBreath");
+        animator.SetTrigger("FireBreath");
+    }
+
+    public void SpawnBreath()
+    {
+        if (breathPrefab == null || breathSpawnPoint == null)
+            return;
+
+        Vector3 dir = transform.forward;
+        dir.y = 0f;
+        dir.Normalize();
+
+        GameObject breath = Instantiate(
+            breathPrefab,
+            breathSpawnPoint.position,
+            Quaternion.LookRotation(dir)
+        );
+
+        // 파티클을 2초 진행된 상태부터 시작
+        ParticleSystem[] particles = breath.GetComponentsInChildren<ParticleSystem>();
+
+        foreach (ParticleSystem ps in particles)
+        {
+            ps.Simulate(2f, true, true);
+            ps.Play();
+        }
+
+        DragonBreathDamage damage = breath.GetComponent<DragonBreathDamage>();
+
+        if (damage != null)
+            damage.Init(this);
+    }
 
     //포효하기
     public bool ShouldRoar()
@@ -675,6 +747,33 @@ public class DragonBoss : Enemy
     {
         rightWingHitbox.DisableHitbox();
     }
+
+    public void EnableLeftWingCrushHitbox()
+    {
+        leftWingCrushHitbox.EnableHitbox();
+    }
+
+    public void DisableLeftWingCrushHitbox()
+    {
+        leftWingCrushHitbox.DisableHitbox();
+    }
+
+    public void EnableRightWingCrushHitbox()
+    {
+        rightWingCrushHitbox.EnableHitbox();
+    }
+
+    public void DisableRightWingCrushHitbox()
+    {
+        rightWingCrushHitbox.DisableHitbox();
+    }
+
+    public void DisableAllWingCrushHitboxes()
+    {
+        leftWingCrushHitbox.DisableHitbox();
+        rightWingCrushHitbox.DisableHitbox();
+    }
+
 
     public void SetManualMoveMode(bool value)
     {

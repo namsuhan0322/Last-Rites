@@ -3,33 +3,66 @@ using UnityEngine;
 
 public class DragonBreathDamage : MonoBehaviour
 {
-    [SerializeField] private int damage = 5;
-    [SerializeField] private float tickInterval = 0.3f;
+    [SerializeField] private int damage = 10;
     [SerializeField] private float lifeTime = 2f;
+    [SerializeField] private LayerMask targetLayer;
 
     private Actor owner;
-    private Dictionary<Actor, float> nextDamageTime = new Dictionary<Actor, float>();
+    private BoxCollider boxCollider;
+
+    // 한 번 스캔할 때 같은 Actor 중복 방지
+    private HashSet<Actor> damagedThisFrame = new HashSet<Actor>();
 
     public void Init(Actor owner)
     {
         this.owner = owner;
+        boxCollider = GetComponent<BoxCollider>();
+
         Destroy(gameObject, lifeTime);
     }
 
-    private void OnTriggerStay(Collider other)
+    private void Update()
     {
-        Actor target = other.GetComponentInParent<Actor>();
-
-        if (target == null) return;
-        if (target == owner) return;
-
-        if (!nextDamageTime.ContainsKey(target))
-            nextDamageTime[target] = 0f;
-
-        if (Time.time < nextDamageTime[target])
+        if (boxCollider == null)
             return;
 
-        nextDamageTime[target] = Time.time + tickInterval;
-        target.TakeDamage(damage);
+        damagedThisFrame.Clear();
+
+        Vector3 center = boxCollider.transform.TransformPoint(boxCollider.center);
+        Vector3 halfExtents = Vector3.Scale(boxCollider.size * 0.5f, boxCollider.transform.lossyScale);
+        Quaternion rotation = boxCollider.transform.rotation;
+
+        Collider[] hits = Physics.OverlapBox(
+            center,
+            halfExtents,
+            rotation,
+            targetLayer
+        );
+
+        foreach (Collider hit in hits)
+        {
+            Actor target = hit.GetComponentInParent<Actor>();
+
+            if (target == null) continue;
+            if (target == owner) continue;
+            if (damagedThisFrame.Contains(target)) continue;
+
+            damagedThisFrame.Add(target);
+            target.TakeDamage(damage);
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        BoxCollider box = GetComponent<BoxCollider>();
+        if (box == null) return;
+
+        Gizmos.matrix = Matrix4x4.TRS(
+            box.transform.TransformPoint(box.center),
+            box.transform.rotation,
+            Vector3.Scale(box.size, box.transform.lossyScale)
+        );
+
+        Gizmos.DrawWireCube(Vector3.zero, Vector3.one);
     }
 }

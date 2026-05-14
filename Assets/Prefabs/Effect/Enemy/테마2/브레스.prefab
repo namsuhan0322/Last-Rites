@@ -29578,9 +29578,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e083216e3a42a144885b9735719f4404, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DragonBreathDamage
-  damage: 5
-  tickInterval: 0.9
+  damage: 1
   lifeTime: 3
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 384
 --- !u!1 &1475651077030148
 GameObject:
   m_ObjectHideFlags: 0

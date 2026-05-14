@@ -3,7 +3,6 @@ using UnityEngine.AI;
 
 public class DragonBoss : Enemy
 {
-
     [Header("스킬후 공통 현타시간")]
     public float combatIdleTime = 2f;
 
@@ -91,6 +90,12 @@ public class DragonBoss : Enemy
     public float biteAfterWingDelay = 2.8f;
     public float wingSlamBiteComboCooldown = 12f;
 
+    [Header("날개 스윙 + 물기 + 좌우 브레스 콤보")]
+    public float wingSlamBiteSideBreathComboDuration = 11f;
+    public float sideBreathStartDelay = 7f;
+    public float wingSlamBiteSideBreathComboCooldown = 18f;
+
+
 
     //변수들
     public bool HasRoared => hasRoared;
@@ -106,6 +111,10 @@ public class DragonBoss : Enemy
     private float jumpAttackCooldownTimer = 0f;
     private float wingCrushBreathCooldownTimer = 0f;
     private float wingSlamBiteComboCooldownTimer = 0f;
+    private float wingSlamBiteSideBreathComboCooldownTimer = 0f;
+    private GameObject currentBreath;
+    private BreathFollowMouth currentBreathFollow;
+
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -175,6 +184,11 @@ public class DragonBoss : Enemy
 
         if (wingSlamBiteComboCooldownTimer > 0f)
             wingSlamBiteComboCooldownTimer -= Time.deltaTime;
+
+        if (wingSlamBiteSideBreathComboCooldownTimer > 0f)
+            wingSlamBiteSideBreathComboCooldownTimer -= Time.deltaTime;
+
+
     }
 
     public void SetMoveType(int type)
@@ -683,6 +697,8 @@ public class DragonBoss : Enemy
             damage.Init(this);
     }
 
+
+    //좌우 날개스윙 후 물기
     public bool CanWingSlamBiteCombo()
     {
         return wingSlamBiteComboCooldownTimer <= 0f;
@@ -692,6 +708,73 @@ public class DragonBoss : Enemy
     {
         wingSlamBiteComboCooldownTimer = wingSlamBiteComboCooldown;
     }
+
+    //좌우로 브레스
+    public void SpawnAttachedBreath()
+    {
+        if (breathPrefab == null || breathSpawnPoint == null)
+            return;
+
+        if (currentBreath != null)
+            Destroy(currentBreath);
+
+        currentBreath = Instantiate(
+            breathPrefab,
+            breathSpawnPoint.position,
+            Quaternion.identity
+        );
+
+        currentBreathFollow = currentBreath.GetComponent<BreathFollowMouth>();
+
+        if (currentBreathFollow == null)
+            currentBreathFollow = currentBreath.AddComponent<BreathFollowMouth>();
+
+        currentBreathFollow.Init(
+            breathSpawnPoint,
+            transform,
+            new Vector3(0f, 90f, 0f)
+        );
+
+        ParticleSystem[] particles = currentBreath.GetComponentsInChildren<ParticleSystem>();
+
+        foreach (ParticleSystem ps in particles)
+        {
+            ps.Simulate(2f, true, true);
+            ps.Play();
+        }
+
+        DragonBreathDamage damage = currentBreath.GetComponent<DragonBreathDamage>();
+
+        if (damage != null)
+            damage.Init(this);
+    }
+
+    public void StopAttachedBreath()
+    {
+        if (currentBreath != null)
+        {
+            Destroy(currentBreath);
+            currentBreath = null;
+            currentBreathFollow = null;
+        }
+    }
+
+    public void PlaySideBreath()
+    {
+        animator.ResetTrigger("SideBreath");
+        animator.SetTrigger("SideBreath");
+    }
+
+    public bool CanWingSlamBiteSideBreathCombo()
+    {
+        return wingSlamBiteSideBreathComboCooldownTimer <= 0f;
+    }
+
+    public void StartWingSlamBiteSideBreathComboCooldown()
+    {
+        wingSlamBiteSideBreathComboCooldownTimer = wingSlamBiteSideBreathComboCooldown;
+    }
+
     //포효하기
     public bool ShouldRoar()
     {

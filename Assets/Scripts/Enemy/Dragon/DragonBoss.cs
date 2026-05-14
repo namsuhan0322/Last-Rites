@@ -85,6 +85,12 @@ public class DragonBoss : Enemy
     public DragonAttackHitbox leftWingCrushHitbox;
     public DragonAttackHitbox rightWingCrushHitbox;
 
+    [Header("날개 스윙 + 물기 콤보")]
+    public float wingSlamBiteComboDuration = 6f;
+    public float secondWingSlamDelay = 1.3f;
+    public float biteAfterWingDelay = 2.8f;
+    public float wingSlamBiteComboCooldown = 12f;
+
 
     //변수들
     public bool HasRoared => hasRoared;
@@ -99,6 +105,7 @@ public class DragonBoss : Enemy
     private float wingComboCooldownTimer = 0f;
     private float jumpAttackCooldownTimer = 0f;
     private float wingCrushBreathCooldownTimer = 0f;
+    private float wingSlamBiteComboCooldownTimer = 0f;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -165,6 +172,9 @@ public class DragonBoss : Enemy
 
         if (wingCrushBreathCooldownTimer > 0f)
             wingCrushBreathCooldownTimer -= Time.deltaTime;
+
+        if (wingSlamBiteComboCooldownTimer > 0f)
+            wingSlamBiteComboCooldownTimer -= Time.deltaTime;
     }
 
     public void SetMoveType(int type)
@@ -642,6 +652,7 @@ public class DragonBoss : Enemy
         animator.SetTrigger("FireBreath");
     }
 
+    //브레스 소환
     public void SpawnBreath()
     {
         if (breathPrefab == null || breathSpawnPoint == null)
@@ -672,6 +683,15 @@ public class DragonBoss : Enemy
             damage.Init(this);
     }
 
+    public bool CanWingSlamBiteCombo()
+    {
+        return wingSlamBiteComboCooldownTimer <= 0f;
+    }
+
+    public void StartWingSlamBiteComboCooldown()
+    {
+        wingSlamBiteComboCooldownTimer = wingSlamBiteComboCooldown;
+    }
     //포효하기
     public bool ShouldRoar()
     {

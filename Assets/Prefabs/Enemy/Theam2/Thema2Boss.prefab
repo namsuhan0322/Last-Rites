@@ -5530,12 +5530,16 @@ MonoBehaviour:
   wingCrushBreathDuration: 8.5
   secondCrushDelay: 2.2
   breathStartDelay: 4
-  wingCrushBreathCooldown: 2
+  wingCrushBreathCooldown: 30
   breathPrefab: {fileID: 1326818236535208, guid: 2fd756a9a064d6043904348e86ea96db,
     type: 3}
   breathSpawnPoint: {fileID: 3327778268357399599}
   leftWingCrushHitbox: {fileID: 3978111813020256882}
   rightWingCrushHitbox: {fileID: 8663773716319855909}
+  wingSlamBiteComboDuration: 7
+  secondWingSlamDelay: 2.45
+  biteAfterWingDelay: 4.8
+  wingSlamBiteComboCooldown: 2
 --- !u!195 &7804963564610020852
 NavMeshAgent:
   m_ObjectHideFlags: 0

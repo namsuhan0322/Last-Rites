@@ -5505,8 +5505,8 @@ MonoBehaviour:
   tailBackAngle: 120
   leftTailHitbox: {fileID: 287528563655993468}
   rightTailHitbox: {fileID: 287528563655993468}
-  fireballMinRange: 14
-  fireballMaxRange: 25
+  fireballMinRange: 15
+  fireballMaxRange: 50
   fireballDuration: 2
   fireballCooldown: 6
   fireballPrefab: {fileID: 8392620470651161117, guid: 1bdcb099065b524448cf0c676beb1795,
@@ -5543,6 +5543,8 @@ MonoBehaviour:
   wingSlamBiteSideBreathComboDuration: 10
   sideBreathStartDelay: 6.5
   wingSlamBiteSideBreathComboCooldown: 15
+  sideJumpDuration: 1.5
+  sideJumpCooldown: 8
 --- !u!195 &7804963564610020852
 NavMeshAgent:
   m_ObjectHideFlags: 0

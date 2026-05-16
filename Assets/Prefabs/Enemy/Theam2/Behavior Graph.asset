@@ -32,8 +32,8 @@ MonoBehaviour:
           rid: 1076259303954055377
         BlackboardGroupReferences: []
         Root:
-          rid: 1076259488800440701
-        m_VersionTimestamp: 639144081578046340
+          rid: 1076259536028566152
+        m_VersionTimestamp: 639145875564062766
     - rid: 1076259303954055377
       type: {class: BlackboardReference, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
@@ -44,8 +44,17 @@ MonoBehaviour:
       type: {class: Blackboard, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         m_Variables:
-        - rid: 1076259488800440703
-    - rid: 1076259488800440694
+        - rid: 1076259535933669678
+    - rid: 1076259535933669678
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]',
+        ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Self
+        m_Value: {fileID: 0}
+    - rid: 1076259536028565729
       type: {class: 'BlackboardVariable`1[[System.Single, mscorlib]]', ns: Unity.Behavior,
         asm: Unity.Behavior}
       data:
@@ -54,7 +63,7 @@ MonoBehaviour:
           m_Value1: 0
         Name: 
         m_Value: 2
-    - rid: 1076259488800440701
+    - rid: 1076259536028566152
       type: {class: Start, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -65,10 +74,10 @@ MonoBehaviour:
         m_Parent:
           rid: -2
         m_Child:
-          rid: 1076259488800440702
+          rid: 1076259536028566153
         Repeat: 1
         AllowMultipleRepeatsPerTick: 0
-    - rid: 1076259488800440702
+    - rid: 1076259536028566153
       type: {class: SelectorComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -77,23 +86,14 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440701
+          rid: 1076259536028566152
         m_Children:
-        - rid: 1076259488800440704
-        - rid: 1076259488800440705
-        - rid: 1076259488800440706
-        - rid: 1076259488800440707
+        - rid: 1076259536028566154
+        - rid: 1076259536028566155
+        - rid: 1076259536028566156
+        - rid: 1076259536028566157
         m_RegisteredObservers: []
-    - rid: 1076259488800440703
-      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]',
-        ns: Unity.Behavior, asm: Unity.Behavior}
-      data:
-        GUID:
-          m_Value0: 1
-          m_Value1: 0
-        Name: Self
-        m_Value: {fileID: 0}
-    - rid: 1076259488800440704
+    - rid: 1076259536028566154
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -102,12 +102,11 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440702
+          rid: 1076259536028566153
         m_Children:
-        - rid: 1076259488800440708
-        - rid: 1076259488800440709
+        - rid: 1076259536028566158
         m_RegisteredObservers: []
-    - rid: 1076259488800440705
+    - rid: 1076259536028566155
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -116,11 +115,11 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440702
+          rid: 1076259536028566153
         m_Children:
-        - rid: 1076259488800440710
+        - rid: 1076259536028566159
         m_RegisteredObservers: []
-    - rid: 1076259488800440706
+    - rid: 1076259536028566156
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -129,11 +128,11 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440702
+          rid: 1076259536028566153
         m_Children:
-        - rid: 1076259488800440711
+        - rid: 1076259536028566160
         m_RegisteredObservers: []
-    - rid: 1076259488800440707
+    - rid: 1076259536028566157
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -142,11 +141,11 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440702
+          rid: 1076259536028566153
         m_Children:
-        - rid: 1076259488800440712
+        - rid: 1076259536028566161
         m_RegisteredObservers: []
-    - rid: 1076259488800440708
+    - rid: 1076259536028566158
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -155,24 +154,12 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440704
+          rid: 1076259536028566154
         m_Children:
-        - rid: 1076259488800440713
-        - rid: 1076259488800440714
+        - rid: 1076259536028566162
+        - rid: 1076259536028566163
         m_RegisteredObservers: []
-    - rid: 1076259488800440709
-      type: {class: DragonWingSlamBiteSideBreathComboAction, ns: , asm: Assembly-CSharp}
-      data:
-        ID:
-          m_Value0: 15517724255632901536
-          m_Value1: 14813841716955456619
-        Graph:
-          rid: 1076259303954055376
-        m_Parent:
-          rid: 1076259488800440704
-        Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440710
+    - rid: 1076259536028566159
       type: {class: SelectorComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -181,15 +168,15 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440705
+          rid: 1076259536028566155
         m_Children:
-        - rid: 1076259488800440715
-        - rid: 1076259488800440716
-        - rid: 1076259488800440717
-        - rid: 1076259488800440718
-        - rid: 1076259488800440719
+        - rid: 1076259536028566164
+        - rid: 1076259536028566165
+        - rid: 1076259536028566166
+        - rid: 1076259536028566167
+        - rid: 1076259536028566168
         m_RegisteredObservers: []
-    - rid: 1076259488800440711
+    - rid: 1076259536028566160
       type: {class: DragonCombatIdleAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -198,10 +185,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440706
+          rid: 1076259536028566156
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440712
+          rid: 1076259535933669678
+    - rid: 1076259536028566161
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -210,12 +197,12 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440707
+          rid: 1076259536028566157
         m_Children:
-        - rid: 1076259488800440720
-        - rid: 1076259488800440721
+        - rid: 1076259536028566169
+        - rid: 1076259536028566170
         m_RegisteredObservers: []
-    - rid: 1076259488800440713
+    - rid: 1076259536028566162
       type: {class: DragonFacePlayerOnceAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -224,10 +211,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440708
+          rid: 1076259536028566158
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440714
+          rid: 1076259535933669678
+    - rid: 1076259536028566163
       type: {class: DragonRoarAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -236,10 +223,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440708
+          rid: 1076259536028566158
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440715
+          rid: 1076259535933669678
+    - rid: 1076259536028566164
       type: {class: DragonTailAttackAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -248,10 +235,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440710
+          rid: 1076259536028566159
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440716
+          rid: 1076259535933669678
+    - rid: 1076259536028566165
       type: {class: DragonWingSlamAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -260,10 +247,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440710
+          rid: 1076259536028566159
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440717
+          rid: 1076259535933669678
+    - rid: 1076259536028566166
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -272,11 +259,11 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440710
+          rid: 1076259536028566159
         m_Children:
-        - rid: 1076259488800440722
+        - rid: 1076259536028566171
         m_RegisteredObservers: []
-    - rid: 1076259488800440718
+    - rid: 1076259536028566167
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -285,11 +272,11 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440710
+          rid: 1076259536028566159
         m_Children:
-        - rid: 1076259488800440723
+        - rid: 1076259536028566172
         m_RegisteredObservers: []
-    - rid: 1076259488800440719
+    - rid: 1076259536028566168
       type: {class: RandomComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -298,14 +285,16 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440710
+          rid: 1076259536028566159
         m_Children:
-        - rid: 1076259488800440724
-        - rid: 1076259488800440725
-        - rid: 1076259488800440726
-        - rid: 1076259488800440727
+        - rid: 1076259536028566173
+        - rid: 1076259536028566174
+        - rid: 1076259536028566175
+        - rid: 1076259536028566176
+        - rid: 1076259536028566177
+        - rid: 1076259536028566178
         m_RegisteredObservers: []
-    - rid: 1076259488800440720
+    - rid: 1076259536028566169
       type: {class: DragonIdleAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -314,10 +303,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440712
+          rid: 1076259536028566161
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440721
+          rid: 1076259535933669678
+    - rid: 1076259536028566170
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -326,12 +315,12 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440712
+          rid: 1076259536028566161
         m_Children:
-        - rid: 1076259488800440728
-        - rid: 1076259488800440729
+        - rid: 1076259536028566179
+        - rid: 1076259536028566180
         m_RegisteredObservers: []
-    - rid: 1076259488800440722
+    - rid: 1076259536028566171
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -340,12 +329,12 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440717
+          rid: 1076259536028566166
         m_Children:
-        - rid: 1076259488800440730
-        - rid: 1076259488800440731
+        - rid: 1076259536028566181
+        - rid: 1076259536028566182
         m_RegisteredObservers: []
-    - rid: 1076259488800440723
+    - rid: 1076259536028566172
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -354,12 +343,25 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440718
+          rid: 1076259536028566167
         m_Children:
-        - rid: 1076259488800440732
-        - rid: 1076259488800440733
+        - rid: 1076259536028566183
+        - rid: 1076259536028566184
         m_RegisteredObservers: []
-    - rid: 1076259488800440724
+    - rid: 1076259536028566173
+      type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 18278295094785803823
+          m_Value1: 2135525057075473620
+        Graph:
+          rid: 1076259303954055376
+        m_Parent:
+          rid: 1076259536028566168
+        m_Children:
+        - rid: 1076259536028566185
+        m_RegisteredObservers: []
+    - rid: 1076259536028566174
       type: {class: DragonJumpAttackAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -368,10 +370,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440719
+          rid: 1076259536028566168
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440725
+          rid: 1076259535933669678
+    - rid: 1076259536028566175
       type: {class: DragonWingSlamBiteComboAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -380,10 +382,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440719
+          rid: 1076259536028566168
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440726
+          rid: 1076259535933669678
+    - rid: 1076259536028566176
       type: {class: DragonWingCrushBreathComboAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -392,10 +394,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440719
+          rid: 1076259536028566168
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440727
+          rid: 1076259535933669678
+    - rid: 1076259536028566177
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -404,11 +406,23 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440719
+          rid: 1076259536028566168
         m_Children:
-        - rid: 1076259488800440734
+        - rid: 1076259536028566186
         m_RegisteredObservers: []
-    - rid: 1076259488800440728
+    - rid: 1076259536028566178
+      type: {class: DragonWingSlamBiteSideBreathComboAction, ns: , asm: Assembly-CSharp}
+      data:
+        ID:
+          m_Value0: 15517724255632901536
+          m_Value1: 14813841716955456619
+        Graph:
+          rid: 1076259303954055376
+        m_Parent:
+          rid: 1076259536028566168
+        Self:
+          rid: 1076259535933669678
+    - rid: 1076259536028566179
       type: {class: WaitAction, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -417,10 +431,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440721
+          rid: 1076259536028566170
         SecondsToWait:
-          rid: 1076259488800440694
-    - rid: 1076259488800440729
+          rid: 1076259536028565729
+    - rid: 1076259536028566180
       type: {class: RandomComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -429,13 +443,13 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440721
+          rid: 1076259536028566170
         m_Children:
-        - rid: 1076259488800440735
-        - rid: 1076259488800440736
-        - rid: 1076259488800440737
+        - rid: 1076259536028566187
+        - rid: 1076259536028566188
+        - rid: 1076259536028566189
         m_RegisteredObservers: []
-    - rid: 1076259488800440730
+    - rid: 1076259536028566181
       type: {class: DragonFacePlayerForFireballAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -444,10 +458,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440722
+          rid: 1076259536028566171
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440731
+          rid: 1076259535933669678
+    - rid: 1076259536028566182
       type: {class: DragonFireballAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -456,10 +470,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440722
+          rid: 1076259536028566171
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440732
+          rid: 1076259535933669678
+    - rid: 1076259536028566183
       type: {class: DragonFacePlayerForAttackAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -468,10 +482,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440723
+          rid: 1076259536028566172
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440733
+          rid: 1076259535933669678
+    - rid: 1076259536028566184
       type: {class: DragonBiteAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -480,10 +494,24 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440723
+          rid: 1076259536028566172
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440734
+          rid: 1076259535933669678
+    - rid: 1076259536028566185
+      type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 1474401223290763765
+          m_Value1: 4334969655690453184
+        Graph:
+          rid: 1076259303954055376
+        m_Parent:
+          rid: 1076259536028566173
+        m_Children:
+        - rid: 1076259536028566190
+        - rid: 1076259536028566191
+        m_RegisteredObservers: []
+    - rid: 1076259536028566186
       type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
       data:
         ID:
@@ -492,12 +520,12 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440727
+          rid: 1076259536028566177
         m_Children:
-        - rid: 1076259488800440738
-        - rid: 1076259488800440739
+        - rid: 1076259536028566192
+        - rid: 1076259536028566193
         m_RegisteredObservers: []
-    - rid: 1076259488800440735
+    - rid: 1076259536028566187
       type: {class: DragonPatrolAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -506,10 +534,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440729
+          rid: 1076259536028566180
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440736
+          rid: 1076259535933669678
+    - rid: 1076259536028566188
       type: {class: DragonTurnLeftAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -518,10 +546,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440729
+          rid: 1076259536028566180
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440737
+          rid: 1076259535933669678
+    - rid: 1076259536028566189
       type: {class: DragonTurnRightAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -530,10 +558,36 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440729
+          rid: 1076259536028566180
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440738
+          rid: 1076259535933669678
+    - rid: 1076259536028566190
+      type: {class: DragonSideJumpAction, ns: , asm: Assembly-CSharp}
+      data:
+        ID:
+          m_Value0: 1474401223290763765
+          m_Value1: 4334969655690453184
+        Graph:
+          rid: 1076259303954055376
+        m_Parent:
+          rid: 1076259536028566185
+        Self:
+          rid: 1076259535933669678
+    - rid: 1076259536028566191
+      type: {class: SelectorComposite, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 14866777748612650196
+          m_Value1: 3357113636449372732
+        Graph:
+          rid: 1076259303954055376
+        m_Parent:
+          rid: 1076259536028566185
+        m_Children:
+        - rid: 1076259536028566194
+        - rid: 1076259536028566195
+        m_RegisteredObservers: []
+    - rid: 1076259536028566192
       type: {class: DragonFacePlayerForAttackAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -542,10 +596,10 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440734
+          rid: 1076259536028566186
         Self:
-          rid: 1076259488800440703
-    - rid: 1076259488800440739
+          rid: 1076259535933669678
+    - rid: 1076259536028566193
       type: {class: DragonWingComboAction, ns: , asm: Assembly-CSharp}
       data:
         ID:
@@ -554,9 +608,72 @@ MonoBehaviour:
         Graph:
           rid: 1076259303954055376
         m_Parent:
-          rid: 1076259488800440734
+          rid: 1076259536028566186
         Self:
-          rid: 1076259488800440703
+          rid: 1076259535933669678
+    - rid: 1076259536028566194
+      type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 10619520826465463058
+          m_Value1: 2240787683479756510
+        Graph:
+          rid: 1076259303954055376
+        m_Parent:
+          rid: 1076259536028566191
+        m_Children:
+        - rid: 1076259536028566196
+        m_RegisteredObservers: []
+    - rid: 1076259536028566195
+      type: {class: DragonTailAttackAction, ns: , asm: Assembly-CSharp}
+      data:
+        ID:
+          m_Value0: 5629706117696603449
+          m_Value1: 8894108557516834690
+        Graph:
+          rid: 1076259303954055376
+        m_Parent:
+          rid: 1076259536028566191
+        Self:
+          rid: 1076259535933669678
+    - rid: 1076259536028566196
+      type: {class: SequenceComposite, ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        ID:
+          m_Value0: 7715540276700070782
+          m_Value1: 18438685657753726676
+        Graph:
+          rid: 1076259303954055376
+        m_Parent:
+          rid: 1076259536028566194
+        m_Children:
+        - rid: 1076259536028566197
+        - rid: 1076259536028566198
+        m_RegisteredObservers: []
+    - rid: 1076259536028566197
+      type: {class: DragonFacePlayerForFireballAction, ns: , asm: Assembly-CSharp}
+      data:
+        ID:
+          m_Value0: 7715540276700070782
+          m_Value1: 18438685657753726676
+        Graph:
+          rid: 1076259303954055376
+        m_Parent:
+          rid: 1076259536028566196
+        Self:
+          rid: 1076259535933669678
+    - rid: 1076259536028566198
+      type: {class: DragonFireballAction, ns: , asm: Assembly-CSharp}
+      data:
+        ID:
+          m_Value0: 911709549651264087
+          m_Value1: 10458904767668005103
+        Graph:
+          rid: 1076259303954055376
+        m_Parent:
+          rid: 1076259536028566196
+        Self:
+          rid: 1076259535933669678
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -617,7 +734,16 @@ MonoBehaviour:
   - rid: 1076259488748536781
   - rid: 1076259488800440345
   - rid: 1076259488800440428
-  m_VersionTimestamp: 639144081578046340
+  - rid: 1076259535933669631
+  - rid: 1076259535933669754
+  - rid: 1076259535933669874
+  - rid: 1076259535933669959
+  - rid: 1076259535933669960
+  - rid: 1076259535933669961
+  - rid: 1076259535933670060
+  - rid: 1076259535933670199
+  - rid: 1076259535933670396
+  m_VersionTimestamp: 639145875564062766
   m_SerializedVersion: 2
   m_DebugInfo: {fileID: 5319552792526597682}
   m_RuntimeGraph: {fileID: -4209857644097750514}
@@ -954,6 +1080,21 @@ MonoBehaviour:
       Tooltip: 
     NamedChildren: []
     IsPlaceholder: 0
+  - Name: Dragon Side Jump
+    Story: '[Self] jumps left or right'
+    RuntimeTypeString: DragonSideJumpAction, Assembly-CSharp, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
+    RuntimeTypeID:
+      m_Value0: 246346439237840
+      m_Value1: 49162
+    Variables:
+    - Name: Self
+      Type:
+        m_SerializableType: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+          Culture=neutral, PublicKeyToken=null
+      Tooltip: 
+    NamedChildren: []
+    IsPlaceholder: 0
   m_Blackboards: []
   m_MainBlackboardAuthoringAsset: {fileID: 3428315631554557483}
   m_CommandBuffer:
@@ -1278,7 +1419,6 @@ MonoBehaviour:
           rid: 1076259303954055436
         m_Connections:
         - rid: 1076259330368733837
-        - rid: 1076259488800440346
     - rid: 1076259303954055448
       type: {class: ActionNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
       data:
@@ -1392,7 +1532,7 @@ MonoBehaviour:
     - rid: 1076259303954055697
       type: {class: CompositeNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
       data:
-        Position: {x: -37.597637, y: 22.614838}
+        Position: {x: -36.545864, y: 22.614838}
         ID:
           m_Value0: 4718659407673830000
           m_Value1: 1058261548031502265
@@ -1433,7 +1573,7 @@ MonoBehaviour:
     - rid: 1076259303954055748
       type: {class: ActionNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
       data:
-        Position: {x: -41.00227, y: 236.16681}
+        Position: {x: -41.00227, y: 174.76108}
         ID:
           m_Value0: 10563008269652617428
           m_Value1: 6291124009042055846
@@ -1502,7 +1642,7 @@ MonoBehaviour:
     - rid: 1076259330368733348
       type: {class: ActionNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
       data:
-        Position: {x: -1386.0117, y: 261.90192}
+        Position: {x: -1500.9531, y: 276.2696}
         ID:
           m_Value0: 3236352357376970898
           m_Value1: 14146082307408161163
@@ -1571,7 +1711,7 @@ MonoBehaviour:
     - rid: 1076259330368733428
       type: {class: CompositeNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
       data:
-        Position: {x: -41.01403, y: 142.38058}
+        Position: {x: -40.069324, y: 107.426544}
         ID:
           m_Value0: 12196010021000309160
           m_Value1: 6228757441246412820
@@ -1657,7 +1797,7 @@ MonoBehaviour:
     - rid: 1076259330368733662
       type: {class: StickyNoteModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
       data:
-        Position: {x: -39.717457, y: 103.92266}
+        Position: {x: -35.938633, y: 80.30507}
         ID:
           m_Value0: 5295395715806444073
           m_Value1: 16274978191217615925
@@ -1677,7 +1817,7 @@ MonoBehaviour:
     - rid: 1076259330368733836
       type: {class: ActionNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
       data:
-        Position: {x: -1385.4619, y: 184.1986}
+        Position: {x: -1500.4033, y: 184.1986}
         ID:
           m_Value0: 11908556950883555258
           m_Value1: 1192989811724423389
@@ -2030,7 +2170,7 @@ MonoBehaviour:
     - rid: 1076259390053417253
       type: {class: CompositeNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
       data:
-        Position: {x: -292.5124, y: 219.64319}
+        Position: {x: -292.5125, y: 207.57642}
         ID:
           m_Value0: 697446153103067499
           m_Value1: 5994462865172457707
@@ -2766,10 +2906,12 @@ MonoBehaviour:
         m_NodeModel:
           rid: 1076259488348767138
         m_Connections:
+        - rid: 1076259535933669755
         - rid: 1076259395147137854
         - rid: 1076259488348766627
         - rid: 1076259464891334759
         - rid: 1076259394171437354
+        - rid: 1076259488800440346
     - rid: 1076259488748536259
       type: {class: StickyNoteModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
       data:
@@ -2823,7 +2965,7 @@ MonoBehaviour:
     - rid: 1076259488800440345
       type: {class: ActionNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
       data:
-        Position: {x: -1209.2463, y: 222.83707}
+        Position: {x: -152.0586, y: 737.90796}
         ID:
           m_Value0: 15517724255632901536
           m_Value1: 14813841716955456619
@@ -2848,7 +2990,7 @@ MonoBehaviour:
         m_NodeModel:
           rid: 1076259488800440345
         m_Connections:
-        - rid: 1076259303954055438
+        - rid: 1076259488348767140
     - rid: 1076259488800440347
       type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
       data:
@@ -2899,6 +3041,387 @@ MonoBehaviour:
         IsExposed: 1
         m_IsShared: 0
         m_Value: {fileID: 0}
+    - rid: 1076259535933669631
+      type: {class: ActionNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        Position: {x: -420.3234, y: 874.3137}
+        ID:
+          m_Value0: 1474401223290763765
+          m_Value1: 4334969655690453184
+        Parents: []
+        PortModels:
+        - rid: 1076259535933669632
+        - rid: 1076259535933669633
+        NodeType:
+          m_SerializableType: DragonSideJumpAction, Assembly-CSharp, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        NodeTypeID:
+          m_Value0: 246346439237840
+          m_Value1: 49162
+        m_FieldValues:
+        - rid: 1076259535933669634
+    - rid: 1076259535933669632
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: InputPort
+        m_PortDataFlowType: 0
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933669631
+        m_Connections:
+        - rid: 1076259535933669756
+    - rid: 1076259535933669633
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: OutputPort
+        m_PortDataFlowType: 1
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933669631
+        m_Connections:
+        - rid: 1076259535933669875
+    - rid: 1076259535933669634
+      type: {class: BehaviorGraphNodeModel/FieldModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        FieldName: Self
+        Type:
+          m_SerializableType: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        LocalValue:
+          rid: 1076259535933669635
+        LinkedVariable:
+          rid: 1076259535933669636
+    - rid: 1076259535933669635
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]',
+        ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: {fileID: 0}
+    - rid: 1076259535933669636
+      type: {class: 'TypedVariableModel`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]',
+        ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        ID:
+          m_Value0: 1
+          m_Value1: 0
+        Name: Self
+        IsExposed: 1
+        m_IsShared: 0
+        m_Value: {fileID: 0}
+    - rid: 1076259535933669754
+      type: {class: CompositeNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        Position: {x: -419.58316, y: 803.3569}
+        ID:
+          m_Value0: 18278295094785803823
+          m_Value1: 2135525057075473620
+        Parents: []
+        PortModels:
+        - rid: 1076259535933669755
+        - rid: 1076259535933669756
+        NodeType:
+          m_SerializableType: Unity.Behavior.SequenceComposite, Unity.Behavior, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        NodeTypeID:
+          m_Value0: 10181448252506100447
+          m_Value1: 8737116843063128493
+        m_FieldValues: []
+    - rid: 1076259535933669755
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: InputPort
+        m_PortDataFlowType: 0
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933669754
+        m_Connections:
+        - rid: 1076259488348767140
+    - rid: 1076259535933669756
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: OutputPort
+        m_PortDataFlowType: 1
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933669754
+        m_Connections:
+        - rid: 1076259535933669632
+    - rid: 1076259535933669874
+      type: {class: CompositeNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        Position: {x: -420.63358, y: 948.50134}
+        ID:
+          m_Value0: 14866777748612650196
+          m_Value1: 3357113636449372732
+        Parents: []
+        PortModels:
+        - rid: 1076259535933669875
+        - rid: 1076259535933669876
+        NodeType:
+          m_SerializableType: Unity.Behavior.SelectorComposite, Unity.Behavior, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        NodeTypeID:
+          m_Value0: 11477120919463386923
+          m_Value1: 7730102824742023565
+        m_FieldValues: []
+    - rid: 1076259535933669875
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: InputPort
+        m_PortDataFlowType: 0
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933669874
+        m_Connections:
+        - rid: 1076259535933669633
+    - rid: 1076259535933669876
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: OutputPort
+        m_PortDataFlowType: 1
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933669874
+        m_Connections:
+        - rid: 1076259535933669962
+        - rid: 1076259535933670200
+    - rid: 1076259535933669959
+      type: {class: CompositeNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        Position: {x: -539.0207, y: 1033.8909}
+        ID:
+          m_Value0: 10619520826465463058
+          m_Value1: 2240787683479756510
+        Parents: []
+        PortModels:
+        - rid: 1076259535933669962
+        - rid: 1076259535933669963
+        NodeType:
+          m_SerializableType: Unity.Behavior.SequenceComposite, Unity.Behavior, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        NodeTypeID:
+          m_Value0: 10181448252506100447
+          m_Value1: 8737116843063128493
+        m_FieldValues: []
+    - rid: 1076259535933669960
+      type: {class: ActionNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        Position: {x: -539.6519, y: 1113.047}
+        ID:
+          m_Value0: 7715540276700070782
+          m_Value1: 18438685657753726676
+        Parents: []
+        PortModels:
+        - rid: 1076259535933669964
+        - rid: 1076259535933669965
+        NodeType:
+          m_SerializableType: DragonFacePlayerForFireballAction, Assembly-CSharp,
+            Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+        NodeTypeID:
+          m_Value0: 11529462075659165904
+          m_Value1: 45294381757894624
+        m_FieldValues:
+        - rid: 1076259535933669966
+    - rid: 1076259535933669961
+      type: {class: ActionNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        Position: {x: -539.94867, y: 1203.8844}
+        ID:
+          m_Value0: 911709549651264087
+          m_Value1: 10458904767668005103
+        Parents: []
+        PortModels:
+        - rid: 1076259535933669967
+        - rid: 1076259535933669968
+        NodeType:
+          m_SerializableType: DragonFireballAction, Assembly-CSharp, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        NodeTypeID:
+          m_Value0: 45294381757931728
+          m_Value1: 172
+        m_FieldValues:
+        - rid: 1076259535933669969
+    - rid: 1076259535933669962
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: InputPort
+        m_PortDataFlowType: 0
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933669959
+        m_Connections:
+        - rid: 1076259535933669876
+    - rid: 1076259535933669963
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: OutputPort
+        m_PortDataFlowType: 1
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933669959
+        m_Connections:
+        - rid: 1076259535933669964
+    - rid: 1076259535933669964
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: InputPort
+        m_PortDataFlowType: 0
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933669960
+        m_Connections:
+        - rid: 1076259535933669963
+    - rid: 1076259535933669965
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: OutputPort
+        m_PortDataFlowType: 1
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933669960
+        m_Connections:
+        - rid: 1076259535933669967
+    - rid: 1076259535933669966
+      type: {class: BehaviorGraphNodeModel/FieldModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        FieldName: Self
+        Type:
+          m_SerializableType: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        LocalValue:
+          rid: 1076259535933669970
+        LinkedVariable:
+          rid: 1076259535933669636
+    - rid: 1076259535933669967
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: InputPort
+        m_PortDataFlowType: 0
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933669961
+        m_Connections:
+        - rid: 1076259535933669965
+    - rid: 1076259535933669968
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: OutputPort
+        m_PortDataFlowType: 1
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933669961
+        m_Connections: []
+    - rid: 1076259535933669969
+      type: {class: BehaviorGraphNodeModel/FieldModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        FieldName: Self
+        Type:
+          m_SerializableType: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        LocalValue:
+          rid: 1076259535933669971
+        LinkedVariable:
+          rid: 1076259535933669636
+    - rid: 1076259535933669970
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]',
+        ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: {fileID: 0}
+    - rid: 1076259535933669971
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]',
+        ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: {fileID: 0}
+    - rid: 1076259535933670060
+      type: {class: StickyNoteModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        Position: {x: -545.46484, y: 1014.59674}
+        ID:
+          m_Value0: 14380846424375070127
+          m_Value1: 3871522890067838377
+        Parents: []
+        PortModels: []
+        Text: FireBall
+    - rid: 1076259535933670199
+      type: {class: ActionNodeModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        Position: {x: -350.16464, y: 1046.3159}
+        ID:
+          m_Value0: 5629706117696603449
+          m_Value1: 8894108557516834690
+        Parents: []
+        PortModels:
+        - rid: 1076259535933670200
+        - rid: 1076259535933670201
+        NodeType:
+          m_SerializableType: DragonTailAttackAction, Assembly-CSharp, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        NodeTypeID:
+          m_Value0: 765612623847792848
+          m_Value1: 12585664
+        m_FieldValues:
+        - rid: 1076259535933670202
+    - rid: 1076259535933670200
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: InputPort
+        m_PortDataFlowType: 0
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933670199
+        m_Connections:
+        - rid: 1076259535933669876
+    - rid: 1076259535933670201
+      type: {class: PortModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        m_Name: OutputPort
+        m_PortDataFlowType: 1
+        m_IsFloating: 0
+        m_NodeModel:
+          rid: 1076259535933670199
+        m_Connections: []
+    - rid: 1076259535933670202
+      type: {class: BehaviorGraphNodeModel/FieldModel, ns: Unity.Behavior, asm: Unity.Behavior.Authoring}
+      data:
+        FieldName: Self
+        Type:
+          m_SerializableType: UnityEngine.GameObject, UnityEngine.CoreModule, Version=0.0.0.0,
+            Culture=neutral, PublicKeyToken=null
+        LocalValue:
+          rid: 1076259535933670203
+        LinkedVariable:
+          rid: 1076259535933669636
+    - rid: 1076259535933670203
+      type: {class: 'BlackboardVariable`1[[UnityEngine.GameObject, UnityEngine.CoreModule]]',
+        ns: Unity.Behavior, asm: Unity.Behavior}
+      data:
+        GUID:
+          m_Value0: 0
+          m_Value1: 0
+        Name: 
+        m_Value: {fileID: 0}
+    - rid: 1076259535933670396
+      type: {class: StickyNoteModel, ns: Unity.Behavior.GraphFramework, asm: Unity.Behavior.GraphFramework}
+      data:
+        Position: {x: -421.76352, y: 780.2998}
+        ID:
+          m_Value0: 1096757063500888272
+          m_Value1: 11538792063788087800
+        Parents: []
+        PortModels: []
+        Text: "\uC88C\uC6B0 \uC810\uD504 \uC774\uB3D9\uD6C4 \uD30C\uC774\uC5B4\uBCFC,
+          \uAF2C\uB9AC\uACF5\uACA9"
 --- !u!114 &2901630554304049094
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2911,7 +3434,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c02bb70996b49eba31d0c206e28da24, type: 3}
   m_Name: Behavior Graph Blackboard
   m_EditorClassIdentifier: Unity.Behavior::Unity.Behavior.RuntimeBlackboardAsset
-  VersionTimestamp: 639144081569012181
+  VersionTimestamp: 639145864916865331
   AssetID:
     m_Value0: 2611734034414527773
     m_Value1: 13939880019180002185
@@ -2948,7 +3471,7 @@ MonoBehaviour:
     m_Value1: 13939880019180002185
   m_Variables:
   - rid: 1076259303954055384
-  m_VersionTimestamp: 639144081569012181
+  m_VersionTimestamp: 639145864916865331
   m_CommandBuffer:
     m_Commands: []
   m_RuntimeBlackboardAsset: {fileID: 2901630554304049094}

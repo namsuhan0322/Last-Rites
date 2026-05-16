@@ -95,6 +95,12 @@ public class DragonBoss : Enemy
     public float sideBreathStartDelay = 7f;
     public float wingSlamBiteSideBreathComboCooldown = 18f;
 
+    [Header("좌우 점프 이동 콤보 스킬")]
+    public float sideJumpDuration = 1.2f;
+    public float sideJumpCooldown = 8f;
+
+
+
 
 
     //변수들
@@ -114,6 +120,7 @@ public class DragonBoss : Enemy
     private float wingSlamBiteSideBreathComboCooldownTimer = 0f;
     private GameObject currentBreath;
     private BreathFollowMouth currentBreathFollow;
+    private float sideJumpCooldownTimer = 0f;
 
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
@@ -188,7 +195,8 @@ public class DragonBoss : Enemy
         if (wingSlamBiteSideBreathComboCooldownTimer > 0f)
             wingSlamBiteSideBreathComboCooldownTimer -= Time.deltaTime;
 
-
+        if (sideJumpCooldownTimer > 0f)
+            sideJumpCooldownTimer -= Time.deltaTime;
     }
 
     public void SetMoveType(int type)
@@ -773,6 +781,30 @@ public class DragonBoss : Enemy
     public void StartWingSlamBiteSideBreathComboCooldown()
     {
         wingSlamBiteSideBreathComboCooldownTimer = wingSlamBiteSideBreathComboCooldown;
+    }
+
+
+    //좌우로 점프 하기
+    public bool CanSideJump()
+    {
+        return sideJumpCooldownTimer <= 0f;
+    }
+
+    public void StartSideJumpCooldown()
+    {
+        sideJumpCooldownTimer = sideJumpCooldown;
+    }
+
+    public void PlayLeftSideJump()
+    {
+        animator.ResetTrigger("LeftSideJump");
+        animator.SetTrigger("LeftSideJump");
+    }
+
+    public void PlayRightSideJump()
+    {
+        animator.ResetTrigger("RightSideJump");
+        animator.SetTrigger("RightSideJump");
     }
 
     //포효하기

@@ -33,11 +33,11 @@ public partial class DragonWingSlamBiteSideBreathComboAction : Action
         if (!boss.HasPlayerInRange())
             return Status.Failure;
 
-       // if (!boss.CanUseAnyAttack())
-          //  return Status.Failure;
+        if (!boss.CanUseAnyAttack())
+           return Status.Failure;
 
-      //  if (!boss.CanWingSlamBiteSideBreathCombo())
-         //   return Status.Failure;
+       if (!boss.CanWingSlamBiteSideBreathCombo())
+          return Status.Failure;
 
         timer = 0f;
         playedFirstWing = false;

@@ -45,7 +45,23 @@ public partial class DragonPatrolAction : Action
 
     protected override Status OnUpdate()
     {
+        if (boss == null || boss.agent == null)
+            return Status.Failure;
+
+        if (!boss.agent.isOnNavMesh)
+        {
+            boss.Idle();
+            return Status.Failure;
+        }
+
         timer += Time.deltaTime;
+
+        if (!boss.agent.pathPending &&
+            boss.agent.pathStatus != UnityEngine.AI.NavMeshPathStatus.PathComplete)
+        {
+            boss.Idle();
+            return Status.Success;
+        }
 
         RotateToMoveDirection();
 
@@ -95,7 +111,12 @@ public partial class DragonPatrolAction : Action
 
     protected override void OnEnd()
     {
-        if (boss != null)
-            boss.Idle();
+        if (boss == null) return;
+
+        if (boss.agent != null && boss.agent.isOnNavMesh)
+        {
+            boss.agent.ResetPath();
+            boss.agent.velocity = Vector3.zero;
+        }
     }
 }

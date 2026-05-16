@@ -227,8 +227,12 @@ public class DragonBoss : Enemy
         for (int i = 0; i < 30; i++)
         {
             Vector3 randomPos = transform.position + Random.insideUnitSphere * PatrolRadius;
+            randomPos.y = transform.position.y;
 
-            if (NavMesh.SamplePosition(randomPos, out NavMeshHit hit, 2f, NavMesh.AllAreas))
+            if (Vector3.Distance(transform.position, randomPos) < 3f)
+                continue;
+
+            if (NavMesh.SamplePosition(randomPos, out NavMeshHit hit, 3f, NavMesh.AllAreas))
             {
                 result = hit.position;
                 return true;

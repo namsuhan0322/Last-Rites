@@ -94,6 +94,8 @@ public class DragonBoss : Enemy
     public float wingSlamBiteSideBreathComboDuration = 11f;
     public float sideBreathStartDelay = 7f;
     public float wingSlamBiteSideBreathComboCooldown = 18f;
+    [Header("좌우 브레스")]
+    public float sideBreathDuration = 4.5f;
 
     [Header("좌우 점프 이동 콤보 스킬")]
     public float sideJumpDuration = 1.2f;

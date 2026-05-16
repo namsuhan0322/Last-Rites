@@ -92,6 +92,10 @@ public class Actor : MonoBehaviour
             Debug.Log($"{name} : 무적 상태 회피 성공!");
             return;
         }
+
+        PlayerController pc = GetComponent<PlayerController>();
+        if (pc != null && pc.TryBlockDamageWithShield()) return;
+
         if (damage <= 0) return;
 
         damage -= damageReduction;

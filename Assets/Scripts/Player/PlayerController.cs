@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.ProBuilder;
 
 public class PlayerController : MonoBehaviour
 {
@@ -126,6 +125,12 @@ public class PlayerController : MonoBehaviour
     public GameObject wizardSkillWPrefab;
     public GameObject wizardSkillEPrefab;
     public GameObject wizardSkillVPrefab;
+
+    [Header("마법사 보호막 세팅")]
+    public bool isWizardShieldActive = false;
+    public int wizardShieldRemainingHits = 0;
+    public int wizardShieldMaxHits = 3;
+    private GameObject activeWizardShieldInstance;
 
     [SerializeField] private Transform wizardQSpawnPoint;
     [SerializeField] private Transform wizardWSpawnPoint;
@@ -474,8 +479,15 @@ public class PlayerController : MonoBehaviour
             }
             if (Input.GetKeyDown(KeyCode.E))
             {
-                if (TryUseSkill(KeyCode.E, "Skill_E", CurrentWeapon.E_Dmg, CurrentWeapon.E_Cool, CurrentWeapon.E_Stamina))
-                { StateMachine.ChangeState(SkillState); return true; }
+                if (isWizardShieldActive)
+                {
+                    Debug.Log("보호막이 이미 유지되고 있어 스킬을 쓸 수 없습니다!");
+                }
+                else if (TryUseSkill(KeyCode.E, "Skill_E", CurrentWeapon.E_Dmg, CurrentWeapon.E_Cool, CurrentWeapon.E_Stamina))
+                {
+                    StateMachine.ChangeState(SkillState);
+                    return true;
+                }
             }
             if (Input.GetKeyDown(KeyCode.R))
             {
@@ -1149,51 +1161,75 @@ public class PlayerController : MonoBehaviour
 
     public void FireWizardSkill_Q() { SpawnMagicSkill(wizardSkillQPrefab, wizardQSpawnPoint, false); }
     public void FireWizardSkill_W() { SpawnMagicSkill(wizardSkillWPrefab, wizardWSpawnPoint, false); }
-    public void FireWizardSkill_E() { SpawnMagicSkill(wizardSkillEPrefab, wizardESpawnPoint, true); }
+    public void FireWizardSkill_E()
+    {
+        GameObject shieldObj = SpawnMagicSkill(wizardSkillEPrefab, wizardESpawnPoint, true);
+
+        if (shieldObj != null)
+        {
+            isWizardShieldActive = true;
+            wizardShieldRemainingHits = wizardShieldMaxHits;
+            activeWizardShieldInstance = shieldObj;
+            Debug.Log($"보호막 전개! 방어 가능 횟수: {wizardShieldMaxHits}");
+        }
+    }
     public void FireWizardSkill_V() { SpawnMagicSkill(wizardSkillVPrefab, wizardVSpawnPoint, false); }
 
-    private void SpawnMagicSkill(GameObject skillPrefab, Transform spawnPoint, bool isAttached)
+    private GameObject SpawnMagicSkill(GameObject skillPrefab, Transform spawnPoint, bool isAttached)
     {
-        if (skillPrefab == null || spawnPoint == null) return;
+        if (skillPrefab == null || spawnPoint == null) return null;
 
-        if (Time.time - _lastMagicFireTime < 0.1f) return;
+        if (Time.time - _lastMagicFireTime < 0.1f) return null;
         _lastMagicFireTime = Time.time;
 
         GameObject skillInstance;
 
-        if (isAttached)
-        {
-            skillInstance = Instantiate(skillPrefab, spawnPoint.position, spawnPoint.rotation, spawnPoint);
-        }
-        else
-        {
-            skillInstance = Instantiate(skillPrefab, spawnPoint.position, spawnPoint.rotation);
-        }
+        if (isAttached) skillInstance = Instantiate(skillPrefab, spawnPoint.position, spawnPoint.rotation, spawnPoint);
+        else skillInstance = Instantiate(skillPrefab, spawnPoint.position, spawnPoint.rotation);
 
         skillInstance.SetActive(true);
 
         int damageToDeal = CurrentSkillDamage;
-
-        if (HasRBuff)
-        {
-            damageToDeal = Mathf.RoundToInt(damageToDeal * CurrentSkillVal);
-        }
+        if (HasRBuff) damageToDeal = Mathf.RoundToInt(damageToDeal * CurrentSkillVal);
 
         AoESkillEffect aoeScript = skillInstance.GetComponent<AoESkillEffect>();
-        if (aoeScript != null)
-        {
-            aoeScript.Initialize(damageToDeal, EnemyLayer);
-            return;
-        }
+        if (aoeScript != null) { aoeScript.Initialize(damageToDeal, EnemyLayer); return skillInstance; }
 
         LaserSkillEffect laserScript = skillInstance.GetComponent<LaserSkillEffect>();
-        if (laserScript != null)
-        {
-            laserScript.Initialize(damageToDeal, EnemyLayer);
-            return;
-        }
-        Debug.LogWarning($"[Skill] {skillPrefab.name} 데미지 스크립트 없음");
+        if (laserScript != null) { laserScript.Initialize(damageToDeal, EnemyLayer); return skillInstance; }
+
+        BlackholeSkillEffect blackHoleScript = skillInstance.GetComponent<BlackholeSkillEffect>();
+        if (blackHoleScript != null) { blackHoleScript.Initialize(damageToDeal, EnemyLayer); return skillInstance; }
+
+        return skillInstance;
     }
 
+    #endregion
+
+    #region 마법사 보호막(E) 방어 로직
+    public bool TryBlockDamageWithShield()
+    {
+        if (!isWizardShieldActive) return false;
+        wizardShieldRemainingHits--;
+        Debug.Log($"[보호막 방어] 데미지 무시! (남은 방어 횟수: {wizardShieldRemainingHits})");
+
+        if (wizardShieldRemainingHits <= 0)
+        {
+            BreakWizardShield();
+        }
+
+        return true;
+    }
+
+    public void BreakWizardShield()
+    {
+        isWizardShieldActive = false;
+        if (activeWizardShieldInstance != null)
+        {
+            Destroy(activeWizardShieldInstance);
+            activeWizardShieldInstance = null;
+        }
+        Debug.Log("보호막이 깨졌습니다! 이제부터 데미지를 입습니다.");
+    }
     #endregion
 }

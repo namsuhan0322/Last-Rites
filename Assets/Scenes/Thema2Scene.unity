@@ -4569,6 +4569,12 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1887947663}
   m_LocalEulerAnglesHint: {x: 0, y: -36.508, z: 0}
+--- !u!4 &1093633446 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4882503976947379945, guid: 0f9bab5272d9a794d923441e91c2427c,
+    type: 3}
+  m_PrefabInstance: {fileID: 5052641151817009630}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1149204945 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6770751328678428857, guid: 0f9bab5272d9a794d923441e91c2427c,
@@ -10250,6 +10256,23 @@ PrefabInstance:
       objectReference: {fileID: 1649458090}
     - target: {fileID: 475020715049840863, guid: 0f9bab5272d9a794d923441e91c2427c,
         type: 3}
+      propertyPath: wizardVSpawnPoint
+      value: 
+      objectReference: {fileID: 1093633446}
+    - target: {fileID: 475020715049840863, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: wizardSkillVPrefab
+      value: 
+      objectReference: {fileID: 3626065428989888030, guid: 5108a5c7c7c8d82488fdde26ce1522a1,
+        type: 3}
+    - target: {fileID: 475020715049840863, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: wizardSkillWPrefab
+      value: 
+      objectReference: {fileID: 5971203435228136222, guid: ad58bcd661a85754fb6d572e5a1a4921,
+        type: 3}
+    - target: {fileID: 475020715049840863, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
       propertyPath: weaponSpecialEffects.Array.data[0].screenEffectObj
       value: 
       objectReference: {fileID: 412108779}
@@ -10317,6 +10340,46 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4882503976947379945, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4882503976947379945, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 5.25
+      objectReference: {fileID: 0}
+    - target: {fileID: 4882503976947379945, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4882503976947379945, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4882503976947379945, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4882503976947379945, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4882503976947379945, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 180
+      objectReference: {fileID: 0}
+    - target: {fileID: 9032020745760329257, guid: 0f9bab5272d9a794d923441e91c2427c,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 1.09
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

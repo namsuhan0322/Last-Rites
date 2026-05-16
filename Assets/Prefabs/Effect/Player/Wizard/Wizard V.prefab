@@ -226,7 +226,7 @@ PrefabInstance:
     - target: {fileID: 3924845949707325383, guid: f259756a0d0256041bcf895c52e94d05,
         type: 3}
       propertyPath: m_Name
-      value: HCFX_Meteor_05_Area
+      value: Wizard V
       objectReference: {fileID: 0}
     - target: {fileID: 6749105395329666565, guid: f259756a0d0256041bcf895c52e94d05,
         type: 3}
@@ -351,5 +351,55 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3924845949707325383, guid: f259756a0d0256041bcf895c52e94d05,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6480719407149471267}
+    - targetCorrespondingSourceObject: {fileID: 3924845949707325383, guid: f259756a0d0256041bcf895c52e94d05,
+        type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1198010200564555741}
   m_SourcePrefab: {fileID: 100100000, guid: f259756a0d0256041bcf895c52e94d05, type: 3}
+--- !u!1 &3626065428989888030 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3924845949707325383, guid: f259756a0d0256041bcf895c52e94d05,
+    type: 3}
+  m_PrefabInstance: {fileID: 298792093540403673}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &6480719407149471267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3626065428989888030}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 317dddba21d6d5540a37c52b838fb9d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AoESkillEffect
+  damageDelay: 0.5
+  damageRadius: 35
+  lifeTime: 2
+--- !u!135 &1198010200564555741
+SphereCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3626065428989888030}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Radius: 35
+  m_Center: {x: 0, y: 0, z: 0}

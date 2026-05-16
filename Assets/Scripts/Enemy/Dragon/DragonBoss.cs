@@ -103,6 +103,10 @@ public class DragonBoss : Enemy
     public float sideJumpDuration = 1.2f;
     public float sideJumpCooldown = 8f;
 
+    [Header("브레스 중 약점")]
+    [SerializeField] private WeakPoint headWeakPoint;
+    [SerializeField] private int headWeakPointHP = 100;
+
 
 
 
@@ -125,6 +129,7 @@ public class DragonBoss : Enemy
     private GameObject currentBreath;
     private BreathFollowMouth currentBreathFollow;
     private float sideJumpCooldownTimer = 0f;
+    private bool isHeadWeakPointBroken = false;
 
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
@@ -826,6 +831,44 @@ public class DragonBoss : Enemy
     {
         roarRequested = false;
     }
+
+
+
+
+    //약점 키기
+    public void EnableHeadWeakPoint()
+    {
+        if (isHeadWeakPointBroken)
+            return;
+
+        if (headWeakPoint == null)
+            return;
+
+        headWeakPoint.gameObject.SetActive(true);
+        headWeakPoint.Init(headWeakPointHP, this);
+    }
+
+    public void DisableHeadWeakPoint()
+    {
+        if (headWeakPoint == null)
+            return;
+
+        headWeakPoint.gameObject.SetActive(false);
+    }
+
+    //머리 약점부위파괴
+    public void OnHeadWeakPointBreak()
+    {
+        if (isHeadWeakPointBroken || _isDead)
+            return;
+
+        isHeadWeakPointBroken = true;
+
+        StopAttachedBreath();
+
+        DisableHeadWeakPoint();
+    }
+
     //죽음
     public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
     {

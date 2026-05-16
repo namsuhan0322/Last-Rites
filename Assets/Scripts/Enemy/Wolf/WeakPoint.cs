@@ -2,10 +2,12 @@
 
 public class WeakPoint : Actor
 {
-    private WolfBoss boss;
+    private Actor boss;
     public WeakPointUI ui;
-    bool isInitialized = false;
-    public void Init(int hp, WolfBoss owner)
+
+    private bool isInitialized = false;
+
+    public void Init(int hp, Actor owner)
     {
         boss = owner;
 
@@ -25,21 +27,23 @@ public class WeakPoint : Actor
     {
         base.TakeDamage(damage, severityOverride, isHeavyAttack, false);
 
-        ui.SetHP(_currentHP); 
+        ui.SetHP(_currentHP);
 
         if (boss != null)
-        {
             boss.TakeDamage(damage, severityOverride, isHeavyAttack, false);
-        }
     }
+
     protected override void Die()
     {
         base.Die();
 
-        if (boss != null)
-        {
-            boss.OnWeakPointBreak();
-        }
+        DragonBoss dragon = boss as DragonBoss;
+        if (dragon != null)
+            dragon.OnHeadWeakPointBreak();
+
+        WolfBoss wolf = boss as WolfBoss;
+        if (wolf != null)
+            wolf.OnWeakPointBreak();
 
         gameObject.SetActive(false);
     }

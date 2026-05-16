@@ -79,6 +79,8 @@ public class DragonBoss : Enemy
     public float secondCrushDelay = 1.3f;
     public float breathStartDelay = 2.8f;
     public float wingCrushBreathCooldown = 12f;
+    [Header("정면 브레스")]
+    public float fireBreathDuration = 4.5f;
     public GameObject breathPrefab;
     public Transform breathSpawnPoint;
     public DragonAttackHitbox leftWingCrushHitbox;
@@ -222,6 +224,7 @@ public class DragonBoss : Enemy
         SetMoveType(0);
     }
 
+    //순찰 랜덤 포인트 뽑기
     public bool GetRandomPatrolPoint(out Vector3 result)
     {
         for (int i = 0; i < 30; i++)

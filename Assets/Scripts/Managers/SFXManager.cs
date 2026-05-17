@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.Audio;
 
 public class SFXManager : SingletonMono<SFXManager>
 {
@@ -11,7 +12,8 @@ public class SFXManager : SingletonMono<SFXManager>
 
     [Header("사운드 클립 딕셔너리")]
     public List<SoundData> soundDataList;
-    private Dictionary<string, AudioClip> sfxDictionary = new Dictionary<string, AudioClip>();
+
+    private Dictionary<string, SoundData> sfxDictionary = new Dictionary<string, SoundData>();
 
     protected override void Awake()
     {
@@ -43,13 +45,13 @@ public class SFXManager : SingletonMono<SFXManager>
         foreach (var data in soundDataList)
         {
             if (!sfxDictionary.ContainsKey(data.soundID))
-                sfxDictionary.Add(data.soundID, data.clip);
+                sfxDictionary.Add(data.soundID, data);
         }
     }
 
     public void PlaySFX(string soundID, Vector3 position, float volume = 1f)
     {
-        if (!sfxDictionary.TryGetValue(soundID, out AudioClip clip))
+        if (!sfxDictionary.TryGetValue(soundID, out SoundData data))
         {
             Debug.LogWarning($"[SFXManager] {soundID} 클립을 찾을 수 없습니다!");
             return;
@@ -59,8 +61,10 @@ public class SFXManager : SingletonMono<SFXManager>
         if (source != null)
         {
             source.transform.position = position;
-            source.clip = clip;
+            source.clip = data.clip;
             source.volume = volume;
+            source.outputAudioMixerGroup = data.mixerGroup;
+
             source.Play();
         }
     }
@@ -81,4 +85,5 @@ public class SoundData
 {
     public string soundID;
     public AudioClip clip;
+    public AudioMixerGroup mixerGroup;
 }

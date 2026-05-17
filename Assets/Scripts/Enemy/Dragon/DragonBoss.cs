@@ -107,8 +107,13 @@ public class DragonBoss : Enemy
     [SerializeField] private WeakPoint headWeakPoint;
     [SerializeField] private int headWeakPointHP = 100;
 
-
-
+    [Header("브레스 차징 패턴")]
+    public float breathCastTime = 3.5f;
+    public float breathChargeTime = 2.5f;
+    public float breathChargeCooldown = 12f;
+    public GameObject breathChargePrefab;
+    [Header("브레스 차징 FX")]
+    public float breathChargeFxLifeTime = 2f;
 
 
     //변수들
@@ -130,7 +135,9 @@ public class DragonBoss : Enemy
     private BreathFollowMouth currentBreathFollow;
     private float sideJumpCooldownTimer = 0f;
     private bool isHeadWeakPointBroken = false;
-
+    private float breathChargeCooldownTimer = 0f;
+    private GameObject currentBreathCharge;
+    private float breathChargeRestartTimer = 0f;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -206,6 +213,9 @@ public class DragonBoss : Enemy
 
         if (sideJumpCooldownTimer > 0f)
             sideJumpCooldownTimer -= Time.deltaTime;
+
+        if (breathChargeCooldownTimer > 0f)
+            breathChargeCooldownTimer -= Time.deltaTime;
     }
 
     public void SetMoveType(int type)
@@ -821,6 +831,108 @@ public class DragonBoss : Enemy
         animator.SetTrigger("RightSideJump");
     }
 
+    public bool CanBreathCharge()
+    {
+        return breathChargeCooldownTimer <= 0f;
+    }
+
+    public void StartBreathChargeCooldown()
+    {
+        breathChargeCooldownTimer = breathChargeCooldown;
+    }
+
+    public void PlayBreathCast()
+    {
+        animator.ResetTrigger("BreathCast");
+        animator.SetTrigger("BreathCast");
+    }
+
+    public void PlayBreathChargeLoop()
+    {
+        animator.ResetTrigger("BreathChargeLoop");
+        animator.SetTrigger("BreathChargeLoop");
+    }
+
+    //브레스 차지 
+    public void SpawnBreathCharge()
+    {
+        if (breathChargePrefab == null || breathSpawnPoint == null)
+            return;
+
+        if (currentBreathCharge != null)
+            Destroy(currentBreathCharge);
+
+        currentBreathCharge = Instantiate(
+            breathChargePrefab,
+            breathSpawnPoint.position,
+            Quaternion.identity,
+            breathSpawnPoint
+        );
+
+        currentBreathCharge.transform.localPosition = Vector3.zero;
+
+        Vector3 dir = transform.forward;
+        dir.y = 0f;
+        dir.Normalize();
+
+        currentBreathCharge.transform.rotation = Quaternion.LookRotation(dir);
+        currentBreathCharge.transform.rotation *= Quaternion.Euler(-90f, 0f, 0f);
+
+        ParticleSystem[] particles =
+            currentBreathCharge.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem ps in particles)
+        {
+            ps.gameObject.SetActive(true);
+            ps.Clear(true);
+            ps.Play(true);
+        }
+
+        breathChargeRestartTimer = 0f;
+    }
+
+    public void KeepBreathChargeAlive()
+    {
+        if (breathChargePrefab == null || breathSpawnPoint == null)
+            return;
+
+        breathChargeRestartTimer += Time.deltaTime;
+
+        if (currentBreathCharge != null)
+        {
+            currentBreathCharge.transform.position = breathSpawnPoint.position;
+
+            Vector3 dir = transform.forward;
+            dir.y = 0f;
+            dir.Normalize();
+
+            currentBreathCharge.transform.rotation = Quaternion.LookRotation(dir);
+            currentBreathCharge.transform.rotation *= Quaternion.Euler(-90f, 0f, 0f);
+        }
+
+        if (currentBreathCharge == null || breathChargeRestartTimer >= breathChargeFxLifeTime)
+        {
+            SpawnBreathCharge();
+        }
+    }
+
+    public void StopBreathCharge()
+    {
+        if (currentBreathCharge != null)
+        {
+            Destroy(currentBreathCharge);
+            currentBreathCharge = null;
+        }
+    }
+    public void EndBreathChargeLoop()
+    {
+        StopBreathCharge();
+
+        animator.ResetTrigger("EndBreathCharge");
+        animator.SetTrigger("EndBreathCharge");
+
+        Idle();
+    }
     //포효하기
     public bool ShouldRoar()
     {

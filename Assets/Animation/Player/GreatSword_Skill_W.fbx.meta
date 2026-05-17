@@ -62,6 +62,20 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
+      - time: 0.3125584
+        functionName: PlayWeaponSwingSound
+        data: GS_003
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.32019702
+        functionName: EnableActionEffect
+        data: GS_W
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       - time: 0.401088
         functionName: DisableWeaponCollider
         data: 
@@ -72,13 +86,6 @@ ModelImporter:
       - time: 0.41740856
         functionName: DisableREffect
         data: 
-        objectReferenceParameter: {instanceID: 0}
-        floatParameter: 0
-        intParameter: 0
-        messageOptions: 0
-      - time: 0.32019702
-        functionName: EnableActionEffect
-        data: GS_W
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0

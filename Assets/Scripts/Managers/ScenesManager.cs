@@ -203,6 +203,8 @@ public class ScenesManager : SingletonMono<ScenesManager>
         if (sceneName == mainMenuSceneName) SoundManager.Instance.PlayBGM("MainBGM");
         else if (sceneName == LobbySceneName) SoundManager.Instance.PlayBGM("LobbyBGM");
         else if (sceneName == tutorialSceneName) SoundManager.Instance.PlayBGM("TutorialBGM");
+        else if (sceneName == Thema1SceneName) SoundManager.Instance.PlayBGM("Thema1BGM");
+        else if (sceneName == Thema2SceneName) SoundManager.Instance.PlayBGM("Thema2BGM");
         else if (sceneName == loadingSceneName) SoundManager.Instance.PlayBGM("");
     }
 

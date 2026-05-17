@@ -1159,8 +1159,17 @@ public class PlayerController : MonoBehaviour
     #region 마법사 스킬 파티클 생성 (애니메이션 이벤트용)
     private float _lastMagicFireTime = 0f;
 
-    public void FireWizardSkill_Q() { SpawnMagicSkill(wizardSkillQPrefab, wizardQSpawnPoint, false); }
-    public void FireWizardSkill_W() { SpawnMagicSkill(wizardSkillWPrefab, wizardWSpawnPoint, false); }
+    public void FireWizardSkill_Q()
+    {
+        SpawnMagicSkill(wizardSkillQPrefab, wizardQSpawnPoint, false);
+        SFXManager.Instance?.PlaySFX("Wz_002", wizardQSpawnPoint.position);
+    }
+
+    public void FireWizardSkill_W()
+    {
+        SpawnMagicSkill(wizardSkillWPrefab, wizardWSpawnPoint, false);
+        SFXManager.Instance?.PlaySFX("Wz_003", wizardWSpawnPoint.position);
+    }
     public void FireWizardSkill_E()
     {
         GameObject shieldObj = SpawnMagicSkill(wizardSkillEPrefab, wizardESpawnPoint, true);
@@ -1171,9 +1180,14 @@ public class PlayerController : MonoBehaviour
             wizardShieldRemainingHits = wizardShieldMaxHits;
             activeWizardShieldInstance = shieldObj;
             Debug.Log($"보호막 전개! 방어 가능 횟수: {wizardShieldMaxHits}");
+            SFXManager.Instance?.PlaySFX("Wz_004", transform.position);
         }
     }
-    public void FireWizardSkill_V() { SpawnMagicSkill(wizardSkillVPrefab, wizardVSpawnPoint, false); }
+    public void FireWizardSkill_V()
+    {
+        SpawnMagicSkill(wizardSkillVPrefab, wizardVSpawnPoint, false);
+        SFXManager.Instance?.PlaySFX("Wz_005", wizardVSpawnPoint.position);
+    }
 
     private GameObject SpawnMagicSkill(GameObject skillPrefab, Transform spawnPoint, bool isAttached)
     {
@@ -1230,6 +1244,41 @@ public class PlayerController : MonoBehaviour
             activeWizardShieldInstance = null;
         }
         Debug.Log("보호막이 깨졌습니다! 이제부터 데미지를 입습니다.");
+    }
+    #endregion
+
+    // 게임 특성상 발사운드 필요하지 않을거 같긴한데 일단 추가
+    #region 사운드
+    public void PlayFootstep()
+    {
+        Vector3 origin = transform.position + Vector3.up * 0.1f;
+
+        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 0.5f, GroundLayer))
+        {
+            string groundTag = hit.collider.gameObject.tag;
+
+            switch (groundTag)
+            {
+                case "Thema2Ground":
+                    SFXManager.Instance.PlaySFX("Walk_002", transform.position);
+                    break;
+                default:
+                    SFXManager.Instance.PlaySFX("Walk_001", transform.position);
+                    break;
+            }
+        }
+        else
+        {
+            SFXManager.Instance.PlaySFX("Walk_001", transform.position);
+        }
+    }
+
+    public void PlayWeaponSwingSound(string soundID)
+    {
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlaySFX(soundID, transform.position);
+        }
     }
     #endregion
 }

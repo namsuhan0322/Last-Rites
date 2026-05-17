@@ -31,4 +31,7 @@ public class WeaponSO : ScriptableObject
 
     public BuffSkill_SO R_Skill_Logic;
     public AnimatorOverrideController weaponAnimator;
+
+    [Tooltip("적을 명중시켰을 때 나는 무기 특유의 소리")]
+    public string hitSoundID;
 }

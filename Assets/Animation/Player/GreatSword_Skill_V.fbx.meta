@@ -55,6 +55,13 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
+      - time: 0.19722709
+        functionName: PlayWeaponSwingSound
+        data: GS_003
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       - time: 0.21117707
         functionName: EnableWeaponCollider
         data: 
@@ -83,6 +90,13 @@ ModelImporter:
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
+      - time: 0.3854719
+        functionName: PlayWeaponSwingSound
+        data: GS_003
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
       - time: 0.3877305
         functionName: EnableWeaponCollider
         data: 
@@ -107,6 +121,13 @@ ModelImporter:
       - time: 0.48571426
         functionName: DisableActionEffect
         data: GS_V 02
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.5983487
+        functionName: PlayWeaponSwingSound
+        data: GS_003
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0

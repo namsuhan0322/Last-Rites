@@ -16,6 +16,8 @@ public class WeaponHitbox : MonoBehaviour
     private List<Actor> _hitActors = new List<Actor>();
     private bool _isAttackActive = false;
 
+    private WeaponType _currentWeaponType;
+
     private void Awake()
     {
         DisableAll();
@@ -25,6 +27,8 @@ public class WeaponHitbox : MonoBehaviour
     {
         _activeColliders.Clear();
         DisableAll();
+
+        _currentWeaponType = type;
 
         switch (type)
         {
@@ -80,13 +84,33 @@ public class WeaponHitbox : MonoBehaviour
         if (!_isAttackActive) return;
 
         Actor enemy = other.GetComponentInParent<Actor>();
-
         if (enemy != null && !enemy.IsDead && !_hitActors.Contains(enemy))
         {
             if (enemy.GetComponent<PlayerController>() != null) return;
 
             enemy.TakeDamage(_damage);
             _hitActors.Add(enemy);
+            PlayHitSound(enemy.transform.position);
+        }
+    }
+
+    private void PlayHitSound(Vector3 hitPosition)
+    {
+        if (SFXManager.Instance == null) return;
+
+        switch (_currentWeaponType)
+        {
+            case WeaponType.GreatSword:
+                SFXManager.Instance.PlaySFX("GS_002", hitPosition);
+                break;
+
+            case WeaponType.DualBlade:
+                SFXManager.Instance.PlaySFX("DB_002", hitPosition);
+                break;
+
+            case WeaponType.Spear:
+                SFXManager.Instance.PlaySFX("SP_002", hitPosition);
+                break;
         }
     }
 }

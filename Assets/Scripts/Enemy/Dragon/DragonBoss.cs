@@ -1406,5 +1406,15 @@ public class DragonBoss : Enemy
         DisableHeadWeakPoint();
     }
 
+    public bool IsInGlobalRecovery()
+    {
+        return globalAttackRecoveryTimer > 0f;
+    }
 
+    public bool CanFaceForAttack()
+    {
+        return globalAttackRecoveryTimer <= 0f
+            && faceCooldownTimer <= 0f
+            && !IsBreakingWeakPoint();
+    }
 }

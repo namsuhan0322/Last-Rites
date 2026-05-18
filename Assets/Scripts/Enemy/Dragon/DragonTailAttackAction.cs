@@ -41,6 +41,7 @@ public partial class DragonTailAttackAction : Action
         timer = 0f;
 
         boss.StopMove();
+        boss.Idle(); 
         boss.DisableAllTailHitboxes();
         boss.PlayTailAttack(moveType);
 

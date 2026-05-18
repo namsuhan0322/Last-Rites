@@ -27,6 +27,9 @@ public partial class DragonBiteAction : Action
         if (!boss.HasLockedTarget())
             return Status.Failure;
 
+        if (!boss.CanUseAnyAttack())
+            return Status.Failure;
+
         if (!boss.CanBite())
             return Status.Failure;
 
@@ -41,6 +44,7 @@ public partial class DragonBiteAction : Action
         timer = 0f;
 
         boss.StopMove();
+        boss.Idle(); // Ãß°¡
         boss.DisableBiteHitbox();
         boss.PlayBite(moveType);
 

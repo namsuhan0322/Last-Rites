@@ -43,7 +43,10 @@ public partial class DragonRoarAction : Action
         if (timer >= boss.roarDuration)
         {
             boss.Idle();
+
+            boss.StartGlobalAttackRecovery();
             boss.StartFaceCooldown();
+
             return Status.Success;
         }
 

@@ -27,6 +27,9 @@ public partial class DragonFacePlayerForAttackAction : Action
         if (!boss.HasLockedTarget())
             return Status.Failure;
 
+        if (!boss.CanFaceForAttack())
+            return Status.Failure;
+
         if (!boss.CanUseAnyAttack())
             return Status.Failure;
 

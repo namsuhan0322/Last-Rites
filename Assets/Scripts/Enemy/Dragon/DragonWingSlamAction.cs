@@ -41,6 +41,7 @@ public partial class DragonWingSlamAction : Action
         timer = 0f;
 
         boss.StopMove();
+        boss.Idle(); // Ãß°¡
         boss.DisableAllWingHitboxes();
         boss.PlayWingSlam(moveType);
 

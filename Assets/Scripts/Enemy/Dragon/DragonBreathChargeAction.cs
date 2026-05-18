@@ -82,13 +82,15 @@ public partial class DragonBreathChargeAction : Action
 
             if (timer >= boss.breathChargeTime)
             {
+                boss.DoBreathChargeExplosionDamage();
+
                 boss.StopBreathCharge();
                 boss.StartBreathChargeCooldown();
                 boss.EndBreathChargeLoop();
                 boss.StartGlobalAttackRecovery();
                 boss.DisableWingWeakPoints();
-                return Status.Success;
 
+                return Status.Success;
             }
 
             return Status.Running;

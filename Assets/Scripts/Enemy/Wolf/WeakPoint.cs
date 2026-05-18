@@ -23,27 +23,33 @@ public class WeakPoint : Actor
         if (!isInitialized)
         {
             InitActor(hp);
-            ui.Init(hp);
+
+            if (ui != null)
+                ui.Init(hp);
+
             isInitialized = true;
         }
         else
         {
-            ui.SetHP(_currentHP);
+            if (ui != null)
+                ui.SetHP(_currentHP);
         }
     }
 
-    public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
+    public override void TakeDamage(
+      int damage,
+      float severityOverride = -1f,
+      bool isHeavyAttack = false,
+      bool showDamageText = true)
     {
         base.TakeDamage(damage, severityOverride, isHeavyAttack, false);
 
-        ui.SetHP(_currentHP);
         if (ui != null)
             ui.SetHP(_currentHP);
 
         if (boss != null)
             boss.TakeDamage(damage, severityOverride, isHeavyAttack, false);
     }
-
     protected override void Die()
     {
         base.Die();

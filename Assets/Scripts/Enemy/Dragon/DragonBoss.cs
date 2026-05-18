@@ -3,6 +3,10 @@ using UnityEngine.AI;
 using System.Collections;
 public class DragonBoss : Enemy
 {
+    [Header("2페이즈")]
+    [SerializeField] private float phase2HpRate = 0.4f;
+
+
     [Header("스킬후 공통 현타시간")]
     public float combatIdleTime = 2f;
 
@@ -116,6 +120,9 @@ public class DragonBoss : Enemy
     public float breathChargeTime = 2.5f;
     public float breathChargeCooldown = 12f;
     public GameObject breathChargePrefab;
+    [Header("브레스 차징 실패 시 광역 데미지")]
+    public float breathChargeExplosionRadius = 100f;
+    public int breathChargeExplosionDamage = 80;
     [Header("브레스 차징 FX")]
     public float breathChargeFxLifeTime = 2f;
     [Header("부위파괴")]
@@ -148,6 +155,10 @@ public class DragonBoss : Enemy
     private bool isLeftWingBroken = false;
     private bool isRightWingBroken = false;
     private bool cancelBreathCharge = false;
+    private bool isPhase2 = false;
+    private bool phase2Requested = false;
+    private bool firstEncounterRoared = false;
+    private bool phase2Roared = false;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -946,7 +957,7 @@ public class DragonBoss : Enemy
     //포효하기
     public bool ShouldRoar()
     {
-        return !HasRoared || roarRequested;
+        return phase2Requested && !isPhase2 && roarRequested;
     }
 
     public void ClearRoarRequest()
@@ -1076,21 +1087,79 @@ public class DragonBoss : Enemy
         cancelBreathCharge = false;
     }
 
+    public void DoBreathChargeExplosionDamage()
+    {
+        Collider[] hits = Physics.OverlapSphere(
+            transform.position,
+            breathChargeExplosionRadius,
+            targetLayer
+        );
+
+        foreach (Collider hit in hits)
+        {
+            Actor target = hit.GetComponentInParent<Actor>();
+
+            if (target == null)
+                continue;
+
+            if (target == this)
+                continue;
+
+            target.TakeDamage(breathChargeExplosionDamage);
+        }
+
+        Debug.Log("[BreathCharge] 차징 완료 광역 데미지 발생");
+    }
+
     //죽음
-    public override void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
+    public override void TakeDamage(
+       int damage,
+       float severityOverride = -1f,
+       bool isHeavyAttack = false,
+       bool showDamageText = true)
     {
         base.TakeDamage(damage, severityOverride, isHeavyAttack, showDamageText);
 
         if (_isDead) return;
 
+        CheckPhase2Request();
+    }
 
+    //2페이지 체크
+    private void CheckPhase2Request()
+    {
+        if (isPhase2 || phase2Requested || phase2Roared)
+            return;
 
-        if (!HasRoared)
+        float hpRate = (float)_currentHP / _maxHP;
+
+        if (hpRate <= phase2HpRate)
         {
-            roarRequested = true;
-            StopMove();
-            Idle();
+            phase2Requested = true;
+            Debug.Log("2페이즈 포효 예약");
         }
+    }
+
+    public bool ShouldFirstEncounterRoar()
+    {
+        return HasPlayerInRange() && !firstEncounterRoared;
+    }
+
+    public bool ShouldPhase2Roar()
+    {
+        return phase2Requested && !phase2Roared;
+    }
+
+    public void SetFirstEncounterRoared()
+    {
+        firstEncounterRoared = true;
+    }
+
+    public void EnterPhase2()
+    {
+        isPhase2 = true;
+        phase2Requested = false;
+        phase2Roared = true;
     }
 
     // 애니메이션 이벤트

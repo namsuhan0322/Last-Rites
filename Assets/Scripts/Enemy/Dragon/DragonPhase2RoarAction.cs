@@ -6,11 +6,11 @@ using Action = Unity.Behavior.Action;
 
 [Serializable, GeneratePropertyBag]
 [NodeDescription(
-    name: "Dragon Roar",
-    story: "[Self] roars",
+    name: "Dragon Phase2 Roar",
+    story: "[Self] phase2 roars",
     category: "Action/Dragon",
-    id: "dragon_roar_action")]
-public partial class DragonRoarAction : Action
+    id: "dragon_phase2_roar_action")]
+public partial class DragonPhase2RoarAction : Action
 {
     [SerializeReference] public BlackboardVariable<GameObject> Self;
 
@@ -24,14 +24,15 @@ public partial class DragonRoarAction : Action
         if (boss == null)
             return Status.Failure;
 
-        if (!boss.ShouldFirstEncounterRoar())
+        // 2페이즈 포효 예약이 없으면 실행 안 함
+        if (!boss.ShouldPhase2Roar())
             return Status.Failure;
 
         timer = 0f;
 
         boss.StopMove();
-        boss.SetMoveType(4);
-        boss.SetFirstEncounterRoared();
+        boss.SetMoveType(4); 
+        boss.EnterPhase2();  
 
         return Status.Running;
     }
@@ -50,4 +51,3 @@ public partial class DragonRoarAction : Action
         return Status.Running;
     }
 }
-

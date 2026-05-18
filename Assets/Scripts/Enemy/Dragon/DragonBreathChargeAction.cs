@@ -23,6 +23,7 @@ public partial class DragonBreathChargeAction : Action
     {
         boss = Self.Value.GetComponent<DragonBoss>();
 
+
         if (boss == null)
             return Status.Failure;
 
@@ -36,6 +37,8 @@ public partial class DragonBreathChargeAction : Action
             return Status.Failure;
 
         boss.StopMove();
+        boss.ResetBreathChargeCancel();
+        boss.EnableWingWeakPoints();
 
         timer = 0f;
         phase = 0;
@@ -48,6 +51,14 @@ public partial class DragonBreathChargeAction : Action
 
     protected override Status OnUpdate()
     {
+
+        if (boss.ShouldCancelBreathCharge())
+        {
+            boss.StopBreathCharge();
+            boss.DisableWingWeakPoints();
+            return Status.Failure;
+        }
+
         timer += Time.deltaTime;
 
         if (phase == 0)
@@ -75,6 +86,7 @@ public partial class DragonBreathChargeAction : Action
                 boss.StartBreathChargeCooldown();
                 boss.EndBreathChargeLoop();
                 boss.StartGlobalAttackRecovery();
+                boss.DisableWingWeakPoints();
                 return Status.Success;
 
             }
@@ -88,7 +100,10 @@ public partial class DragonBreathChargeAction : Action
     protected override void OnEnd()
     {
         if (boss != null)
+        {
             boss.StopBreathCharge();
+            boss.DisableWingWeakPoints();
+        }
     }
 }
 

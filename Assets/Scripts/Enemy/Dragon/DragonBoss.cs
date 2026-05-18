@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.AI;
-
+using System.Collections;
 public class DragonBoss : Enemy
 {
     [Header("스킬후 공통 현타시간")]
@@ -103,9 +103,13 @@ public class DragonBoss : Enemy
     public float sideJumpDuration = 1.2f;
     public float sideJumpCooldown = 8f;
 
-    [Header("브레스 중 약점")]
+    [Header("브레스 중 헤드약점")]
     [SerializeField] private WeakPoint headWeakPoint;
     [SerializeField] private int headWeakPointHP = 100;
+    [Header("브레스 차징 중 날개 약점")]
+    [SerializeField] private WeakPoint leftWingWeakPoint;
+    [SerializeField] private WeakPoint rightWingWeakPoint;
+    [SerializeField] private int wingWeakPointHP = 100;
 
     [Header("브레스 차징 패턴")]
     public float breathCastTime = 3.5f;
@@ -114,7 +118,8 @@ public class DragonBoss : Enemy
     public GameObject breathChargePrefab;
     [Header("브레스 차징 FX")]
     public float breathChargeFxLifeTime = 2f;
-
+    [Header("부위파괴")]
+    public float weakPointBreakAnimTime = 3f;
 
     //변수들
     public bool HasRoared => hasRoared;
@@ -138,6 +143,11 @@ public class DragonBoss : Enemy
     private float breathChargeCooldownTimer = 0f;
     private GameObject currentBreathCharge;
     private float breathChargeRestartTimer = 0f;
+    private bool isBreakingWeakPoint = false;
+    private bool isHeadBroken = false;
+    private bool isLeftWingBroken = false;
+    private bool isRightWingBroken = false;
+    private bool cancelBreathCharge = false;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -943,42 +953,127 @@ public class DragonBoss : Enemy
     {
         roarRequested = false;
     }
-
-
-
-
-    //약점 키기
-    public void EnableHeadWeakPoint()
+    public bool IsBreakingWeakPoint()
     {
-        if (isHeadWeakPointBroken)
-            return;
-
-        if (headWeakPoint == null)
-            return;
-
-        headWeakPoint.gameObject.SetActive(true);
-        headWeakPoint.Init(headWeakPointHP, this);
+        return isBreakingWeakPoint;
     }
 
-    public void DisableHeadWeakPoint()
+    //Type별 부위파괴
+    public void OnWeakPointBreak(WeakPointType type)
     {
-        if (headWeakPoint == null)
+        if (_isDead || isBreakingWeakPoint)
             return;
 
-        headWeakPoint.gameObject.SetActive(false);
+        switch (type)
+        {
+            case WeakPointType.Head:
+                if (isHeadBroken) return;
+
+                isHeadBroken = true;
+
+                StartCoroutine(
+                    WeakPointBreakRoutine(
+                        WeakPointType.Head,
+                        "HeadBreak"
+                    )
+                );
+                break;
+
+            case WeakPointType.LeftWing:
+                if (isLeftWingBroken) return;
+
+                isLeftWingBroken = true;
+                CancelBreathCharge();
+
+                StartCoroutine(
+                    WeakPointBreakRoutine(
+                        WeakPointType.LeftWing,
+                        "LeftWingBreak"
+                    )
+                );
+                break;
+
+            case WeakPointType.RightWing:
+                if (isRightWingBroken) return;
+
+                isRightWingBroken = true;
+                CancelBreathCharge();
+
+                StartCoroutine(
+                    WeakPointBreakRoutine(
+                        WeakPointType.RightWing,
+                        "RightWingBreak"
+                    )
+                );
+                break;
+        }
     }
 
-    //머리 약점부위파괴
-    public void OnHeadWeakPointBreak()
+    //부위파괴 루틴 (머리 양쪽날개 포함)
+    private IEnumerator WeakPointBreakRoutine(WeakPointType type, string triggerName)
     {
-        if (isHeadWeakPointBroken || _isDead)
-            return;
+        isBreakingWeakPoint = true;
 
-        isHeadWeakPointBroken = true;
+        StopMove();
 
-        StopAttachedBreath();
+        switch (type)
+        {
+            case WeakPointType.Head:
+                DisableHeadWeakPoint();
+                break;
 
-        DisableHeadWeakPoint();
+            case WeakPointType.LeftWing:
+                DisableLeftWingWeakPoint();
+                break;
+
+            case WeakPointType.RightWing:
+                DisableRightWingWeakPoint();
+                break;
+        }
+
+        animator.ResetTrigger("HeadBreak");
+        animator.ResetTrigger("LeftWingBreak");
+        animator.ResetTrigger("RightWingBreak");
+
+        animator.SetTrigger(triggerName);
+
+        yield return new WaitForSeconds(weakPointBreakAnimTime);
+
+        isBreakingWeakPoint = false;
+
+        Idle();
+
+        // 부위파괴 후 공통 현타 시작
+        StartGlobalAttackRecovery();
+    }
+
+    public void DisableLeftWingWeakPoint()
+    {
+        if (leftWingWeakPoint != null)
+            leftWingWeakPoint.gameObject.SetActive(false);
+    }
+
+    public void DisableRightWingWeakPoint()
+    {
+        if (rightWingWeakPoint != null)
+            rightWingWeakPoint.gameObject.SetActive(false);
+    }
+
+    public bool ShouldCancelBreathCharge()
+    {
+        return cancelBreathCharge;
+    }
+
+    public void CancelBreathCharge()
+    {
+        cancelBreathCharge = true;
+        StopBreathCharge();
+        EndBreathChargeLoop();
+    }
+
+    public void ResetBreathChargeCancel()
+    {
+        cancelBreathCharge = false;
     }
 
     //죽음
@@ -1082,5 +1177,64 @@ public class DragonBoss : Enemy
             agent.updateRotation = !value;
         }
     }
+
+    public void EnableWingWeakPoints()
+    {
+        if (leftWingWeakPoint != null)
+        {
+            leftWingWeakPoint.gameObject.SetActive(true);
+            leftWingWeakPoint.Init(wingWeakPointHP, this);
+        }
+
+        if (rightWingWeakPoint != null)
+        {
+            rightWingWeakPoint.gameObject.SetActive(true);
+            rightWingWeakPoint.Init(wingWeakPointHP, this);
+        }
+    }
+
+    public void DisableWingWeakPoints()
+    {
+        if (leftWingWeakPoint != null)
+            leftWingWeakPoint.gameObject.SetActive(false);
+
+        if (rightWingWeakPoint != null)
+            rightWingWeakPoint.gameObject.SetActive(false);
+    }
+
+    //약점 키기
+    public void EnableHeadWeakPoint()
+    {
+        if (isHeadWeakPointBroken)
+            return;
+
+        if (headWeakPoint == null)
+            return;
+
+        headWeakPoint.gameObject.SetActive(true);
+        headWeakPoint.Init(headWeakPointHP, this);
+    }
+
+    public void DisableHeadWeakPoint()
+    {
+        if (headWeakPoint == null)
+            return;
+
+        headWeakPoint.gameObject.SetActive(false);
+    }
+
+    //머리 약점부위파괴
+    public void OnHeadWeakPointBreak()
+    {
+        if (isHeadWeakPointBroken || _isDead)
+            return;
+
+        isHeadWeakPointBroken = true;
+
+        StopAttachedBreath();
+
+        DisableHeadWeakPoint();
+    }
+
 
 }

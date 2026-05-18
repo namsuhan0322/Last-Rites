@@ -1,9 +1,18 @@
 ﻿using UnityEngine;
 
+public enum WeakPointType
+{
+    Head,
+    LeftWing,
+    RightWing
+}
+
 public class WeakPoint : Actor
 {
     private Actor boss;
     public WeakPointUI ui;
+
+    [SerializeField] private WeakPointType weakPointType;
 
     private bool isInitialized = false;
 
@@ -39,11 +48,15 @@ public class WeakPoint : Actor
 
         DragonBoss dragon = boss as DragonBoss;
         if (dragon != null)
-            dragon.OnHeadWeakPointBreak();
+        {
+            dragon.OnWeakPointBreak(weakPointType);
+        }
 
         WolfBoss wolf = boss as WolfBoss;
         if (wolf != null)
+        {
             wolf.OnWeakPointBreak();
+        }
 
         gameObject.SetActive(false);
     }

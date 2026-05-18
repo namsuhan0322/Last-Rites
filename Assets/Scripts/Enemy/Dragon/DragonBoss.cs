@@ -1083,6 +1083,8 @@ public class DragonBoss : Enemy
 
         if (_isDead) return;
 
+
+
         if (!HasRoared)
         {
             roarRequested = true;

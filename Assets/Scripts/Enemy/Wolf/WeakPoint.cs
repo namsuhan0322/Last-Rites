@@ -37,6 +37,8 @@ public class WeakPoint : Actor
         base.TakeDamage(damage, severityOverride, isHeavyAttack, false);
 
         ui.SetHP(_currentHP);
+        if (ui != null)
+            ui.SetHP(_currentHP);
 
         if (boss != null)
             boss.TakeDamage(damage, severityOverride, isHeavyAttack, false);

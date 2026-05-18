@@ -58,9 +58,6 @@ public class FractureThis : MonoBehaviour
                 }
             }
 
-            // ==========================================
-            // [핵심 추가] 설정된 시간(shardLifeTime) 후에 파편 덩어리를 삭제합니다.
-            // ==========================================
             Destroy(fractureRoot, shardLifeTime);
         }
     }
@@ -76,7 +73,6 @@ public class FractureThis : MonoBehaviour
             if (col) col.enabled = true;
         }
 
-        // 리스폰 시 이미 부서져 있는 파편이 있다면 즉시 제거 (중복 방지)
         if (fractureRoot != null)
         {
             Destroy(fractureRoot);

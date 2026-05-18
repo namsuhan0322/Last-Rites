@@ -23,7 +23,6 @@ public partial class DragonBreathChargeAction : Action
     {
         boss = Self.Value.GetComponent<DragonBoss>();
 
-
         if (boss == null)
             return Status.Failure;
 
@@ -33,7 +32,7 @@ public partial class DragonBreathChargeAction : Action
         if (!boss.CanUseAnyAttack())
             return Status.Failure;
 
-        if (!boss.CanBreathCharge())
+        if (!boss.ShouldUseBreathChargeEvent())
             return Status.Failure;
 
         boss.StopMove();
@@ -85,10 +84,10 @@ public partial class DragonBreathChargeAction : Action
                 boss.DoBreathChargeExplosionDamage();
 
                 boss.StopBreathCharge();
-                boss.StartBreathChargeCooldown();
                 boss.EndBreathChargeLoop();
                 boss.StartGlobalAttackRecovery();
                 boss.DisableWingWeakPoints();
+                boss.ClearBreathChargeEvent();
 
                 return Status.Success;
             }

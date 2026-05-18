@@ -107,6 +107,8 @@ public class DragonBoss : Enemy
     public float sideJumpDuration = 1.2f;
     public float sideJumpCooldown = 8f;
 
+
+
     [Header("브레스 중 헤드약점")]
     [SerializeField] private WeakPoint headWeakPoint;
     [SerializeField] private int headWeakPointHP = 100;
@@ -114,7 +116,6 @@ public class DragonBoss : Enemy
     [SerializeField] private WeakPoint leftWingWeakPoint;
     [SerializeField] private WeakPoint rightWingWeakPoint;
     [SerializeField] private int wingWeakPointHP = 100;
-
     [Header("브레스 차징 패턴")]
     public float breathCastTime = 3.5f;
     public float breathChargeTime = 2.5f;
@@ -127,6 +128,12 @@ public class DragonBoss : Enemy
     public float breathChargeFxLifeTime = 2f;
     [Header("부위파괴")]
     public float weakPointBreakAnimTime = 3f;
+    [Header("1페이즈 브레스 차지 체력 이벤트")]
+    [SerializeField] private float breathChargeHp1 = 0.85f;
+    [SerializeField] private float breathChargeHp2 = 0.70f;
+    [SerializeField] private float breathChargeHp3 = 0.55f;
+    [SerializeField] private int normalBreathChargeDamage = 80;
+    [SerializeField] private int finalBreathChargeDamage = 150;
 
     //변수들
     public bool HasRoared => hasRoared;
@@ -159,6 +166,11 @@ public class DragonBoss : Enemy
     private bool phase2Requested = false;
     private bool firstEncounterRoared = false;
     private bool phase2Roared = false;
+    private bool breathCharge1Used = false;
+    private bool breathCharge2Used = false;
+    private bool breathCharge3Used = false;
+    private bool breathChargeEventRequested = false;
+    private int currentBreathChargeEventIndex = 0;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -954,16 +966,87 @@ public class DragonBoss : Enemy
 
         Idle();
     }
-    //포효하기
-    public bool ShouldRoar()
+
+    private void CheckBreathChargeEventRequest()
     {
-        return phase2Requested && !isPhase2 && roarRequested;
+        if (isPhase2)
+            return;
+
+        if (breathChargeEventRequested)
+            return;
+
+        // 양쪽 날개 다 부쉈으면 더 이상 브레스 차지 안 함
+        if (AreBothWingBroken())
+            return;
+
+        float hpRate = (float)_currentHP / _maxHP;
+
+        if (!breathCharge1Used && hpRate <= breathChargeHp1)
+        {
+            breathCharge1Used = true;
+            RequestBreathChargeEvent(1);
+            return;
+        }
+
+        if (!breathCharge2Used && hpRate <= breathChargeHp2)
+        {
+            breathCharge2Used = true;
+            RequestBreathChargeEvent(2);
+            return;
+        }
+
+        if (!breathCharge3Used && hpRate <= breathChargeHp3)
+        {
+            breathCharge3Used = true;
+            RequestBreathChargeEvent(3);
+            return;
+        }
     }
 
-    public void ClearRoarRequest()
+    private void RequestBreathChargeEvent(int index)
     {
-        roarRequested = false;
+        breathChargeEventRequested = true;
+        currentBreathChargeEventIndex = index;
+
+        Debug.Log($"브레스 차지 {index}번째 예약");
     }
+
+    public bool ShouldUseBreathChargeEvent()
+    {
+        if (isPhase2)
+            return false;
+
+        if (!breathChargeEventRequested)
+            return false;
+
+        if (AreBothWingBroken())
+        {
+            ClearBreathChargeEvent();
+            return false;
+        }
+
+        return true;
+    }
+
+    public void ClearBreathChargeEvent()
+    {
+        breathChargeEventRequested = false;
+        currentBreathChargeEventIndex = 0;
+    }
+
+    public bool AreBothWingBroken()
+    {
+        return isLeftWingBroken && isRightWingBroken;
+    }
+
+    public int GetBreathChargeEventDamage()
+    {
+        if (currentBreathChargeEventIndex == 3 && !AreBothWingBroken())
+            return finalBreathChargeDamage;
+
+        return normalBreathChargeDamage;
+    }
+
     public bool IsBreakingWeakPoint()
     {
         return isBreakingWeakPoint;
@@ -1082,13 +1165,17 @@ public class DragonBoss : Enemy
         EndBreathChargeLoop();
     }
 
+    //리셋하기
     public void ResetBreathChargeCancel()
     {
         cancelBreathCharge = false;
     }
 
+    //브레스 차지 데미지
     public void DoBreathChargeExplosionDamage()
     {
+        int damage = GetBreathChargeEventDamage();
+
         Collider[] hits = Physics.OverlapSphere(
             transform.position,
             breathChargeExplosionRadius,
@@ -1105,23 +1192,24 @@ public class DragonBoss : Enemy
             if (target == this)
                 continue;
 
-            target.TakeDamage(breathChargeExplosionDamage);
+            target.TakeDamage(damage);
         }
 
-        Debug.Log("[BreathCharge] 차징 완료 광역 데미지 발생");
+        Debug.Log($"[BreathCharge] 광역 데미지 발생: {damage}");
     }
 
     //죽음
     public override void TakeDamage(
-       int damage,
-       float severityOverride = -1f,
-       bool isHeavyAttack = false,
-       bool showDamageText = true)
+     int damage,
+     float severityOverride = -1f,
+     bool isHeavyAttack = false,
+     bool showDamageText = true)
     {
         base.TakeDamage(damage, severityOverride, isHeavyAttack, showDamageText);
 
         if (_isDead) return;
 
+        CheckBreathChargeEventRequest();
         CheckPhase2Request();
     }
 
@@ -1144,22 +1232,33 @@ public class DragonBoss : Enemy
     {
         return HasPlayerInRange() && !firstEncounterRoared;
     }
-
+    //2페이지 포효
     public bool ShouldPhase2Roar()
     {
         return phase2Requested && !phase2Roared;
     }
-
+    //첫조우 포효
     public void SetFirstEncounterRoared()
     {
         firstEncounterRoared = true;
     }
-
+    //2페이지 진입
     public void EnterPhase2()
     {
         isPhase2 = true;
         phase2Requested = false;
         phase2Roared = true;
+    }
+
+    //포효하기
+    public bool ShouldRoar()
+    {
+        return phase2Requested && !isPhase2 && roarRequested;
+    }
+
+    public void ClearRoarRequest()
+    {
+        roarRequested = false;
     }
 
     // 애니메이션 이벤트

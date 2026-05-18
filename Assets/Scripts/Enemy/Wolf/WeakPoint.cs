@@ -37,10 +37,10 @@ public class WeakPoint : Actor
     }
 
     public override void TakeDamage(
-      int damage,
-      float severityOverride = -1f,
-      bool isHeavyAttack = false,
-      bool showDamageText = true)
+     int damage,
+     float severityOverride = -1f,
+     bool isHeavyAttack = false,
+     bool showDamageText = true)
     {
         base.TakeDamage(damage, severityOverride, isHeavyAttack, false);
 

@@ -6772,6 +6772,17 @@ MonoBehaviour:
   breathChargeHp3: 0.55
   normalBreathChargeDamage: 80
   finalBreathChargeDamage: 150
+  chargeCooldown: 10
+  chargeDistance: 10
+  chargeReadyTime: 2.5
+  chargeStartDelay: 0.8
+  chargeDuration: 1.5
+  chargeDamage: 45
+  chargeHitRadius: 2.5
+  chargeIndicatorBaseLength: 1
+  chargeIndicatorPrefab: {fileID: 5004172382952367341, guid: 1b6ccf47b3a0f4f479cc782cd5c88d3a,
+    type: 3}
+  chargeTurnSpeed: 360
 --- !u!195 &7804963564610020852
 NavMeshAgent:
   m_ObjectHideFlags: 0

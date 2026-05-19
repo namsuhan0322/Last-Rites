@@ -135,6 +135,21 @@ public class DragonBoss : Enemy
     [SerializeField] private int normalBreathChargeDamage = 80;
     [SerializeField] private int finalBreathChargeDamage = 150;
 
+    [Header("돌진 패턴")]
+    public float chargeCooldown = 10f;
+    public float chargeDistance = 10f;
+    public float chargeReadyTime = 2.5f;
+    public float chargeStartDelay = 0.8f;
+    public float chargeDuration = 1.5f;
+    public int chargeDamage = 45;
+    public float chargeHitRadius = 2.5f;
+    public float chargeIndicatorBaseLength = 7f;
+    [SerializeField] private GameObject chargeIndicatorPrefab;
+    [Tooltip("돌진 준비 중 플레이어를 따라보는 회전 속도")]
+    public float chargeTurnSpeed = 360f;
+
+
+
     //변수들
     public bool HasRoared => hasRoared;
     private float biteCooldownTimer = 0f;
@@ -172,6 +187,7 @@ public class DragonBoss : Enemy
     private bool breathChargeEventRequested = false;
     private int currentBreathChargeEventIndex = 0;
     private bool isBTActionPlaying = false;
+    private float chargeCooldownTimer = 0f;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -250,6 +266,9 @@ public class DragonBoss : Enemy
 
         if (breathChargeCooldownTimer > 0f)
             breathChargeCooldownTimer -= Time.deltaTime;
+
+        if (chargeCooldownTimer > 0f)
+            chargeCooldownTimer -= Time.deltaTime;
 
 
     }
@@ -1200,6 +1219,49 @@ public class DragonBoss : Enemy
 
         Debug.Log($"[BreathCharge] 광역 데미지 발생: {damage}");
     }
+
+    public bool CanCharge()
+    {
+        return chargeCooldownTimer <= 0f;
+    }
+
+    public void StartChargeCooldown()
+    {
+        chargeCooldownTimer = chargeCooldown;
+    }
+
+    public bool IsTargetInChargeRange()
+    {
+        Transform target = GetLockedTarget();
+        if (target == null) return false;
+
+        float dist = Vector3.Distance(transform.position, target.position);
+        return dist <= chargeDistance;
+    }
+
+    public void PlayChargeReady()
+    {
+        animator.ResetTrigger("ChargeReady");
+        animator.SetTrigger("ChargeReady");
+    }
+
+    public void PlayCharge()
+    {
+        animator.ResetTrigger("Charge");
+        animator.SetTrigger("Charge");
+    }
+
+    public GameObject CreateChargeIndicator()
+    {
+        if (chargeIndicatorPrefab == null)
+            return null;
+
+        GameObject indicator = Instantiate(chargeIndicatorPrefab);
+        indicator.SetActive(true);
+
+        return indicator;
+    }
+
 
     //죽음
     public override void TakeDamage(

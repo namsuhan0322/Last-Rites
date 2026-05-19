@@ -23,10 +23,7 @@ public partial class DragonFacePlayerOnceAction : Action
         if (boss == null)
             return Status.Failure;
 
-        if (boss.HasRoared)
-            return Status.Failure;
-
-        if (!boss.HasPlayerInRange())
+        if (!boss.ShouldFirstEncounterRoar())
             return Status.Failure;
 
         boss.StopMove();

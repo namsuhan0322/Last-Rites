@@ -29,6 +29,7 @@ public partial class DragonRoarAction : Action
 
         timer = 0f;
 
+        boss.SetBTActionPlaying(true);
         boss.StopMove();
         boss.SetMoveType(4);
         boss.SetFirstEncounterRoared();
@@ -47,10 +48,18 @@ public partial class DragonRoarAction : Action
             boss.StartGlobalAttackRecovery();
             boss.StartFaceCooldown();
 
+            boss.SetBTActionPlaying(false);
+
             return Status.Success;
         }
 
         return Status.Running;
+    }
+
+    protected override void OnEnd()
+    {
+        if (boss != null)
+            boss.SetBTActionPlaying(false);
     }
 }
 

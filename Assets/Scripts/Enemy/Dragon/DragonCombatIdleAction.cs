@@ -41,12 +41,12 @@ public partial class DragonCombatIdleAction : Action
         if (!boss.HasLockedTarget())
             return Status.Failure;
 
-        timer += Time.deltaTime;
+        boss.Idle();
 
-        if (timer >= boss.combatIdleTime)
-            return Status.Success;
+        if (boss.IsInGlobalRecovery())
+            return Status.Running;
 
-        return Status.Running;
+        return Status.Success;
     }
 }
 

@@ -22,6 +22,12 @@ public partial class DragonTurnLeftAction : Action
         boss = Self.Value.GetComponent<DragonBoss>();
         if (boss == null) return Status.Failure;
 
+        if (boss.IsInGlobalRecovery())
+        {
+            boss.Idle();
+            return Status.Failure;
+        }
+
         timer = 0f;
         boss.StopMove();
         boss.SetMoveType(2);

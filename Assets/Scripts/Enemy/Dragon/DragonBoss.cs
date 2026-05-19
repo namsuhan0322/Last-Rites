@@ -171,6 +171,7 @@ public class DragonBoss : Enemy
     private bool breathCharge3Used = false;
     private bool breathChargeEventRequested = false;
     private int currentBreathChargeEventIndex = 0;
+    private bool isBTActionPlaying = false;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -249,6 +250,8 @@ public class DragonBoss : Enemy
 
         if (breathChargeCooldownTimer > 0f)
             breathChargeCooldownTimer -= Time.deltaTime;
+
+
     }
 
     public void SetMoveType(int type)
@@ -1241,6 +1244,7 @@ public class DragonBoss : Enemy
     public void SetFirstEncounterRoared()
     {
         firstEncounterRoared = true;
+        hasRoared = true;
     }
     //2페이지 진입
     public void EnterPhase2()
@@ -1416,5 +1420,15 @@ public class DragonBoss : Enemy
         return globalAttackRecoveryTimer <= 0f
             && faceCooldownTimer <= 0f
             && !IsBreakingWeakPoint();
+    }
+
+    public void SetBTActionPlaying(bool value)
+    {
+        isBTActionPlaying = value;
+    }
+
+    protected override bool IsRecovering()
+    {
+        return IsInGlobalRecovery() || isBTActionPlaying || IsBreakingWeakPoint();
     }
 }

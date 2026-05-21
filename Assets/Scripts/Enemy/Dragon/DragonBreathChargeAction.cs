@@ -82,6 +82,7 @@ public partial class DragonBreathChargeAction : Action
             if (timer >= boss.breathChargeTime)
             {
                 boss.DoBreathChargeExplosionDamage();
+                boss.PlayBreathChargeExplosionEffect();
 
                 boss.StopBreathCharge();
                 boss.EndBreathChargeLoop();

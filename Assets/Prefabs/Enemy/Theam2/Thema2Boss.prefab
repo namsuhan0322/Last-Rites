@@ -2213,7 +2213,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &8686580762105455645
 Transform:
   m_ObjectHideFlags: 0
@@ -5278,7 +5278,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6679679194986396429}
   m_LocalRotation: {x: 0.68106896, y: -0.07559713, z: -0.08267385, w: 0.72359884}
-  m_LocalPosition: {x: 0, y: 0, z: 2.19}
+  m_LocalPosition: {x: 0, y: 0, z: 1.69}
   m_LocalScale: {x: 0.008000001, y: 0.007999999, z: 0.008}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5289,7 +5289,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.28, y: 1.29}
+  m_AnchoredPosition: {x: -0.15, y: 1.23}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &8490866212546392881
@@ -5396,7 +5396,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6694198114796770479}
   m_LocalRotation: {x: 0.68106896, y: -0.07559713, z: -0.08267385, w: 0.72359884}
-  m_LocalPosition: {x: 0, y: 0, z: 2.35}
+  m_LocalPosition: {x: 0, y: 0, z: 1.9}
   m_LocalScale: {x: 0.008000001, y: 0.007999999, z: 0.008}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5407,7 +5407,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: -0.44, y: 1.35}
+  m_AnchoredPosition: {x: -0.32, y: 1.29}
   m_SizeDelta: {x: 1920, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &6065365667777666998
@@ -6274,7 +6274,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1433476899301112603
 Transform:
   m_ObjectHideFlags: 0
@@ -6803,6 +6803,11 @@ MonoBehaviour:
   tailAttackEffectScale: 4.5
   tailAttackEffectSpeed: 0.3
   tailAttackEffectLifeTime: 4
+  breathChargeExplosionEffectPrefab: {fileID: 2917385618030906396, guid: 65866c70669d94b46949f677c29e396d,
+    type: 3}
+  breathChargeExplosionEffectScale: 9
+  breathChargeExplosionEffectSpeed: 0.8
+  breathChargeExplosionEffectLifeTime: 3
 --- !u!195 &7804963564610020852
 NavMeshAgent:
   m_ObjectHideFlags: 0

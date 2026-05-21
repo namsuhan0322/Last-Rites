@@ -172,6 +172,11 @@ public class DragonBoss : Enemy
     public float tailAttackEffectScale = 2f;
     public float tailAttackEffectSpeed = 0.5f;
     public float tailAttackEffectLifeTime = 3f;
+    [Header("브레스 차지 폭발 이펙트")]
+    [SerializeField] private GameObject breathChargeExplosionEffectPrefab;
+    public float breathChargeExplosionEffectScale = 5f;
+    public float breathChargeExplosionEffectSpeed = 0.6f;
+    public float breathChargeExplosionEffectLifeTime = 4f;
 
 
 
@@ -1596,5 +1601,42 @@ public class DragonBoss : Enemy
         }
 
         Destroy(effect, tailAttackEffectLifeTime);
+    }
+
+    public void PlayBreathChargeExplosionEffect()
+    {
+        if (breathChargeExplosionEffectPrefab == null)
+            return;
+
+        Vector3 spawnPos = transform.position;
+
+        if (Physics.Raycast(
+            transform.position + Vector3.up * 5f,
+            Vector3.down,
+            out RaycastHit hit,
+            20f))
+        {
+            spawnPos = hit.point;
+        }
+
+        GameObject effect = Instantiate(
+            breathChargeExplosionEffectPrefab,
+            spawnPos,
+            breathChargeExplosionEffectPrefab.transform.rotation
+        );
+
+        effect.transform.localScale *= breathChargeExplosionEffectScale;
+
+        ParticleSystem[] particles =
+            effect.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem ps in particles)
+        {
+            ParticleSystem.MainModule main = ps.main;
+            main.simulationSpeed = breathChargeExplosionEffectSpeed;
+            ps.Play(true);
+        }
+
+        Destroy(effect, breathChargeExplosionEffectLifeTime);
     }
 }

@@ -177,6 +177,15 @@ public class DragonBoss : Enemy
     public float breathChargeExplosionEffectScale = 5f;
     public float breathChargeExplosionEffectSpeed = 0.6f;
     public float breathChargeExplosionEffectLifeTime = 4f;
+    [Header("점프 공격 이펙트")]
+    [SerializeField] private GameObject jumpStartDustEffectPrefab;
+    [SerializeField] private GameObject jumpLandImpactEffectPrefab;
+    public float jumpStartDustEffectScale = 2f;
+    public float jumpStartDustEffectSpeed = 0.6f;
+    public float jumpStartDustEffectLifeTime = 3f;
+    public float jumpLandImpactEffectScale = 4f;
+    public float jumpLandImpactEffectSpeed = 0.6f;
+    public float jumpLandImpactEffectLifeTime = 4f;
 
 
 
@@ -1638,5 +1647,71 @@ public class DragonBoss : Enemy
         }
 
         Destroy(effect, breathChargeExplosionEffectLifeTime);
+    }
+
+
+    public void PlayJumpStartDustEffect()
+    {
+        SpawnEffectOnGround(
+            jumpStartDustEffectPrefab,
+            transform.position,
+            jumpStartDustEffectScale,
+            jumpStartDustEffectSpeed,
+            jumpStartDustEffectLifeTime
+        );
+    }
+
+    public void PlayJumpLandImpactEffect(Vector3 position)
+    {
+        SpawnEffectOnGround(
+            jumpLandImpactEffectPrefab,
+            position,
+            jumpLandImpactEffectScale,
+            jumpLandImpactEffectSpeed,
+            jumpLandImpactEffectLifeTime
+        );
+    }
+
+    private void SpawnEffectOnGround(
+        GameObject prefab,
+        Vector3 position,
+        float scale,
+        float speed,
+        float lifeTime)
+    {
+        if (prefab == null)
+            return;
+
+        Vector3 spawnPos = position;
+
+        if (Physics.Raycast(
+            position + Vector3.up * 5f,
+            Vector3.down,
+            out RaycastHit hit,
+            20f))
+        {
+            spawnPos = hit.point;
+        }
+
+        GameObject effect = Instantiate(
+            prefab,
+            spawnPos,
+            prefab.transform.rotation
+        );
+
+        effect.transform.SetParent(null);
+        effect.transform.localScale *= scale;
+
+        ParticleSystem[] particles =
+            effect.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem ps in particles)
+        {
+            ParticleSystem.MainModule main = ps.main;
+            main.simulationSpeed = speed;
+            ps.Play(true);
+        }
+
+        Destroy(effect, lifeTime);
     }
 }

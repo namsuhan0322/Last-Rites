@@ -61,6 +61,7 @@ public partial class DragonJumpAttackAction : Action
         damageDone = false;
 
         boss.PlayJumpStart();
+        boss.PlayJumpStartDustEffect();
 
         return Status.Running;
     }
@@ -143,7 +144,9 @@ public partial class DragonJumpAttackAction : Action
             if (!damageDone && t >= 0.85f)
             {
                 damageDone = true;
+
                 boss.DoJumpDamage(landPos);
+                boss.PlayJumpLandImpactEffect(landPos);
             }
 
             if (t >= 1f)

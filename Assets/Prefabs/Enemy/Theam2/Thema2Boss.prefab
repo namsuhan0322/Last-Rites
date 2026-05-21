@@ -312,7 +312,7 @@ GameObject:
   - component: {fileID: 74851745356138375}
   - component: {fileID: 5581760662009012218}
   - component: {fileID: 7378695517875338830}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: BG2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1344,7 +1344,7 @@ GameObject:
   - component: {fileID: 4184448543726939456}
   - component: {fileID: 7151362102499102453}
   - component: {fileID: 8660815003296007088}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2100,7 +2100,7 @@ GameObject:
   - component: {fileID: 3869112772101640163}
   - component: {fileID: 6009945461399157573}
   - component: {fileID: 2444562622693843849}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: BG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2213,7 +2213,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &8686580762105455645
 Transform:
   m_ObjectHideFlags: 0
@@ -2554,7 +2554,7 @@ GameObject:
   - component: {fileID: 9093313919928501928}
   - component: {fileID: 5823525449930873732}
   - component: {fileID: 2798255934841316806}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: BG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2809,7 +2809,7 @@ GameObject:
   - component: {fileID: 8553704916674895880}
   - component: {fileID: 1611603014581370568}
   - component: {fileID: 7141815459987526681}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: BG2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3710,7 +3710,7 @@ GameObject:
   - component: {fileID: 2147782200077759217}
   - component: {fileID: 5569359701089060403}
   - component: {fileID: 2291847011509760644}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3817,7 +3817,7 @@ GameObject:
   - component: {fileID: 5313775895260582903}
   - component: {fileID: 7063288983669392375}
   - component: {fileID: 6527425295257724918}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Fill
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3978,7 +3978,7 @@ GameObject:
   - component: {fileID: 3405929897478327402}
   - component: {fileID: 3009271121323754801}
   - component: {fileID: 1605745146280470860}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: BG2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4288,7 +4288,7 @@ GameObject:
   - component: {fileID: 1666469900790646252}
   - component: {fileID: 2463537482478288632}
   - component: {fileID: 2423642389599194772}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: WeakPointUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5263,7 +5263,7 @@ GameObject:
   - component: {fileID: 1991727180606924305}
   - component: {fileID: 2950674434692051159}
   - component: {fileID: 7813751895161755138}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: WeakPointUI (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5381,7 +5381,7 @@ GameObject:
   - component: {fileID: 10291371968465809}
   - component: {fileID: 8285973700427551147}
   - component: {fileID: 6650068702807842907}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: WeakPointUI (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6274,7 +6274,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1433476899301112603
 Transform:
   m_ObjectHideFlags: 0
@@ -6789,10 +6789,10 @@ MonoBehaviour:
     type: 3}
   rightWingSlamEffectPrefab: {fileID: 830516002863052490, guid: a8e7990032a2aa14c9da072472c3415c,
     type: 3}
-  leftWingSlamEffectPoint: {fileID: 4751967211330099810}
+  leftWingSlamEffectPoint: {fileID: 8632811793622456929}
   rightWingSlamEffectPoint: {fileID: 3628389466205212232}
   wingSlamEffectScale: 3.67
-  wingSlamEffectSpeed: 0.27
+  wingSlamEffectSpeed: 0.32
   wingSlamEffectLifeTime: 5
   leftTailAttackEffectPrefab: {fileID: 8419285111730486566, guid: 881a969780190754db62c81786eeb626,
     type: 3}
@@ -6808,6 +6808,16 @@ MonoBehaviour:
   breathChargeExplosionEffectScale: 9
   breathChargeExplosionEffectSpeed: 0.8
   breathChargeExplosionEffectLifeTime: 3
+  jumpStartDustEffectPrefab: {fileID: 5550403049875251295, guid: 61b2263c34a64d844ae559594f07d80a,
+    type: 3}
+  jumpLandImpactEffectPrefab: {fileID: 1272901806709456, guid: 05752b699b59a15408b495a628439c15,
+    type: 3}
+  jumpStartDustEffectScale: 3
+  jumpStartDustEffectSpeed: 0.6
+  jumpStartDustEffectLifeTime: 3
+  jumpLandImpactEffectScale: 4
+  jumpLandImpactEffectSpeed: 0.8
+  jumpLandImpactEffectLifeTime: 1.7
 --- !u!195 &7804963564610020852
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -6923,7 +6933,7 @@ GameObject:
   - component: {fileID: 3123504177839478920}
   - component: {fileID: 7598923170446626286}
   - component: {fileID: 3824735561315006664}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: BG
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7164,7 +7174,7 @@ GameObject:
   - component: {fileID: 1715169422762636062}
   m_Layer: 6
   m_Name: L Hand
-  m_TagString: Untagged
+  m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

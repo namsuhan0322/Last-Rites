@@ -150,6 +150,19 @@ public class DragonBoss : Enemy
 
 
 
+
+    [Header("fbx모음")]
+    [Header("날개 내려찍기 이펙트")]
+    [SerializeField] private GameObject leftWingSlamEffectPrefab;
+    [SerializeField] private GameObject rightWingSlamEffectPrefab;
+    [SerializeField] private Transform leftWingSlamEffectPoint;
+    [SerializeField] private Transform rightWingSlamEffectPoint;
+    public float wingSlamEffectScale = 2f;
+    public float wingSlamEffectSpeed = 0.5f;
+    public float wingSlamEffectLifeTime = 3f;
+
+
+
     //변수들
     public bool HasRoared => hasRoared;
     private float biteCooldownTimer = 0f;
@@ -1492,5 +1505,45 @@ public class DragonBoss : Enemy
     protected override bool IsRecovering()
     {
         return IsInGlobalRecovery() || isBTActionPlaying || IsBreakingWeakPoint();
+    }
+
+    //fbx 모음들
+    public void PlayLeftWingSlamEffect()
+    {
+        SpawnWingSlamEffect(leftWingSlamEffectPrefab, leftWingSlamEffectPoint);
+    }
+
+    public void PlayRightWingSlamEffect()
+    {
+        SpawnWingSlamEffect(rightWingSlamEffectPrefab, rightWingSlamEffectPoint);
+    }
+
+    private void SpawnWingSlamEffect(GameObject prefab, Transform spawnPoint)
+    {
+        if (prefab == null || spawnPoint == null)
+            return;
+
+        GameObject effect = Instantiate(
+            prefab,
+            spawnPoint.position,
+            prefab.transform.rotation
+        );
+
+        // Bone 밑에 붙지 않게 독립 오브젝트로 유지
+        effect.transform.SetParent(null);
+
+        effect.transform.localScale *= wingSlamEffectScale;
+
+        ParticleSystem[] particles =
+            effect.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem ps in particles)
+        {
+            ParticleSystem.MainModule main = ps.main;
+            main.simulationSpeed = wingSlamEffectSpeed;
+            ps.Play(true);
+        }
+
+        Destroy(effect, wingSlamEffectLifeTime);
     }
 }

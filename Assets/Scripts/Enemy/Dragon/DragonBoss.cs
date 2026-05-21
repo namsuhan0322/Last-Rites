@@ -147,6 +147,10 @@ public class DragonBoss : Enemy
     [SerializeField] private GameObject chargeIndicatorPrefab;
     [Tooltip("돌진 준비 중 플레이어를 따라보는 회전 속도")]
     public float chargeTurnSpeed = 360f;
+    [Tooltip("돌진 장판 앞뒤 위치 보정")]
+    public float chargeIndicatorForwardOffset = 0f;
+    [Tooltip("Root Motion 돌진에 추가로 밀어주는 속도")]
+    public float chargeExtraMoveSpeed = 0f;
 
 
 
@@ -160,6 +164,14 @@ public class DragonBoss : Enemy
     public float wingSlamEffectScale = 2f;
     public float wingSlamEffectSpeed = 0.5f;
     public float wingSlamEffectLifeTime = 3f;
+    [Header("꼬리 공격 이펙트")]
+    [SerializeField] private GameObject leftTailAttackEffectPrefab;
+    [SerializeField] private GameObject rightTailAttackEffectPrefab;
+    [SerializeField] private Transform leftTailAttackEffectPoint;
+    [SerializeField] private Transform rightTailAttackEffectPoint;
+    public float tailAttackEffectScale = 2f;
+    public float tailAttackEffectSpeed = 0.5f;
+    public float tailAttackEffectLifeTime = 3f;
 
 
 
@@ -1518,6 +1530,7 @@ public class DragonBoss : Enemy
         SpawnWingSlamEffect(rightWingSlamEffectPrefab, rightWingSlamEffectPoint);
     }
 
+    //날개 이펙트
     private void SpawnWingSlamEffect(GameObject prefab, Transform spawnPoint)
     {
         if (prefab == null || spawnPoint == null)
@@ -1529,7 +1542,6 @@ public class DragonBoss : Enemy
             prefab.transform.rotation
         );
 
-        // Bone 밑에 붙지 않게 독립 오브젝트로 유지
         effect.transform.SetParent(null);
 
         effect.transform.localScale *= wingSlamEffectScale;
@@ -1545,5 +1557,44 @@ public class DragonBoss : Enemy
         }
 
         Destroy(effect, wingSlamEffectLifeTime);
+    }
+
+    public void PlayLeftTailAttackEffect()
+    {
+        SpawnTailAttackEffect(leftTailAttackEffectPrefab, leftTailAttackEffectPoint);
+    }
+
+    public void PlayRightTailAttackEffect()
+    {
+        SpawnTailAttackEffect(rightTailAttackEffectPrefab, rightTailAttackEffectPoint);
+    }
+
+    //꼬리 이펙트
+    private void SpawnTailAttackEffect(GameObject prefab, Transform spawnPoint)
+    {
+        if (prefab == null || spawnPoint == null)
+            return;
+
+        GameObject effect = Instantiate(
+            prefab,
+            spawnPoint.position,
+            prefab.transform.rotation
+        );
+
+        effect.transform.SetParent(null);
+
+        effect.transform.localScale *= tailAttackEffectScale;
+
+        ParticleSystem[] particles =
+            effect.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem ps in particles)
+        {
+            ParticleSystem.MainModule main = ps.main;
+            main.simulationSpeed = tailAttackEffectSpeed;
+            ps.Play(true);
+        }
+
+        Destroy(effect, tailAttackEffectLifeTime);
     }
 }

@@ -101,6 +101,9 @@ public partial class DragonChargeAttackAction : Action
         // 2단계: 돌진 애니 진행 중
         if (phase == 2)
         {
+            boss.transform.position +=
+                boss.transform.forward * boss.chargeExtraMoveSpeed * Time.deltaTime;
+
             CheckChargeHit();
 
             if (timer >= boss.chargeDuration)
@@ -137,15 +140,16 @@ public partial class DragonChargeAttackAction : Action
         Quaternion targetRot = Quaternion.LookRotation(dir.normalized);
 
         boss.transform.rotation = Quaternion.RotateTowards(
-     boss.transform.rotation,
-     targetRot,
-     boss.chargeTurnSpeed * Time.deltaTime
- );
+            boss.transform.rotation,
+            targetRot,
+            boss.chargeTurnSpeed * Time.deltaTime
+        );
 
         if (indicator != null)
         {
             Vector3 forwardOffset =
-                boss.transform.forward * (boss.chargeDistance * 0.5f);
+                boss.transform.forward *
+                ((boss.chargeDistance * 0.5f) + boss.chargeIndicatorForwardOffset);
 
             indicator.transform.position =
                 boss.transform.position + forwardOffset;

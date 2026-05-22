@@ -173,6 +173,19 @@ public class DragonBoss : Enemy
     [SerializeField] private LayerMask meteorGroundLayer;
     [Header("메테오 착지 보정")]
     public float meteorLandForwardOffset = 1.5f;
+    [Header("점프 착지 충격파")]
+    public int jumpImpactWaveCount = 3;
+    public float jumpImpactWaveInterval = 0.4f;
+    public float jumpImpactWaveRadius1 = 4f;
+    public float jumpImpactWaveRadius2 = 7f;
+    public float jumpImpactWaveRadius3 = 10f;
+    public float jumpImpactWaveEffectScale1 = 1f;
+    public float jumpImpactWaveEffectScale2 = 1.5f;
+    public float jumpImpactWaveEffectScale3 = 2f;
+    [Header("메테오 콤보 착지 이펙트")]
+    public float meteorComboImpactEffectSpeed = 3f;
+    [Header("메테오 전용 현자타임")]
+    public float meteorRecoveryTime = 6f;
 
 
 
@@ -1970,5 +1983,79 @@ public class DragonBoss : Enemy
         }
 
         Destroy(effect, meteorImpactEffectLifeTime);
+    }
+
+    public void StartJumpImpactWave(Vector3 center)
+    {
+        StartCoroutine(JumpImpactWaveRoutine(center));
+    }
+
+    private IEnumerator JumpImpactWaveRoutine(Vector3 center)
+    {
+        float[] radiuses =
+        {
+        jumpImpactWaveRadius1,
+        jumpImpactWaveRadius2,
+        jumpImpactWaveRadius3
+    };
+
+        float[] effectScales =
+        {
+        jumpImpactWaveEffectScale1,
+        jumpImpactWaveEffectScale2,
+        jumpImpactWaveEffectScale3
+    };
+
+        for (int i = 0; i < jumpImpactWaveCount; i++)
+        {
+            float radius = radiuses[i];
+            float effectScale = effectScales[i];
+
+            DoJumpWaveDamage(center, radius);
+            PlayMeteorComboImpactEffect(center, effectScale);
+
+            if (i < jumpImpactWaveCount - 1)
+                yield return new WaitForSeconds(jumpImpactWaveInterval);
+        }
+    }
+
+    private void DoJumpWaveDamage(Vector3 center, float radius)
+    {
+        Collider[] hits = Physics.OverlapSphere(
+            center,
+            radius,
+            targetLayer
+        );
+
+        foreach (Collider hit in hits)
+        {
+            Actor target = hit.GetComponentInParent<Actor>();
+
+            if (target == null)
+                continue;
+
+            if (target == this)
+                continue;
+
+            target.TakeDamage(jumpDamage);
+        }
+    }
+
+    public void PlayMeteorComboImpactEffect(
+    Vector3 position,
+    float customScale)
+    {
+        SpawnEffectOnGround(
+            jumpLandImpactEffectPrefab,
+            position,
+            jumpLandImpactEffectScale * customScale,
+            meteorComboImpactEffectSpeed,
+            jumpLandImpactEffectLifeTime
+        );
+    }
+
+    public void StartMeteorRecovery()
+    {
+        globalAttackRecoveryTimer = meteorRecoveryTime;
     }
 }

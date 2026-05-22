@@ -158,9 +158,7 @@ public partial class DragonMeteorAttackAction : Action
             if (!damageDone && t >= 0.85f)
             {
                 damageDone = true;
-
-                boss.DoJumpDamage(landPos);
-                boss.PlayJumpLandImpactEffect(landPos);
+                boss.StartJumpImpactWave(landPos);
             }
 
             if (t >= 1f)
@@ -171,7 +169,7 @@ public partial class DragonMeteorAttackAction : Action
                 boss.AnimatorApplyRootMotion(false);
 
                 boss.StartMeteorCooldown();
-                boss.StartGlobalAttackRecovery();
+                boss.StartMeteorRecovery();
 
                 boss.Idle();
                 boss.SetBTActionPlaying(false);

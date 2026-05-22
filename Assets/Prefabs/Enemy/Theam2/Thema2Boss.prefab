@@ -6804,7 +6804,17 @@ MonoBehaviour:
   meteorGroundLayer:
     serializedVersion: 2
     m_Bits: 8
-  meteorLandForwardOffset: 1
+  meteorLandForwardOffset: 2.3
+  jumpImpactWaveCount: 3
+  jumpImpactWaveInterval: 1.7
+  jumpImpactWaveRadius1: 6
+  jumpImpactWaveRadius2: 8
+  jumpImpactWaveRadius3: 10
+  jumpImpactWaveEffectScale1: 1
+  jumpImpactWaveEffectScale2: 1.3
+  jumpImpactWaveEffectScale3: 1.7
+  meteorComboImpactEffectSpeed: 1.5
+  meteorRecoveryTime: 6
   leftWingSlamEffectPrefab: {fileID: 1714461283400591064, guid: 142c5b29b572efe42aefb18baa725269,
     type: 3}
   rightWingSlamEffectPrefab: {fileID: 830516002863052490, guid: a8e7990032a2aa14c9da072472c3415c,

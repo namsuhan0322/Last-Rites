@@ -171,6 +171,8 @@ public class DragonBoss : Enemy
     public float meteorWarningTime = 1f;
     [Header("메테오 바닥 체크")]
     [SerializeField] private LayerMask meteorGroundLayer;
+    [Header("메테오 착지 보정")]
+    public float meteorLandForwardOffset = 1.5f;
 
 
 
@@ -745,6 +747,8 @@ public class DragonBoss : Enemy
 
     public void PlaySkyLoop()
     {
+        animator.ResetTrigger("FlyUp");
+        animator.ResetTrigger("SkyLoop");
         animator.SetTrigger("SkyLoop");
     }
 
@@ -1709,11 +1713,11 @@ public class DragonBoss : Enemy
     }
 
     private void SpawnEffectOnGround(
-        GameObject prefab,
-        Vector3 position,
-        float scale,
-        float speed,
-        float lifeTime)
+      GameObject prefab,
+      Vector3 position,
+      float scale,
+      float speed,
+      float lifeTime)
     {
         if (prefab == null)
             return;
@@ -1721,13 +1725,16 @@ public class DragonBoss : Enemy
         Vector3 spawnPos = position;
 
         if (Physics.Raycast(
-            position + Vector3.up * 5f,
+            position + Vector3.up * 10f,
             Vector3.down,
             out RaycastHit hit,
-            20f))
+            50f,
+            meteorGroundLayer))
         {
             spawnPos = hit.point;
         }
+
+        spawnPos.y += 0.05f;
 
         GameObject effect = Instantiate(
             prefab,

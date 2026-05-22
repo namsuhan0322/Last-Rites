@@ -186,6 +186,13 @@ public class DragonBoss : Enemy
     public float jumpLandImpactEffectScale = 4f;
     public float jumpLandImpactEffectSpeed = 0.6f;
     public float jumpLandImpactEffectLifeTime = 4f;
+    [Header("포효 이펙트")]
+    [SerializeField] private GameObject roarEffectPrefab;
+    public float roarEffectScale = 4f;
+    public float roarEffectSpeed = 0.6f;
+    public float roarEffectLifeTime = 4f;
+    [Header("이펙트 바닥 체크")]
+    [SerializeField] private LayerMask groundLayer;
 
 
 
@@ -1713,5 +1720,44 @@ public class DragonBoss : Enemy
         }
 
         Destroy(effect, lifeTime);
+    }
+    //포효하기 fbx
+    public void PlayRoarEffect()
+    {
+        if (roarEffectPrefab == null)
+            return;
+
+        Vector3 spawnPos = transform.position;
+
+        if (Physics.Raycast(
+            transform.position + Vector3.up * 5f,
+            Vector3.down,
+            out RaycastHit hit,
+            30f,
+            groundLayer))
+        {
+            spawnPos = hit.point;
+        }
+
+        GameObject effect = Instantiate(
+            roarEffectPrefab,
+            spawnPos,
+            roarEffectPrefab.transform.rotation
+        );
+
+        effect.transform.SetParent(null);
+        effect.transform.localScale *= roarEffectScale;
+
+        ParticleSystem[] particles =
+            effect.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem ps in particles)
+        {
+            ParticleSystem.MainModule main = ps.main;
+            main.simulationSpeed = roarEffectSpeed;
+            ps.Play(true);
+        }
+
+        Destroy(effect, roarEffectLifeTime);
     }
 }

@@ -90,6 +90,7 @@ public partial class DragonChargeAttackAction : Action
                 timer = 0f;
                 phase = 2;
 
+                boss.SetManualMoveMode(true);
                 boss.PlayCharge();
 
                 return Status.Running;
@@ -101,13 +102,12 @@ public partial class DragonChargeAttackAction : Action
         // 2단계: 돌진 애니 진행 중
         if (phase == 2)
         {
-            boss.transform.position +=
-                boss.transform.forward * boss.chargeExtraMoveSpeed * Time.deltaTime;
-
             CheckChargeHit();
 
             if (timer >= boss.chargeDuration)
             {
+                boss.SyncAgentToTransform();
+                boss.SetManualMoveMode(false);
                 boss.Idle();
 
                 boss.StartChargeCooldown();
@@ -120,7 +120,6 @@ public partial class DragonChargeAttackAction : Action
 
             return Status.Running;
         }
-
         return Status.Running;
     }
 
@@ -198,6 +197,8 @@ public partial class DragonChargeAttackAction : Action
 
         if (boss != null)
         {
+            boss.SyncAgentToTransform();
+            boss.SetManualMoveMode(false);
             boss.Idle();
             boss.SetBTActionPlaying(false);
         }

@@ -25,6 +25,7 @@ public partial class DragonMeteorAttackAction : Action
     private GameObject warningObj;
     private bool damageDone;
     private bool fallAnimPlayed;
+    private float groundY;
 
     protected override Status OnStart()
     {
@@ -46,11 +47,11 @@ public partial class DragonMeteorAttackAction : Action
         phase = 0;
         damageDone = false;
         fallAnimPlayed = false;
+        groundY = boss.transform.position.y;
 
         boss.SetBTActionPlaying(true);
         boss.StopMove();
         boss.SetManualMoveMode(true);
-        boss.AnimatorApplyRootMotion(true);
 
         boss.PlayFlyUp();
         boss.PlayJumpStartDustEffect();
@@ -65,22 +66,18 @@ public partial class DragonMeteorAttackAction : Action
 
         timer += Time.deltaTime;
 
-        // 0단계: FlyUp + 메테오 진행
         if (phase == 0)
         {
             if (timer >= boss.meteorDuration)
             {
                 phase = 1;
                 timer = 0f;
-
-                boss.AnimatorApplyRootMotion(false);
                 boss.PlaySkyLoop();
             }
 
             return Status.Running;
         }
 
-        // 1단계: SkyLoop 유지 후 착지 위치 정하기
         if (phase == 1)
         {
             if (timer >= boss.skyLoopTime)
@@ -93,12 +90,7 @@ public partial class DragonMeteorAttackAction : Action
                     return Status.Failure;
 
                 landPos = target.position;
-
-                // 보스가 뒤로 밀려 보이면 착지 목표를 보스 앞쪽으로 보정
-                landPos += boss.transform.forward * boss.meteorLandForwardOffset;
-
-                // 바닥 높이 고정
-                landPos.y = 0f;
+                landPos.y = groundY;
 
                 warningObj = boss.CreateJumpWarning(landPos);
             }
@@ -106,7 +98,6 @@ public partial class DragonMeteorAttackAction : Action
             return Status.Running;
         }
 
-        // 2단계: 위험장판 표시
         if (phase == 2)
         {
             if (timer >= boss.warningShowTime)
@@ -121,7 +112,6 @@ public partial class DragonMeteorAttackAction : Action
             return Status.Running;
         }
 
-        // 3단계: 장판 사라진 후 짧은 딜레이
         if (phase == 3)
         {
             if (timer >= boss.afterWarningDelay)
@@ -132,21 +122,17 @@ public partial class DragonMeteorAttackAction : Action
                 fallAnimPlayed = false;
                 damageDone = false;
 
-                // 내려찍기 시작 위치만 현재 공중 위치로 저장
                 fallStartPos = boss.transform.position;
             }
 
             return Status.Running;
         }
 
-        // 4단계: 내려찍을 때만 보스 몸 이동
         if (phase == 4)
         {
             if (!fallAnimPlayed && timer >= boss.fallAnimDelay)
             {
                 fallAnimPlayed = true;
-
-                boss.AnimatorApplyRootMotion(false); // 추가
                 boss.PlayJumpFall();
             }
 
@@ -166,7 +152,6 @@ public partial class DragonMeteorAttackAction : Action
                 boss.transform.position = landPos;
 
                 boss.SetManualMoveMode(false);
-                boss.AnimatorApplyRootMotion(false);
 
                 boss.StartMeteorCooldown();
                 boss.StartMeteorRecovery();
@@ -190,7 +175,6 @@ public partial class DragonMeteorAttackAction : Action
 
         if (boss != null)
         {
-            boss.AnimatorApplyRootMotion(false);
             boss.SetManualMoveMode(false);
             boss.Idle();
             boss.SetBTActionPlaying(false);

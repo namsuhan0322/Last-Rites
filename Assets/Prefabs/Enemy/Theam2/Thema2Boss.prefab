@@ -6688,7 +6688,7 @@ MonoBehaviour:
   attackDamage: 0
   attackTimer: 0
   phase2HpRate: 0.4
-  testMeteorOnly: 1
+  testMeteorOnly: 0
   combatIdleTime: 3.6
   turnSpeed: 32.5
   turnDuration: 2.45
@@ -6807,9 +6807,9 @@ MonoBehaviour:
   meteorLandForwardOffset: 2.3
   jumpImpactWaveCount: 3
   jumpImpactWaveInterval: 1.7
-  jumpImpactWaveRadius1: 6
-  jumpImpactWaveRadius2: 8
-  jumpImpactWaveRadius3: 10
+  jumpImpactWaveRadius1: 8
+  jumpImpactWaveRadius2: 12
+  jumpImpactWaveRadius3: 14
   jumpImpactWaveEffectScale1: 1
   jumpImpactWaveEffectScale2: 1.3
   jumpImpactWaveEffectScale3: 1.7
@@ -6819,8 +6819,8 @@ MonoBehaviour:
     type: 3}
   rightWingSlamEffectPrefab: {fileID: 830516002863052490, guid: a8e7990032a2aa14c9da072472c3415c,
     type: 3}
-  leftWingSlamEffectPoint: {fileID: 4751967211330099810}
-  rightWingSlamEffectPoint: {fileID: 3628389466205212232}
+  leftWingSlamEffectPoint: {fileID: 5120591903489749130}
+  rightWingSlamEffectPoint: {fileID: 570244788887817373}
   wingSlamEffectScale: 3.67
   wingSlamEffectSpeed: 0.32
   wingSlamEffectLifeTime: 5

@@ -171,8 +171,6 @@ public class DragonBoss : Enemy
     public float meteorWarningTime = 1f;
     [Header("메테오 바닥 체크")]
     [SerializeField] private LayerMask meteorGroundLayer;
-    [Header("메테오 착지 보정")]
-    public float meteorLandForwardOffset = 1.5f;
     [Header("점프 착지 충격파")]
     public int jumpImpactWaveCount = 3;
     public float jumpImpactWaveInterval = 0.4f;
@@ -1354,6 +1352,233 @@ public class DragonBoss : Enemy
         return indicator;
     }
 
+    //메테오를 할수있나?
+    public bool CanMeteor()
+    {
+        if (testMeteorOnly)
+            return meteorCooldownTimer <= 0f;
+
+        return isPhase2 && meteorCooldownTimer <= 0f;
+    }
+
+    //메테오 쿨타임
+    public void StartMeteorCooldown()
+    {
+        meteorCooldownTimer = meteorCooldown;
+    }
+
+    //날기
+    public void PlayFlyUp()
+    {
+        animator.ResetTrigger("FlyUp");
+        animator.SetTrigger("FlyUp");
+    }
+
+    //메테오 소환
+    private IEnumerator MeteorWarningSpawnRoutine()
+    {
+        for (int i = 0; i < meteorSpawnMaxCount; i++)
+        {
+            Vector3 pos = GetRandomMeteorPosition();
+            StartCoroutine(MeteorStrikeRoutine(pos));
+
+            yield return new WaitForSeconds(meteorDamageInterval);
+        }
+    }
+
+    //메테오 소환 이펙트
+ 
+
+    public IEnumerator MeteorStrikeRoutine(Vector3 position)
+    {
+        GameObject warning = null;
+
+        if (meteorWarningPrefab != null)
+        {
+            Vector3 warningPos = position;
+            warningPos.y += 0.1f;
+
+            warning = Instantiate(
+                meteorWarningPrefab,
+                warningPos,
+                meteorWarningPrefab.transform.rotation
+            );
+
+            float size = meteorHitRadius * 2f;
+
+            warning.transform.localScale =
+                new Vector3(size, size, 1f);
+        }
+
+        yield return new WaitForSeconds(meteorWarningTime);
+
+        if (warning != null)
+            Destroy(warning);
+
+        PlayMeteorImpactEffect(position);
+
+        Collider[] hits = Physics.OverlapSphere(
+            position,
+            meteorHitRadius,
+            targetLayer
+        );
+
+        foreach (Collider hit in hits)
+        {
+            Actor target = hit.GetComponentInParent<Actor>();
+
+            if (target == null || target == this)
+                continue;
+
+            target.TakeDamage(meteorDamage);
+        }
+    }
+
+    //메테오 위치 랜덤 
+    public Vector3 GetRandomMeteorPosition()
+    {
+        Vector2 randomCircle = UnityEngine.Random.insideUnitCircle * meteorRadius;
+
+        Vector3 pos = transform.position + new Vector3(
+            randomCircle.x,
+            0f,
+            randomCircle.y
+        );
+
+        Vector3 rayStart = pos + Vector3.up * 50f;
+
+        if (Physics.Raycast(
+            rayStart,
+            Vector3.down,
+            out RaycastHit hit,
+            100f,
+            meteorGroundLayer))
+        {
+            pos = hit.point;
+        }
+
+        return pos;
+    }
+
+    //메테오 이펙트 
+    private void PlayMeteorImpactEffect(Vector3 position)
+    {
+        if (meteorImpactEffectPrefab == null)
+            return;
+
+        Vector3 spawnPos = position;
+        spawnPos.y += 0.05f;
+
+        GameObject effect = Instantiate(
+            meteorImpactEffectPrefab,
+            spawnPos,
+            meteorImpactEffectPrefab.transform.rotation
+        );
+
+        effect.transform.SetParent(null);
+
+        effect.transform.localScale *= meteorImpactEffectScale;
+
+        ParticleSystem[] particles =
+            effect.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem ps in particles)
+        {
+            ParticleSystem.MainModule main = ps.main;
+            main.simulationSpeed = meteorImpactEffectSpeed;
+            ps.Play(true);
+        }
+
+        Destroy(effect, meteorImpactEffectLifeTime);
+    }
+
+    public void StartJumpImpactWave(Vector3 center)
+    {
+        StartCoroutine(JumpImpactWaveRoutine(center));
+    }
+
+    //3단 장판 터짐 코드
+    private IEnumerator JumpImpactWaveRoutine(Vector3 center)
+    {
+        float[] radiuses =
+        {
+        jumpImpactWaveRadius1,
+        jumpImpactWaveRadius2,
+        jumpImpactWaveRadius3
+    };
+
+        float[] effectScales =
+        {
+        jumpImpactWaveEffectScale1,
+        jumpImpactWaveEffectScale2,
+        jumpImpactWaveEffectScale3
+    };
+
+        for (int i = 0; i < jumpImpactWaveCount; i++)
+        {
+            float radius = radiuses[i];
+            float effectScale = effectScales[i];
+
+            DoJumpWaveDamage(center, radius);
+            PlayMeteorComboImpactEffect(center, effectScale);
+
+            if (i < jumpImpactWaveCount - 1)
+                yield return new WaitForSeconds(jumpImpactWaveInterval);
+        }
+    }
+
+    private void DoJumpWaveDamage(Vector3 center, float radius)
+    {
+        Collider[] hits = Physics.OverlapSphere(
+            center,
+            radius,
+            targetLayer
+        );
+
+        foreach (Collider hit in hits)
+        {
+            Actor target = hit.GetComponentInParent<Actor>();
+
+            if (target == null)
+                continue;
+
+            if (target == this)
+                continue;
+
+            target.TakeDamage(jumpDamage);
+        }
+    }
+
+    // 이펙트 콤보
+    public void PlayMeteorComboImpactEffect(
+    Vector3 position,
+    float customScale)
+    {
+        SpawnEffectOnGround(
+            jumpLandImpactEffectPrefab,
+            position,
+            jumpLandImpactEffectScale * customScale,
+            meteorComboImpactEffectSpeed,
+            jumpLandImpactEffectLifeTime
+        );
+    }
+
+    public void StartMeteorRecovery()
+    {
+        globalAttackRecoveryTimer = meteorRecoveryTime;
+    }
+
+    public void SyncAgentToTransform()
+    {
+        if (agent == null || !agent.enabled)
+            return;
+
+        if (NavMesh.SamplePosition(transform.position, out NavMeshHit hit, 3f, NavMesh.AllAreas))
+        {
+            agent.Warp(hit.position);
+        }
+    }
+
 
     //죽음
     public override void TakeDamage(
@@ -1810,25 +2035,7 @@ public class DragonBoss : Enemy
         Destroy(effect, roarEffectLifeTime);
     }
 
-    public bool CanMeteor()
-    {
-        if (testMeteorOnly)
-            return meteorCooldownTimer <= 0f;
-
-        return isPhase2 && meteorCooldownTimer <= 0f;
-    }
-
-    public void StartMeteorCooldown()
-    {
-        meteorCooldownTimer = meteorCooldown;
-    }
-
-    public void PlayFlyUp()
-    {
-        animator.ResetTrigger("FlyUp");
-        animator.SetTrigger("FlyUp");
-    }
-
+    //메테오 이펙트 
     public void PlayMeteorEffect()
     {
         SpawnMeteorEffect();
@@ -1840,17 +2047,8 @@ public class DragonBoss : Enemy
 
         StartCoroutine(MeteorWarningSpawnRoutine());
     }
+    //메테오 이펙트
 
-    private IEnumerator MeteorWarningSpawnRoutine()
-    {
-        for (int i = 0; i < meteorSpawnMaxCount; i++)
-        {
-            Vector3 pos = GetRandomMeteorPosition();
-            StartCoroutine(MeteorStrikeRoutine(pos));
-
-            yield return new WaitForSeconds(meteorDamageInterval);
-        }
-    }
     private GameObject SpawnMeteorEffect()
     {
         if (meteorEffectPrefab == null)
@@ -1878,184 +2076,5 @@ public class DragonBoss : Enemy
         Destroy(effect, meteorEffectLifeTime);
 
         return effect;
-    }
-
-    public IEnumerator MeteorStrikeRoutine(Vector3 position)
-    {
-        GameObject warning = null;
-
-        if (meteorWarningPrefab != null)
-        {
-            Vector3 warningPos = position;
-            warningPos.y += 0.1f;
-
-            warning = Instantiate(
-                meteorWarningPrefab,
-                warningPos,
-                meteorWarningPrefab.transform.rotation
-            );
-
-            float size = meteorHitRadius * 2f;
-
-            warning.transform.localScale =
-                new Vector3(size, size, 1f);
-        }
-
-        yield return new WaitForSeconds(meteorWarningTime);
-
-        if (warning != null)
-            Destroy(warning);
-
-        PlayMeteorImpactEffect(position);
-
-        Collider[] hits = Physics.OverlapSphere(
-            position,
-            meteorHitRadius,
-            targetLayer
-        );
-
-        foreach (Collider hit in hits)
-        {
-            Actor target = hit.GetComponentInParent<Actor>();
-
-            if (target == null || target == this)
-                continue;
-
-            target.TakeDamage(meteorDamage);
-        }
-    }
-
-    public Vector3 GetRandomMeteorPosition()
-    {
-        Vector2 randomCircle = UnityEngine.Random.insideUnitCircle * meteorRadius;
-
-        Vector3 pos = transform.position + new Vector3(
-            randomCircle.x,
-            0f,
-            randomCircle.y
-        );
-
-        Vector3 rayStart = pos + Vector3.up * 50f;
-
-        if (Physics.Raycast(
-            rayStart,
-            Vector3.down,
-            out RaycastHit hit,
-            100f,
-            meteorGroundLayer))
-        {
-            pos = hit.point;
-        }
-
-        return pos;
-    }
-
-    public void AnimatorApplyRootMotion(bool value)
-    {
-        animator.applyRootMotion = value;
-    }
-    private void PlayMeteorImpactEffect(Vector3 position)
-    {
-        if (meteorImpactEffectPrefab == null)
-            return;
-
-        Vector3 spawnPos = position;
-        spawnPos.y += 0.05f;
-
-        GameObject effect = Instantiate(
-            meteorImpactEffectPrefab,
-            spawnPos,
-            meteorImpactEffectPrefab.transform.rotation
-        );
-
-        effect.transform.SetParent(null);
-
-        effect.transform.localScale *= meteorImpactEffectScale;
-
-        ParticleSystem[] particles =
-            effect.GetComponentsInChildren<ParticleSystem>(true);
-
-        foreach (ParticleSystem ps in particles)
-        {
-            ParticleSystem.MainModule main = ps.main;
-            main.simulationSpeed = meteorImpactEffectSpeed;
-            ps.Play(true);
-        }
-
-        Destroy(effect, meteorImpactEffectLifeTime);
-    }
-
-    public void StartJumpImpactWave(Vector3 center)
-    {
-        StartCoroutine(JumpImpactWaveRoutine(center));
-    }
-
-    private IEnumerator JumpImpactWaveRoutine(Vector3 center)
-    {
-        float[] radiuses =
-        {
-        jumpImpactWaveRadius1,
-        jumpImpactWaveRadius2,
-        jumpImpactWaveRadius3
-    };
-
-        float[] effectScales =
-        {
-        jumpImpactWaveEffectScale1,
-        jumpImpactWaveEffectScale2,
-        jumpImpactWaveEffectScale3
-    };
-
-        for (int i = 0; i < jumpImpactWaveCount; i++)
-        {
-            float radius = radiuses[i];
-            float effectScale = effectScales[i];
-
-            DoJumpWaveDamage(center, radius);
-            PlayMeteorComboImpactEffect(center, effectScale);
-
-            if (i < jumpImpactWaveCount - 1)
-                yield return new WaitForSeconds(jumpImpactWaveInterval);
-        }
-    }
-
-    private void DoJumpWaveDamage(Vector3 center, float radius)
-    {
-        Collider[] hits = Physics.OverlapSphere(
-            center,
-            radius,
-            targetLayer
-        );
-
-        foreach (Collider hit in hits)
-        {
-            Actor target = hit.GetComponentInParent<Actor>();
-
-            if (target == null)
-                continue;
-
-            if (target == this)
-                continue;
-
-            target.TakeDamage(jumpDamage);
-        }
-    }
-
-    public void PlayMeteorComboImpactEffect(
-    Vector3 position,
-    float customScale)
-    {
-        SpawnEffectOnGround(
-            jumpLandImpactEffectPrefab,
-            position,
-            jumpLandImpactEffectScale * customScale,
-            meteorComboImpactEffectSpeed,
-            jumpLandImpactEffectLifeTime
-        );
-    }
-
-    public void StartMeteorRecovery()
-    {
-        globalAttackRecoveryTimer = meteorRecoveryTime;
     }
 }

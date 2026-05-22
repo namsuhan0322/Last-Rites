@@ -91,6 +91,15 @@ public class WeaponHitbox : MonoBehaviour
             enemy.TakeDamage(_damage);
             _hitActors.Add(enemy);
             PlayHitSound(enemy.transform.position);
+
+            Vector3 effectPos = other.ClosestPoint(transform.position);
+            if (Camera.main != null)
+            {
+                Vector3 dirToCamera = (Camera.main.transform.position - effectPos).normalized;
+                effectPos += dirToCamera * 0.5f;
+            }
+
+            EffectManager.Instance.PlayEffect("Hit", effectPos, Quaternion.identity);
         }
     }
 

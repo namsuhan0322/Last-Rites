@@ -79,13 +79,23 @@ public class ScenesManager : SingletonMono<ScenesManager>
         AsyncOperation op = SceneManager.LoadSceneAsync(targetScene);
         op.allowSceneActivation = false;
 
+        bool hasActivated = false;
+
         while (!op.isDone)
         {
-            LoadingProgress = Mathf.Clamp01(op.progress / 0.9f);
-
-            if (op.progress >= 0.9f)
+            if (!hasActivated)
             {
+                LoadingProgress = Mathf.Clamp01((op.progress / 0.9f) * 0.99f);
+            }
+
+            if (op.progress >= 0.9f && !hasActivated)
+            {
+                hasActivated = true;
+
                 LoadingProgress = 1f;
+
+                yield return new WaitForSeconds(0.3f);
+
                 if (useFadeEffect) yield return StartCoroutine(FadeIn());
 
                 op.allowSceneActivation = true;
@@ -185,9 +195,16 @@ public class ScenesManager : SingletonMono<ScenesManager>
     {
         currentSceneName = scene.name;
 
-        if (scene.name != loadingSceneName) GameEvents.SceneChanged(currentSceneName);
+        try
+        {
+            if (scene.name != loadingSceneName) GameEvents.SceneChanged(currentSceneName);
+            PlaySceneBGM(scene.name);
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError($"[ScenesManager] 씬 로드 이벤트 중 에러 발생 (로딩은 계속 진행됨): {e.Message}");
+        }
 
-        PlaySceneBGM(scene.name);
         Debug.Log($"씬 로드 : {scene.name}");
 
         if (scene.name != loadingSceneName)

@@ -6,6 +6,8 @@ public class DragonBoss : Enemy
     [Header("2페이즈")]
     [SerializeField] private float phase2HpRate = 0.4f;
 
+    [Header("테스트")]
+    public bool testMeteorOnly = false;
 
     [Header("스킬후 공통 현타시간")]
     public float combatIdleTime = 2f;
@@ -152,6 +154,24 @@ public class DragonBoss : Enemy
     [Tooltip("Root Motion 돌진에 추가로 밀어주는 속도")]
     public float chargeExtraMoveSpeed = 0f;
 
+    [Header("2페이즈 메테오 스킬")]
+    public float meteorDuration = 5f;
+    public float meteorCooldown = 18f;
+    public float meteorDamageInterval = 0.4f;
+    public float meteorRadius = 18f;
+    public float meteorHitRadius = 2.5f;
+    public int meteorDamage = 35;
+    [SerializeField] private GameObject meteorEffectPrefab;
+    public float meteorEffectScale = 1f;
+    public float meteorEffectSpeed = 0.6f;
+    public float meteorEffectLifeTime = 6f;
+    public int meteorSpawnMaxCount = 8;
+    [Header("메테오 경고")]
+    [SerializeField] private GameObject meteorWarningPrefab;
+    public float meteorWarningTime = 1f;
+    [Header("메테오 바닥 체크")]
+    [SerializeField] private LayerMask meteorGroundLayer;
+
 
 
 
@@ -193,6 +213,12 @@ public class DragonBoss : Enemy
     public float roarEffectLifeTime = 4f;
     [Header("이펙트 바닥 체크")]
     [SerializeField] private LayerMask groundLayer;
+    [Header("메테오 착탄 폭발 이펙트")]
+    [SerializeField] private GameObject meteorImpactEffectPrefab;
+    public float meteorImpactEffectScale = 1f;
+    public float meteorImpactEffectSpeed = 0.6f;
+    public float meteorImpactEffectLifeTime = 3f;
+
 
 
 
@@ -234,6 +260,7 @@ public class DragonBoss : Enemy
     private int currentBreathChargeEventIndex = 0;
     private bool isBTActionPlaying = false;
     private float chargeCooldownTimer = 0f;
+    private float meteorCooldownTimer = 0f;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -316,6 +343,8 @@ public class DragonBoss : Enemy
         if (chargeCooldownTimer > 0f)
             chargeCooldownTimer -= Time.deltaTime;
 
+        if (meteorCooldownTimer > 0f)
+            meteorCooldownTimer -= Time.deltaTime;
 
     }
 
@@ -1759,5 +1788,180 @@ public class DragonBoss : Enemy
         }
 
         Destroy(effect, roarEffectLifeTime);
+    }
+
+    public bool CanMeteor()
+    {
+        if (testMeteorOnly)
+            return meteorCooldownTimer <= 0f;
+
+        return isPhase2 && meteorCooldownTimer <= 0f;
+    }
+
+    public void StartMeteorCooldown()
+    {
+        meteorCooldownTimer = meteorCooldown;
+    }
+
+    public void PlayFlyUp()
+    {
+        animator.ResetTrigger("FlyUp");
+        animator.SetTrigger("FlyUp");
+    }
+
+    public void PlayMeteorEffect()
+    {
+        SpawnMeteorEffect();
+    }
+
+    public void PlayMeteorEvent()
+    {
+        PlayMeteorEffect();
+
+        StartCoroutine(MeteorWarningSpawnRoutine());
+    }
+
+    private IEnumerator MeteorWarningSpawnRoutine()
+    {
+        for (int i = 0; i < meteorSpawnMaxCount; i++)
+        {
+            Vector3 pos = GetRandomMeteorPosition();
+            StartCoroutine(MeteorStrikeRoutine(pos));
+
+            yield return new WaitForSeconds(meteorDamageInterval);
+        }
+    }
+    private GameObject SpawnMeteorEffect()
+    {
+        if (meteorEffectPrefab == null)
+            return null;
+
+        GameObject effect = Instantiate(
+            meteorEffectPrefab,
+            transform.position,
+            meteorEffectPrefab.transform.rotation
+        );
+
+        effect.transform.SetParent(null);
+        effect.transform.localScale *= meteorEffectScale;
+
+        ParticleSystem[] particles =
+            effect.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem ps in particles)
+        {
+            ParticleSystem.MainModule main = ps.main;
+            main.simulationSpeed = meteorEffectSpeed;
+            ps.Play(true);
+        }
+
+        Destroy(effect, meteorEffectLifeTime);
+
+        return effect;
+    }
+
+    public IEnumerator MeteorStrikeRoutine(Vector3 position)
+    {
+        GameObject warning = null;
+
+        if (meteorWarningPrefab != null)
+        {
+            Vector3 warningPos = position;
+            warningPos.y += 0.1f;
+
+            warning = Instantiate(
+                meteorWarningPrefab,
+                warningPos,
+                meteorWarningPrefab.transform.rotation
+            );
+
+            float size = meteorHitRadius * 2f;
+
+            warning.transform.localScale =
+                new Vector3(size, size, 1f);
+        }
+
+        yield return new WaitForSeconds(meteorWarningTime);
+
+        if (warning != null)
+            Destroy(warning);
+
+        PlayMeteorImpactEffect(position);
+
+        Collider[] hits = Physics.OverlapSphere(
+            position,
+            meteorHitRadius,
+            targetLayer
+        );
+
+        foreach (Collider hit in hits)
+        {
+            Actor target = hit.GetComponentInParent<Actor>();
+
+            if (target == null || target == this)
+                continue;
+
+            target.TakeDamage(meteorDamage);
+        }
+    }
+
+    public Vector3 GetRandomMeteorPosition()
+    {
+        Vector2 randomCircle = UnityEngine.Random.insideUnitCircle * meteorRadius;
+
+        Vector3 pos = transform.position + new Vector3(
+            randomCircle.x,
+            0f,
+            randomCircle.y
+        );
+
+        Vector3 rayStart = pos + Vector3.up * 50f;
+
+        if (Physics.Raycast(
+            rayStart,
+            Vector3.down,
+            out RaycastHit hit,
+            100f,
+            meteorGroundLayer))
+        {
+            pos = hit.point;
+        }
+
+        return pos;
+    }
+
+    public void AnimatorApplyRootMotion(bool value)
+    {
+        animator.applyRootMotion = value;
+    }
+    private void PlayMeteorImpactEffect(Vector3 position)
+    {
+        if (meteorImpactEffectPrefab == null)
+            return;
+
+        Vector3 spawnPos = position;
+        spawnPos.y += 0.05f;
+
+        GameObject effect = Instantiate(
+            meteorImpactEffectPrefab,
+            spawnPos,
+            meteorImpactEffectPrefab.transform.rotation
+        );
+
+        effect.transform.SetParent(null);
+
+        effect.transform.localScale *= meteorImpactEffectScale;
+
+        ParticleSystem[] particles =
+            effect.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem ps in particles)
+        {
+            ParticleSystem.MainModule main = ps.main;
+            main.simulationSpeed = meteorImpactEffectSpeed;
+            ps.Play(true);
+        }
+
+        Destroy(effect, meteorImpactEffectLifeTime);
     }
 }

@@ -37,7 +37,7 @@ public class DragonBoss : Enemy
     public float biteCooldown = 2f;
     [SerializeField] private DragonAttackHitbox headHitbox;
 
-    [Header("날개 내려찍기 패턴")]
+    [Header("날개 슬램 패턴")]
     public float wingSlamRange = 7f;
     public float wingSlamDuration = 2f;
     public float wingSlamCooldown = 8f;
@@ -89,8 +89,19 @@ public class DragonBoss : Enemy
     public float fireBreathDuration = 4.5f;
     public GameObject breathPrefab;
     public Transform breathSpawnPoint;
-    public DragonAttackHitbox leftWingCrushHitbox;
-    public DragonAttackHitbox rightWingCrushHitbox;
+    [Header("날개 크러쉬 삼각형 판정")]
+    [SerializeField] private Transform leftWingCrushPoint;
+    [SerializeField] private Transform rightWingCrushPoint;
+    public float wingCrushTriangleLength = 8f;
+    public float wingCrushTriangleWidth = 6f;
+    public int wingCrushDamage = 40;
+    [Header("날개 크러쉬 이펙트")]
+    [SerializeField] private GameObject leftWingCrushEffectPrefab;
+    [SerializeField] private GameObject rightWingCrushEffectPrefab;
+
+    public float wingCrushEffectScale = 2f;
+    public float wingCrushEffectSpeed = 0.7f;
+    public float wingCrushEffectLifeTime = 3f;
 
     [Header("날개 스윙 + 물기 콤보")]
     public float wingSlamBiteComboDuration = 6f;
@@ -840,6 +851,94 @@ public class DragonBoss : Enemy
     {
         animator.ResetTrigger("FireBreath");
         animator.SetTrigger("FireBreath");
+    }
+    private void DoWingCrushTriangleDamage(Transform point)
+    {
+        if (point == null)
+            return;
+
+        Vector3 origin = point.position;
+
+        if (Physics.Raycast(
+            point.position,
+            Vector3.down,
+            out RaycastHit hit,
+            50f,
+            groundLayer))
+        {
+            origin = hit.point;
+        }
+
+        origin.y += 0.05f;
+
+        Vector3 forward = transform.forward;
+        forward.y = 0f;
+        forward.Normalize();
+
+        Vector3 right = transform.right;
+        right.y = 0f;
+        right.Normalize();
+
+        // 디버그 삼각형
+        Debug.DrawRay(origin, forward * wingCrushTriangleLength, Color.red, 2f);
+
+        Debug.DrawRay(
+            origin,
+            (forward * wingCrushTriangleLength) + (right * wingCrushTriangleWidth * 0.5f),
+            Color.green,
+            2f
+        );
+
+        Debug.DrawRay(
+            origin,
+            (forward * wingCrushTriangleLength) - (right * wingCrushTriangleWidth * 0.5f),
+            Color.green,
+            2f
+        );
+
+        Actor[] actors = FindObjectsByType<Actor>(FindObjectsSortMode.None);
+
+        foreach (Actor actor in actors)
+        {
+            if (actor == null || actor.IsDead)
+                continue;
+
+            if (actor == this)
+                continue;
+
+            if (((1 << actor.gameObject.layer) & targetLayer) == 0)
+                continue;
+
+            Collider col = actor.GetComponentInChildren<Collider>();
+            if (col == null)
+                continue;
+
+            Vector3 targetPos = col.bounds.center;
+            targetPos.y = origin.y;
+
+            Vector3 toTarget = targetPos - origin;
+
+            float z = Vector3.Dot(toTarget, forward);
+            float x = Vector3.Dot(toTarget, right);
+
+            if (z < 0f || z > wingCrushTriangleLength)
+                continue;
+
+            float widthAtZ = Mathf.Lerp(
+                0f,
+                wingCrushTriangleWidth * 0.5f,
+                z / wingCrushTriangleLength
+            );
+
+            bool isInside =
+                Mathf.Abs(x) <= widthAtZ;
+
+            if (isInside)
+            {
+                Debug.Log("날개 크러쉬 히트");
+                actor.TakeDamage(wingCrushDamage);
+            }
+        }
     }
 
     //브레스 소환
@@ -1694,33 +1793,6 @@ public class DragonBoss : Enemy
         rightWingHitbox.DisableHitbox();
     }
 
-    public void EnableLeftWingCrushHitbox()
-    {
-        leftWingCrushHitbox.EnableHitbox();
-    }
-
-    public void DisableLeftWingCrushHitbox()
-    {
-        leftWingCrushHitbox.DisableHitbox();
-    }
-
-    public void EnableRightWingCrushHitbox()
-    {
-        rightWingCrushHitbox.EnableHitbox();
-    }
-
-    public void DisableRightWingCrushHitbox()
-    {
-        rightWingCrushHitbox.DisableHitbox();
-    }
-
-    public void DisableAllWingCrushHitboxes()
-    {
-        leftWingCrushHitbox.DisableHitbox();
-        rightWingCrushHitbox.DisableHitbox();
-    }
-
-
     public void SetManualMoveMode(bool value)
     {
         if (agent != null)
@@ -1803,6 +1875,19 @@ public class DragonBoss : Enemy
     public void SetBTActionPlaying(bool value)
     {
         isBTActionPlaying = value;
+    }
+
+
+    public void DoLeftWingCrushImpact()
+    {
+        DoWingCrushTriangleDamage(leftWingCrushPoint);
+        SpawnWingCrushEffect(leftWingCrushEffectPrefab, leftWingCrushPoint);
+    }
+
+    public void DoRightWingCrushImpact()
+    {
+        DoWingCrushTriangleDamage(rightWingCrushPoint);
+        SpawnWingCrushEffect(rightWingCrushEffectPrefab, rightWingCrushPoint);
     }
 
     protected override bool IsRecovering()
@@ -2075,5 +2160,51 @@ public class DragonBoss : Enemy
         Destroy(effect, meteorEffectLifeTime);
 
         return effect;
+    }
+
+    private void SpawnWingCrushEffect(GameObject prefab, Transform point)
+    {
+        if (prefab == null || point == null)
+            return;
+
+        Vector3 spawnPos = point.position;
+
+        if (Physics.Raycast(
+            point.position,
+            Vector3.down,
+            out RaycastHit hit,
+            50f,
+            groundLayer))
+        {
+            spawnPos = hit.point;
+        }
+
+        spawnPos.y += 0.05f;
+
+        Vector3 forward = transform.forward;
+        forward.y = 0f;
+        forward.Normalize();
+
+        Quaternion rot = Quaternion.LookRotation(forward) * Quaternion.Euler(0f, -90f, 0f);
+        GameObject effect = Instantiate(
+            prefab,
+            spawnPos,
+            rot
+        );
+
+        effect.transform.SetParent(null);
+        effect.transform.localScale *= wingCrushEffectScale;
+
+        ParticleSystem[] particles =
+            effect.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem ps in particles)
+        {
+            ParticleSystem.MainModule main = ps.main;
+            main.simulationSpeed = wingCrushEffectSpeed;
+            ps.Play(true);
+        }
+
+        Destroy(effect, wingCrushEffectLifeTime);
     }
 }

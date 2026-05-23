@@ -57,8 +57,6 @@ public partial class DragonWingCrushBreathComboAction : Action
 
         firstLeft = UnityEngine.Random.Range(0, 2) == 0;
 
-        boss.DisableAllWingCrushHitboxes();
-
         return Status.Running;
     }
 
@@ -138,8 +136,6 @@ public partial class DragonWingCrushBreathComboAction : Action
 
         if (timer >= boss.wingCrushBreathDuration)
         {
-            boss.DisableAllWingCrushHitboxes();
-
             boss.StartWingCrushBreathComboCooldown();
             boss.StartGlobalAttackRecovery();
             boss.Idle();
@@ -153,7 +149,5 @@ public partial class DragonWingCrushBreathComboAction : Action
     protected override void OnEnd()
     {
         if (boss == null) return;
-
-        boss.DisableAllWingCrushHitboxes();
     }
 }

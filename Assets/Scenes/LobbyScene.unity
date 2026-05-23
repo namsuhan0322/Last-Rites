@@ -456,7 +456,6 @@ MonoBehaviour:
   bossStages:
   - {fileID: 11400000, guid: b2e9d6919c485ef4d8f0e410f0934c92, type: 2}
   - {fileID: 11400000, guid: e37619bd333894349a2a23c56c90cc77, type: 2}
-  - {fileID: 11400000, guid: 430b692320d146541b8a9cd3bafa5ead, type: 2}
   slotPrefab: {fileID: 252546855128590541, guid: 4292fadefde3fe9498d454fecd03e7f2,
     type: 3}
   slotContainer: {fileID: 2129080993}
@@ -7152,8 +7151,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::WeaponSlotUI
   allWeapons:
   - {fileID: 11400000, guid: ba6fba7b65ee8a24eb638b2fd717bf27, type: 2}
-  - {fileID: 11400000, guid: 6c15756d2d35e9845848ca5048e64bd1, type: 2}
-  - {fileID: 11400000, guid: 6cb1811f8116e0d4b9de4da0c76206b3, type: 2}
   - {fileID: 11400000, guid: 3415b4a6263562f4e81e694ffe2f5e8a, type: 2}
   weaponSlotPrefab: {fileID: 993752066788260362, guid: 0998e137f60cc1a4883ed3aad7114824,
     type: 3}
@@ -7504,6 +7501,11 @@ PrefabInstance:
       propertyPath: tabs.Array.data[4].targetPanel
       value: 
       objectReference: {fileID: 1310337115}
+    - target: {fileID: 3732504752516098346, guid: 010365170b6c67d43b4b82f0d185b1be,
+        type: 3}
+      propertyPath: tabs.Array.data[0].isImplemented
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3732504752516098346, guid: 010365170b6c67d43b4b82f0d185b1be,
         type: 3}
       propertyPath: tabs.Array.data[1].isImplemented

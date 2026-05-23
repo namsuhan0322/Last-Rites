@@ -274,7 +274,6 @@ public class DragonBoss : Enemy
     private bool isBTActionPlaying = false;
     private float chargeCooldownTimer = 0f;
     private float meteorCooldownTimer = 0f;
-
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
     {

@@ -88,6 +88,8 @@ public class TriangleMesh : MonoBehaviour
             yield return null;
         }
 
+        SoundManager.Instance.PlaySound("WolfFireballExplosion");
+
         int vfxCount = 30;
 
         for (int i = 0; i < vfxCount; i++)

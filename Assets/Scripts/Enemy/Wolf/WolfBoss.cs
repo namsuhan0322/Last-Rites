@@ -303,6 +303,8 @@ public class WolfBoss : Enemy
     bool isBreaking = false;
     Coroutine stunRoutineCoroutine;
     float comboAttackTimer = 0f;
+    private bool fireExplosionSoundPlayed;
+    private bool poisonExplosionSoundPlayed;
 
     int[] pattern = new int[] { 3, 4, 3, 4 };
     int patternIndex = 0;
@@ -741,6 +743,10 @@ public class WolfBoss : Enemy
     {
         if (isUsingSkill) yield break;
         isUsingSkill = true;
+
+        fireExplosionSoundPlayed = false;
+        poisonExplosionSoundPlayed = false;
+
         if (isPhaseChanging) yield break;
 
         hitActors.Clear(); 
@@ -858,70 +864,145 @@ public class WolfBoss : Enemy
     {
         float radius = 4f;
 
-        GameObject indicator = Instantiate(throwIndicatorPrefab, pos, Quaternion.Euler(-90f, 0f, 0f));
+        GameObject indicator = Instantiate(
+            throwIndicatorPrefab,
+            pos,
+            Quaternion.Euler(-90f, 0f, 0f)
+        );
+
         indicator.transform.localScale = Vector3.zero;
 
         SetIndicatorColor(indicator, Color.red);
 
-        StartCoroutine(GrowIndicator(indicator, radius, throwWarningTime));
+        StartCoroutine(
+            GrowIndicator(indicator, radius, throwWarningTime)
+        );
 
         yield return new WaitForSeconds(throwWarningTime);
 
         if (indicator != null)
             Destroy(indicator);
 
-        GameObject vfx = Instantiate(fireVFX, pos, Quaternion.identity);
+        // 추가
+        if (!fireExplosionSoundPlayed)
+        {
+            fireExplosionSoundPlayed = true;
+            PlayFireballExplosionSound();
+        }
+
+        GameObject vfx = Instantiate(
+            fireVFX,
+            pos,
+            Quaternion.identity
+        );
+
         Destroy(vfx, 2f);
 
-        Collider[] hits = Physics.OverlapSphere(pos, radius, targetLayer);
+        Collider[] hits = Physics.OverlapSphere(
+            pos,
+            radius,
+            targetLayer
+        );
 
         foreach (var hit in hits)
         {
             Actor actor = hit.GetComponent<Actor>();
-            if (actor == null || actor.IsDead) continue;
 
-            if (hitActors.Contains(actor)) continue;
+            if (actor == null || actor.IsDead)
+                continue;
+
+            if (hitActors.Contains(actor))
+                continue;
 
             hitActors.Add(actor);
 
             actor.TakeDamage(fireDamage, 1f);
         }
+
         activeProjectiles--;
     }
+
     //독 장판
     IEnumerator PoisonExplosion(Vector3 pos)
     {
         poisonZones.Add(pos);
 
-        GameObject bigIndicator = Instantiate(throwIndicatorPrefab, pos, Quaternion.Euler(-90, 0, 0));
+        GameObject bigIndicator = Instantiate(
+            throwIndicatorPrefab,
+            pos,
+            Quaternion.Euler(-90, 0, 0)
+        );
+
         bigIndicator.transform.localScale = Vector3.zero;
         bigIndicator.transform.position += Vector3.up * 0.01f;
 
-        SetIndicatorColor(bigIndicator, new Color(0f, 1f, 0f, 0.35f));
-        StartCoroutine(GrowIndicator(bigIndicator, poisonOuterRadius, throwWarningTime));
+        SetIndicatorColor(
+            bigIndicator,
+            new Color(0f, 1f, 0f, 0.35f)
+        );
+
+        StartCoroutine(
+            GrowIndicator(
+                bigIndicator,
+                poisonOuterRadius,
+                throwWarningTime
+            )
+        );
+
         Destroy(bigIndicator, throwWarningTime);
 
-        GameObject safeIndicator = Instantiate(throwIndicatorPrefab, pos, Quaternion.Euler(-90, 0, 0));
+        GameObject safeIndicator = Instantiate(
+            throwIndicatorPrefab,
+            pos,
+            Quaternion.Euler(-90, 0, 0)
+        );
+
         safeIndicator.transform.localScale = Vector3.zero;
         safeIndicator.transform.position += Vector3.up * 0.08f;
 
-        SetIndicatorColor(safeIndicator, new Color(1f, 1f, 1f, 0.8f));
+        SetIndicatorColor(
+            safeIndicator,
+            new Color(1f, 1f, 1f, 0.8f)
+        );
 
         var mat = safeIndicator.GetComponent<Renderer>().material;
         mat.renderQueue = 3100;
 
-        StartCoroutine(GrowIndicator(safeIndicator, 4f, throwWarningTime));
+        StartCoroutine(
+            GrowIndicator(
+                safeIndicator,
+                4f,
+                throwWarningTime
+            )
+        );
+
         Destroy(safeIndicator, throwWarningTime);
 
         yield return new WaitForSeconds(throwWarningTime);
+
+        // 추가
+        if (!poisonExplosionSoundPlayed)
+        {
+            poisonExplosionSoundPlayed = true;
+            PlayPoisonExplosionSound();
+        }
 
         int vfxCount = 15;
 
         for (int i = 0; i < vfxCount; i++)
         {
-            Vector3 randomPos = GetRandomPointInDonut(pos, 4f, poisonOuterRadius);
+            Vector3 randomPos = GetRandomPointInDonut(
+                pos,
+                4f,
+                poisonOuterRadius
+            );
 
-            GameObject vfx = Instantiate(poisonVFX, randomPos, Quaternion.identity);
+            GameObject vfx = Instantiate(
+                poisonVFX,
+                randomPos,
+                Quaternion.identity
+            );
+
             Destroy(vfx, 2f);
         }
 
@@ -1714,11 +1795,14 @@ public class WolfBoss : Enemy
             transform.position,
             Quaternion.identity
         );
+        SoundManager.Instance.PlaySound("Tornado");
     }
 
     void EndTornado()
     {
         tornadoVFX.SetActive(false);
+
+        SoundManager.Instance.StopSound("Tornado");
 
         if (sandstormInstance != null)
             Destroy(sandstormInstance);
@@ -3138,4 +3222,69 @@ public class WolfBoss : Enemy
 
         Destroy(gameObject);
     }
+
+    #region 보스 사운드 Animation Event
+
+    public void PlayBiteSound()
+    {
+        SoundManager.Instance.PlaySound("WolfBite");
+    }
+
+    public void PlaySlamSound()
+    {
+        SoundManager.Instance.PlaySound("WolfSlam");
+    }
+
+    public void PlayJumpSound()
+    {
+        SoundManager.Instance.PlaySound("WolfJump");
+    }
+
+    public void PlayPhase1RoarSound()
+    {
+        SoundManager.Instance.PlaySound("WolfPhase1Roar");
+    }
+
+    public void PlayPhase2RoarSound()
+    {
+        SoundManager.Instance.PlaySound("WolfPhase2Roar");
+    }
+
+    public void PlayTornadoSound()
+    {
+        SoundManager.Instance.PlaySound("WolfTornado");
+    }
+
+    public void PlayJumpLandSound()
+    {
+        SoundManager.Instance.PlaySound("WolfJumpLand");
+    }
+
+    public void PlayFireballSound()
+    {
+        SoundManager.Instance.PlaySound("WolfFireball");
+    }
+
+    public void PlayFireballExplosionSound()
+    {
+        SoundManager.Instance.PlaySound("WolfFireballExplosion");
+    }
+
+    public void PlaySwingSound()
+    {
+        SoundManager.Instance.PlaySound("WolfSwing");
+    }
+
+    public void PlaySpinSound()
+    {
+        SoundManager.Instance.PlaySound("WolfSpin");
+    }
+
+    public void PlayPoisonExplosionSound()
+    {
+        SoundManager.Instance.PlaySound("PoisonExplosion");
+    }
+
+    #endregion
+
 }

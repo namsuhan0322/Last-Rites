@@ -53,6 +53,8 @@ public class LineAOE : MonoBehaviour
             yield return null;
         }
 
+        SoundManager.Instance.PlaySound("WolfFireballExplosion");
+
         for (int i = 0; i < vfxCount; i++)
         {
             float randX = Random.Range(-width * 0.5f, width * 0.5f);

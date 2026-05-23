@@ -11,7 +11,7 @@ public class LobbyTabManager : MonoBehaviour
         public string tabName;
         public TextMeshProUGUI tabText;
         public GameObject targetPanel;
-
+        public bool isImplemented = true;
         [HideInInspector] public GameObject selectedLine;
     }
 
@@ -22,6 +22,7 @@ public class LobbyTabManager : MonoBehaviour
     [Header("Text Colors")]
     public Color activeColor = Color.white;
     public Color inactiveColor = new Color(0.6f, 0.6f, 0.6f, 1f);
+    public Color disabledColor = new Color(0.3f, 0.3f, 0.3f, 0.5f);
 
     void Awake()
     {
@@ -58,16 +59,35 @@ public class LobbyTabManager : MonoBehaviour
             }
 
             btn.onClick.RemoveAllListeners();
-            btn.onClick.AddListener(() => SelectTab(index));
+
+            if (tab.isImplemented)
+            {
+                btn.onClick.AddListener(() => SelectTab(index));
+            }
+            else
+            {
+                btn.onClick.AddListener(() => Debug.Log($"[{tab.tabName}] 탭은 아직 준비 중입니다."));
+            }
         }
     }
 
     public void SelectTab(int index)
     {
+        if (index >= 0 && index < tabs.Count && !tabs[index].isImplemented) return;
+
         for (int i = 0; i < tabs.Count; i++)
         {
-            bool isSelected = (i == index);
             var tab = tabs[i];
+
+            if (!tab.isImplemented)
+            {
+                if (tab.targetPanel != null) tab.targetPanel.SetActive(false);
+                if (tab.selectedLine != null) tab.selectedLine.SetActive(false);
+                if (tab.tabText != null) tab.tabText.color = disabledColor;
+                continue;
+            }
+
+            bool isSelected = (i == index);
 
             if (tab.targetPanel != null)
                 tab.targetPanel.SetActive(isSelected);

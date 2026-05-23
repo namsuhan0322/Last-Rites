@@ -196,6 +196,12 @@ public class DragonBoss : Enemy
     [Header("메테오 전용 현자타임")]
     public float meteorRecoveryTime = 6f;
 
+    [Header("2페이즈 오른찍-왼날개-왼찍 콤보")]
+    public float phase2MixedComboDuration = 6f;
+    public float phase2MixedComboSecondDelay = 1.6f;
+    public float phase2MixedComboThirdDelay = 3.2f;
+    public float phase2MixedComboCooldown = 14f;
+
 
 
 
@@ -285,6 +291,9 @@ public class DragonBoss : Enemy
     private bool isBTActionPlaying = false;
     private float chargeCooldownTimer = 0f;
     private float meteorCooldownTimer = 0f;
+    private float phase2MixedComboCooldownTimer = 0f;
+
+
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
     {
@@ -368,6 +377,9 @@ public class DragonBoss : Enemy
 
         if (meteorCooldownTimer > 0f)
             meteorCooldownTimer -= Time.deltaTime;
+
+        if (phase2MixedComboCooldownTimer > 0f)
+            phase2MixedComboCooldownTimer -= Time.deltaTime;
 
     }
 
@@ -878,6 +890,7 @@ public class DragonBoss : Enemy
         Vector3 right = transform.right;
         right.y = 0f;
         right.Normalize();
+
 
         // 디버그 삼각형
         Debug.DrawRay(origin, forward * wingCrushTriangleLength, Color.red, 2f);
@@ -1675,6 +1688,17 @@ public class DragonBoss : Enemy
         {
             agent.Warp(hit.position);
         }
+    }
+
+    //페이즈2스킬 콤보 믹스 1번 콤보
+    public bool CanPhase2MixedCombo()
+    {
+        return isPhase2 && phase2MixedComboCooldownTimer <= 0f;
+    }
+
+    public void StartPhase2MixedComboCooldown()
+    {
+        phase2MixedComboCooldownTimer = phase2MixedComboCooldown;
     }
 
 

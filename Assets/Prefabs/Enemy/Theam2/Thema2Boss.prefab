@@ -6744,14 +6744,14 @@ MonoBehaviour:
   breathSpawnPoint: {fileID: 3327778268357399599}
   leftWingCrushPoint: {fileID: 8632811793622456929}
   rightWingCrushPoint: {fileID: 6896717735079017393}
-  wingCrushTriangleLength: 8
-  wingCrushTriangleWidth: 4
-  wingCrushDamage: 40
+  wingCrushTriangleLength: 12
+  wingCrushTriangleWidth: 6
+  wingCrushDamage: 15
   leftWingCrushEffectPrefab: {fileID: 1758561088887766, guid: c089cdc5e4ce2ce42ad542327474b15f,
     type: 3}
   rightWingCrushEffectPrefab: {fileID: 1758561088887766, guid: c089cdc5e4ce2ce42ad542327474b15f,
     type: 3}
-  wingCrushEffectScale: 0.9
+  wingCrushEffectScale: 1.1
   wingCrushEffectSpeed: 1
   wingCrushEffectLifeTime: 2
   wingSlamBiteComboDuration: 7
@@ -6824,6 +6824,10 @@ MonoBehaviour:
   jumpImpactWaveEffectScale3: 1.7
   meteorComboImpactEffectSpeed: 1.5
   meteorRecoveryTime: 6
+  phase2MixedComboDuration: 9.2
+  phase2MixedComboSecondDelay: 1.9
+  phase2MixedComboThirdDelay: 5.8
+  phase2MixedComboCooldown: 14
   leftWingSlamEffectPrefab: {fileID: 1714461283400591064, guid: 142c5b29b572efe42aefb18baa725269,
     type: 3}
   rightWingSlamEffectPrefab: {fileID: 830516002863052490, guid: a8e7990032a2aa14c9da072472c3415c,

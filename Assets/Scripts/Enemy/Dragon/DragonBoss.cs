@@ -300,6 +300,7 @@ public class DragonBoss : Enemy
     private float meteorCooldownTimer = 0f;
     private float phase2MixedComboCooldownTimer = 0f;
     private float phase2CrushSlamComboCooldownTimer = 0f;
+    private bool phase2FirstMeteorRequested = false;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -1479,7 +1480,15 @@ public class DragonBoss : Enemy
         if (testMeteorOnly)
             return meteorCooldownTimer <= 0f;
 
+        if (phase2FirstMeteorRequested)
+            return isPhase2;
+
         return isPhase2 && meteorCooldownTimer <= 0f;
+    }
+
+    public void ClearPhase2FirstMeteorRequest()
+    {
+        phase2FirstMeteorRequested = false;
     }
 
     //메테오 쿨타임
@@ -1773,6 +1782,9 @@ public class DragonBoss : Enemy
         isPhase2 = true;
         phase2Requested = false;
         phase2Roared = true;
+
+        phase2FirstMeteorRequested = true;
+        meteorCooldownTimer = 0f;
     }
 
     //포효하기

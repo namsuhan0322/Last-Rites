@@ -53,6 +53,8 @@ public partial class DragonMeteorAttackAction : Action
         boss.StopMove();
         boss.SetManualMoveMode(true);
 
+        boss.ClearPhase2FirstMeteorRequest();
+
         boss.PlayFlyUp();
         boss.PlayJumpStartDustEffect();
 

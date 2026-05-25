@@ -202,6 +202,13 @@ public class DragonBoss : Enemy
     public float phase2MixedComboThirdDelay = 3.2f;
     public float phase2MixedComboCooldown = 14f;
 
+    [Header("2페이즈 양쪽 내려찍기 + 양쪽 윙슬램 콤보")]
+    public float phase2CrushSlamComboDuration = 11f;
+    public float phase2CrushSlamComboSecondDelay = 2.4f;
+    public float phase2CrushSlamComboThirdDelay = 5.2f;
+    public float phase2CrushSlamComboFourthDelay = 8.0f;
+    public float phase2CrushSlamComboCooldown = 16f;
+
 
 
 
@@ -292,7 +299,7 @@ public class DragonBoss : Enemy
     private float chargeCooldownTimer = 0f;
     private float meteorCooldownTimer = 0f;
     private float phase2MixedComboCooldownTimer = 0f;
-
+    private float phase2CrushSlamComboCooldownTimer = 0f;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -380,6 +387,9 @@ public class DragonBoss : Enemy
 
         if (phase2MixedComboCooldownTimer > 0f)
             phase2MixedComboCooldownTimer -= Time.deltaTime;
+
+        if (phase2CrushSlamComboCooldownTimer > 0f)
+            phase2CrushSlamComboCooldownTimer -= Time.deltaTime;
 
     }
 
@@ -544,7 +554,7 @@ public class DragonBoss : Enemy
             animator.SetTrigger("BiteRight");
     }
 
-    //날개를 내려찍을수 있나?
+    //날개를 스윙할 수 있나?
     public bool CanWingSlam()
     {
         return wingSlamCooldownTimer <= 0f;
@@ -765,7 +775,7 @@ public class DragonBoss : Enemy
 
     public bool CanJumpAttack()
     {
-        return jumpAttackCooldownTimer <= 0f;
+        return !isPhase2 && jumpAttackCooldownTimer <= 0f;
     }
 
     public void StartJumpAttackCooldown()
@@ -839,7 +849,7 @@ public class DragonBoss : Enemy
 
     public bool CanWingCrushBreathCombo()
     {
-        return wingCrushBreathCooldownTimer <= 0f;
+        return !isPhase2 && wingCrushBreathCooldownTimer <= 0f;
     }
 
     public void StartWingCrushBreathComboCooldown()
@@ -989,7 +999,7 @@ public class DragonBoss : Enemy
     //좌우 날개스윙 후 물기
     public bool CanWingSlamBiteCombo()
     {
-        return wingSlamBiteComboCooldownTimer <= 0f;
+        return !isPhase2 && wingSlamBiteComboCooldownTimer <= 0f;
     }
 
     public void StartWingSlamBiteComboCooldown()
@@ -1055,7 +1065,7 @@ public class DragonBoss : Enemy
 
     public bool CanWingSlamBiteSideBreathCombo()
     {
-        return wingSlamBiteSideBreathComboCooldownTimer <= 0f;
+        return !isPhase2 && wingSlamBiteSideBreathComboCooldownTimer <= 0f;
     }
 
     public void StartWingSlamBiteSideBreathComboCooldown()
@@ -1067,7 +1077,7 @@ public class DragonBoss : Enemy
     //좌우로 점프 하기
     public bool CanSideJump()
     {
-        return sideJumpCooldownTimer <= 0f;
+        return !isPhase2 && sideJumpCooldownTimer <= 0f;
     }
 
     public void StartSideJumpCooldown()
@@ -1089,7 +1099,7 @@ public class DragonBoss : Enemy
 
     public bool CanBreathCharge()
     {
-        return breathChargeCooldownTimer <= 0f;
+        return !isPhase2 && breathChargeCooldownTimer <= 0f;
     }
 
     public void StartBreathChargeCooldown()
@@ -1423,7 +1433,7 @@ public class DragonBoss : Enemy
 
     public bool CanCharge()
     {
-        return chargeCooldownTimer <= 0f;
+        return !isPhase2 && chargeCooldownTimer <= 0f;
     }
 
     public void StartChargeCooldown()
@@ -1701,6 +1711,16 @@ public class DragonBoss : Enemy
         phase2MixedComboCooldownTimer = phase2MixedComboCooldown;
     }
 
+    //페이즈2스킬 콤보 믹스 2번 콤보
+    public bool CanPhase2CrushSlamCombo()
+    {
+        return isPhase2 && phase2CrushSlamComboCooldownTimer <= 0f;
+    }
+
+    public void StartPhase2CrushSlamComboCooldown()
+    {
+        phase2CrushSlamComboCooldownTimer = phase2CrushSlamComboCooldown;
+    }
 
     //죽음
     public override void TakeDamage(
@@ -2230,5 +2250,15 @@ public class DragonBoss : Enemy
         }
 
         Destroy(effect, wingCrushEffectLifeTime);
+    }
+
+    public bool IsPhase1()
+    {
+        return !isPhase2;
+    }
+
+    public bool IsPhase2()
+    {
+        return isPhase2;
     }
 }

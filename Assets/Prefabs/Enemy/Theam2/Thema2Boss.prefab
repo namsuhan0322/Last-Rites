@@ -6699,16 +6699,16 @@ MonoBehaviour:
   roarDuration: 2.7
   biteRange: 12
   biteDuration: 2.25
-  biteCooldown: 2
+  biteCooldown: 45
   headHitbox: {fileID: 4792965742145267456}
   wingSlamRange: 10.5
   wingSlamDuration: 2.25
-  wingSlamCooldown: 16
+  wingSlamCooldown: 45
   leftWingHitbox: {fileID: 1715169422762636062}
   rightWingHitbox: {fileID: 1144641065990520349}
   tailAttackRange: 12
   tailAttackDuration: 2
-  tailAttackCooldown: 16
+  tailAttackCooldown: 45
   tailBackAngle: 120
   leftTailHitbox: {fileID: 287528563655993468}
   rightTailHitbox: {fileID: 287528563655993468}
@@ -6783,7 +6783,7 @@ MonoBehaviour:
   breathChargeHp3: 0.55
   normalBreathChargeDamage: 80
   finalBreathChargeDamage: 150
-  chargeCooldown: 10
+  chargeCooldown: 25
   chargeDistance: 9.5
   chargeReadyTime: 2.5
   chargeStartDelay: 0.8

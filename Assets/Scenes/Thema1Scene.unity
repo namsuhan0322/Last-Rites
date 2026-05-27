@@ -1497,6 +1497,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6764799035139232018, guid: b6d4a1c44719b5942b5d381d9636fe29,
         type: 3}
+      propertyPath: wallLayer.m_Bits
+      value: 131072
+      objectReference: {fileID: 0}
+    - target: {fileID: 6764799035139232018, guid: b6d4a1c44719b5942b5d381d9636fe29,
+        type: 3}
       propertyPath: tornadoPullRadius
       value: 3.5
       objectReference: {fileID: 0}
@@ -3918,7 +3923,7 @@ GameObject:
   - component: {fileID: 140609907}
   - component: {fileID: 140609906}
   - component: {fileID: 140609905}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: Cube (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -12199,7 +12204,7 @@ GameObject:
   - component: {fileID: 382366957}
   - component: {fileID: 382366956}
   - component: {fileID: 382366955}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -28360,7 +28365,7 @@ GameObject:
   - component: {fileID: 918138347}
   - component: {fileID: 918138346}
   - component: {fileID: 918138345}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: Cube (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33071,7 +33076,7 @@ GameObject:
   - component: {fileID: 1033712496}
   - component: {fileID: 1033712495}
   - component: {fileID: 1033712494}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: Cube (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -35755,7 +35760,7 @@ GameObject:
   - component: {fileID: 1117270418}
   - component: {fileID: 1117270417}
   - component: {fileID: 1117270416}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: Cube (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37547,7 +37552,7 @@ GameObject:
   - component: {fileID: 1186335267}
   - component: {fileID: 1186335266}
   - component: {fileID: 1186335265}
-  m_Layer: 0
+  m_Layer: 17
   m_Name: Cube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

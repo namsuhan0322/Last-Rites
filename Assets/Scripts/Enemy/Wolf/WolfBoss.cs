@@ -114,6 +114,7 @@ public class WolfBoss : Enemy
     public float secondChargeBrokenSpeed = 12f;
     public float chargeIndicatorBaseLength = 7f;
     public GameObject chargeIndicatorPrefab;
+    [SerializeField] private LayerMask wallLayer;
 
     [Header("1페이지 회오리 스킬")]
     public float tornadoSpeed = 3f;
@@ -1533,6 +1534,21 @@ public class WolfBoss : Enemy
         while (moved < chargeDistance)
         {
             float step = currentChargeSpeed * Time.deltaTime;
+
+            if (Physics.BoxCast(
+                transform.position + Vector3.up * 1f,
+                new Vector3(1.2f, 1f, 1.2f),
+                finalDir,
+                out RaycastHit wallHit,
+                transform.rotation,
+                step + 0.3f,
+                wallLayer
+            ))
+            {
+                // 벽 앞에서 멈춤
+                transform.position = wallHit.point - finalDir * 1.2f;
+                break;
+            }
 
             transform.position += finalDir * step;
             moved += step;

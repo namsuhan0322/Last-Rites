@@ -52,24 +52,30 @@ public class PlayerSkillState : PlayerState
         {
             float normalizedTime = stateInfo.normalizedTime;
 
-            if (normalizedTime >= 0.6f)
+            if (normalizedTime >= 0.4f)
             {
-                // 이 시점부터 다른 스킬이나 회피(Space) 키가 눌리면 즉시 그 상태로 넘어갑니다!
                 if (_player.CheckSkillAndDashInput())
                 {
-                    return; // 성공적으로 다른 스킬/회피가 나갔다면 여기서 멈춤
+                    return;
+                }
+
+                if (Input.GetMouseButton(1) || Input.GetMouseButtonDown(1))
+                {
+                    _player.Anim.CrossFade("Idle/Move", 0.1f);
+                    _stateMachine.ChangeState(_player.MoveState);
+                    return;
                 }
             }
 
-            if (normalizedTime >= 0.75f && _attackBuffered)
+            if (normalizedTime >= 0.55f && _attackBuffered)
             {
                 _stateMachine.ChangeState(_player.AttackState);
                 return;
             }
 
-            // 아무것도 안 누르고 가만히 있으면 95%에서 대기 상태로 복귀
-            if (normalizedTime >= 0.95f)
+            if (normalizedTime >= 0.8f)
             {
+                _player.Anim.CrossFade("Idle/Move", 0.1f);
                 _stateMachine.ChangeState(_player.IdleState);
             }
         }

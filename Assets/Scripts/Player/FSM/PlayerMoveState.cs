@@ -17,12 +17,9 @@ public class PlayerMoveState : PlayerState
         if (Input.GetMouseButton(1)) SetDestinationToMouse();
         if (Input.GetMouseButtonDown(0))
         {
-            if (_player.InCombat)
+            if (_player.InCombat && _player.postRollAttackTimer <= 0f)
             {
-                if (_player.InCombat && _player.postRollAttackTimer <= 0f)
-                {
-                    _stateMachine.ChangeState(_player.AttackState);
-                }
+                _stateMachine.ChangeState(_player.AttackState);
             }
         }
 

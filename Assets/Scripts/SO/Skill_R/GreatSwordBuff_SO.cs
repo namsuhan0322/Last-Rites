@@ -30,6 +30,13 @@ public class GreatSwordBuff_SO : BuffSkill_SO
             yield return new WaitForSeconds(1.0f);
 
             player.Stats.DrainHP(hpDrainPerSecond);
+
+            if (DamageEffectManager.Instance != null)
+            {
+                Vector3 textPos = player.transform.position + (Vector3.up * 1.5f);
+                DamageEffectManager.Instance.ShowDamage(textPos, -hpDrainPerSecond, Color.red);
+            }
+
             timer -= 1.0f;
         }
 

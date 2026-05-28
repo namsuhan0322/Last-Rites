@@ -35,6 +35,11 @@ public class DamageEffectManager : SingletonMono<DamageEffectManager>
 
     public void ShowDamage(Vector3 worldPosition, int amount)
     {
+        ShowDamage(worldPosition, amount, damageColor);
+    }
+
+    public void ShowDamage(Vector3 worldPosition, int amount, Color customColor)
+    {
         if (textPrefab == null || uiCanvas == null) return;
 
         Vector3 screenPos = Camera.main.WorldToScreenPoint(worldPosition);
@@ -54,7 +59,7 @@ public class DamageEffectManager : SingletonMono<DamageEffectManager>
         if (tmp != null)
         {
             tmp.text = amount.ToString();
-            tmp.color = damageColor;
+            tmp.color = customColor;
         }
     }
 }

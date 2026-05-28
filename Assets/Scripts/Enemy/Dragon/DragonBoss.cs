@@ -301,6 +301,8 @@ public class DragonBoss : Enemy
     private float phase2MixedComboCooldownTimer = 0f;
     private float phase2CrushSlamComboCooldownTimer = 0f;
     private bool phase2FirstMeteorRequested = false;
+    private float leftWingSlamCooldownTimer = 0f;
+    private float rightWingSlamCooldownTimer = 0f;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -391,6 +393,12 @@ public class DragonBoss : Enemy
 
         if (phase2CrushSlamComboCooldownTimer > 0f)
             phase2CrushSlamComboCooldownTimer -= Time.deltaTime;
+
+        if (leftWingSlamCooldownTimer > 0f)
+            leftWingSlamCooldownTimer -= Time.deltaTime;
+
+        if (rightWingSlamCooldownTimer > 0f)
+            rightWingSlamCooldownTimer -= Time.deltaTime;
 
     }
 
@@ -558,7 +566,15 @@ public class DragonBoss : Enemy
     //날개를 스윙할 수 있나?
     public bool CanWingSlam()
     {
-        return wingSlamCooldownTimer <= 0f;
+        int moveType = GetWingSlamMoveType();
+
+        if (moveType == 8)
+            return leftWingSlamCooldownTimer <= 0f;
+
+        if (moveType == 9)
+            return rightWingSlamCooldownTimer <= 0f;
+
+        return false;
     }
     public int GetWingSlamMoveType()
     {
@@ -590,9 +606,12 @@ public class DragonBoss : Enemy
         return 8; // 왼쪽 날개 내려찍기
     }
 
-    public void StartWingSlamCooldown()
+    public void StartWingSlamCooldown(int moveType)
     {
-        wingSlamCooldownTimer = wingSlamCooldown;
+        if (moveType == 8)
+            leftWingSlamCooldownTimer = wingSlamCooldown;
+        else if (moveType == 9)
+            rightWingSlamCooldownTimer = wingSlamCooldown;
     }
 
     public void PlayWingSlam(int moveType)
@@ -1299,6 +1318,8 @@ public class DragonBoss : Enemy
 
                 isHeadBroken = true;
 
+                fireballCooldownTimer += 150f;
+
                 StartCoroutine(
                     WeakPointBreakRoutine(
                         WeakPointType.Head,
@@ -1311,6 +1332,9 @@ public class DragonBoss : Enemy
                 if (isLeftWingBroken) return;
 
                 isLeftWingBroken = true;
+
+                leftWingSlamCooldownTimer += 130f;
+
                 CancelBreathCharge();
 
                 StartCoroutine(
@@ -1325,6 +1349,9 @@ public class DragonBoss : Enemy
                 if (isRightWingBroken) return;
 
                 isRightWingBroken = true;
+
+                rightWingSlamCooldownTimer += 130f;
+
                 CancelBreathCharge();
 
                 StartCoroutine(

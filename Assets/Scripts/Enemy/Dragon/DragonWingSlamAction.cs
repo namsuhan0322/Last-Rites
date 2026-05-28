@@ -16,6 +16,7 @@ public partial class DragonWingSlamAction : Action
 
     private DragonBoss boss;
     private float timer;
+    private int moveType;
 
     protected override Status OnStart()
     {
@@ -33,7 +34,7 @@ public partial class DragonWingSlamAction : Action
         if (!boss.CanWingSlam())
             return Status.Failure;
 
-        int moveType = boss.GetWingSlamMoveType();
+        moveType = boss.GetWingSlamMoveType();
 
         if (moveType == -1)
             return Status.Failure;
@@ -56,7 +57,7 @@ public partial class DragonWingSlamAction : Action
         {
             boss.DisableAllWingHitboxes();
 
-            boss.StartWingSlamCooldown();
+            boss.StartWingSlamCooldown(moveType);
             boss.StartGlobalAttackRecovery();
 
             boss.Idle();

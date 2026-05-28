@@ -1,4 +1,4 @@
-using BansheeGz.BGDatabase;
+ï»¿using BansheeGz.BGDatabase;
 using System.Collections;
 using UnityEngine;
 
@@ -18,8 +18,8 @@ public class GameManager : SingletonMono<GameManager>
     public bool isGamePaused = false;
 
     [Header("Respawn Settings")]
-    public Transform respawnPoint;      // À¯´ÏÆ¼ ¿¡µğÅÍ¿¡¼­ ºÎÈ°½ÃÅ³ ºó ¿ÀºêÁ§Æ®(Transform)¸¦ ³Ö¾îÁÖ¼¼¿ä.
-    public float respawnDelay = 3.0f;   // Á×°í ³ª¼­ ºÎÈ°ÇÏ±â±îÁö °É¸®´Â ´ë±â ½Ã°£
+    public Transform respawnPoint;      // ìœ ë‹ˆí‹° ì—ë””í„°ì—ì„œ ë¶€í™œì‹œí‚¬ ë¹ˆ ì˜¤ë¸Œì íŠ¸(Transform)ë¥¼ ë„£ì–´ì£¼ì„¸ìš”.
+    public float respawnDelay = 3.0f;   // ì£½ê³  ë‚˜ì„œ ë¶€í™œí•˜ê¸°ê¹Œì§€ ê±¸ë¦¬ëŠ” ëŒ€ê¸° ì‹œê°„
 
     [Header("Game Stats")]
     public int currentScore = 0;
@@ -38,7 +38,7 @@ public class GameManager : SingletonMono<GameManager>
 
     private void Start()
     {
-        // ´Ù¸¥ ¸Å´ÏÀúµéÀÌ ÃÊ±âÈ­µÈ ÈÄ ½ÇÇà
+        // ë‹¤ë¥¸ ë§¤ë‹ˆì €ë“¤ì´ ì´ˆê¸°í™”ëœ í›„ ì‹¤í–‰
         StartCoroutine(InitializeManagers());
     }
 
@@ -52,56 +52,58 @@ public class GameManager : SingletonMono<GameManager>
 
     private void InitializeGame()
     {
-        // °ÔÀÓ ½ÃÀÛ ½Ã ±âº» ¼³Á¤
+        // ê²Œì„ ì‹œì‘ ì‹œ ê¸°ë³¸ ì„¤ì •
         Application.targetFrameRate = 60;
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
 
-        Debug.Log("GameManager ÃÊ±âÈ­ ¿Ï·á");
+        UpdateCursorState(currentGameState);
+
+        Debug.Log("GameManager ì´ˆê¸°í™” ì™„ë£Œ");
     }
 
     private IEnumerator InitializeManagers()
     {
-        // ¸ğµç ½ºÅ©¸³Æ®ÀÇ Awake¿Í Start°¡ ¿ÏÀüÈ÷ ³¡³¯ ¶§±îÁö 1ÇÁ·¹ÀÓ ´ë±âÇÕ´Ï´Ù.
+        // ëª¨ë“  ìŠ¤í¬ë¦½íŠ¸ì˜ Awakeì™€ Startê°€ ì™„ì „íˆ ëë‚  ë•Œê¹Œì§€ 1í”„ë ˆì„ ëŒ€ê¸°í•©ë‹ˆë‹¤.
         yield return new WaitForEndOfFrame();
 
-        Debug.Log("<color=cyan>=== ½Ã½ºÅÛ ¸Å´ÏÀú ÃÊ±âÈ­ ¹× Á¡°Ë ½ÃÀÛ ===</color>");
+        Debug.Log("<color=cyan>=== ì‹œìŠ¤í…œ ë§¤ë‹ˆì € ì´ˆê¸°í™” ë° ì ê²€ ì‹œì‘ ===</color>");
 
-        if (DataManager.Instance != null) Debug.Log("DataManager ÁØºñ ¿Ï·á");
-        else Debug.LogWarning("DataManager°¡ ¾À¿¡ ¾ø½À´Ï´Ù!");
+        if (DataManager.Instance != null) Debug.Log("DataManager ì¤€ë¹„ ì™„ë£Œ");
+        else Debug.LogWarning("DataManagerê°€ ì”¬ì— ì—†ìŠµë‹ˆë‹¤!");
 
-        if (GameProgressManager.Instance != null) Debug.Log("GameProgressManager ÁØºñ ¿Ï·á");
-        if (InventoryManager.Instance != null) Debug.Log("InventoryManager ÁØºñ ¿Ï·á");
+        if (GameProgressManager.Instance != null) Debug.Log("GameProgressManager ì¤€ë¹„ ì™„ë£Œ");
+        if (InventoryManager.Instance != null) Debug.Log("InventoryManager ì¤€ë¹„ ì™„ë£Œ");
 
-        // (±âÁ¸ ¼¼ÀÌºê ½Ã½ºÅÛÀ» º´Çà »ç¿ë ÁßÀÌ½Ã¶ó¸é À¯Áö)
+        // (ê¸°ì¡´ ì„¸ì´ë¸Œ ì‹œìŠ¤í…œì„ ë³‘í–‰ ì‚¬ìš© ì¤‘ì´ì‹œë¼ë©´ ìœ ì§€)
         if (SaveDataHolder.Instance != null)
         {
             if (SaveDataHolder.Instance.currentData == null)
                 SaveDataHolder.Instance.Load();
-            Debug.Log("SaveDataHolder ÁØºñ ¿Ï·á");
+            Debug.Log("SaveDataHolder ì¤€ë¹„ ì™„ë£Œ");
         }
-        if (SaveManager.Instance != null) Debug.Log("SaveManager ÁØºñ ¿Ï·á");
+        if (SaveManager.Instance != null) Debug.Log("SaveManager ì¤€ë¹„ ì™„ë£Œ");
 
-        if (ScenesManager.Instance != null) Debug.Log("ScenesManager ÁØºñ ¿Ï·á");
-        else Debug.LogError("ScenesManager°¡ ¾ø½À´Ï´Ù! ¾À ÀÌµ¿ÀÌ ºÒ°¡´ÉÇÕ´Ï´Ù.");
+        if (ScenesManager.Instance != null) Debug.Log("ScenesManager ì¤€ë¹„ ì™„ë£Œ");
+        else Debug.LogError("ScenesManagerê°€ ì—†ìŠµë‹ˆë‹¤! ì”¬ ì´ë™ì´ ë¶ˆê°€ëŠ¥í•©ë‹ˆë‹¤.");
 
-        if (SoundManager.Instance != null) Debug.Log("SoundManager ÁØºñ ¿Ï·á");
-        if (EffectManager.Instance != null) Debug.Log("EffectManager ÁØºñ ¿Ï·á");
+        if (SoundManager.Instance != null) Debug.Log("SoundManager ì¤€ë¹„ ì™„ë£Œ");
+        if (EffectManager.Instance != null) Debug.Log("EffectManager ì¤€ë¹„ ì™„ë£Œ");
 
         var graphicsManager = FindFirstObjectByType<GraphicsSettingsManager>();
         if (graphicsManager != null)
         {
             graphicsManager.InitUI();
-            Debug.Log("GraphicsSettings Àû¿ë ¿Ï·á");
+            Debug.Log("GraphicsSettings ì ìš© ì™„ë£Œ");
         }
 
         var soundSettings = FindFirstObjectByType<MixerController>();
         if (soundSettings != null)
         {
             soundSettings.InitUI();
-            Debug.Log("SoundSettings Àû¿ë ¿Ï·á");
+            Debug.Log("SoundSettings ì ìš© ì™„ë£Œ");
         }
 
-        Debug.Log("<color=cyan>=== ¸ğµç ¸Å´ÏÀú ÃÊ±âÈ­ ¿Ï·á! ===</color>");
+        Debug.Log("<color=cyan>=== ëª¨ë“  ë§¤ë‹ˆì € ì´ˆê¸°í™” ì™„ë£Œ! ===</color>");
 
         if (ScenesManager.Instance != null)
         {
@@ -120,11 +122,13 @@ public class GameManager : SingletonMono<GameManager>
 
         OnGameStateChanged(newState);
 
-        Debug.Log($"°ÔÀÓ »óÅÂ º¯°æ: {previousGameState} -> {currentGameState}");
+        Debug.Log($"ê²Œì„ ìƒíƒœ ë³€ê²½: {previousGameState} -> {currentGameState}");
     }
 
     private void OnGameStateChanged(GameState newState)
     {
+        UpdateCursorState(newState);
+
         switch (newState)
         {
             case GameState.Menu:
@@ -162,7 +166,7 @@ public class GameManager : SingletonMono<GameManager>
         ChangeGameState(GameState.Paused);
         GameEvents.GamePaused();
 
-        // ÀÏ½ÃÁ¤Áö UI Ç¥½Ã
+        // ì¼ì‹œì •ì§€ UI í‘œì‹œ
         //UIManager.Instance?.ShowPauseMenu();
     }
 
@@ -176,7 +180,7 @@ public class GameManager : SingletonMono<GameManager>
         ChangeGameState(GameState.Playing);
         GameEvents.GameResumed();
 
-        // ÀÏ½ÃÁ¤Áö UI ¼û±â±â
+        // ì¼ì‹œì •ì§€ UI ìˆ¨ê¸°ê¸°
         //UIManager.Instance?.HidePauseMenu();
     }
 
@@ -186,7 +190,7 @@ public class GameManager : SingletonMono<GameManager>
 
         StartCoroutine(RespawnRoutine());
 
-        // °ÔÀÓ ¿À¹ö Ã³¸®
+        // ê²Œì„ ì˜¤ë²„ ì²˜ë¦¬
         //SaveManager.Instance?.SaveHighScore(currentScore);
         //UIManager.Instance?.ShowGameOverUI();
     }
@@ -203,9 +207,35 @@ public class GameManager : SingletonMono<GameManager>
         //SceneManager.Instance?.LoadScene("MainMenu");
     }
 
+    public void UpdateCursorState(GameState state)
+    {
+        if (isInteractUIOpen)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            return;
+        }
+
+        switch (state)
+        {
+            case GameState.Playing:
+                Cursor.lockState = CursorLockMode.Confined;
+                Cursor.visible = true;
+                break;
+
+            case GameState.Menu:
+            case GameState.Paused:
+            case GameState.GameOver:
+            case GameState.Loading:
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                break;
+        }
+    }
+
     #endregion
 
-    #region ¸®½ºÆù °ü·Ã
+    #region ë¦¬ìŠ¤í° ê´€ë ¨
     private IEnumerator RespawnRoutine()
     {
         yield return new WaitForSecondsRealtime(respawnDelay);
@@ -292,7 +322,7 @@ public class GameManager : SingletonMono<GameManager>
         currentScore += points;
         GameEvents.ScoreChanged(currentScore);
 
-        Debug.Log($"Á¡¼ö Ãß°¡: +{points}, ÃÑ Á¡¼ö: {currentScore}");
+        Debug.Log($"ì ìˆ˜ ì¶”ê°€: +{points}, ì´ ì ìˆ˜: {currentScore}");
     }
 
     public void SetScore(int score)
@@ -304,7 +334,7 @@ public class GameManager : SingletonMono<GameManager>
     public void NextLevel()
     {
         currentLevel++;
-        Debug.Log($"·¹º§¾÷! ÇöÀç ·¹º§: {currentLevel}");
+        Debug.Log($"ë ˆë²¨ì—…! í˜„ì¬ ë ˆë²¨: {currentLevel}");
     }
 
     private void ResetGameStats()
@@ -326,7 +356,7 @@ public class GameManager : SingletonMono<GameManager>
 
     public void QuitGame()
     {
-        Debug.Log("°ÔÀÓ Á¾·á");
+        Debug.Log("ê²Œì„ ì¢…ë£Œ");
 
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;

@@ -3514,22 +3514,27 @@ MonoBehaviour:
   - tabName: GamePlay
     tabText: {fileID: 4815221586916512462}
     targetPanel: {fileID: 7928894427499207678}
+    isImplemented: 1
     selectedLine: {fileID: 0}
   - tabName: KeyBinding
     tabText: {fileID: 5888676416764143879}
     targetPanel: {fileID: 8212564233205886562}
+    isImplemented: 1
     selectedLine: {fileID: 0}
   - tabName: Controller
     tabText: {fileID: 7742853255082839412}
     targetPanel: {fileID: 234972199771467251}
+    isImplemented: 1
     selectedLine: {fileID: 0}
   - tabName: Audio
     tabText: {fileID: 5054501262687310188}
     targetPanel: {fileID: 940935925257758786}
+    isImplemented: 1
     selectedLine: {fileID: 0}
   defaultTabIndex: 0
   activeColor: {r: 0.9254902, g: 0.80784315, b: 0.62352943, a: 1}
   inactiveColor: {r: 1, g: 1, b: 1, a: 0.49019608}
+  disabledColor: {r: 0.3, g: 0.3, b: 0.3, a: 0.5}
 --- !u!114 &3304308229739547522 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6236379797635607325, guid: 1e6389ec569416a42af20d17bee603c8,
@@ -5521,6 +5526,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: SceneConfig
       objectReference: {fileID: 0}
+    - target: {fileID: 3887757723281666808, guid: 4b1e9ba57249c8a44a4e3605193dac06,
+        type: 3}
+      propertyPath: sceneConfigs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3887757723281666808, guid: 4b1e9ba57249c8a44a4e3605193dac06,
+        type: 3}
+      propertyPath: sceneConfigs.Array.data[0].sceneName
+      value: MainScene
+      objectReference: {fileID: 0}
     - target: {fileID: 6706634299280307114, guid: 4b1e9ba57249c8a44a4e3605193dac06,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -5845,7 +5860,7 @@ PrefabInstance:
     - target: {fileID: 8166505313678642401, guid: 4bc4e6ff8e467754bbcda6f517d0ee53,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 0.000061035156
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8166505313678642401, guid: 4bc4e6ff8e467754bbcda6f517d0ee53,
         type: 3}

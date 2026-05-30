@@ -419,10 +419,12 @@ public class DragonBoss : Enemy
 
     public void Idle()
     {
+        StopDragonWingFlapSound();
+        StopDragonBreathSound();
+
         StopMove();
         SetMoveType(0);
     }
-
     //순찰 랜덤 포인트 뽑기
     public bool GetRandomPatrolPoint(out Vector3 result)
     {
@@ -780,6 +782,8 @@ public class DragonBoss : Enemy
         if (dir.sqrMagnitude < 0.01f)
             dir = transform.forward;
 
+        PlayDragonFireballShootSound();
+
         GameObject fireball = Instantiate(
             fireballPrefab,
             fireballSpawnPoint.position,
@@ -813,10 +817,13 @@ public class DragonBoss : Enemy
         animator.ResetTrigger("FlyUp");
         animator.ResetTrigger("SkyLoop");
         animator.SetTrigger("SkyLoop");
+
+        StartDragonWingFlapSound();
     }
 
     public void PlayJumpFall()
     {
+        StopDragonWingFlapSound();
         animator.SetTrigger("JumpFall");
     }
 
@@ -2300,4 +2307,59 @@ public class DragonBoss : Enemy
     {
         return isPhase2;
     }
+
+
+    #region Dragon Sound Animation Event
+
+    public void PlayDragonBiteSound()
+    {
+        SoundManager.Instance.PlaySound("DragonBite");
+    }
+
+    public void PlayDragonWingSlamSound()
+    {
+        SoundManager.Instance.PlaySound("DragonWingSlam");
+    }
+
+    public void PlayDragonWingCrushSound()
+    {
+        SoundManager.Instance.PlaySound("DragonWingCrush");
+    }
+
+    public void StartDragonBreathSound()
+    {
+        SoundManager.Instance.PlaySound("DragonBreath");
+    }
+
+    public void StopDragonBreathSound()
+    {
+        SoundManager.Instance.StopSound("DragonBreath");
+    }
+
+    public void PlayDragonFireballShootSound()
+    {
+        SoundManager.Instance.PlaySound("DragonFireballShoot");
+    }
+
+    public void PlayDragonFireballExplosionSound()
+    {
+        SoundManager.Instance.PlaySound("DragonFireballExplosion");
+    }
+
+    public void PlayDragonRoarSound()
+    {
+        SoundManager.Instance.PlaySound("DragonRoar");
+    }
+
+    public void StartDragonWingFlapSound()
+    {
+        SoundManager.Instance.PlaySound("DragonWingFlap");
+    }
+
+    public void StopDragonWingFlapSound()
+    {
+        SoundManager.Instance.StopSound("DragonWingFlap");
+    }
+
+    #endregion
 }

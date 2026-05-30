@@ -71,6 +71,9 @@ public class DragonFireballProjectile : MonoBehaviour
     {
         exploded = true;
 
+        SoundManager.Instance.PlaySound("DragonFireballExplosion");
+
+
         if (explosionEffect != null)
         {
             GameObject fx = Instantiate(explosionEffect, position, Quaternion.identity);

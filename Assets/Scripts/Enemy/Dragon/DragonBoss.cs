@@ -2027,47 +2027,29 @@ public class DragonBoss : Enemy
         baseDir.y = 0f;
         baseDir.Normalize();
 
-        if (tornadoFiveWayVfxPrefab != null)
+        if (tornadoFiveWayVfxPrefab == null)
+            return;
+
+        GameObject vfx = Instantiate(
+            tornadoFiveWayVfxPrefab,
+            tornadoSpawnPoint.position,
+            Quaternion.LookRotation(baseDir)
+        );
+
+        DragonTornadoParticleDamage[] damages =
+            vfx.GetComponentsInChildren<DragonTornadoParticleDamage>(true);
+
+        foreach (DragonTornadoParticleDamage damage in damages)
         {
-            Instantiate(
-                tornadoFiveWayVfxPrefab,
-                tornadoSpawnPoint.position,
-                Quaternion.LookRotation(baseDir)
+            damage.Init(
+                this,
+                tornadoProjectileDamage,
+                targetLayer
             );
         }
 
-        int count = 5;
-        float startAngle = -tornadoSpreadAngle * 0.5f;
-        float angleStep = tornadoSpreadAngle / (count - 1);
-
-        for (int i = 0; i < count; i++)
-        {
-            float angle = startAngle + angleStep * i;
-            Vector3 dir = Quaternion.Euler(0f, angle, 0f) * baseDir;
-
-            GameObject hitbox = Instantiate(
-                tornadoHitboxPrefab,
-                tornadoSpawnPoint.position,
-                Quaternion.LookRotation(dir)
-            );
-
-            DragonTornadoProjectile projectile =
-                hitbox.GetComponent<DragonTornadoProjectile>();
-
-            if (projectile != null)
-            {
-                projectile.Init(
-                    this,
-                    dir,
-                    tornadoProjectileSpeed,
-                    tornadoProjectileLifeTime,
-                    tornadoProjectileDamage,
-                    targetLayer
-                );
-            }
-        }
+        Destroy(vfx, tornadoProjectileLifeTime);
     }
-
 
     //fbx 모음들
     public void PlayLeftWingSlamEffect()

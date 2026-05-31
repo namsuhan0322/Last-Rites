@@ -18598,12 +18598,12 @@ ParticleSystem:
   TriggerModule:
     enabled: 0
     serializedVersion: 2
-    inside: 1
+    inside: 0
     outside: 0
-    enter: 0
+    enter: 2
     exit: 0
-    colliderQueryMode: 0
-    radiusScale: 1
+    colliderQueryMode: 2
+    radiusScale: 3
     primitives:
     - {fileID: 0}
     - {fileID: 0}
@@ -24618,6 +24618,7 @@ GameObject:
   - component: {fileID: 4819052006832638}
   - component: {fileID: 198744110943049628}
   - component: {fileID: 199852233139284296}
+  - component: {fileID: 3731638049813084623}
   m_Layer: 0
   m_Name: Tornado
   m_TagString: Untagged
@@ -28508,13 +28509,13 @@ ParticleSystem:
     collidesWithDynamic: 1
     interiorCollisions: 0
   TriggerModule:
-    enabled: 0
+    enabled: 1
     serializedVersion: 2
-    inside: 1
+    inside: 0
     outside: 0
-    enter: 0
+    enter: 2
     exit: 0
-    colliderQueryMode: 0
+    colliderQueryMode: 2
     radiusScale: 1
     primitives:
     - {fileID: 0}
@@ -29565,6 +29566,26 @@ ParticleSystemRenderer:
   m_MeshWeighting1: 1
   m_MeshWeighting2: 1
   m_MeshWeighting3: 1
+--- !u!114 &3731638049813084623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1304703466469904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ee59c2843c80074893b8a5aa93471f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DragonTornadoParticleDamage
+  damage: 30
+  damageRadius: 5
+  damageCooldown: 0.5
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 256
+  showDebugGizmos: 1
+  debugLifeTime: 12
 --- !u!1 &1530258550923384
 GameObject:
   m_ObjectHideFlags: 0

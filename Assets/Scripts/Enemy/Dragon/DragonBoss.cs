@@ -209,6 +209,17 @@ public class DragonBoss : Enemy
     public float phase2CrushSlamComboFourthDelay = 8.0f;
     public float phase2CrushSlamComboCooldown = 16f;
 
+    [Header("5갈래 회오리 공격")]
+    [SerializeField] private GameObject tornadoFiveWayVfxPrefab;
+    [SerializeField] private GameObject tornadoHitboxPrefab;
+    [SerializeField] private Transform tornadoSpawnPoint;
+    public float fiveTornadoDuration = 5f;
+    public float fiveTornadoCooldown = 20f;
+    public float tornadoProjectileSpeed = 12f;
+    public float tornadoProjectileLifeTime = 4f;
+    public int tornadoProjectileDamage = 30;
+    public float tornadoSpreadAngle = 60f;
+
 
 
 
@@ -303,6 +314,7 @@ public class DragonBoss : Enemy
     private bool phase2FirstMeteorRequested = false;
     private float leftWingSlamCooldownTimer = 0f;
     private float rightWingSlamCooldownTimer = 0f;
+    private float fiveTornadoCooldownTimer = 0f;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -399,6 +411,9 @@ public class DragonBoss : Enemy
 
         if (rightWingSlamCooldownTimer > 0f)
             rightWingSlamCooldownTimer -= Time.deltaTime;
+
+        if(fiveTornadoCooldownTimer > 0f)
+            fiveTornadoCooldownTimer -= Time.deltaTime;
 
     }
 
@@ -1765,6 +1780,23 @@ public class DragonBoss : Enemy
         phase2CrushSlamComboCooldownTimer = phase2CrushSlamComboCooldown;
     }
 
+    //5가지 토네이도
+    public bool CanFiveTornado()
+    {
+        return  fiveTornadoCooldownTimer <= 0f;
+    }
+
+    public void StartFiveTornadoCooldown()
+    {
+        fiveTornadoCooldownTimer = fiveTornadoCooldown;
+    }
+
+    public void PlayFiveTornado()
+    {
+        animator.ResetTrigger("FiveTornado");
+        animator.SetTrigger("FiveTornado");
+    }
+
     //죽음
     public override void TakeDamage(
      int damage,
@@ -1984,6 +2016,58 @@ public class DragonBoss : Enemy
     {
         return IsInGlobalRecovery() || isBTActionPlaying || IsBreakingWeakPoint();
     }
+
+
+    public void ShootFiveWayTornado()
+    {
+        if (tornadoSpawnPoint == null)
+            return;
+
+        Vector3 baseDir = tornadoSpawnPoint.forward;
+        baseDir.y = 0f;
+        baseDir.Normalize();
+
+        if (tornadoFiveWayVfxPrefab != null)
+        {
+            Instantiate(
+                tornadoFiveWayVfxPrefab,
+                tornadoSpawnPoint.position,
+                Quaternion.LookRotation(baseDir)
+            );
+        }
+
+        int count = 5;
+        float startAngle = -tornadoSpreadAngle * 0.5f;
+        float angleStep = tornadoSpreadAngle / (count - 1);
+
+        for (int i = 0; i < count; i++)
+        {
+            float angle = startAngle + angleStep * i;
+            Vector3 dir = Quaternion.Euler(0f, angle, 0f) * baseDir;
+
+            GameObject hitbox = Instantiate(
+                tornadoHitboxPrefab,
+                tornadoSpawnPoint.position,
+                Quaternion.LookRotation(dir)
+            );
+
+            DragonTornadoProjectile projectile =
+                hitbox.GetComponent<DragonTornadoProjectile>();
+
+            if (projectile != null)
+            {
+                projectile.Init(
+                    this,
+                    dir,
+                    tornadoProjectileSpeed,
+                    tornadoProjectileLifeTime,
+                    tornadoProjectileDamage,
+                    targetLayer
+                );
+            }
+        }
+    }
+
 
     //fbx 모음들
     public void PlayLeftWingSlamEffect()

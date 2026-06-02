@@ -246,6 +246,11 @@ public class WolfElite : Enemy
         Debug.DrawRay(transform.position, attackDirection * 3f, Color.red, 1f);
         animator.SetBool("Walk", false);
         animator.SetBool("Run", false);
+
+        animator.SetBool("Phase1Idle", currentPhase == BossPhase.Phase1);
+        animator.SetBool("Phase2Idle", currentPhase == BossPhase.Phase2);
+
+        animator.SetTrigger("Stomp");
         isAttacking = true;
         isSkillAttacking = true;
         agent.isStopped = true;
@@ -279,6 +284,11 @@ public class WolfElite : Enemy
 
         animator.SetBool("Walk", false);
         animator.SetBool("Run", false);
+
+        animator.SetBool("Phase1Idle", currentPhase == BossPhase.Phase1);
+        animator.SetBool("Phase2Idle", currentPhase == BossPhase.Phase2);
+
+        animator.SetTrigger("DoubleStomp");
 
         isAttacking = true;
         isSkillAttacking = true;

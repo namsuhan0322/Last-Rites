@@ -14,6 +14,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
     public string Thema3SceneName = "Thema3Scene";
     public string Tower1SceneName = "Tower1";
     public string BossRushSceneName = "BossRushScene";
+    public string TowerSceneName = "TowerScene";
 
     [Header("Loading Settings")]
     public float minimumLoadingTime = 5f;
@@ -117,6 +118,12 @@ public class ScenesManager : SingletonMono<ScenesManager>
         if (useFadeEffect) yield return StartCoroutine(FadeOut());
 
         isLoading = false;
+    }
+    
+    //타워씬 로드
+    public void LoadTowerScene()
+    {
+        LoadScene(TowerSceneName);
     }
 
     private IEnumerator LoadSceneDirectly(string targetScene)

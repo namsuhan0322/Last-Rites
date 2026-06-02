@@ -15,6 +15,16 @@ public class WaveEntry
     public int weight = 1;
 }
 
+[System.Serializable]
+public class TowerFloorSetting
+{
+    public int floor;
+
+    public int minionCountWave1 = 5;
+    public int minionCountWave2 = 7;
+    public int eliteCountWave3 = 1;
+}
+
 public enum EnemyGrade
 {
     Minion,
@@ -53,6 +63,11 @@ public class WaveManager : MonoBehaviour
     [Header("Boss UI")]
     public BossHealthUI bossHealthUI;
 
+    [Header("Tower Floor Settings")]
+    public List<TowerFloorSetting> floorSettings = new List<TowerFloorSetting>();
+
+    private TowerFloorSetting currentFloorSetting;
+
     int waveIndex = 1;
     int aliveEnemies = 0;
     bool isClear = false;
@@ -61,6 +76,7 @@ public class WaveManager : MonoBehaviour
 
     void Start()
     {
+        ApplyTowerFloorSetting();
         StartCoroutine(StartWaveLoop());
     }
 
@@ -215,6 +231,9 @@ public class WaveManager : MonoBehaviour
 
         isClear = true;
 
+        if (TowerManager.Instance != null)
+            TowerManager.Instance.ClearSelectedFloor();
+
         if (stageClearManager != null)
             stageClearManager.ShowClearSequence();
         else
@@ -292,5 +311,28 @@ public class WaveManager : MonoBehaviour
         }
 
         countdownText.gameObject.SetActive(false);
+    }
+
+    //클리어한 층수
+    void ApplyTowerFloorSetting()
+    {
+        int selectedFloor = 1;
+
+        if (TowerManager.Instance != null)
+            selectedFloor = TowerManager.Instance.selectedFloor;
+
+        currentFloorSetting = floorSettings.Find(x => x.floor == selectedFloor);
+
+        if (currentFloorSetting == null)
+        {
+            Debug.LogWarning($"{selectedFloor}층 설정이 없습니다. 기본값 사용");
+            return;
+        }
+
+        minionCountWave1 = currentFloorSetting.minionCountWave1;
+        minionCountWave2 = currentFloorSetting.minionCountWave2;
+        eliteCountWave3 = currentFloorSetting.eliteCountWave3;
+
+        Debug.Log($"{selectedFloor}층 설정 적용 완료");
     }
 }

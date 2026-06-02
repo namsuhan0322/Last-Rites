@@ -10,6 +10,7 @@ public class DataManager : SingletonMono<DataManager>
     // 게임 전체 데이터
     public PlaythroughSaveData CurrentGameData { get; private set; }
 
+
     private void OnEnable()
     {
         UnityEngine.SceneManagement.SceneManager.sceneLoaded += OnSceneLoaded;

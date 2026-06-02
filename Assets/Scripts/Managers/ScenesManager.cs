@@ -13,6 +13,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
     public string Thema2SceneName = "Thema2Scene";
     public string Thema3SceneName = "Thema3Scene";
     public string Tower1SceneName = "Tower1";
+    public string BossRushSceneName = "BossRushScene";
 
     [Header("Loading Settings")]
     public float minimumLoadingTime = 5f;
@@ -252,6 +253,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
     public void LoadTestGameScene() => LoadScene(Thema1SceneName);
     public void LoadLobbyScene() => LoadScene(LobbySceneName);
     public void LoadTower1Scene() => LoadScene(Tower1SceneName);
+    public void LoadBossRushScene() => LoadScene(BossRushSceneName);
     public void ReloadCurrentScene() => LoadScene(currentSceneName);
     #endregion
 }

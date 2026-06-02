@@ -3,17 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-
 [System.Serializable]
 public class WaveEntry
 {
     public EnemyData enemy;
 
-    [Tooltip("적이 생성되는 웨이브")]
-    public int unlockWave = 1;
+    [Tooltip("Minion / Elite 구분용")]
+    public EnemyGrade grade;
 
     [Tooltip("가중치")]
     public int weight = 1;
+}
+
+public enum EnemyGrade
+{
+    Minion,
+    Elite
 }
 
 public class WaveManager : MonoBehaviour
@@ -22,121 +27,229 @@ public class WaveManager : MonoBehaviour
     public List<WaveEntry> enemyPool = new List<WaveEntry>();
 
     [Header("Wave Settings")]
-    public int baseEnemiesPerWave = 5;
-    public float delayBeforeNextWave = 3f;
-    public float difficultyGrowth = 1.2f;  //난이도 조정 수치
+    public int maxWave = 3;
+    public int minionCountWave1 = 5;
+    public int minionCountWave2 = 7;
+    public int eliteCountWave3 = 1;
 
-    //생성효과들
+    [Header("Spawn Area")]
+    public Transform spawnAreaQuad;
+
+    public float delayBeforeNextWave = 3f;
+
+    [Header("Spawn")]
     public GameObject spawnIndicatorPrefab;
     public float spawnDelay = 1.5f;
 
-    //UI
+    [Header("UI")]
     public TextMeshProUGUI countdownText;
 
-    //변수들
+    [Header("Clear")]
+    public StageClearManager stageClearManager;
+
+    [Header("Boss UI")]
+    public BossHealthUI bossHealthUI;
+
     int waveIndex = 1;
     int aliveEnemies = 0;
+    bool isClear = false;
+
     GameObject[] plans;
 
     void Start()
     {
-
-        plans = GameObject.FindGameObjectsWithTag("Plan");
         StartCoroutine(StartWaveLoop());
     }
 
-    #region 웨이브 반복문
     IEnumerator StartWaveLoop()
     {
-        while (true)
+        while (waveIndex <= maxWave)
         {
             yield return StartCoroutine(ShowCountdown());
 
             yield return StartCoroutine(StartWave());
 
+            if (waveIndex >= maxWave)
+            {
+                ClearTower();
+                yield break;
+            }
+
             yield return new WaitForSeconds(delayBeforeNextWave);
             waveIndex++;
         }
     }
-    #endregion
 
-    //웨이브 시작
     IEnumerator StartWave()
     {
-        int enemiesThisWave = Mathf.RoundToInt(baseEnemiesPerWave * Mathf.Pow(difficultyGrowth, waveIndex - 1));
+        int spawnCount = GetSpawnCount();
+        EnemyGrade grade = GetWaveGrade();
 
         List<Coroutine> coroutines = new List<Coroutine>();
 
-        for (int i = 0; i < enemiesThisWave; i++)
+        for (int i = 0; i < spawnCount; i++)
         {
-            coroutines.Add(StartCoroutine(SpawnEnemyWithWarning(PickEnemyForWave())));
+            EnemyData enemy = PickEnemyByGrade(grade);
+
+            if (enemy != null)
+                coroutines.Add(StartCoroutine(SpawnEnemyWithWarning(enemy)));
         }
 
         foreach (var co in coroutines)
-        {
             yield return co;
-        }
 
         while (aliveEnemies > 0)
             yield return null;
     }
 
-    #region 웨이브에서 적 뽑기
-    EnemyData PickEnemyForWave()
+    int GetSpawnCount()
     {
-        List<WaveEntry> unlocked = enemyPool.FindAll(e => e.unlockWave <= waveIndex);
+        if (waveIndex == 1)
+            return minionCountWave1;
+
+        if (waveIndex == 2)
+            return minionCountWave2;
+
+        return eliteCountWave3;
+    }
+
+    EnemyGrade GetWaveGrade()
+    {
+        if (waveIndex == 3)
+            return EnemyGrade.Elite;
+
+        return EnemyGrade.Minion;
+    }
+
+    EnemyData PickEnemyByGrade(EnemyGrade grade)
+    {
+        List<WaveEntry> list = enemyPool.FindAll(e => e.grade == grade);
+
+        if (list.Count == 0)
+        {
+            Debug.LogWarning($"{grade} 등급 몬스터가 EnemyPool에 없습니다.");
+            return null;
+        }
 
         int totalWeight = 0;
-        foreach (var e in unlocked) totalWeight += e.weight;
+
+        foreach (var e in list)
+            totalWeight += e.weight;
 
         int r = Random.Range(0, totalWeight);
-        foreach (var e in unlocked)
+
+        foreach (var e in list)
         {
-            if (r < e.weight) return e.enemy;
+            if (r < e.weight)
+                return e.enemy;
+
             r -= e.weight;
         }
-        return unlocked[0].enemy;
+
+        return list[0].enemy;
     }
-    #endregion
-    public void OnEnemyDead() => aliveEnemies--;
-    #region 적 소환
+
+    public void OnEnemyDead()
+    {
+        aliveEnemies--;
+
+        Debug.Log("적 사망 처리됨 / 남은 적 수 : " + aliveEnemies);
+
+        if (aliveEnemies < 0)
+            aliveEnemies = 0;
+    }
+
     IEnumerator SpawnEnemyWithWarning(EnemyData data)
     {
-        GameObject plan = plans[Random.Range(0, plans.Length)];
-        Bounds b = plan.GetComponent<Renderer>().bounds;
+        Vector3 pos = GetRandomSpawnPosition();
 
-        Vector3 pos = new Vector3(
-            Random.Range(b.min.x, b.max.x),
-            b.max.y + 0.05f,
-            Random.Range(b.min.z, b.max.z)
-        );
-
-        var indicator = Instantiate(
+        GameObject indicator = Instantiate(
             spawnIndicatorPrefab,
             pos + Vector3.up * 0.02f,
             Quaternion.Euler(90, 0, 0)
         );
 
-        var effect = indicator.GetComponent<SpawnIndicator>();
+        SpawnIndicator effect = indicator.GetComponent<SpawnIndicator>();
+
         if (effect != null)
             StartCoroutine(effect.Play());
 
+        aliveEnemies++;
+        Debug.Log("적 생성 예약 / 현재 적 수 : " + aliveEnemies);
+
         yield return new WaitForSeconds(spawnDelay);
 
-        var go = Instantiate(data.prefab, pos + Vector3.up, Quaternion.identity);
-        go.GetComponent<Enemy>().Init(this, data);
+        GameObject go = Instantiate(data.prefab, pos + Vector3.up, Quaternion.identity);
 
-        aliveEnemies++;
+        Enemy enemy = go.GetComponent<Enemy>();
+
+        if (enemy != null)
+        {
+            enemy.Init(this, data);
+
+            // 엘리트나 보스면 HP UI 연결
+            if (data.rank == EnemyRank.Elite || data.rank == EnemyRank.Boss)
+            {
+                if (bossHealthUI != null)
+                {
+                    bossHealthUI.SetBossOnSpawn(enemy);
+                }
+            }
+        }
+        else
+        {
+            aliveEnemies--;
+            Debug.LogWarning(go.name + "에 Enemy 컴포넌트가 없습니다.");
+        }
 
         Destroy(indicator);
     }
-    #endregion
-    #region 카운트다운
+
+    void ClearTower()
+    {
+        if (isClear)
+            return;
+
+        isClear = true;
+
+        if (stageClearManager != null)
+            stageClearManager.ShowClearSequence();
+        else
+            Debug.LogWarning("StageClearManager가 연결되지 않았습니다.");
+    }
+
+    Vector3 GetRandomSpawnPosition()
+    {
+        if (spawnAreaQuad == null)
+        {
+            Debug.LogWarning("Spawn Area Quad가 연결되지 않았습니다.");
+            return transform.position;
+        }
+
+        Vector3 center = spawnAreaQuad.position;
+
+        float halfX = spawnAreaQuad.localScale.x * 0.5f;
+        float halfZ = spawnAreaQuad.localScale.y * 0.5f;
+
+        float randomX = Random.Range(-halfX, halfX);
+        float randomZ = Random.Range(-halfZ, halfZ);
+
+        return center + new Vector3(randomX, 0f, randomZ);
+    }
+
     IEnumerator ShowCountdown()
     {
+
+        if (countdownText == null)
+        {
+            Debug.LogWarning("Countdown Text가 WaveManager에 연결되지 않았습니다.");
+            yield break;
+        }
+
+        countdownText.transform.parent.gameObject.SetActive(true);
         countdownText.gameObject.SetActive(true);
 
-        Color baseColor = countdownText.color;   
+        Color baseColor = countdownText.color;
         string[] numbers = { "3", "2", "1" };
 
         foreach (var n in numbers)
@@ -168,5 +281,4 @@ public class WaveManager : MonoBehaviour
 
         countdownText.gameObject.SetActive(false);
     }
-    #endregion
 }

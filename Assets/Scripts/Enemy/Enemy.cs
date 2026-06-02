@@ -99,15 +99,14 @@ public class Enemy : Actor
     {
         base.Start();
 
-        if (data != null)
+        if (data != null && manager == null)
         {
             Init(null, data);
         }
-        else
+        else if (data == null)
         {
             Debug.LogError("EnemyData 없음");
         }
-
 
         OnStun += HandleStun;
     }
@@ -534,12 +533,6 @@ public class Enemy : Actor
 
         if (isStunned) return;
 
-        isHit = true;
-
-        if (agent != null && agent.enabled && agent.isOnNavMesh)
-            agent.isStopped = true;
-
-        animator?.SetTrigger("Hit");
     }
 
     //공격 시도

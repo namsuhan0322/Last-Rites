@@ -16,27 +16,16 @@ public class BossHealthUI : MonoBehaviour
     private void Start()
     {
         if (bossUIPanel != null)
-        {
             bossUIPanel.SetActive(false);
-        }
-    }
 
-    private void OnEnable()
-    {
         if (bossActor != null)
-        {
-            bossActor.OnHPChanged += UpdateHealthBar;
-
-            UpdateHealthBar(bossActor.CurrentHP, bossActor.MaxHP);
-        }
+            UpdateBossReference(bossActor);
     }
 
     private void OnDisable()
     {
         if (bossActor != null)
-        {
             bossActor.OnHPChanged -= UpdateHealthBar;
-        }
     }
 
     private void UpdateHealthBar(int currentHp, int maxHp)
@@ -50,50 +39,44 @@ public class BossHealthUI : MonoBehaviour
         }
 
         if (currentHpText != null)
-        {
             currentHpText.text = displayHp.ToString();
-        }
 
         if (maxHpText != null)
-        {
             maxHpText.text = maxHp.ToString();
-        }
     }
 
     public void ShowBossUI()
     {
         if (bossUIPanel != null)
-        {
             bossUIPanel.SetActive(true);
 
+        if (bossActor != null)
             UpdateHealthBar(bossActor.CurrentHP, bossActor.MaxHP);
-        }
     }
 
     public void HideBossUI()
     {
         if (bossUIPanel != null)
-        {
             bossUIPanel.SetActive(false);
-        }
     }
 
     public void UpdateBossReference(Actor newBoss)
     {
         if (bossActor != null)
-        {
             bossActor.OnHPChanged -= UpdateHealthBar;
-        }
 
         bossActor = newBoss;
 
         if (bossActor != null)
         {
             bossActor.OnHPChanged += UpdateHealthBar;
-            if (bossUIPanel != null && bossUIPanel.activeSelf)
-            {
-                UpdateHealthBar(bossActor.CurrentHP, bossActor.MaxHP);
-            }
+            UpdateHealthBar(bossActor.CurrentHP, bossActor.MaxHP);
         }
+    }
+
+    public void SetBossOnSpawn(Actor spawnedBoss)
+    {
+        UpdateBossReference(spawnedBoss);
+        ShowBossUI();
     }
 }

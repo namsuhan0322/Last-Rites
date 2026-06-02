@@ -109,11 +109,17 @@ public class WolfElite : Enemy
     {
         isAttacking = true;
         isPhaseChanging = true;
+
         agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.ResetPath();
+
+        animator.SetBool("Walk", false);
+        animator.SetBool("Run", false);
 
         animator.SetTrigger("PhaseRoar");
 
-        yield return new WaitForSeconds(2.0f); 
+        yield return new WaitForSeconds(2f);
 
         currentPhase = BossPhase.Phase2;
 
@@ -129,11 +135,17 @@ public class WolfElite : Enemy
     {
         isAttacking = true;
         isPhaseChanging = true;
+
         agent.isStopped = true;
+        agent.velocity = Vector3.zero;
+        agent.ResetPath();
+
+        animator.SetBool("Walk", false);
+        animator.SetBool("Run", false);
 
         animator.SetTrigger("PhaseRoar");
 
-        yield return new WaitForSeconds(2f); // 애니 길이에 맞춰
+        yield return new WaitForSeconds(2f);
 
         currentPhase = BossPhase.Phase3;
 
@@ -250,7 +262,6 @@ public class WolfElite : Enemy
         animator.SetBool("Phase1Idle", currentPhase == BossPhase.Phase1);
         animator.SetBool("Phase2Idle", currentPhase == BossPhase.Phase2);
 
-        animator.SetTrigger("Stomp");
         isAttacking = true;
         isSkillAttacking = true;
         agent.isStopped = true;
@@ -287,8 +298,6 @@ public class WolfElite : Enemy
 
         animator.SetBool("Phase1Idle", currentPhase == BossPhase.Phase1);
         animator.SetBool("Phase2Idle", currentPhase == BossPhase.Phase2);
-
-        animator.SetTrigger("DoubleStomp");
 
         isAttacking = true;
         isSkillAttacking = true;

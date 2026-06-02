@@ -35,6 +35,9 @@ public class WaveManager : MonoBehaviour
     [Header("Spawn Area")]
     public Transform spawnAreaQuad;
 
+    [Header("Elite Spawn Point")]
+    public Transform eliteSpawnPoint;
+
     public float delayBeforeNextWave = 3f;
 
     [Header("Spawn")]
@@ -161,7 +164,7 @@ public class WaveManager : MonoBehaviour
 
     IEnumerator SpawnEnemyWithWarning(EnemyData data)
     {
-        Vector3 pos = GetRandomSpawnPosition();
+        Vector3 pos = GetSpawnPosition(data);
 
         GameObject indicator = Instantiate(
             spawnIndicatorPrefab,
@@ -218,6 +221,15 @@ public class WaveManager : MonoBehaviour
             Debug.LogWarning("StageClearManager가 연결되지 않았습니다.");
     }
 
+    Vector3 GetSpawnPosition(EnemyData data)
+    {
+        if (data.rank == EnemyRank.Elite && eliteSpawnPoint != null)
+        {
+            return eliteSpawnPoint.position;
+        }
+
+        return GetRandomSpawnPosition();
+    }
     Vector3 GetRandomSpawnPosition()
     {
         if (spawnAreaQuad == null)

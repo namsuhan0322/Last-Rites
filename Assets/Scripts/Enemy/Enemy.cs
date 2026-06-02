@@ -326,6 +326,8 @@ public class Enemy : Actor
     // ---------- 추적 ----------
     void ChasePlayer(float dist)
     {
+
+
         agent.updateRotation = false;
         if (isAttacking || IsRecovering())
             return;
@@ -352,7 +354,7 @@ public class Enemy : Actor
     // ---------- 랜덤 순찰 ----------
     void RandomPatrol()
     {
-        agent.updateRotation = true; 
+        agent.updateRotation = true;
 
         agent.isStopped = false;
         agent.speed = patrolSpeed;
@@ -364,6 +366,7 @@ public class Enemy : Actor
             if (waitTimer >= patrolWaitTime)
             {
                 Vector3 newPos;
+
                 if (GetRandomPoint(transform.position, patrolRadius, out newPos))
                 {
                     agent.SetDestination(newPos);
@@ -373,8 +376,18 @@ public class Enemy : Actor
             }
         }
 
-        animator.SetBool("Walk", true);
-        animator.SetBool("Run", false);
+        float speed = agent.velocity.magnitude;
+
+        if (speed > 0.1f)
+        {
+            animator.SetBool("Walk", true);
+            animator.SetBool("Run", false);
+        }
+        else
+        {
+            animator.SetBool("Walk", false);
+            animator.SetBool("Run", false);
+        }
     }
 
     //----------랜덤좌표값---------
@@ -567,7 +580,7 @@ public class Enemy : Actor
         attackTimer = attackCooldown;
     }
     //공격 끝남
-    public void EndAttack()
+    public virtual void EndAttack()
     {
         isAttacking = false;
 

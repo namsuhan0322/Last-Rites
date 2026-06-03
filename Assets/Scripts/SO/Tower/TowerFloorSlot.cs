@@ -11,6 +11,7 @@ public class TowerFloorSlot : MonoBehaviour, IPointerClickHandler
     public GameObject unSelect_Bg;
     public Image floorIcon;
     public TextMeshProUGUI floorNameText;
+    public GameObject rotateLight;
 
     [HideInInspector] public TowerFloorSO myData;
 
@@ -52,25 +53,42 @@ public class TowerFloorSlot : MonoBehaviour, IPointerClickHandler
 
     public void RefreshState()
     {
-        if (myData == null)
-            return;
+        bool unlocked =
+            TowerManager.Instance.IsFloorUnlocked(myData.floor);
 
-        if (TowerManager.Instance == null)
-        {
-            Debug.LogWarning("TowerManager.Instance가 없습니다.");
-            return;
-        }
-
-        bool unlocked = TowerManager.Instance.IsFloorUnlocked(myData.floor);
+        bool cleared =
+            TowerManager.Instance.HighestClearedFloor >= myData.floor;
 
         CanvasGroup cg = GetComponent<CanvasGroup>();
 
         if (cg == null)
             cg = gameObject.AddComponent<CanvasGroup>();
 
-        cg.alpha = unlocked ? 1f : 0.35f;
-        cg.blocksRaycasts = true;
-        cg.interactable = unlocked;
+        cg.alpha = unlocked ? 1f : 0.5f;
+
+        if (floorIcon != null)
+        {
+            floorIcon.sprite = myData.clearIcon;
+
+            if (cleared)
+            {
+                floorIcon.color = Color.white;
+            }
+            else
+            {
+                floorIcon.color = new Color(
+                    0.35f,
+                    0.35f,
+                    0.35f,
+                    1f);
+            }
+        }
+
+        // 클리어한 층만 회전 이펙트 ON
+        if (rotateLight != null)
+        {
+            rotateLight.SetActive(cleared);
+        }
     }
 
     public void SetSelectedState(bool selected)

@@ -1,11 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlayerHUD : MonoBehaviour
 {
     [Header("UI 슬라이더")]
     [SerializeField] private Slider hpSlider;
     [SerializeField] private Slider staminaSlider;
+
+    [Header("UI 텍스트 (현재 / 최대)")]
+    [SerializeField] private TextMeshProUGUI hpText;
+    [SerializeField] private TextMeshProUGUI staminaText;
 
     [Header("플레이어 스탯")]
     [SerializeField] private PlayerStats playerStats;
@@ -38,6 +43,11 @@ public class PlayerHUD : MonoBehaviour
             hpSlider.maxValue = max;
             hpSlider.value = current;
         }
+
+        if (hpText != null)
+        {
+            hpText.text = $"{current} / {max}";
+        }
     }
 
     private void UpdateStaminaUI(float current, float max)
@@ -46,6 +56,11 @@ public class PlayerHUD : MonoBehaviour
         {
             staminaSlider.maxValue = max;
             staminaSlider.value = current;
+        }
+
+        if (staminaText != null)
+        {
+            staminaText.text = $"{current.ToString("F0")} / {max.ToString("F0")}";
         }
     }
 }

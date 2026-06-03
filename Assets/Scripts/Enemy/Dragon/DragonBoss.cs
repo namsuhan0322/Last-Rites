@@ -227,8 +227,9 @@ public class DragonBoss : Enemy
     [Header("날개 내려찍기 이펙트")]
     [SerializeField] private GameObject leftWingSlamEffectPrefab;
     [SerializeField] private GameObject rightWingSlamEffectPrefab;
-    [SerializeField] private Transform leftWingSlamEffectPoint;
-    [SerializeField] private Transform rightWingSlamEffectPoint;
+    [Header("날개 슬램 이펙트 보스 기준 위치")]
+    public Vector3 leftWingSlamLocalOffset = new Vector3(-4f, 0f, 2f);
+    public Vector3 rightWingSlamLocalOffset = new Vector3(4f, 0f, 2f);
     public float wingSlamEffectScale = 2f;
     public float wingSlamEffectSpeed = 0.5f;
     public float wingSlamEffectLifeTime = 3f;
@@ -2054,12 +2055,64 @@ public class DragonBoss : Enemy
     //fbx 모음들
     public void PlayLeftWingSlamEffect()
     {
-        SpawnWingSlamEffect(leftWingSlamEffectPrefab, leftWingSlamEffectPoint);
+        SpawnWingSlamEffectByBossOffset(
+            leftWingSlamEffectPrefab,
+            leftWingSlamLocalOffset
+        );
     }
 
     public void PlayRightWingSlamEffect()
     {
-        SpawnWingSlamEffect(rightWingSlamEffectPrefab, rightWingSlamEffectPoint);
+        SpawnWingSlamEffectByBossOffset(
+            rightWingSlamEffectPrefab,
+            rightWingSlamLocalOffset
+        );
+    }
+
+    private void SpawnWingSlamEffectByBossOffset(
+    GameObject prefab,
+    Vector3 localOffset)
+    {
+        if (prefab == null)
+            return;
+
+        Vector3 spawnPos = transform.TransformPoint(localOffset);
+        float yOffset = localOffset.y;
+
+        if (Physics.Raycast(
+            spawnPos + Vector3.up * 10f,
+            Vector3.down,
+            out RaycastHit hit,
+            50f,
+            groundLayer))
+        {
+            spawnPos = hit.point;
+        }
+
+        spawnPos.y += yOffset;
+
+        Quaternion rot = transform.rotation * prefab.transform.rotation;
+
+        GameObject effect = Instantiate(
+            prefab,
+            spawnPos,
+            rot
+        );
+
+        effect.transform.SetParent(null);
+        effect.transform.localScale *= wingSlamEffectScale;
+
+        ParticleSystem[] particles =
+            effect.GetComponentsInChildren<ParticleSystem>(true);
+
+        foreach (ParticleSystem ps in particles)
+        {
+            ParticleSystem.MainModule main = ps.main;
+            main.simulationSpeed = wingSlamEffectSpeed;
+            ps.Play(true);
+        }
+
+        Destroy(effect, wingSlamEffectLifeTime);
     }
 
     //날개 이펙트

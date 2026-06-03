@@ -3,44 +3,34 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-[System.Serializable]
-public class WaveEntry
-{
-    public EnemyData enemy;
-
-    [Tooltip("Minion / Elite 구분용")]
-    public EnemyGrade grade;
-
-    [Tooltip("가중치")]
-    public int weight = 1;
-}
 
 [System.Serializable]
 public class TowerFloorSetting
 {
     public int floor;
 
-    public int minionCountWave1 = 5;
-    public int minionCountWave2 = 7;
-    public int eliteCountWave3 = 1;
-}
+    [Header("Wave 1")]
+    public List<TowerEnemySpawnInfo> wave1Enemies = new List<TowerEnemySpawnInfo>();
 
-public enum EnemyGrade
+    [Header("Wave 2")]
+    public List<TowerEnemySpawnInfo> wave2Enemies = new List<TowerEnemySpawnInfo>();
+
+    [Header("Wave 3")]
+    public List<TowerEnemySpawnInfo> wave3Enemies = new List<TowerEnemySpawnInfo>();
+}
+[System.Serializable]
+public class TowerEnemySpawnInfo
 {
-    Minion,
-    Elite
+    public EnemyData enemy;
+
+    [Min(1)]
+    public int count = 1;
 }
 
 public class WaveManager : MonoBehaviour
 {
-    [Header("Enemy Pool")]
-    public List<WaveEntry> enemyPool = new List<WaveEntry>();
-
     [Header("Wave Settings")]
     public int maxWave = 3;
-    public int minionCountWave1 = 5;
-    public int minionCountWave2 = 7;
-    public int eliteCountWave3 = 1;
 
     [Header("Spawn Area")]
     public Transform spawnAreaQuad;
@@ -84,6 +74,14 @@ public class WaveManager : MonoBehaviour
     {
         while (waveIndex <= maxWave)
         {
+            List<TowerEnemySpawnInfo> enemies = GetEnemiesForCurrentWave();
+
+            if (enemies == null || enemies.Count == 0)
+            {
+                waveIndex++;
+                continue;
+            }
+
             yield return StartCoroutine(ShowCountdown());
 
             yield return StartCoroutine(StartWave());
@@ -97,21 +95,25 @@ public class WaveManager : MonoBehaviour
             yield return new WaitForSeconds(delayBeforeNextWave);
             waveIndex++;
         }
+
+        ClearTower();
     }
 
     IEnumerator StartWave()
     {
-        int spawnCount = GetSpawnCount();
-        EnemyGrade grade = GetWaveGrade();
+        List<TowerEnemySpawnInfo> spawnInfos = GetEnemiesForCurrentWave();
 
         List<Coroutine> coroutines = new List<Coroutine>();
 
-        for (int i = 0; i < spawnCount; i++)
+        foreach (TowerEnemySpawnInfo info in spawnInfos)
         {
-            EnemyData enemy = PickEnemyByGrade(grade);
+            if (info == null || info.enemy == null)
+                continue;
 
-            if (enemy != null)
-                coroutines.Add(StartCoroutine(SpawnEnemyWithWarning(enemy)));
+            for (int i = 0; i < info.count; i++)
+            {
+                coroutines.Add(StartCoroutine(SpawnEnemyWithWarning(info.enemy)));
+            }
         }
 
         foreach (var co in coroutines)
@@ -121,51 +123,21 @@ public class WaveManager : MonoBehaviour
             yield return null;
     }
 
-    int GetSpawnCount()
+    List<TowerEnemySpawnInfo> GetEnemiesForCurrentWave()
     {
+        if (currentFloorSetting == null)
+        {
+            Debug.LogWarning("현재 층 설정이 없습니다.");
+            return new List<TowerEnemySpawnInfo>();
+        }
+
         if (waveIndex == 1)
-            return minionCountWave1;
+            return currentFloorSetting.wave1Enemies;
 
         if (waveIndex == 2)
-            return minionCountWave2;
+            return currentFloorSetting.wave2Enemies;
 
-        return eliteCountWave3;
-    }
-
-    EnemyGrade GetWaveGrade()
-    {
-        if (waveIndex == 3)
-            return EnemyGrade.Elite;
-
-        return EnemyGrade.Minion;
-    }
-
-    EnemyData PickEnemyByGrade(EnemyGrade grade)
-    {
-        List<WaveEntry> list = enemyPool.FindAll(e => e.grade == grade);
-
-        if (list.Count == 0)
-        {
-            Debug.LogWarning($"{grade} 등급 몬스터가 EnemyPool에 없습니다.");
-            return null;
-        }
-
-        int totalWeight = 0;
-
-        foreach (var e in list)
-            totalWeight += e.weight;
-
-        int r = Random.Range(0, totalWeight);
-
-        foreach (var e in list)
-        {
-            if (r < e.weight)
-                return e.enemy;
-
-            r -= e.weight;
-        }
-
-        return list[0].enemy;
+        return currentFloorSetting.wave3Enemies;
     }
 
     public void OnEnemyDead()
@@ -325,13 +297,9 @@ public class WaveManager : MonoBehaviour
 
         if (currentFloorSetting == null)
         {
-            Debug.LogWarning($"{selectedFloor}층 설정이 없습니다. 기본값 사용");
+            Debug.LogWarning($"{selectedFloor}층 설정이 없습니다.");
             return;
         }
-
-        minionCountWave1 = currentFloorSetting.minionCountWave1;
-        minionCountWave2 = currentFloorSetting.minionCountWave2;
-        eliteCountWave3 = currentFloorSetting.eliteCountWave3;
 
         Debug.Log($"{selectedFloor}층 설정 적용 완료");
     }

@@ -942,7 +942,7 @@ PrefabInstance:
     - target: {fileID: 919132149155446097, guid: aa5823831ede81742a159e51a9d1f539,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 919132149155446097, guid: aa5823831ede81742a159e51a9d1f539,
         type: 3}
@@ -1514,7 +1514,6 @@ MonoBehaviour:
   attackTimer: 0
   attackPatternCount: 3
   attackAnimTime: 1
-  attackCooldownTime: 2
   postAttackDelay: 1.5
   stompIndicatorPrefab: {fileID: 3436487514331147369}
   doubleStompCooldown: 12

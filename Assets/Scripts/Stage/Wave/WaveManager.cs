@@ -9,6 +9,14 @@ public class TowerFloorSetting
 {
     public int floor;
 
+    [Header("Floor Type")]
+    public bool isBombSurvivalFloor = false;
+
+    [Header("Bomb Survival Settings")]
+    public EnemyData suicideBombEnemy;
+    public float survivalTime = 60f;
+    public float bombSpawnInterval = 2f;
+
     [Header("Wave 1")]
     public List<TowerEnemySpawnInfo> wave1Enemies = new List<TowerEnemySpawnInfo>();
 
@@ -35,8 +43,9 @@ public class WaveManager : MonoBehaviour
     [Header("Spawn Area")]
     public Transform spawnAreaQuad;
 
-    [Header("Elite Spawn Point")]
-    public Transform eliteSpawnPoint;
+    [Header("Elite Spawn Points")]
+    public Transform eliteSpawnPointLeft;
+    public Transform eliteSpawnPointRight;
 
     public float delayBeforeNextWave = 3f;
 
@@ -61,13 +70,18 @@ public class WaveManager : MonoBehaviour
     int waveIndex = 1;
     int aliveEnemies = 0;
     bool isClear = false;
-
+    private int eliteSpawnIndex = 0;
+    private bool useLeftFirst;
     GameObject[] plans;
 
     void Start()
     {
         ApplyTowerFloorSetting();
-        StartCoroutine(StartWaveLoop());
+
+        if (currentFloorSetting != null && currentFloorSetting.isBombSurvivalFloor)
+            StartCoroutine(StartBombSurvivalFloor());
+        else
+            StartCoroutine(StartWaveLoop());
     }
 
     IEnumerator StartWaveLoop()
@@ -99,8 +113,39 @@ public class WaveManager : MonoBehaviour
         ClearTower();
     }
 
+    IEnumerator StartBombSurvivalFloor()
+    {
+        yield return StartCoroutine(ShowCountdown());
+
+        float timer = 0f;
+        float spawnTimer = 0f;
+
+        while (timer < currentFloorSetting.survivalTime)
+        {
+            timer += Time.deltaTime;
+            spawnTimer += Time.deltaTime;
+
+            if (spawnTimer >= currentFloorSetting.bombSpawnInterval)
+            {
+                spawnTimer = 0f;
+
+                if (currentFloorSetting.suicideBombEnemy != null)
+                {
+                    StartCoroutine(SpawnEnemyWithWarning(currentFloorSetting.suicideBombEnemy));
+                }
+            }
+
+            yield return null;
+        }
+
+        ClearTower();
+    }
+
     IEnumerator StartWave()
     {
+        eliteSpawnIndex = 0;
+        useLeftFirst = Random.value < 0.5f;
+
         List<TowerEnemySpawnInfo> spawnInfos = GetEnemiesForCurrentWave();
 
         List<Coroutine> coroutines = new List<Coroutine>();
@@ -203,6 +248,14 @@ public class WaveManager : MonoBehaviour
 
         isClear = true;
 
+        Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
+
+        foreach (Enemy enemy in enemies)
+        {
+            if (enemy != null)
+                Destroy(enemy.gameObject);
+        }
+
         if (TowerManager.Instance != null)
             TowerManager.Instance.ClearSelectedFloor();
 
@@ -214,13 +267,38 @@ public class WaveManager : MonoBehaviour
 
     Vector3 GetSpawnPosition(EnemyData data)
     {
-        if (data.rank == EnemyRank.Elite && eliteSpawnPoint != null)
+        if (data.rank == EnemyRank.Elite || data.rank == EnemyRank.Boss)
         {
-            return eliteSpawnPoint.position;
+            return GetEliteSpawnPosition();
         }
 
         return GetRandomSpawnPosition();
     }
+
+    //엘리트 전용 스폰 포인트
+    Vector3 GetEliteSpawnPosition()
+    {
+        if (eliteSpawnPointLeft == null || eliteSpawnPointRight == null)
+        {
+            Debug.LogWarning("Elite Spawn Point Left/Right가 연결되지 않았습니다.");
+            return GetRandomSpawnPosition();
+        }
+
+        Transform first = useLeftFirst ? eliteSpawnPointLeft : eliteSpawnPointRight;
+        Transform second = useLeftFirst ? eliteSpawnPointRight : eliteSpawnPointLeft;
+
+        Transform selected;
+
+        if (eliteSpawnIndex == 0)
+            selected = first;
+        else
+            selected = second;
+
+        eliteSpawnIndex++;
+
+        return selected.position;
+    }
+
     Vector3 GetRandomSpawnPosition()
     {
         if (spawnAreaQuad == null)

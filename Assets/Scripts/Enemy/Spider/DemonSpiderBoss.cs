@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-public class SpiderElite : Enemy
+public class DemonSpiderBoss : Enemy
 {
     [Header("랜덤 기본 공격 설정")]
     public int attackPatternCount = 3;
@@ -18,6 +18,25 @@ public class SpiderElite : Enemy
 
     public float doubleStompRange = 5f;
 
+    [Header("2페이즈 설정")]
+    public float phase2HpPercent = 0.4f;
+    public float phaseRoarTime = 2.0f;
+    public bool isPhase2 = false;
+    private bool phase2Started = false;
+
+    [Header("2페이즈 점프 스킬")]
+    public float jumpSkillCooldown = 10f;
+    public float jumpSkillUseRange = 15f;
+    public float jumpUpTime = 0.6f;
+    public float jumpHeight = 8f;
+    public GameObject jumpIndicator;
+    public float indicatorFollowTime = 2.0f;
+    public float indicatorStopTime = 0.6f;
+
+    public float fallTime = 0.5f;
+    public float jumpDamageRange = 4f;
+    public int jumpDamage = 40;
+
     [Header("회전 설정")]
     public float turnSpeed = 8f;
     public float attackStartAngle = 8f;
@@ -26,9 +45,10 @@ public class SpiderElite : Enemy
     private bool isRandomAttacking = false;
     private bool isSkillAttacking = false;
     private bool isRecovering = false;
-
+    private bool isPhaseSkillPlaying = false;
     private float doubleStompTimer = 0f;
     private GameObject stompIndicator;
+    private float jumpSkillTimer = 0f;
 
     protected override void Awake()
     {
@@ -39,6 +59,9 @@ public class SpiderElite : Enemy
             stompIndicator = Instantiate(stompIndicatorPrefab, transform);
             stompIndicator.SetActive(false);
         }
+
+        if (jumpIndicator != null)
+            jumpIndicator.SetActive(false);
     }
 
     protected override void Update()
@@ -49,13 +72,16 @@ public class SpiderElite : Enemy
 
         attackTimer -= Time.deltaTime;
         doubleStompTimer -= Time.deltaTime;
+        jumpSkillTimer -= Time.deltaTime;
+
+        CheckPhase2();
     }
 
     protected override void TryAttack()
     {
         if (currentTarget == null) return;
 
-        if (isAttacking || isRandomAttacking || isSkillAttacking || isRecovering)
+        if (isAttacking || isRandomAttacking || isSkillAttacking || isRecovering || isPhaseSkillPlaying)
         {
             StopAgent();
             return;
@@ -63,6 +89,12 @@ public class SpiderElite : Enemy
 
         float dist = Vector3.Distance(transform.position, currentTarget.position);
         if (dist > attackRange) return;
+
+        if (isPhase2 && jumpSkillTimer <= 0f && dist <= jumpSkillUseRange)
+        {
+            StartCoroutine(JumpAttack());
+            return;
+        }
 
         if (doubleStompTimer <= 0f)
         {
@@ -73,6 +105,21 @@ public class SpiderElite : Enemy
         if (attackTimer <= 0f)
         {
             StartCoroutine(RandomAttackRoutine());
+        }
+    }
+
+    //2페이지 인가?
+    void CheckPhase2()
+    {
+        if (phase2Started || isPhase2)
+            return;
+
+        float hpRate = (float)CurrentHP / MaxHP;
+
+        if (hpRate <= phase2HpPercent)
+        {
+            phase2Started = true;
+            StartCoroutine(Phase2RoarAndExplosion());
         }
     }
 
@@ -151,7 +198,7 @@ public class SpiderElite : Enemy
           doubleStompRange,
           targetLayer
          );
-        
+
 
         foreach (var hit in hits)
         {
@@ -161,6 +208,166 @@ public class SpiderElite : Enemy
                 continue;
 
             actor.TakeDamage(doubleStompDamage, 1f);
+        }
+    }
+
+    IEnumerator Phase2RoarAndExplosion()
+    {
+        isPhaseSkillPlaying = true;
+        isAttacking = true;
+        isSkillAttacking = true;
+
+        StopAgent();
+
+        animator.SetBool("Walk", false);
+        animator.SetBool("Run", false);
+
+        animator.SetTrigger("PhaseRoar");
+
+        yield return new WaitForSeconds(phaseRoarTime);
+
+        isPhase2 = true;
+
+        attackTimer = attackCooldown;
+        doubleStompTimer = doubleStompCooldown;
+
+        isPhaseSkillPlaying = false;
+        isSkillAttacking = false;
+        isAttacking = false;
+
+        ResumeAgent();
+    }
+
+    IEnumerator JumpAttack()
+    {
+        isAttacking = true;
+        isSkillAttacking = true;
+
+        StopAgent();
+
+        agent.updatePosition = false;
+        agent.updateRotation = false;
+
+        yield return StartCoroutine(FaceTargetSmooth());
+
+        animator.SetBool("Walk", false);
+        animator.SetBool("Run", false);
+
+        Vector3 startPos = transform.position;
+        Vector3 airPos = startPos + Vector3.up * jumpHeight;
+
+        animator.SetTrigger("Jump");
+
+        float t = 0f;
+        while (t < jumpUpTime)
+        {
+            t += Time.deltaTime;
+            float p = t / jumpUpTime;
+
+            transform.position = Vector3.Lerp(startPos, airPos, p);
+
+            yield return null;
+        }
+
+        transform.position = airPos;
+
+        Vector3 lockedLandPos = currentTarget.position;
+
+        if (jumpIndicator != null)
+        {
+            jumpIndicator.SetActive(true);
+            jumpIndicator.transform.position = lockedLandPos + Vector3.up * 0.02f;
+            jumpIndicator.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
+            jumpIndicator.transform.localScale = Vector3.one * jumpDamageRange * 2f;
+        }
+
+        float followTimer = 0f;
+
+        while (followTimer < indicatorFollowTime)
+        {
+            followTimer += Time.deltaTime;
+
+            if (currentTarget != null)
+            {
+                lockedLandPos = currentTarget.position;
+
+                transform.position = new Vector3(
+                    lockedLandPos.x,
+                    airPos.y,
+                    lockedLandPos.z
+                );
+            }
+
+            if (jumpIndicator != null)
+                jumpIndicator.transform.position = lockedLandPos + Vector3.up * 0.02f;
+
+            yield return null;
+        }
+
+        yield return new WaitForSeconds(indicatorStopTime);
+
+        if (jumpIndicator != null)
+            jumpIndicator.transform.position = lockedLandPos + Vector3.up * 0.02f;
+
+        animator.SetTrigger("Fall");
+
+        Vector3 fallStartPos = transform.position;
+        Vector3 fallEndPos = new Vector3(
+            lockedLandPos.x,
+            startPos.y,
+            lockedLandPos.z
+        );
+
+        t = 0f;
+        while (t < fallTime)
+        {
+            t += Time.deltaTime;
+            float p = t / fallTime;
+
+            transform.position = Vector3.Lerp(fallStartPos, fallEndPos, p);
+
+            yield return null;
+        }
+
+        transform.position = fallEndPos;
+
+        if (jumpIndicator != null)
+            jumpIndicator.SetActive(false);
+
+        DealJumpDamage(fallEndPos);
+
+        jumpSkillTimer = jumpSkillCooldown;
+        attackTimer = attackCooldown;
+        doubleStompTimer = doubleStompCooldown;
+
+        yield return StartCoroutine(Recover(2f));
+
+        isSkillAttacking = false;
+        isAttacking = false;
+
+        agent.Warp(transform.position);
+        agent.updatePosition = true;
+        agent.updateRotation = true;
+
+        ResumeAgent();
+    }
+
+    void DealJumpDamage(Vector3 center)
+    {
+        Collider[] hits = Physics.OverlapSphere(
+            center,
+            jumpDamageRange,
+            targetLayer
+        );
+
+        foreach (var hit in hits)
+        {
+            Actor actor = hit.GetComponent<Actor>();
+
+            if (actor == null || actor == this)
+                continue;
+
+            actor.TakeDamage(jumpDamage, 1f);
         }
     }
 
@@ -201,7 +408,7 @@ public class SpiderElite : Enemy
 
     protected override bool IsRecovering()
     {
-        return isRecovering || isSkillAttacking;
+        return isRecovering || isSkillAttacking || isPhaseSkillPlaying;
     }
 
     public override void EndAttack()
@@ -255,3 +462,4 @@ public class SpiderElite : Enemy
         DealDoubleStompDamage();
     }
 }
+

@@ -6,7 +6,6 @@ public class BlackSpiderBoss : Enemy
     [Header("랜덤 기본 공격 설정")]
     public int attackPatternCount = 3;
     public float attackAnimTime = 1.0f;
-    public float attackCooldownTime = 2.0f;
     public float postAttackDelay = 1.5f;
 
     [Header("양발 내려찍기")]
@@ -123,7 +122,7 @@ public class BlackSpiderBoss : Enemy
         StopAgent();
         yield return StartCoroutine(FaceTargetSmooth());
 
-        attackTimer = attackCooldownTime;
+        attackTimer = attackCooldown;
 
         animator.SetBool("Walk", false);
         animator.SetBool("Run", false);
@@ -175,7 +174,7 @@ public class BlackSpiderBoss : Enemy
 
         yield return StartCoroutine(Recover(doubleStompRecoveryTime));
 
-        attackTimer = attackCooldownTime;
+        attackTimer = attackCooldown;
 
         isSkillAttacking = false;
         isAttacking = false;
@@ -239,7 +238,7 @@ public class BlackSpiderBoss : Enemy
 
         yield return StartCoroutine(Recover(explosionRecoveryTime));
 
-        attackTimer = attackCooldownTime;
+        attackTimer = attackCooldown;
         doubleStompTimer = doubleStompCooldown;
 
         isPhaseSkillPlaying = false;

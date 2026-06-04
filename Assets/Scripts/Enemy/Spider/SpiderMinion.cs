@@ -6,7 +6,6 @@ public class SpiderMinion : Enemy
     [Header("랜덤 공격 설정")]
     public int attackPatternCount = 3;
     public float attackAnimTime = 1.0f;
-    public float attackCooldownTime = 2.0f;
     public float postAttackDelay = 1.5f;
 
     bool isRandomAttacking = false;
@@ -34,9 +33,7 @@ public class SpiderMinion : Enemy
         agent.isStopped = true;
         agent.ResetPath();
         agent.velocity = Vector3.zero;
-
-        attackTimer = attackCooldownTime;
-
+        attackTimer = attackCooldown;
         Vector3 dir = currentTarget.position - transform.position;
         dir.y = 0f;
 

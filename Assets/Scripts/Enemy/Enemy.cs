@@ -701,7 +701,7 @@ public class Enemy : Actor
 
     private void ClearSpawnedEffects()
     {
-        GameObject[] activeEffects = GameObject.FindGameObjectsWithTag("EnemyEffect");
+        GameObject[] activeEffects = GameObject.FindGameObjectsWithTag("SpawnIndicator");
         foreach (GameObject effect in activeEffects)
         {
             if (effect != null)

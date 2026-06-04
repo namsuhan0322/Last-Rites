@@ -3163,7 +3163,6 @@ GameObject:
   - component: {fileID: 6896717735079017393}
   - component: {fileID: 3899574750100241142}
   - component: {fileID: 1144641065990520349}
-  - component: {fileID: 5810927227391672110}
   m_Layer: 6
   m_Name: R Hand
   m_TagString: Untagged
@@ -3226,26 +3225,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DragonAttackHitbox
   damage: 10
---- !u!114 &5810927227391672110
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3798345212882168430}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a19957c2b3d81e143bdf15c3c44e410f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::WeakPoint
-  _currentHP: 300
-  _maxPoise: 20
-  _currentPoise: 0
-  _poiseRecoveryRate: 0
-  _isInvincible: 0
-  _invincibleTimer: 0
-  ui: {fileID: 0}
-  weakPointType: 0
 --- !u!1 &3861943331143776387
 GameObject:
   m_ObjectHideFlags: 0
@@ -3961,7 +3940,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -5642,7 +5621,7 @@ SphereCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
@@ -6638,7 +6617,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &925633216826566905
 Transform:
   m_ObjectHideFlags: 0

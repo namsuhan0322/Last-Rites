@@ -1258,7 +1258,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2143218506307711735
 Transform:
   m_ObjectHideFlags: 0
@@ -1386,6 +1386,7 @@ MonoBehaviour:
   comboCount: 3
   comboInterval: 0.4
   comboCooldown: 3.5
+  postAttackDelay: 1.5
 --- !u!1 &4275526382902506211
 GameObject:
   m_ObjectHideFlags: 0

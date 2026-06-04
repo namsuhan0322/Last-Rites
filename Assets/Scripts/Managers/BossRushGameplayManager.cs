@@ -26,6 +26,8 @@ public class BossRushGameplayManager : MonoBehaviour
     private bool isCurrentBossDead = false;
     private bool isRushStarted = false; // 트리거 중복 실행 방지용
 
+    private PlayerController _player;
+
     public event Action<int, int> OnWaveChanged;
     public event Action OnBossRushCleared;
 
@@ -42,6 +44,11 @@ public class BossRushGameplayManager : MonoBehaviour
         {
             isRushStarted = true; // 중복 실행 방지
 
+            _player = other.GetComponent<PlayerController>();
+            if (_player != null)
+            {
+                _player.Stats.OnDeath += HandlePlayerDeath;
+            }
             Debug.Log("[BossRush] 플레이어 입장! 보스러쉬를 시작합니다.");
 
             // 문 닫기 & 카메라 전환
@@ -54,6 +61,24 @@ public class BossRushGameplayManager : MonoBehaviour
             // 보스러쉬 루틴 가동
             StartCoroutine(BossRushRoutine());
         }
+    }
+
+    private void HandlePlayerDeath()
+    {
+        if (_player != null) _player.Stats.OnDeath -= HandlePlayerDeath;
+
+        StopAllCoroutines();
+
+        if (currentBossInstance != null) Destroy(currentBossInstance);
+        if (bossHealthUI != null) bossHealthUI.HideBossUI();
+        if (doorObj != null) doorObj.SetActive(false);
+        if (bossCamera != null) bossCamera.Priority = 0;
+
+        isRushStarted = false;
+        currentBossIndex = 0;
+
+        Collider col = GetComponent<Collider>();
+        if (col != null) col.enabled = true;
     }
 
     private IEnumerator BossRushRoutine()
@@ -76,9 +101,7 @@ public class BossRushGameplayManager : MonoBehaviour
             }
         }
 
-        Debug.Log("[BossRush] 보스 러쉬 완벽 클리어!");
-
-        // 카메라 원상 복구 및 문 열기
+        if (_player != null) _player.Stats.OnDeath -= HandlePlayerDeath;
         if (bossCamera != null) bossCamera.Priority = 0;
         if (doorObj != null) doorObj.SetActive(false);
 
@@ -114,10 +137,12 @@ public class BossRushGameplayManager : MonoBehaviour
 
     private void HandleBossDeath()
     {
-        Debug.Log("[BossRush] 현재 보스가 쓰러졌습니다!");
-
         if (bossHealthUI != null) bossHealthUI.HideBossUI();
-
         isCurrentBossDead = true;
+    }
+
+    private void OnDestroy()
+    {
+        if (_player != null) _player.Stats.OnDeath -= HandlePlayerDeath;
     }
 }

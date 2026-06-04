@@ -514,6 +514,13 @@ public class Enemy : Actor
             agent.velocity = Vector3.zero;
         }
 
+        ParticleSystem[] particles = GetComponentsInChildren<ParticleSystem>();
+        foreach (ParticleSystem p in particles)
+        {
+            p.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            p.gameObject.SetActive(false);
+        }
+
         manager?.OnEnemyDead();
 
         BossClearManager bossClearManager = FindAnyObjectByType<BossClearManager>();
@@ -690,5 +697,22 @@ public class Enemy : Actor
             agent.ResetPath();
             agent.velocity = Vector3.zero;
         }
+    }
+
+    private void ClearSpawnedEffects()
+    {
+        GameObject[] activeEffects = GameObject.FindGameObjectsWithTag("EnemyEffect");
+        foreach (GameObject effect in activeEffects)
+        {
+            if (effect != null)
+            {
+                Destroy(effect);
+            }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        ClearSpawnedEffects();
     }
 }

@@ -4,7 +4,6 @@
 public class BoneSyncer : MonoBehaviour
 {
     [Header("정상적으로 작동하는 원본 메쉬")]
-    [Tooltip("예: 기존에 잘 움직이던 M_Knight를 끌어다 넣으세요.")]
     public SkinnedMeshRenderer targetRenderer;
 
     [ContextMenu("뼈대 동기화 실행! (여기 우클릭)")]

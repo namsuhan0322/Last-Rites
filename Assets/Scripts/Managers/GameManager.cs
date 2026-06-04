@@ -247,7 +247,14 @@ public class GameManager : SingletonMono<GameManager>
 
         if (player != null)
         {
-            if (GameProgressManager.Instance != null && GameProgressManager.Instance.progressData.hasSavedRespawn)
+            if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == "BossRushScene")
+            {
+                GameObject rushRespawn = GameObject.Find("BossRushRespawnPoint");
+
+                if (rushRespawn != null) player.Revive(rushRespawn.transform.position);
+                else player.Revive(respawnPoint.position);
+            }
+            else if (GameProgressManager.Instance != null && GameProgressManager.Instance.progressData.hasSavedRespawn)
             {
                 Vector3 savedPos = new Vector3(
                     GameProgressManager.Instance.progressData.respawnPosX,

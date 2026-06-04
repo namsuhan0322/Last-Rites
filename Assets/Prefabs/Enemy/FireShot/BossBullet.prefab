@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 7030500997677910491}
   m_Layer: 13
   m_Name: BossBullet
-  m_TagString: Untagged
+  m_TagString: EnemyEffect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -198,6 +198,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Layer
       value: 13
+      objectReference: {fileID: 0}
+    - target: {fileID: 7043661442727665735, guid: 2e1b472b3b59c0b4ca1f5627bfc2ea7f,
+        type: 3}
+      propertyPath: m_TagString
+      value: EnemyEffect
       objectReference: {fileID: 0}
     - target: {fileID: 8343564958302293273, guid: 2e1b472b3b59c0b4ca1f5627bfc2ea7f,
         type: 3}

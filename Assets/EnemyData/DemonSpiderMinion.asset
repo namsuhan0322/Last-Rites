@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5bad62ff640ca5c4f943cf5ebad64133, type: 3}
-  m_Name: SpiderMinion
+  m_Name: DemonSpiderMinion
   m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  prefab: {fileID: 9107348375807956426, guid: 9d5045aa00c28fc458285a720f2e2bb2, type: 3}
+  prefab: {fileID: 4752660120868119907, guid: 5960de12eef0c4b4e8edd4ed89dfb187, type: 3}
   rank: 0
   enemyHp: 150
   patrolSpeed: 2
@@ -20,6 +20,6 @@ MonoBehaviour:
   detectRadius: 10
   patrolRadius: 4
   patrolWaitTime: 2
-  attackDamage: 7
+  attackDamage: 5
   attackRange: 2.5
-  attackCooldown: 1.8
+  attackCooldown: 0.3

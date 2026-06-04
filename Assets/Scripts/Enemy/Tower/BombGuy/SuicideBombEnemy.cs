@@ -144,4 +144,12 @@ public class SuicideBombEnemy : Enemy
     {
         // 자폭병은 일반 공격 안 함
     }
+
+    private void OnDestroy()
+    {
+        if (explosionIndicator != null)
+        {
+            Destroy(explosionIndicator);
+        }
+    }
 }

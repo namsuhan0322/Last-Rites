@@ -65,19 +65,23 @@ public class WolfElite : Enemy
     //업데이트
     protected override void Update()
     {
+        if (_isDead)
+            return;
+
         base.Update();
 
-        if (_isDead) return;
+        if (_isDead)
+            return;
 
-        attackTimer -= Time.deltaTime;  
+        attackTimer -= Time.deltaTime;
 
         UpdatePhase();
         UpdateSkillCooldowns();
         UpdateIdleState();
 
-        if (isAttacking || isSkillAttacking || isPhaseChanging)
+        if (isAttacking || isSkillAttacking || isPhaseChanging || isRecovering)
         {
-            agent.isStopped = true;
+            StopAllMovement();
             return;
         }
 
@@ -86,6 +90,24 @@ public class WolfElite : Enemy
             RotateToTargetSmooth();
         }
     }
+
+    void StopAllMovement()
+    {
+        if (agent == null) return;
+
+        agent.updateRotation = false;
+
+        if (agent.enabled && agent.isOnNavMesh)
+        {
+            agent.isStopped = true;
+            agent.ResetPath();
+            agent.velocity = Vector3.zero;
+        }
+
+        animator.SetBool("Walk", false);
+        animator.SetBool("Run", false);
+    }
+
 
     //페이즈변환업데이트
     void UpdatePhase()
@@ -164,9 +186,11 @@ public class WolfElite : Enemy
     //공격시도
     protected override void TryAttack()
     {
+        if (_isDead) return;
         if (currentTarget == null) return;
         if (isAttacking || isSkillAttacking || isPhaseChanging || isRecovering)
         {
+            StopAllMovement();
             agent.isStopped = true;
             agent.updateRotation = false;
 
@@ -232,6 +256,9 @@ public class WolfElite : Enemy
     //페이즈3 공격
     void TryPhase3Attack()
     {
+        if (_isDead) return;
+        if (isAttacking || isSkillAttacking || isRecovering || isPhaseChanging) return;
+
         List<System.Action> patterns = new List<System.Action>();
 
         if (chargeTimer <= 0f)
@@ -299,8 +326,10 @@ public class WolfElite : Enemy
         animator.SetBool("Phase1Idle", currentPhase == BossPhase.Phase1);
         animator.SetBool("Phase2Idle", currentPhase == BossPhase.Phase2);
 
+        if (_isDead) yield break;
         isAttacking = true;
         isSkillAttacking = true;
+        doubleStompTimer = doubleStompCooldown;
         agent.isStopped = true;
         agent.velocity = Vector3.zero;
         agent.ResetPath();
@@ -316,7 +345,6 @@ public class WolfElite : Enemy
         stompIndicator.SetActive(false);
 
         animator.SetTrigger("DoubleStomp");
-        doubleStompTimer = doubleStompCooldown;
 
         yield return new WaitForSeconds(2f);
         yield return StartCoroutine(Recover(4.0f));
@@ -426,8 +454,11 @@ public class WolfElite : Enemy
         animator.SetBool("Walk", false);
         animator.SetBool("Run", false);
 
+        if (_isDead) yield break;
+
         isAttacking = true;
         isSkillAttacking = true;
+        chargeTimer = chargeCooldown;
         agent.isStopped = true;
         agent.velocity = Vector3.zero;  
         agent.ResetPath();
@@ -452,6 +483,7 @@ public class WolfElite : Enemy
 
         while (t < 1.5f)
         {
+            if (_isDead) yield break;
             t += Time.deltaTime;
 
             float alpha = Mathf.Lerp(0.2f, 0.7f, t / 1.5f);
@@ -469,6 +501,7 @@ public class WolfElite : Enemy
 
         while (moved < chargeDistance)
         {
+            if (_isDead) yield break;
             float step = chargeSpeed * Time.deltaTime;
             transform.position += dir * step;
             moved += step;
@@ -496,7 +529,6 @@ public class WolfElite : Enemy
             yield return null;
         }
 
-        chargeTimer = chargeCooldown;
 
         yield return StartCoroutine(Recover(2.0f));
 

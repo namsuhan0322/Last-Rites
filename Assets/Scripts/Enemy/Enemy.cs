@@ -46,7 +46,7 @@ public class Enemy : Actor
     public float PatrolSpeed => patrolSpeed;
     public float PatrolRadius => patrolRadius;
     float patrolWaitTime;
-    float chaseSpeed;
+    protected float chaseSpeed;
     float waitTimer = 0f;
     public bool isHit = false;
     public float attackRange;

@@ -11088,6 +11088,30 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fd1cfc5404f519a43b45ecefe997ec68, type: 3}
+--- !u!114 &8129376418264816794 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6848330661806048880, guid: fd1cfc5404f519a43b45ecefe997ec68,
+    type: 3}
+  m_PrefabInstance: {fileID: 8129376418264816793}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
+--- !u!114 &8129376418264816795 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8533599857577836377, guid: fd1cfc5404f519a43b45ecefe997ec68,
+    type: 3}
+  m_PrefabInstance: {fileID: 8129376418264816793}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.TextMeshPro::TMPro.TextMeshProUGUI
 --- !u!114 &8190159666373795265 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1592425815926683663, guid: 5a514e2c5a61e4b42a9dd7166a2edc7e,
@@ -11178,6 +11202,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2305667789019199750, guid: c582de2278e4da74b92342716844443b,
         type: 3}
+      propertyPath: hpText
+      value: 
+      objectReference: {fileID: 8129376418264816795}
+    - target: {fileID: 2305667789019199750, guid: c582de2278e4da74b92342716844443b,
+        type: 3}
       propertyPath: hpSlider
       value: 
       objectReference: {fileID: 1574967999}
@@ -11186,6 +11215,11 @@ PrefabInstance:
       propertyPath: playerStats
       value: 
       objectReference: {fileID: 6414740103678731307}
+    - target: {fileID: 2305667789019199750, guid: c582de2278e4da74b92342716844443b,
+        type: 3}
+      propertyPath: staminaText
+      value: 
+      objectReference: {fileID: 8129376418264816794}
     - target: {fileID: 2305667789019199750, guid: c582de2278e4da74b92342716844443b,
         type: 3}
       propertyPath: staminaSlider

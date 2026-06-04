@@ -248,6 +248,15 @@ public class WaveManager : MonoBehaviour
 
         isClear = true;
 
+        StopAllCoroutines();
+
+        GameObject[] indicators = GameObject.FindGameObjectsWithTag("SpawnIndicator");
+
+        foreach (GameObject indicator in indicators)
+        {
+            Destroy(indicator);
+        }
+
         Enemy[] enemies = FindObjectsByType<Enemy>(FindObjectsSortMode.None);
 
         foreach (Enemy enemy in enemies)
@@ -255,6 +264,8 @@ public class WaveManager : MonoBehaviour
             if (enemy != null)
                 Destroy(enemy.gameObject);
         }
+
+        aliveEnemies = 0;
 
         if (TowerManager.Instance != null)
             TowerManager.Instance.ClearSelectedFloor();

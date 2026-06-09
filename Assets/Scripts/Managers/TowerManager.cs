@@ -1,7 +1,17 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TowerManager : SingletonMono<TowerManager>
 {
+
+    [Header("Tower Floor Data")]
+    public List<TowerFloorSO> towerFloors = new List<TowerFloorSO>();
+
+    public TowerFloorSO GetSelectedFloorData()
+    {
+        return towerFloors.Find(x => x.floor == selectedFloor);
+    }
+
     protected override bool DontDestroy => true;
 
     public int selectedFloor = 1;

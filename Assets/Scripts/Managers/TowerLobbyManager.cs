@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 public class TowerLobbyManager : MonoBehaviour
 {
     [Header("데이터 및 프리팹")]
-    public List<TowerFloorSO> towerFloors;
     public TowerFloorSlot slotPrefab;
     public Transform slotContainer;
 
@@ -90,7 +89,7 @@ public class TowerLobbyManager : MonoBehaviour
 
         _createdSlots.Clear();
 
-        foreach (TowerFloorSO floor in towerFloors)
+        foreach (TowerFloorSO floor in TowerManager.Instance.towerFloors)
         {
             if (floor == null)
             {

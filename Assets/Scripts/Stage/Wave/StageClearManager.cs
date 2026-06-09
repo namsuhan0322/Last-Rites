@@ -10,6 +10,11 @@ public class StageClearManager : MonoBehaviour
     public RectTransform panelTransform;  // 크기 조절용
     public GameObject bossHp;
 
+    [Header("Tower Result UI")]
+    public TowerResultUI towerResultUI;
+
+    public TowerInfoUI towerInfoUI;
+
     [Header("타이밍 설정")]
     [Tooltip("보스가 죽고 텍스트가 뜨기 전까지의 대기 시간 (초)")]
     public float startDelay = 2.0f;
@@ -69,13 +74,14 @@ public class StageClearManager : MonoBehaviour
             DataManager.Instance.SaveAllData();
         }
 
-        if (ScenesManager.Instance != null)
+        if (clearPanel != null)
         {
-            ScenesManager.Instance.LoadLobbyScene();
+            clearPanel.SetActive(false);
         }
-        else
+
+        if (towerInfoUI != null)
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("LobbyScene");
+            towerInfoUI.EnableNextFloorButton();
         }
     }
 }

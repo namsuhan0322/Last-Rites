@@ -1979,6 +1979,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Thema2Boss
       objectReference: {fileID: 0}
+    - target: {fileID: 8359645455954385577, guid: 9863529f54df2db459776f6f7e18371c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2485,6 +2490,8 @@ MonoBehaviour:
   canvasGroup: {fileID: 804252235}
   panelTransform: {fileID: 165358387}
   bossHp: {fileID: 1153540212}
+  towerResultUI: {fileID: 0}
+  towerInfoUI: {fileID: 0}
   startDelay: 2
   fadeDuration: 2.5
   startScale: 0.85
@@ -4099,6 +4106,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: 'JumpIndicator '
+      objectReference: {fileID: 0}
+    - target: {fileID: 204416013530851194, guid: 25fe0237a74d377419a5ba77d7626a99,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8469096586089465048, guid: 25fe0237a74d377419a5ba77d7626a99,
         type: 3}

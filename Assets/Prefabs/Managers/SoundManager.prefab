@@ -214,7 +214,7 @@ MonoBehaviour:
       type: 2}
     source: {fileID: 0}
   - name: DragonWingFlap
-    clip: {fileID: 8300000, guid: de7c334af1a371d4997cfe770b5622c4, type: 3}
+    clip: {fileID: 8300000, guid: 2210d00a446842d4a8b10a8a7e3fbe7e, type: 3}
     volume: 1
     pitch: 1
     loop: 1
@@ -256,6 +256,86 @@ MonoBehaviour:
   - name: DragonRoar
     clip: {fileID: 8300000, guid: 82f9af1e69497f94fac80da911e6e4f5, type: 3}
     volume: 0.7
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: DragonRoar2
+    clip: {fileID: 8300000, guid: 82f9af1e69497f94fac80da911e6e4f5, type: 3}
+    volume: 0.7
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: DragonJump
+    clip: {fileID: 8300000, guid: 9bfc0ff0ac1250c418dc442c2a86e873, type: 3}
+    volume: 0.7
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: DragonJumpDown
+    clip: {fileID: 8300000, guid: f6e7df076397ecd429e58e7dd130eaa0, type: 3}
+    volume: 0.7
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: Meteor1
+    clip: {fileID: 8300000, guid: 12be93dee972ba34fba5ccced84da902, type: 3}
+    volume: 0.7
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: Meteor2
+    clip: {fileID: 8300000, guid: d7a345f4f7ae38644915f3b005c3d326, type: 3}
+    volume: 0.7
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: Meteor3
+    clip: {fileID: 8300000, guid: c367110d75304294e9352487a503290c, type: 3}
+    volume: 0.7
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: DragonCharge1
+    clip: {fileID: 8300000, guid: 9f0608cd55e94f645a2b3dd82673b06d, type: 3}
+    volume: 0.7
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: DragonChargeBomb
+    clip: {fileID: 8300000, guid: 960ba3bb5db1ac243b56c5725346dc80, type: 3}
+    volume: 0.7
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: DragonDash
+    clip: {fileID: 8300000, guid: 48c9fb9ec8644254fb34ce4e1a6e4c20, type: 3}
+    volume: 0.7
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: DragonWeakPoint
+    clip: {fileID: 8300000, guid: d75c196bd00a1664a8eaa27a9ccc4e87, type: 3}
+    volume: 0.4
     pitch: 1
     loop: 0
     mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,

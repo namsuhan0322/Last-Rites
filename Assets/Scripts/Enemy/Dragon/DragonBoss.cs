@@ -2470,6 +2470,53 @@ public class DragonBoss : Enemy
         SoundManager.Instance.PlaySound("DragonRoar");
     }
 
+    public void PlayDragonRoar2Sound()
+    {
+        SoundManager.Instance.PlaySound("DragonRoar2");
+    }
+
+    public void PlayDragonJumpSound()
+    {
+        SoundManager.Instance.PlaySound("DragonJump");
+    }
+    public void PlayDragonJumpDownSound()
+    {
+        SoundManager.Instance.PlaySound("DragonJumpDown");
+    }
+
+    public void PlayDragonMeteor1Sound()
+    {
+        SoundManager.Instance.PlaySound("Meteor1");
+    }
+    public void PlayDragonMeteor2Sound()
+    {
+        SoundManager.Instance.PlaySound("Meteor2");
+    }
+    public void PlayDragonMeteor3Sound()
+    {
+        SoundManager.Instance.PlaySound("Meteor3");
+    }
+
+    public void PlayDragonChargeSound()
+    {
+        SoundManager.Instance.PlaySound("DragonCharge1");
+    }
+
+    public void PlayDragonChargeBombSound()
+    {
+        SoundManager.Instance.PlaySound("DragonChargeBomb");
+    }
+
+    public void PlayDragonDashSound()
+    {
+        SoundManager.Instance.PlaySound("DragonDash");
+    }
+
+    public void PlayDragonWeakPointSound()
+    {
+        SoundManager.Instance.PlaySound("DragonWeakPoint");
+    }
+
     public void StartDragonWingFlapSound()
     {
         SoundManager.Instance.PlaySound("DragonWingFlap");

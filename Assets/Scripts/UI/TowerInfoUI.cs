@@ -48,7 +48,7 @@ public class TowerInfoUI : MonoBehaviour
         int floor = TowerManager.Instance.selectedFloor;
 
         if (floorText != null)
-            floorText.text = $"{floor}Ãþ";
+            floorText.text = $"{floor}";
 
         TowerFloorSO data = TowerManager.Instance.GetSelectedFloorData();
 

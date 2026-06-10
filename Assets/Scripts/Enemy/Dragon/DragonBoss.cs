@@ -316,6 +316,7 @@ public class DragonBoss : Enemy
     private float leftWingSlamCooldownTimer = 0f;
     private float rightWingSlamCooldownTimer = 0f;
     private float fiveTornadoCooldownTimer = 0f;
+    private bool meteor2SoundPlayed = false;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -1154,6 +1155,8 @@ public class DragonBoss : Enemy
     {
         animator.ResetTrigger("BreathCast");
         animator.SetTrigger("BreathCast");
+
+        PlayDragonChargeSound();
     }
 
     public void PlayBreathChargeLoop()
@@ -1235,6 +1238,8 @@ public class DragonBoss : Enemy
     }
     public void EndBreathChargeLoop()
     {
+        SoundManager.Instance.StopSound("DragonCharge1");
+
         StopBreathCharge();
 
         animator.ResetTrigger("EndBreathCharge");
@@ -1445,6 +1450,9 @@ public class DragonBoss : Enemy
     public void CancelBreathCharge()
     {
         cancelBreathCharge = true;
+
+        SoundManager.Instance.StopSound("DragonCharge1");
+
         StopBreathCharge();
         EndBreathChargeLoop();
     }
@@ -1458,6 +1466,8 @@ public class DragonBoss : Enemy
     //브레스 차지 데미지
     public void DoBreathChargeExplosionDamage()
     {
+        PlayDragonChargeBombSound();
+
         int damage = GetBreathChargeEventDamage();
 
         Collider[] hits = Physics.OverlapSphere(
@@ -1552,6 +1562,19 @@ public class DragonBoss : Enemy
     {
         animator.ResetTrigger("FlyUp");
         animator.SetTrigger("FlyUp");
+
+        StartDragonWingFlapSound();
+
+        meteor2SoundPlayed = false;
+    }
+
+    public void PlayDragonMeteor2SoundOnce()
+    {
+        if (meteor2SoundPlayed)
+            return;
+
+        meteor2SoundPlayed = true;
+        PlayDragonMeteor2Sound();
     }
 
     //메테오 소환
@@ -1595,6 +1618,7 @@ public class DragonBoss : Enemy
         if (warning != null)
             Destroy(warning);
 
+        PlayDragonMeteor3Sound();
         PlayMeteorImpactEffect(position);
 
         Collider[] hits = Physics.OverlapSphere(
@@ -1698,6 +1722,8 @@ public class DragonBoss : Enemy
         {
             float radius = radiuses[i];
             float effectScale = effectScales[i];
+
+            SoundManager.Instance.PlaySound("WolfFireballExplosion");
 
             DoJumpWaveDamage(center, radius);
             PlayMeteorComboImpactEffect(center, effectScale);
@@ -2336,6 +2362,8 @@ public class DragonBoss : Enemy
 
     public void PlayMeteorEvent()
     {
+        PlayDragonMeteor2SoundOnce();
+
         PlayMeteorEffect();
 
         StartCoroutine(MeteorWarningSpawnRoutine());
@@ -2467,7 +2495,10 @@ public class DragonBoss : Enemy
 
     public void PlayDragonRoarSound()
     {
-        SoundManager.Instance.PlaySound("DragonRoar");
+        if (isPhase2)
+            SoundManager.Instance.PlaySound("DragonRoar2");
+        else
+            SoundManager.Instance.PlaySound("DragonRoar");
     }
 
     public void PlayDragonRoar2Sound()

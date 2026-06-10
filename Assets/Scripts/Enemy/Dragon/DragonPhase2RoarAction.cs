@@ -31,8 +31,8 @@ public partial class DragonPhase2RoarAction : Action
         timer = 0f;
 
         boss.StopMove();
+        boss.EnterPhase2();
         boss.SetMoveType(4); 
-        boss.EnterPhase2();  
 
         return Status.Running;
     }

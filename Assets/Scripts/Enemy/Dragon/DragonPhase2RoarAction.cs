@@ -24,15 +24,17 @@ public partial class DragonPhase2RoarAction : Action
         if (boss == null)
             return Status.Failure;
 
-        // 2페이즈 포효 예약이 없으면 실행 안 함
         if (!boss.ShouldPhase2Roar())
+            return Status.Failure;
+
+        if (boss.IsBreakingWeakPoint())
             return Status.Failure;
 
         timer = 0f;
 
         boss.StopMove();
         boss.EnterPhase2();
-        boss.SetMoveType(4); 
+        boss.SetMoveType(4);
 
         return Status.Running;
     }

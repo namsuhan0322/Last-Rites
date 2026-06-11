@@ -48,7 +48,9 @@ public partial class DragonChargeAttackAction : Action
         boss.SetBTActionPlaying(true);
         boss.StopMove();
 
+        boss.ResetChargeTriggers();
         boss.PlayChargeReady();
+
         indicator = boss.CreateChargeIndicator();
 
         return Status.Running;
@@ -90,6 +92,7 @@ public partial class DragonChargeAttackAction : Action
                 timer = 0f;
                 phase = 2;
 
+                boss.ResetChargeTriggers();
                 boss.SetManualMoveMode(true);
                 boss.PlayCharge();
 
@@ -106,6 +109,8 @@ public partial class DragonChargeAttackAction : Action
 
             if (timer >= boss.chargeDuration)
             {
+                boss.ResetChargeTriggers();
+
                 boss.SyncAgentToTransform();
                 boss.SetManualMoveMode(false);
                 boss.Idle();
@@ -197,6 +202,7 @@ public partial class DragonChargeAttackAction : Action
 
         if (boss != null)
         {
+            boss.ResetChargeTriggers();
             boss.SyncAgentToTransform();
             boss.SetManualMoveMode(false);
             boss.Idle();

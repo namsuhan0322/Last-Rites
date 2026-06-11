@@ -317,6 +317,8 @@ public class DragonBoss : Enemy
     private float rightWingSlamCooldownTimer = 0f;
     private float fiveTornadoCooldownTimer = 0f;
     private bool meteor2SoundPlayed = false;
+    private Coroutine chargeSoundRoutine;
+
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -332,7 +334,9 @@ public class DragonBoss : Enemy
     //공통 현자타임 시간(개별로 나눔)
     public bool CanUseAnyAttack()
     {
-        return globalAttackRecoveryTimer <= 0f;
+        return globalAttackRecoveryTimer <= 0f
+            && !isBreakingWeakPoint
+            && !isBTActionPlaying;
     }
     //이하 동일
     public void StartGlobalAttackRecovery()
@@ -816,7 +820,7 @@ public class DragonBoss : Enemy
 
     public bool CanJumpAttack()
     {
-        return !isPhase2 && jumpAttackCooldownTimer <= 0f;
+        return jumpAttackCooldownTimer <= 0f;
     }
 
     public void StartJumpAttackCooldown()
@@ -1156,7 +1160,10 @@ public class DragonBoss : Enemy
         animator.ResetTrigger("BreathCast");
         animator.SetTrigger("BreathCast");
 
-        PlayDragonChargeSound();
+        if (chargeSoundRoutine != null)
+            StopCoroutine(chargeSoundRoutine);
+
+        chargeSoundRoutine = StartCoroutine(DelayedChargeSound());
     }
 
     public void PlayBreathChargeLoop()
@@ -1240,20 +1247,27 @@ public class DragonBoss : Enemy
     {
         SoundManager.Instance.StopSound("DragonCharge1");
 
+        if (chargeSoundRoutine != null)
+        {
+            StopCoroutine(chargeSoundRoutine);
+            chargeSoundRoutine = null;
+        }
+
         StopBreathCharge();
 
         animator.ResetTrigger("EndBreathCharge");
         animator.SetTrigger("EndBreathCharge");
-
-        Idle();
     }
 
     private void CheckBreathChargeEventRequest()
     {
-        if (isPhase2)
+        if (isPhase2 || phase2Requested || phase2Roared)
             return;
 
         if (breathChargeEventRequested)
+            return;
+
+        if (AreBothWingBroken())
             return;
 
         // 양쪽 날개 다 부쉈으면 더 이상 브레스 차지 안 함
@@ -1361,6 +1375,9 @@ public class DragonBoss : Enemy
 
                 isLeftWingBroken = true;
 
+                isBreakingWeakPoint = true;
+                isBTActionPlaying = true;
+
                 leftWingSlamCooldownTimer += 130f;
 
                 CancelBreathCharge();
@@ -1377,6 +1394,9 @@ public class DragonBoss : Enemy
                 if (isRightWingBroken) return;
 
                 isRightWingBroken = true;
+
+                isBreakingWeakPoint = true;
+                isBTActionPlaying = true;
 
                 rightWingSlamCooldownTimer += 130f;
 
@@ -1396,8 +1416,13 @@ public class DragonBoss : Enemy
     private IEnumerator WeakPointBreakRoutine(WeakPointType type, string triggerName)
     {
         isBreakingWeakPoint = true;
+        isBTActionPlaying = true; // 추가
 
         StopMove();
+
+        StopDragonWingFlapSound();
+        StopDragonBreathSound();
+        SoundManager.Instance.StopSound("DragonCharge1");
 
         switch (type)
         {
@@ -1418,15 +1443,30 @@ public class DragonBoss : Enemy
         animator.ResetTrigger("LeftWingBreak");
         animator.ResetTrigger("RightWingBreak");
 
+        // 공격 트리거들도 끊어줘야 함
+        animator.ResetTrigger("BiteFront");
+        animator.ResetTrigger("BiteLeft");
+        animator.ResetTrigger("BiteRight");
+        animator.ResetTrigger("LeftWingSlam");
+        animator.ResetTrigger("RightWingSlam");
+        animator.ResetTrigger("LeftTailAttack");
+        animator.ResetTrigger("RightTailAttack");
+        animator.ResetTrigger("Fireball");
+        animator.ResetTrigger("Charge");
+        animator.ResetTrigger("ChargeReady");
+        animator.ResetTrigger("FireBreath");
+        animator.ResetTrigger("BreathCast");
+        animator.ResetTrigger("BreathChargeLoop");
+        animator.ResetTrigger("FiveTornado");
+
         animator.SetTrigger(triggerName);
 
         yield return new WaitForSeconds(weakPointBreakAnimTime);
 
         isBreakingWeakPoint = false;
+        isBTActionPlaying = false; 
 
         Idle();
-
-        // 부위파괴 후 공통 현타 시작
         StartGlobalAttackRecovery();
     }
 
@@ -1453,8 +1493,16 @@ public class DragonBoss : Enemy
 
         SoundManager.Instance.StopSound("DragonCharge1");
 
+        if (chargeSoundRoutine != null)
+        {
+            StopCoroutine(chargeSoundRoutine);
+            chargeSoundRoutine = null;
+        }
+
         StopBreathCharge();
-        EndBreathChargeLoop();
+
+        if (!isBreakingWeakPoint)
+            EndBreathChargeLoop();
     }
 
     //리셋하기
@@ -1513,14 +1561,24 @@ public class DragonBoss : Enemy
 
     public void PlayChargeReady()
     {
+        animator.ResetTrigger("Charge");
         animator.ResetTrigger("ChargeReady");
+
         animator.SetTrigger("ChargeReady");
     }
 
     public void PlayCharge()
     {
+        animator.ResetTrigger("ChargeReady");
         animator.ResetTrigger("Charge");
+
         animator.SetTrigger("Charge");
+    }
+
+    public void ResetChargeTriggers()
+    {
+        animator.ResetTrigger("ChargeReady");
+        animator.ResetTrigger("Charge");
     }
 
     public GameObject CreateChargeIndicator()
@@ -2063,6 +2121,9 @@ public class DragonBoss : Enemy
             Quaternion.LookRotation(baseDir)
         );
 
+        SoundManager.Instance.PlaySound("DragonTornado");
+        Invoke(nameof(StopDragonTornadoSound), 3f);
+
         DragonTornadoParticleDamage[] damages =
             vfx.GetComponentsInChildren<DragonTornadoParticleDamage>(true);
 
@@ -2556,6 +2617,24 @@ public class DragonBoss : Enemy
     public void StopDragonWingFlapSound()
     {
         SoundManager.Instance.StopSound("DragonWingFlap");
+    }
+
+    public void StartDragonTailAttackSound()
+    {
+        SoundManager.Instance.PlaySound("DragonTailAttack");
+    }
+
+    public void StopDragonTornadoSound()
+    {
+        SoundManager.Instance.StopSound("DragonTornado");
+    }
+
+
+    private IEnumerator DelayedChargeSound()
+    {
+        yield return new WaitForSeconds(1f);
+
+        PlayDragonChargeSound();
     }
 
     #endregion

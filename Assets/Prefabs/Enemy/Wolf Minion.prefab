@@ -2171,14 +2171,18 @@ MonoBehaviour:
   currentTarget: {fileID: 0}
   surroundRadius: 1.2
   aggroLockDuration: 3
-  stunMarkDuration: 2
-  stunText: {fileID: 9083152522794332037, guid: 7d0903488ee8713478f73dcd132482cc,
+  stunEffectPrefab: {fileID: 5663927605720312730, guid: d0afbac13ba8b614399f96d8f9007376,
     type: 3}
+  stunEffectYOffset: 0.5
+  stunMarkDuration: 2
   tauntText: {fileID: 1242654875678963862, guid: 7d0903488ee8713478f73dcd132482cc,
     type: 3}
   enemyLayer:
     serializedVersion: 2
     m_Bits: 64
+  targetLayer:
+    serializedVersion: 2
+    m_Bits: 0
   isHit: 0
   attackRange: 0
   attackCooldown: 0

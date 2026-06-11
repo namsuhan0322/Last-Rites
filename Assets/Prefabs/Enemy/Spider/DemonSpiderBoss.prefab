@@ -1198,8 +1198,10 @@ MonoBehaviour:
   currentTarget: {fileID: 0}
   surroundRadius: 2
   aggroLockDuration: 3
+  stunEffectPrefab: {fileID: 5663927605720312730, guid: 8dbab8fb0b777164e8f58b48c3ac7efb,
+    type: 3}
+  stunEffectYOffset: 0.5
   stunMarkDuration: 2
-  stunText: {fileID: 0}
   tauntText: {fileID: 0}
   enemyLayer:
     serializedVersion: 2

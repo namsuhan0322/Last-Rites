@@ -1748,8 +1748,10 @@ MonoBehaviour:
   currentTarget: {fileID: 0}
   surroundRadius: 2
   aggroLockDuration: 3
+  stunEffectPrefab: {fileID: 5663927605720312730, guid: d0afbac13ba8b614399f96d8f9007376,
+    type: 3}
+  stunEffectYOffset: 0.5
   stunMarkDuration: 2
-  stunText: {fileID: 0}
   tauntText: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
@@ -1764,7 +1766,6 @@ MonoBehaviour:
   attackTimer: 0
   attackPatternCount: 3
   attackAnimTime: 1
-  attackCooldownTime: 2
   postAttackDelay: 1.5
   stompIndicatorPrefab: {fileID: 3744484130619603571}
   doubleStompCooldown: 8

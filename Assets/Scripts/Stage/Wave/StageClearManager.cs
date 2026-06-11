@@ -13,6 +13,9 @@ public class StageClearManager : MonoBehaviour
     [Header("Tower Result UI")]
     public TowerResultUI towerResultUI;
 
+    [Header("타워 클리어 후 선택 UI")]
+    public GameObject towerChoiceUI;
+
     public TowerInfoUI towerInfoUI;
 
     [Header("타이밍 설정")]
@@ -32,7 +35,11 @@ public class StageClearManager : MonoBehaviour
 
     private void Start()
     {
-        if (clearPanel != null) clearPanel.SetActive(false);
+        if (clearPanel != null)
+            clearPanel.SetActive(false);
+
+        if (towerChoiceUI != null)
+            towerChoiceUI.SetActive(false);
     }
 
     public void ShowClearSequence()
@@ -77,6 +84,11 @@ public class StageClearManager : MonoBehaviour
         if (clearPanel != null)
         {
             clearPanel.SetActive(false);
+        }
+
+        if (towerChoiceUI != null)
+        {
+            towerChoiceUI.SetActive(true);
         }
 
         if (towerInfoUI != null)

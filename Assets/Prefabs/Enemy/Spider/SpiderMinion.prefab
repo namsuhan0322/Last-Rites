@@ -330,18 +330,6 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 7030273776525315285}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &7621605882731619334 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 600648819108473043, guid: f5dcde67601038c4d9e3b6a467aca531,
-    type: 3}
-  m_PrefabInstance: {fileID: 7030273776525315285}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &8260345852796512411
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1654,8 +1642,10 @@ MonoBehaviour:
   currentTarget: {fileID: 0}
   surroundRadius: 2
   aggroLockDuration: 3
+  stunEffectPrefab: {fileID: 5663927605720312730, guid: d0afbac13ba8b614399f96d8f9007376,
+    type: 3}
+  stunEffectYOffset: 0.5
   stunMarkDuration: 2
-  stunText: {fileID: 7621605882731619334}
   tauntText: {fileID: 1589843583713955304}
   enemyLayer:
     serializedVersion: 2

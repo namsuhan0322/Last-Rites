@@ -23,10 +23,13 @@ public class Enemy : Actor
     [Header("어그로락")]
     public float aggroLockDuration = 3f;
 
+    [Header("스턴 이펙트")]
+    public GameObject stunEffectPrefab;
+    public float stunEffectYOffset = 0.5f;
+
     float aggroTimer = 0f;
 
     [SerializeField] float stunMarkDuration = 2f; 
-    public TextMeshPro stunText;
     public TextMeshPro tauntText;
 
 
@@ -58,6 +61,7 @@ public class Enemy : Actor
     Transform lastTarget;
     [System.NonSerialized]
     protected Vector3 attackDirection;
+    private GameObject stunEffectInstance;
 
     //랭크표시 편하게
     public EnemyRank Rank => data.rank;
@@ -423,8 +427,6 @@ public class Enemy : Actor
         if (isStunned) return;
 
         StopCoroutine(nameof(HideStunMark));
-        if (stunText != null)
-            stunText.gameObject.SetActive(false);
 
         tauntText.gameObject.SetActive(true);
         tauntText.text = "!";
@@ -458,24 +460,55 @@ public class Enemy : Actor
     //스턴 마크 보여주기
     void ShowStunMark()
     {
-        if (stunText == null) return;
+        if (stunEffectPrefab == null)
+            return;
 
-        StopCoroutine(nameof(HideTauntText));
-        if (tauntText != null)
-            tauntText.gameObject.SetActive(false);
+        if (stunEffectInstance != null)
+        {
+            Destroy(stunEffectInstance);
+            stunEffectInstance = null;
+        }
 
-        stunText.gameObject.SetActive(true);
-        stunText.text = "@";
+        Vector3 spawnPos = GetTopPosition();
 
-        StopCoroutine(nameof(HideStunMark));
-        StartCoroutine(HideStunMark());
+        stunEffectInstance =
+            Instantiate(stunEffectPrefab, spawnPos, Quaternion.identity, transform);
+    }
+
+    Vector3 GetTopPosition()
+    {
+        Renderer[] renderers =
+            GetComponentsInChildren<Renderer>();
+
+        if (renderers.Length == 0)
+            return transform.position + Vector3.up * 2f;
+
+        Bounds bounds = renderers[0].bounds;
+
+        foreach (Renderer r in renderers)
+        {
+            bounds.Encapsulate(r.bounds);
+        }
+
+        float height = bounds.size.y;
+
+        return new Vector3(
+            bounds.center.x,
+            bounds.max.y + (height * 0.15f),
+            bounds.center.z
+        );
     }
 
     //스턴 마크 숨기기
     IEnumerator HideStunMark()
     {
         yield return new WaitForSeconds(stunMarkDuration);
-        stunText.gameObject.SetActive(false);
+
+        if (stunEffectInstance != null)
+        {
+            Destroy(stunEffectInstance);
+            stunEffectInstance = null;
+        }
     }
 
     //스턴이 끝난 시점
@@ -486,7 +519,11 @@ public class Enemy : Actor
         agent.isStopped = false;
         animator?.SetBool("Stun", false);
 
-        stunText.gameObject.SetActive(false);
+        if (stunEffectInstance != null)
+        {
+            Destroy(stunEffectInstance);
+            stunEffectInstance = null;
+        }
 
         Debug.Log($"[Enemy] {name} STUN END");
     }
@@ -495,6 +532,12 @@ public class Enemy : Actor
     protected override void Die()
     {
         if (_isDead) return;
+
+        if (stunEffectInstance != null)
+        {
+            Destroy(stunEffectInstance);
+            stunEffectInstance = null;
+        }
 
         isStunned = false;
         stunTimer = 0f;
@@ -678,7 +721,6 @@ public class Enemy : Actor
         isAttacking = false;
 
         // UI 텍스트(기절, 도발 마크) 숨기기
-        if (stunText != null) stunText.gameObject.SetActive(false);
         if (tauntText != null) tauntText.gameObject.SetActive(false);
 
         // 애니메이션 리셋
@@ -707,6 +749,7 @@ public class Enemy : Actor
             if (effect != null)
             {
                 Destroy(effect);
+
             }
         }
     }

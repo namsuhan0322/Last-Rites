@@ -267,6 +267,11 @@ public class DragonBoss : Enemy
     public float meteorImpactEffectScale = 1f;
     public float meteorImpactEffectSpeed = 0.6f;
     public float meteorImpactEffectLifeTime = 3f;
+    [Header("먼지 이펙트")]
+    [SerializeField] private GameObject dustEffectPrefab;
+    [SerializeField] private float dustEffectScale = 1f;
+    [SerializeField] private float dustEffectLifeTime = 3f;
+    [SerializeField] private float dustEffectYOffset = 0.1f;
 
 
 
@@ -2514,6 +2519,34 @@ public class DragonBoss : Enemy
     public bool IsPhase2()
     {
         return isPhase2;
+    }
+
+    public void PlayDustEffect()
+    {
+        if (dustEffectPrefab == null)
+            return;
+
+        Vector3 spawnPos = transform.position + Vector3.down * 0.5f;
+
+        if (Physics.Raycast(
+            transform.position + Vector3.up,
+            Vector3.down,
+            out RaycastHit hit,
+            10f,
+            meteorGroundLayer))
+        {
+            spawnPos = hit.point;
+        }
+
+        GameObject effect = Instantiate(
+            dustEffectPrefab,
+            spawnPos,
+            Quaternion.identity
+        );
+
+        effect.transform.localScale *= dustEffectScale;
+
+        Destroy(effect, dustEffectLifeTime);
     }
 
 

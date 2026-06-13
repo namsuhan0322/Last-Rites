@@ -6697,7 +6697,7 @@ MonoBehaviour:
   _poiseRecoveryRate: 0
   _isInvincible: 0
   _invincibleTimer: 0
-  data: {fileID: 11400000, guid: 4437b63f820048e4f940d0ed3333cb4c, type: 2}
+  data: {fileID: 11400000, guid: cd9a96e172749b24d9ae6457b068146d, type: 2}
   agent: {fileID: 7804963564610020852}
   aiLayer:
     serializedVersion: 2
@@ -6705,8 +6705,9 @@ MonoBehaviour:
   currentTarget: {fileID: 0}
   surroundRadius: 0
   aggroLockDuration: 3
+  stunEffectPrefab: {fileID: 0}
+  stunEffectYOffset: 0.5
   stunMarkDuration: 2
-  stunText: {fileID: 0}
   tauntText: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
@@ -6922,6 +6923,10 @@ MonoBehaviour:
   meteorImpactEffectScale: 0.85
   meteorImpactEffectSpeed: 0.6
   meteorImpactEffectLifeTime: 3
+  dustEffectPrefab: {fileID: 0}
+  dustEffectScale: 1
+  dustEffectLifeTime: 3
+  dustEffectYOffset: 0.1
 --- !u!195 &7804963564610020852
 NavMeshAgent:
   m_ObjectHideFlags: 0

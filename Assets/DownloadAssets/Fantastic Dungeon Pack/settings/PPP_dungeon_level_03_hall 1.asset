@@ -21,10 +21,10 @@ MonoBehaviour:
     m_Value: {x: 0.5, y: 0.5}
   intensity:
     m_OverrideState: 1
-    m_Value: 0.212
+    m_Value: 0.362
   smoothness:
     m_OverrideState: 1
-    m_Value: 0.457
+    m_Value: 0.234
   rounded:
     m_OverrideState: 0
     m_Value: 0
@@ -38,7 +38,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
-  m_Name: PPP_dungeon_level_03_hall
+  m_Name: PPP_dungeon_level_03_hall 1
   m_EditorClassIdentifier: 
   components:
   - {fileID: 1289347783132739166}
@@ -65,10 +65,10 @@ MonoBehaviour:
     m_Value: 1
   threshold:
     m_OverrideState: 1
-    m_Value: 0.5
+    m_Value: 0.8
   intensity:
-    m_OverrideState: 1
-    m_Value: 1.4
+    m_OverrideState: 0
+    m_Value: 1
   scatter:
     m_OverrideState: 0
     m_Value: 0.7
@@ -140,9 +140,9 @@ MonoBehaviour:
   active: 1
   shadows:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 1, z: 1, w: -0.23313904}
+    m_Value: {x: 1, y: 0.9023468, z: 0.964932, w: -0.23313904}
   midtones:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: {x: 1, y: 1, z: 1, w: 0.06661116}
   highlights:
     m_OverrideState: 0
@@ -193,10 +193,10 @@ MonoBehaviour:
   active: 1
   lift:
     m_OverrideState: 1
-    m_Value: {x: 0.96372396, y: 0.93815655, z: 1, w: 0}
+    m_Value: {x: 0.9057261, y: 1, z: 0.9531192, w: 0}
   gamma:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0.91133296, z: 0.9841405, w: 0}
+    m_Value: {x: 1, y: 0.90980977, z: 0.9821976, w: 0}
   gain:
     m_OverrideState: 1
     m_Value: {x: 0.9682718, y: 0.93654376, z: 1, w: 0}

@@ -231,6 +231,8 @@ public class ScenesManager : SingletonMono<ScenesManager>
         else if (sceneName == tutorialSceneName) SoundManager.Instance.PlayBGM("TutorialBGM");
         else if (sceneName == Thema1SceneName) SoundManager.Instance.PlayBGM("Thema1BGM");
         else if (sceneName == Thema2SceneName) SoundManager.Instance.PlayBGM("Thema2BGM");
+        else if (sceneName == BossRushSceneName) SoundManager.Instance.PlayBGM("BossRushBGM");
+        else if (sceneName == Tower1SceneName) SoundManager.Instance.PlayBGM("TowerBGM");
         else if (sceneName == loadingSceneName) SoundManager.Instance.PlayBGM("");
     }
 
@@ -238,7 +240,6 @@ public class ScenesManager : SingletonMono<ScenesManager>
     {
         Debug.Log($"[Scene Unloaded] {scene.name}");
     }
-
     public void LoadMainMenu() => LoadScene(mainMenuSceneName);
     public void LoadGameScene()
     {

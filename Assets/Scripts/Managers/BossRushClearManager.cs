@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
+
 public class BossRushClearManager : MonoBehaviour
 {
     [Header("클리어 패널 UI")]

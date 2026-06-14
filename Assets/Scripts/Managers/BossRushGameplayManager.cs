@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Cinemachine;
+using TMPro;
 
 public class BossRushGameplayManager : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class BossRushGameplayManager : MonoBehaviour
     public BossHealthUI bossHealthUI;
     public GameObject doorObj;
     public CinemachineVirtualCamera bossCamera;
+    public TextMeshProUGUI countdownText;
 
     [Header("클리어 매니저 연결")]
     public BossRushClearManager rushClearManager;
@@ -89,6 +91,8 @@ public class BossRushGameplayManager : MonoBehaviour
         {
             OnWaveChanged?.Invoke(currentBossIndex + 1, bossPrefabs.Count);
 
+            yield return StartCoroutine(ShowCountdown());
+
             SpawnBoss(currentBossIndex);
 
             yield return new WaitUntil(() => isCurrentBossDead);
@@ -144,5 +148,47 @@ public class BossRushGameplayManager : MonoBehaviour
     private void OnDestroy()
     {
         if (_player != null) _player.Stats.OnDeath -= HandlePlayerDeath;
+    }
+
+    //카운트다운
+    IEnumerator ShowCountdown()
+    {
+        if (countdownText == null)
+            yield break;
+
+        countdownText.transform.parent.gameObject.SetActive(true);
+        countdownText.gameObject.SetActive(true);
+
+        Color baseColor = countdownText.color;
+        string[] numbers = { "3", "2", "1" };
+
+        foreach (var n in numbers)
+        {
+            countdownText.text = n;
+
+            countdownText.transform.localScale = Vector3.one * 0.3f;
+            countdownText.color = new Color(baseColor.r, baseColor.g, baseColor.b, 1f);
+
+            float duration = 1f;
+            float t = 0f;
+
+            while (t < duration)
+            {
+                t += Time.deltaTime;
+                float normalized = t / duration;
+
+                float scale = Mathf.Lerp(0.3f, 1.2f, normalized);
+                countdownText.transform.localScale = Vector3.one * scale;
+
+                float alpha = 1f - Mathf.Clamp01((normalized - 0.4f) / 0.6f);
+                countdownText.color = new Color(baseColor.r, baseColor.g, baseColor.b, alpha);
+
+                yield return null;
+            }
+
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        countdownText.gameObject.SetActive(false);
     }
 }

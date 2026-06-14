@@ -3694,7 +3694,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &938842076
 Transform:
   m_ObjectHideFlags: 0
@@ -6488,6 +6488,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7207453542784150176, guid: 9863529f54df2db459776f6f7e18371c,
+        type: 3}
+      propertyPath: phase2EnvironmentEffect
+      value: 
+      objectReference: {fileID: 938842075}
     - target: {fileID: 8359645455954385577, guid: 9863529f54df2db459776f6f7e18371c,
         type: 3}
       propertyPath: m_Name
@@ -10638,7 +10643,7 @@ PrefabInstance:
     - target: {fileID: 5754770391342946623, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
         type: 3}
       propertyPath: ShapeModule.m_Scale.x
-      value: 0.53969896
+      value: 0.64868414
       objectReference: {fileID: 0}
     - target: {fileID: 5754770391342946623, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
         type: 3}
@@ -10648,7 +10653,7 @@ PrefabInstance:
     - target: {fileID: 5754770391342946623, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
         type: 3}
       propertyPath: InitialModule.startSize.scalar
-      value: 0.53969896
+      value: 0.64868414
       objectReference: {fileID: 0}
     - target: {fileID: 5754770391342946623, guid: c67b837bd6a93b944bdeeb56ad2cdeca,
         type: 3}

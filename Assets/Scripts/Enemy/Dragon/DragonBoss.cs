@@ -120,8 +120,6 @@ public class DragonBoss : Enemy
     public float sideJumpDuration = 1.2f;
     public float sideJumpCooldown = 8f;
 
-
-
     [Header("브레스 중 헤드약점")]
     [SerializeField] private WeakPoint headWeakPoint;
     [SerializeField] private int headWeakPointHP = 100;
@@ -219,9 +217,6 @@ public class DragonBoss : Enemy
     public float tornadoProjectileLifeTime = 4f;
     public int tornadoProjectileDamage = 30;
     public float tornadoSpreadAngle = 60f;
-
-
-
 
     [Header("fbx모음")]
     [Header("날개 내려찍기 이펙트")]
@@ -324,6 +319,7 @@ public class DragonBoss : Enemy
     private bool meteor2SoundPlayed = false;
     private Coroutine chargeSoundRoutine;
 
+    public GameObject phase2EnvironmentEffect;
 
     //기본적으로 모든 스킬에 다 쓸거 (마지막 플레이어 위치 저장)
     public void LockAttackPosition()
@@ -360,6 +356,8 @@ public class DragonBoss : Enemy
 
         agent.updateRotation = false;
         agent.speed = PatrolSpeed;
+
+        phase2EnvironmentEffect.SetActive(false);
     }
 
     protected override void EnemyAIUpdate()
@@ -1936,6 +1934,7 @@ public class DragonBoss : Enemy
     public void EnterPhase2()
     {
         isPhase2 = true;
+        phase2EnvironmentEffect.SetActive(true);
         phase2Requested = false;
         phase2Roared = true;
 

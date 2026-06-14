@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using Cinemachine;
 using TMPro;
+using UnityEngine.UI;
 
 public class BossRushGameplayManager : MonoBehaviour
 {
@@ -13,7 +14,12 @@ public class BossRushGameplayManager : MonoBehaviour
     public float startDelay = 2.0f;
     public float spawnDelay = 3.0f;
 
-    [Header("보스방 트리거 및 UI 설정")]
+    [Header("제한 시간 설정")]
+    public float timeLimit = 300f;
+    public GameObject timerObj;
+    public TextMeshProUGUI timerText;
+
+    [Header("보스방 트리거 및 기본 UI 설정")]
     public BossHealthUI bossHealthUI;
     public GameObject doorObj;
     public CinemachineVirtualCamera bossCamera;
@@ -22,11 +28,20 @@ public class BossRushGameplayManager : MonoBehaviour
     [Header("클리어 매니저 연결")]
     public BossRushClearManager rushClearManager;
 
+    [Header("팝업 UI")]
+    public GameObject failPopupObj;
+    public TextMeshProUGUI failMainText;
+    public Button retryButton;
+    public Button exitButton;
+
     [Header("현재 진행 상태")]
     public int currentBossIndex = 0;
     private GameObject currentBossInstance;
     private bool isCurrentBossDead = false;
-    private bool isRushStarted = false; // 트리거 중복 실행 방지용
+    private bool isRushStarted = false;
+    private bool isCleared = false;
+    private float currentTime;
+    private bool isTimerPaused = false;
 
     private PlayerController _player;
 
@@ -35,16 +50,24 @@ public class BossRushGameplayManager : MonoBehaviour
 
     private void Start()
     {
-        // 시작 시 카메라와 문 초기화
         if (bossCamera != null) bossCamera.Priority = 0;
         if (doorObj != null) doorObj.SetActive(false);
+        if (failPopupObj != null) failPopupObj.SetActive(false);
+        if (retryButton != null) retryButton.onClick.AddListener(OnClickRetry);
+        if (exitButton != null) exitButton.onClick.AddListener(OnClickExit);
+
+        if (timerObj != null) timerObj.SetActive(false);
+        currentTime = timeLimit;
+        UpdateTimerUI(currentTime);
     }
 
     private void OnTriggerEnter(Collider other)
     {
         if (!isRushStarted && other.CompareTag("Player"))
         {
-            isRushStarted = true; // 중복 실행 방지
+            isRushStarted = true;
+            isCleared = false;
+            isTimerPaused = false;
 
             _player = other.GetComponent<PlayerController>();
             if (_player != null)
@@ -53,39 +76,63 @@ public class BossRushGameplayManager : MonoBehaviour
             }
             Debug.Log("[BossRush] 플레이어 입장! 보스러쉬를 시작합니다.");
 
-            // 문 닫기 & 카메라 전환
             if (doorObj != null) doorObj.SetActive(true);
             if (bossCamera != null) bossCamera.Priority = 20;
 
             Collider col = GetComponent<Collider>();
             if (col != null) col.enabled = false;
 
-            // 보스러쉬 루틴 가동
             StartCoroutine(BossRushRoutine());
         }
     }
 
-    private void HandlePlayerDeath()
+    private IEnumerator TimerRoutine()
     {
-        if (_player != null) _player.Stats.OnDeath -= HandlePlayerDeath;
+        while (currentTime > 0 && !isCleared)
+        {
+            if (!isTimerPaused)
+            {
+                currentTime -= Time.deltaTime;
+                UpdateTimerUI(currentTime);
+            }
+            yield return null;
+        }
 
-        StopAllCoroutines();
+        if (isCleared) yield break;
 
-        if (currentBossInstance != null) Destroy(currentBossInstance);
-        if (bossHealthUI != null) bossHealthUI.HideBossUI();
-        if (doorObj != null) doorObj.SetActive(false);
-        if (bossCamera != null) bossCamera.Priority = 0;
+        currentTime = 0;
+        UpdateTimerUI(0);
+        Debug.Log("<color=red>[BossRush] 시간 초과! 플레이어 사망 처리</color>");
 
-        isRushStarted = false;
-        currentBossIndex = 0;
+        if (_player != null && _player.Stats != null && !_player.Stats.IsDead)
+        {
+            _player.Stats.TakeDamage(Mathf.RoundToInt(_player.Stats.MaxHP * 10f));
+        }
+        else
+        {
+            HandlePlayerDeath();
+        }
+    }
 
-        Collider col = GetComponent<Collider>();
-        if (col != null) col.enabled = true;
+    private void UpdateTimerUI(float time)
+    {
+        if (timerText == null) return;
+
+        int minutes = Mathf.FloorToInt(time / 60f);
+        int seconds = Mathf.FloorToInt(time % 60f);
+        timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+
+        timerText.color = time <= 30f ? Color.red : Color.white;
     }
 
     private IEnumerator BossRushRoutine()
     {
         yield return new WaitForSeconds(startDelay);
+
+        if (timerObj != null) timerObj.SetActive(true);
+        currentTime = timeLimit;
+        isTimerPaused = false;
+        StartCoroutine(TimerRoutine());
 
         while (currentBossIndex < bossPrefabs.Count)
         {
@@ -95,7 +142,6 @@ public class BossRushGameplayManager : MonoBehaviour
             }
 
             SpawnBoss(currentBossIndex);
-
             yield return new WaitUntil(() => isCurrentBossDead);
 
             currentBossIndex++;
@@ -104,9 +150,12 @@ public class BossRushGameplayManager : MonoBehaviour
                 yield return new WaitForSeconds(spawnDelay);
         }
 
+        isCleared = true;
+
         if (_player != null) _player.Stats.OnDeath -= HandlePlayerDeath;
         if (bossCamera != null) bossCamera.Priority = 0;
         if (doorObj != null) doorObj.SetActive(false);
+        if (timerObj != null) timerObj.SetActive(false);
 
         if (rushClearManager != null)
         {
@@ -116,15 +165,68 @@ public class BossRushGameplayManager : MonoBehaviour
         OnBossRushCleared?.Invoke();
     }
 
+    private void HandlePlayerDeath()
+    {
+        if (_player != null) _player.Stats.OnDeath -= HandlePlayerDeath;
+
+        isTimerPaused = true;
+        StopAllCoroutines();
+
+        if (currentBossInstance != null) Destroy(currentBossInstance);
+        if (bossHealthUI != null) bossHealthUI.HideBossUI();
+        if (doorObj != null) doorObj.SetActive(false);
+        if (bossCamera != null) bossCamera.Priority = 0;
+        if (timerObj != null) timerObj.SetActive(false);
+
+        StartCoroutine(ShowFailPopupRoutine());
+    }
+
+    private IEnumerator ShowFailPopupRoutine()
+    {
+        yield return new WaitForSeconds(1.5f);
+
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
+        if (failPopupObj != null)
+        {
+            failPopupObj.SetActive(true);
+            if (failMainText != null)
+            {
+                failMainText.text = "실패하였습니다.\n다시 하시겠습니까?";
+            }
+        }
+
+        Time.timeScale = 0f;
+    }
+
+    private void OnClickRetry()
+    {
+        Time.timeScale = 1f;
+
+        if (ScenesManager.Instance != null)
+            ScenesManager.Instance.ReloadCurrentScene();
+        else
+            UnityEngine.SceneManagement.SceneManager.LoadScene(UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
+    }
+
+    private void OnClickExit()
+    {
+        Time.timeScale = 1f;
+
+        if (ScenesManager.Instance != null)
+            ScenesManager.Instance.LoadLobbyScene();
+        else
+            UnityEngine.SceneManagement.SceneManager.LoadScene("LobbyScene");
+    }
+
     private void SpawnBoss(int index)
     {
         if (bossPrefabs[index] == null) return;
-
         isCurrentBossDead = false;
+        isTimerPaused = false;
 
         currentBossInstance = Instantiate(bossPrefabs[index], spawnPoint.position, spawnPoint.rotation);
-        Debug.Log($"[BossRush] {currentBossInstance.name} 등장!");
-
         Actor bossActor = currentBossInstance.GetComponent<Actor>();
 
         if (bossActor != null)
@@ -142,6 +244,7 @@ public class BossRushGameplayManager : MonoBehaviour
     {
         if (bossHealthUI != null) bossHealthUI.HideBossUI();
         isCurrentBossDead = true;
+        isTimerPaused = true;
     }
 
     private void OnDestroy()
@@ -149,11 +252,9 @@ public class BossRushGameplayManager : MonoBehaviour
         if (_player != null) _player.Stats.OnDeath -= HandlePlayerDeath;
     }
 
-    //카운트다운
     IEnumerator ShowCountdown()
     {
-        if (countdownText == null)
-            yield break;
+        if (countdownText == null) yield break;
 
         countdownText.transform.parent.gameObject.SetActive(true);
         countdownText.gameObject.SetActive(true);
@@ -164,7 +265,6 @@ public class BossRushGameplayManager : MonoBehaviour
         foreach (var n in numbers)
         {
             countdownText.text = n;
-
             countdownText.transform.localScale = Vector3.one * 0.3f;
             countdownText.color = new Color(baseColor.r, baseColor.g, baseColor.b, 1f);
 
@@ -184,10 +284,8 @@ public class BossRushGameplayManager : MonoBehaviour
 
                 yield return null;
             }
-
             yield return new WaitForSeconds(0.1f);
         }
-
         countdownText.gameObject.SetActive(false);
     }
 }

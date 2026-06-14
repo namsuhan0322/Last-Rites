@@ -192,6 +192,9 @@ public class GameManager : SingletonMono<GameManager>
     {
         ChangeGameState(GameState.GameOver);
 
+        string bossRushName = ScenesManager.Instance != null ? ScenesManager.Instance.BossRushSceneName : "BossRushScene";
+
+        if (UnityEngine.SceneManagement.SceneManager.GetActiveScene().name == bossRushName) return;
         StartCoroutine(RespawnRoutine());
 
         // 게임 오버 처리

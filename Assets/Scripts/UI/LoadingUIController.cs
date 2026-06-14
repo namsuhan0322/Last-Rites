@@ -8,6 +8,10 @@ public class LoadingUIController : MonoBehaviour
     public Slider progressBar;
     public TextMeshProUGUI progressText;
 
+    [Header("Loading Tips UI")]
+    public Image backgroundImage;
+    public TextMeshProUGUI descriptionText;
+
     private void Start()
     {
         if (progressBar != null)
@@ -17,6 +21,31 @@ public class LoadingUIController : MonoBehaviour
         if (progressText != null)
         {
             progressText.text = "0%";
+        }
+
+        if (ScenesManager.Instance != null)
+        {
+            string nextScene = ScenesManager.Instance.TargetSceneName;
+            bool isDataFound = false;
+
+            if (ScenesManager.Instance.loadingTips != null)
+            {
+                foreach (var data in ScenesManager.Instance.loadingTips)
+                {
+                    if (data.targetSceneName == nextScene)
+                    {
+                        if (backgroundImage != null) backgroundImage.sprite = data.loadingImage;
+                        if (descriptionText != null) descriptionText.text = data.loadingDescription;
+                        isDataFound = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!isDataFound && descriptionText != null)
+            {
+                descriptionText.text = "세계의 데이터를 불러오는 중입니다...";
+            }
         }
     }
 

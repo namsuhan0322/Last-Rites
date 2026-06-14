@@ -1,6 +1,16 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections;
+
+[System.Serializable]
+public struct SceneLoadingData
+{
+    public string targetSceneName;      // 이동할 씬 이름
+    public Sprite loadingImage;         // 보여줄 배경 일러스트
+    [TextArea(3, 5)]
+    public string loadingDescription;   // 보여줄 설명/팁
+}
 
 public class ScenesManager : SingletonMono<ScenesManager>
 {
@@ -33,6 +43,10 @@ public class ScenesManager : SingletonMono<ScenesManager>
     public float LoadingProgress { get; private set; }
 
     [HideInInspector] public bool isDataLoaded = false;
+
+    [Header("Loading UI Settings")]
+    public List<SceneLoadingData> loadingTips;
+    public string TargetSceneName { get; private set; }
 
     protected override void Awake()
     {
@@ -73,6 +87,7 @@ public class ScenesManager : SingletonMono<ScenesManager>
         isLoading = true;
         isDataLoaded = false;
         LoadingProgress = 0f;
+        TargetSceneName = targetScene;
 
         GameManager.Instance?.ChangeGameState(GameState.Loading);
 

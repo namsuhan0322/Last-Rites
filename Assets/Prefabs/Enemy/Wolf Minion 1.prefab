@@ -1252,6 +1252,7 @@ GameObject:
   - component: {fileID: 2951319517252533538}
   - component: {fileID: 5820312854152493603}
   - component: {fileID: 7822637639155007826}
+  - component: {fileID: 4925220756154710134}
   m_Layer: 6
   m_Name: Wolf Minion 1
   m_TagString: Enemy
@@ -1389,6 +1390,24 @@ MonoBehaviour:
   comboInterval: 0.4
   comboCooldown: 3.5
   postAttackDelay: 1.5
+--- !u!114 &4925220756154710134
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4077847239182567473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 047fae5f98ecc984d84c0e6dfde1cf1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HitFlashEffect
+  flashColor: {r: 1, g: 0.1603772, b: 0.1603772, a: 1}
+  originalColor: {r: 1, g: 1, b: 1, a: 1}
+  maxFlashAmount: 3
+  flashDuration: 0.1
+  colorPropertyName: _BaseColorTint
+  amountPropertyName: _Self_Ilumination_Intensity
 --- !u!1 &4275526382902506211
 GameObject:
   m_ObjectHideFlags: 0
@@ -2616,6 +2635,11 @@ PrefabInstance:
       propertyPath: m_fontSizeBase
       value: 20
       objectReference: {fileID: 0}
+    - target: {fileID: 1413037410094390485, guid: 1d109e0ffd3dd3441b89f5af8942d97e,
+        type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
+      objectReference: {fileID: 0}
     - target: {fileID: 1998852703758431248, guid: 1d109e0ffd3dd3441b89f5af8942d97e,
         type: 3}
       propertyPath: m_Name
@@ -2766,6 +2790,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_IsActive
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 600648819108473043, guid: f5dcde67601038c4d9e3b6a467aca531,
+        type: 3}
+      propertyPath: 'm_ActiveFontFeatures.Array.data[0]'
+      value: 1801810542
       objectReference: {fileID: 0}
     - target: {fileID: 2556529246632889110, guid: f5dcde67601038c4d9e3b6a467aca531,
         type: 3}

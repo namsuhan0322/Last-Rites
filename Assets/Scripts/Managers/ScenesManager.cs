@@ -39,6 +39,8 @@ public class ScenesManager : SingletonMono<ScenesManager>
         base.Awake();
         currentSceneName = SceneManager.GetActiveScene().name;
         if (useFadeEffect) CreateFadeUI();
+
+        Debug.Log($"SceneManager Awake {Time.realtimeSinceStartup}");
     }
 
     private void Start()
@@ -46,6 +48,8 @@ public class ScenesManager : SingletonMono<ScenesManager>
         SceneManager.sceneLoaded += OnSceneLoaded;
         SceneManager.sceneUnloaded += OnSceneUnloaded;
         PlaySceneBGM(currentSceneName);
+
+        Debug.Log($"SceneManager Start {Time.realtimeSinceStartup}");
     }
 
     private void OnDestroy()
@@ -79,6 +83,9 @@ public class ScenesManager : SingletonMono<ScenesManager>
 
         if (useFadeEffect) yield return StartCoroutine(FadeOut());
 
+        System.GC.Collect();
+        yield return Resources.UnloadUnusedAssets();
+
         AsyncOperation op = SceneManager.LoadSceneAsync(targetScene);
         op.allowSceneActivation = false;
 
@@ -95,16 +102,28 @@ public class ScenesManager : SingletonMono<ScenesManager>
             {
                 hasActivated = true;
 
-                LoadingProgress = 1f;
+                float fakeProgress = 0.9f;
+                float creepSpeed = 0.05f;
 
-                yield return new WaitForSeconds(0.3f);
+                while (fakeProgress < 0.99f)
+                {
+                    fakeProgress += Time.unscaledDeltaTime * creepSpeed;
 
-                if (useFadeEffect) yield return StartCoroutine(FadeIn());
+                    if (fakeProgress > 0.99f) fakeProgress = 0.99f;
 
+                    LoadingProgress = fakeProgress;
+
+                    yield return null;
+                }
+
+                LoadingProgress = 0.99f;
+                yield return new WaitForSeconds(0.1f);
                 op.allowSceneActivation = true;
             }
             yield return null;
         }
+
+        if (useFadeEffect && fadeCanvasGroup != null) fadeCanvasGroup.alpha = 1f;
 
         float timeout = 10f;
         while (!isDataLoaded && timeout > 0)
@@ -115,11 +134,17 @@ public class ScenesManager : SingletonMono<ScenesManager>
 
         if (timeout <= 0) Debug.LogWarning("[ScenesManager] 데이터 로드 대기 시간 초과! 강제로 화면을 엽니다.");
 
+        yield return new WaitForEndOfFrame();
+
+        LoadingProgress = 1.0f;
+
+        yield return new WaitForSecondsRealtime(0.5f);
+
         if (useFadeEffect) yield return StartCoroutine(FadeOut());
 
         isLoading = false;
     }
-    
+
     //타워씬 로드
     public void LoadTowerScene()
     {
@@ -148,8 +173,8 @@ public class ScenesManager : SingletonMono<ScenesManager>
 
     public void DataLoadCompleted()
     {
-        isDataLoaded = true;
-        Debug.Log("[ScenesManager] 씬 데이터 세팅 완료 신호 수신! 화면을 켭니다.");
+        Debug.Log($"DataLoadCompleted {Time.realtimeSinceStartup}");
+        isDataLoaded = true;  
     }
 
     #region UI & Fade Logic (동일)
@@ -202,6 +227,8 @@ public class ScenesManager : SingletonMono<ScenesManager>
     #region Scene Events & Utils (동일)
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        Debug.Log($"Scene Loaded Event {Time.realtimeSinceStartup}");
+
         currentSceneName = scene.name;
 
         try
@@ -245,12 +272,12 @@ public class ScenesManager : SingletonMono<ScenesManager>
     {
         if (InventoryManager.Instance != null)
         {
-            InventoryManager.Instance.AddItem("S_000", 1);
-            InventoryManager.Instance.AddItem("R_001", 99);
-            InventoryManager.Instance.AddItem("P_001", 99);
-            InventoryManager.Instance.AddItem("P_002", 99);
-            InventoryManager.Instance.AddItem("P_003", 99);
-            InventoryManager.Instance.AddCurrency(999999);
+            InventoryManager.Instance.AddItem("S_000", 1, false);
+            InventoryManager.Instance.AddItem("R_001", 99, false);
+            InventoryManager.Instance.AddItem("P_001", 99, false);
+            InventoryManager.Instance.AddItem("P_002", 99, false);
+            InventoryManager.Instance.AddItem("P_003", 99, false);
+            InventoryManager.Instance.AddCurrency(999999, false);
 
             InventoryData invData = InventoryManager.Instance.GetCurrentData();
             if (invData != null) invData.equippedWeaponID = 10;

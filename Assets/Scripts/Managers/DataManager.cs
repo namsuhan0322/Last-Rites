@@ -23,6 +23,8 @@ public class DataManager : SingletonMono<DataManager>
 
     protected override void Awake()
     {
+        Debug.Log($"DataManager Awake {Time.realtimeSinceStartup}");
+
         base.Awake();
         saveFilePath = Path.Combine(Application.persistentDataPath, "LastRites_SaveData.json");
 

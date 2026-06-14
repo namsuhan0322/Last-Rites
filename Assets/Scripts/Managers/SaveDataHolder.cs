@@ -14,6 +14,7 @@ public class SaveDataHolder : SingletonMono<SaveDataHolder>
 
     protected override void Awake()
     {
+        Debug.Log($"SaveDataHolder Awake {Time.realtimeSinceStartup}");
         base.Awake();
         saveFilePath = Path.Combine(Application.persistentDataPath, "settings_data.json");
         Load();

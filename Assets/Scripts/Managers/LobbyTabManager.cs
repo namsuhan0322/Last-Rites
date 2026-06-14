@@ -27,6 +27,8 @@ public class LobbyTabManager : MonoBehaviour
     void Awake()
     {
         InitializeTabs();
+
+        Debug.Log($"LobbyTabManager Awake {Time.realtimeSinceStartup}");
     }
 
     void OnEnable()

@@ -44,6 +44,8 @@ public class EffectManager : SingletonMono<EffectManager>
     {
         base.Awake();
         InitializeEffectPools();
+
+        Debug.Log($"Effect Awake {Time.realtimeSinceStartup}");
     }
 
     #endregion

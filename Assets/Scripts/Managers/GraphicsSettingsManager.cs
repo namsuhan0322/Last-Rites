@@ -29,6 +29,8 @@ public class GraphicsSettingsManager : MonoBehaviour
 
     void Start()
     {
+        Debug.Log($"GraphicsSettingsManager Start {Time.realtimeSinceStartup}");
+
         InitUI();
     }
 

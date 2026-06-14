@@ -13,6 +13,8 @@ public class KeyBindingsManager : MonoBehaviour
 
     void Start()
     {
+        Debug.Log($"KeyBindingsManager Start {Time.realtimeSinceStartup}");
+
         // 모든 아이템 초기화
         foreach (var item in keyItems)
         {

@@ -20,6 +20,8 @@ public class MouseOutlineManager : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log($"MouseOutlineManager Start {Time.realtimeSinceStartup}");
+
         _enemyOutlineIndex = LayerMask.NameToLayer(EnemyOutlineLayerName);
         _interactableOutlineIndex = LayerMask.NameToLayer(InteractableOutlineLayerName);
 

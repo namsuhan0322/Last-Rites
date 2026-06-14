@@ -10,6 +10,8 @@ public class InventoryManager : SingletonMono<InventoryManager>
     {
         base.Awake();
         if (holder == null) holder = GetComponent<InventoryHolder>();
+
+        Debug.Log($"Inventory Awake {Time.realtimeSinceStartup}");
     }
 
     public void InitializeData(InventoryData loadedData)
@@ -20,22 +22,28 @@ public class InventoryManager : SingletonMono<InventoryManager>
         Debug.Log("[InventoryManager] 인벤토리 데이터 초기화 완료");
     }
 
-    public void AddItem(string id, int amount)
+    public void AddItem(string id, int amount, bool autoSave = true)
     {
         InventorySystem.ProcessAddItem(holder.CurrentData, id, amount);
         Debug.Log($"[Manager] {id} 아이템 {amount}개 획득 처리 완료.");
 
-        SaveGame();
+        if (autoSave)
+        {
+            SaveGame();
+        }
     }
 
-    public void AddCurrency(int amount)
+    public void AddCurrency(int amount, bool autoSave = true)
     {
         if (holder != null && holder.CurrentData != null)
         {
             holder.CurrentData.currencyAmount += amount;
             Debug.Log($"[Manager] 재화 {amount} 획득 완료. (현재 총합: {holder.CurrentData.currencyAmount})");
 
-            SaveGame();
+            if (autoSave)
+            {
+                SaveGame();
+            }
         }
         else
         {
@@ -50,12 +58,16 @@ public class InventoryManager : SingletonMono<InventoryManager>
         return slot != null ? slot.amount : 0;
     }
 
-    public void SaveEquippedWeapon(int weaponID)
+    public void SaveEquippedWeapon(int weaponID, bool autoSave = true)
     {
         if (holder != null && holder.CurrentData != null)
         {
             holder.CurrentData.equippedWeaponID = weaponID;
-            SaveGame();
+
+            if (autoSave)
+            {
+                SaveGame();
+            }
             Debug.Log($"[InventoryManager] 무기 ID 저장 완료: {weaponID}");
         }
     }

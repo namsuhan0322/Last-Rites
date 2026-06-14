@@ -33,6 +33,8 @@ public class WeaponLoadoutManager : MonoBehaviour
 
     void Start()
     {
+        Debug.Log($"WeaponLoadoutManager Start {Time.realtimeSinceStartup}");
+
         _player = FindFirstObjectByType<PlayerController>();
 
         // 팝업 버튼 리스너 연결

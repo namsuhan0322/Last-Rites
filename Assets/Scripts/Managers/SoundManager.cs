@@ -48,6 +48,8 @@ public class SoundManager : SingletonMono<SoundManager>
             sound.source.loop = sound.loop;
             sound.source.outputAudioMixerGroup = sound.mixerGroup;
         }
+
+        Debug.Log($"SoundManager Awake {Time.realtimeSinceStartup}");
     }
 
     #endregion

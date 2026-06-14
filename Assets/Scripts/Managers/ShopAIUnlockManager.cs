@@ -34,6 +34,8 @@ public class ShopAIUnlockManager : MonoBehaviour
 
     void Start()
     {
+        Debug.Log($"ShopAIUnklockManager Start {Time.realtimeSinceStartup}");
+
         if (confirmBtn != null) confirmBtn.onClick.AddListener(OnConfirmUnlock);
         if (cancelBtn != null) cancelBtn.onClick.AddListener(ClosePopup);
 
@@ -70,6 +72,13 @@ public class ShopAIUnlockManager : MonoBehaviour
 
     private void GenerateShopSlots()
     {
+        float start = Time.realtimeSinceStartup;
+
+        Debug.Log(
+            $"GenerateShopSlots Count:{createdSlots.Count} " +
+            $"Time:{Time.realtimeSinceStartup - start:F3}"
+        );
+
         foreach (Transform child in slotContainer) Destroy(child.gameObject);
         createdSlots.Clear();
 

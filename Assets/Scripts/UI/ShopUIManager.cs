@@ -32,6 +32,8 @@ public class ShopUIManager : MonoBehaviour
 
     void Start()
     {
+        Debug.Log($"ShopUIManager Start {Time.realtimeSinceStartup}");
+
         if (recipeDatabase != null) recipeDatabase.Initialize();
 
         // 팝업 버튼 리스너 연결

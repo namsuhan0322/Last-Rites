@@ -17,6 +17,8 @@ public class BrightnessManager : SingletonMono<BrightnessManager>
     protected override void Awake()
     {
         base.Awake();
+
+        Debug.Log($"BrightnessManager Awake {Time.realtimeSinceStartup}");
     }
 
     private void OnEnable()

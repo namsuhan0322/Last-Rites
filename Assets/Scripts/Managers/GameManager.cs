@@ -34,12 +34,16 @@ public class GameManager : SingletonMono<GameManager>
     {
         base.Awake();
         InitializeGame();
+
+        Debug.Log($"GameManager Awake {Time.realtimeSinceStartup}");
     }
 
     private void Start()
     {
         // 다른 매니저들이 초기화된 후 실행
         StartCoroutine(InitializeManagers());
+
+        Debug.Log($"GameManager Start {Time.realtimeSinceStartup}");
     }
 
     private void Update()

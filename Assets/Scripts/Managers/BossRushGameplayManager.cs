@@ -89,9 +89,10 @@ public class BossRushGameplayManager : MonoBehaviour
 
         while (currentBossIndex < bossPrefabs.Count)
         {
-            OnWaveChanged?.Invoke(currentBossIndex + 1, bossPrefabs.Count);
-
-            yield return StartCoroutine(ShowCountdown());
+            if (currentBossIndex > 0)
+            {
+                yield return StartCoroutine(ShowCountdown());
+            }
 
             SpawnBoss(currentBossIndex);
 
@@ -100,9 +101,7 @@ public class BossRushGameplayManager : MonoBehaviour
             currentBossIndex++;
 
             if (currentBossIndex < bossPrefabs.Count)
-            {
                 yield return new WaitForSeconds(spawnDelay);
-            }
         }
 
         if (_player != null) _player.Stats.OnDeath -= HandlePlayerDeath;

@@ -2207,35 +2207,6 @@ public class DragonBoss : Enemy
         Destroy(effect, wingSlamEffectLifeTime);
     }
 
-    //날개 이펙트
-    private void SpawnWingSlamEffect(GameObject prefab, Transform spawnPoint)
-    {
-        if (prefab == null || spawnPoint == null)
-            return;
-
-        GameObject effect = Instantiate(
-            prefab,
-            spawnPoint.position,
-            prefab.transform.rotation
-        );
-
-        effect.transform.SetParent(null);
-
-        effect.transform.localScale *= wingSlamEffectScale;
-
-        ParticleSystem[] particles =
-            effect.GetComponentsInChildren<ParticleSystem>(true);
-
-        foreach (ParticleSystem ps in particles)
-        {
-            ParticleSystem.MainModule main = ps.main;
-            main.simulationSpeed = wingSlamEffectSpeed;
-            ps.Play(true);
-        }
-
-        Destroy(effect, wingSlamEffectLifeTime);
-    }
-
     public void PlayLeftTailAttackEffect()
     {
         SpawnTailAttackEffect(leftTailAttackEffectPrefab, leftTailAttackEffectPoint);
@@ -2668,6 +2639,11 @@ public class DragonBoss : Enemy
         yield return new WaitForSeconds(1f);
 
         PlayDragonChargeSound();
+    }
+
+    public void PlayDragonDieSound()
+    {
+        SoundManager.Instance.PlaySound("DragonDie");
     }
 
     #endregion

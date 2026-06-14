@@ -3301,6 +3301,12 @@ public class WolfBoss : Enemy
         SoundManager.Instance.PlaySound("PoisonExplosion");
     }
 
+    public void PlayWolfDieSound()
+    {
+        SoundManager.Instance.PlaySound("WolfDie");
+    }
+
+
     #endregion
 
 }

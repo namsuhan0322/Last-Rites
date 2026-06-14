@@ -533,6 +533,18 @@ public class Enemy : Actor
     {
         if (_isDead) return;
 
+        WolfBoss wolfBoss = GetComponent<WolfBoss>();
+        if (wolfBoss != null)
+        {
+            wolfBoss.PlayWolfDieSound();
+        }
+
+        DragonBoss dragonBoss = GetComponent<DragonBoss>();
+
+        if (dragonBoss != null)
+            dragonBoss.PlayDragonDieSound();
+
+
         if (stunEffectInstance != null)
         {
             Destroy(stunEffectInstance);

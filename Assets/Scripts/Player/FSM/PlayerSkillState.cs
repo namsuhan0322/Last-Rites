@@ -26,7 +26,14 @@ public class PlayerSkillState : PlayerState
         _player.Anim.SetFloat("AttackSpd", baseAtkSpd * _player.AtkSpeedModifier);
 
         _stateTimer = 0f;
-        _attackBuffered = false;
+        if (Input.GetMouseButton(0))
+        {
+            _attackBuffered = true;
+        }
+        else
+        {
+            _attackBuffered = false;
+        }
 
         _player.globalSkillTimer = _player.globalSkillDelay;
     }

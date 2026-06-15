@@ -47,17 +47,20 @@ public class PlayerRollState : PlayerState
                 return;
             }
 
-            if (stateInfo.normalizedTime >= 0.9f)
+            if (stateInfo.normalizedTime >= 0.65f)
             {
+                _player.Stats.SetInvincible(false);
+
                 if (Input.GetMouseButton(1))
                 {
-                    _player.Stats.SetInvincible(false);
                     _stateMachine.ChangeState(_player.MoveState);
+                    return;
                 }
-                else
+                else if (stateInfo.normalizedTime >= 0.9f)
                 {
                     _player.Stats.SetInvincibleForSeconds(0.5f);
                     _stateMachine.ChangeState(_player.IdleState);
+                    return;
                 }
             }
         }

@@ -150,13 +150,12 @@ public class GraphicsSettingsManager : MonoBehaviour
     {
         SaveDataHolder.Instance.currentData.displayModeIndex = index;
 
-        FullScreenMode mode = FullScreenMode.ExclusiveFullScreen;
+        FullScreenMode mode = FullScreenMode.FullScreenWindow;
         if (index == 1) mode = FullScreenMode.FullScreenWindow;
         else if (index == 2) mode = FullScreenMode.Windowed;
 
         Screen.fullScreenMode = mode;
-
-        GameEvents.FullscreenChanged(index == 0);
+        GameEvents.FullscreenChanged(index == 0 || index == 1);
     }
 
     // --- UI 선택 로직 ---

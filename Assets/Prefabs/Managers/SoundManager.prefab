@@ -117,6 +117,14 @@ MonoBehaviour:
     mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
       type: 2}
     source: {fileID: 0}
+  - name: WolfDash
+    clip: {fileID: 8300000, guid: 29b2f146e0666414e92bec5570534228, type: 3}
+    volume: 0.4
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
   - name: WolfPhase1Roar
     clip: {fileID: 8300000, guid: 5146db0fcbd0d5e40b254f4d6ad873b2, type: 3}
     volume: 1
@@ -335,6 +343,54 @@ MonoBehaviour:
     source: {fileID: 0}
   - name: DragonWeakPoint
     clip: {fileID: 8300000, guid: d75c196bd00a1664a8eaa27a9ccc4e87, type: 3}
+    volume: 0.4
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: CatAttack
+    clip: {fileID: 8300000, guid: 7fd31d3067f713b4b94f3f0ee8c188e9, type: 3}
+    volume: 0.4
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: EliteWolfAttack
+    clip: {fileID: 8300000, guid: 2c47e4a6e14b7004eb52d5743b1c0699, type: 3}
+    volume: 0.4
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: EliteWolfAttack2
+    clip: {fileID: 8300000, guid: bf53cdf729edc454fb83141cb9eed788, type: 3}
+    volume: 0.4
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: EliteWolfDie
+    clip: {fileID: 8300000, guid: 6a0d5a4239252e4408edb92f7f3009c1, type: 3}
+    volume: 0.4
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: EliteWolfRoar
+    clip: {fileID: 8300000, guid: bb74f0baef58e2e49811386c1ad02da9, type: 3}
+    volume: 0.4
+    pitch: 1
+    loop: 0
+    mixerGroup: {fileID: -4983187589066287760, guid: 263a0b6783e617d40839c9a9db1e63ee,
+      type: 2}
+    source: {fileID: 0}
+  - name: MinionWolfAttack
+    clip: {fileID: 8300000, guid: 5b9d17fa3f7a9f944a0a31ddfff83f05, type: 3}
     volume: 0.4
     pitch: 1
     loop: 0

@@ -493,6 +493,7 @@ public class WolfElite : Enemy
         }
 
         chargeIndicator.SetActive(false);
+        PlayWolfDashSound();
         animator.SetTrigger("Charge");
         yield return new WaitForSeconds(0.1f);
 

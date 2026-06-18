@@ -1523,7 +1523,7 @@ public class WolfBoss : Enemy
         chargeIndicator.SetActive(false);
 
         yield return new WaitForSeconds(chargeStartDelay);
-
+        PlayWolfDashSound();
         animator.SetTrigger("Charge");
 
         yield return new WaitForSeconds(0.2f);
@@ -3304,6 +3304,11 @@ public class WolfBoss : Enemy
     public void PlayWolfDieSound()
     {
         SoundManager.Instance.PlaySound("WolfDie");
+    }
+
+    public void PlayWolfDashSound()
+    {
+        SoundManager.Instance.PlaySound("WolfDash");
     }
 
 

@@ -81,4 +81,10 @@ public class CatMinion : Enemy
 
         base.EndAttack();
     }
+
+    public void PlayCatAttackSound()
+    {
+        SoundManager.Instance.PlaySound("CatAttack");
+    }
+
 }

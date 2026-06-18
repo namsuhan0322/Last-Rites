@@ -80,4 +80,9 @@ public class WolfMinion : Enemy
 
         base.EndAttack();
     }
+
+    public void PlayWolfAttackSound()
+    {
+        SoundManager.Instance.PlaySound("MinionWolfAttack");
+    }
 }

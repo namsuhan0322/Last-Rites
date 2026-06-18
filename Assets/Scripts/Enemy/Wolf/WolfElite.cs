@@ -588,4 +588,29 @@ public class WolfElite : Enemy
             Time.deltaTime * speed
         );
     }
+
+    public void PlayWolfAttackSound()
+    {
+        SoundManager.Instance.PlaySound("EliteWolfAttack");
+    }
+
+    public void PlayWolfAttack2Sound()
+    {
+        SoundManager.Instance.PlaySound("EliteWolfAttack2");
+    }
+
+    public void PlayWolfDieSound()
+    {
+        SoundManager.Instance.PlaySound("EliteWolfDie");
+    }
+
+    public void PlayWolfRoarSound()
+    {
+        SoundManager.Instance.PlaySound("EliteWolfRoar");
+    }
+
+    public void PlayWolfDashSound()
+    {
+        SoundManager.Instance.PlaySound("WolfDash");
+    }
 }

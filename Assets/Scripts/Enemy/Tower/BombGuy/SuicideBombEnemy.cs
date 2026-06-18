@@ -1,17 +1,20 @@
-using System.Collections;
+Ôªøusing System.Collections;
 using UnityEngine;
 
 public class SuicideBombEnemy : Enemy
 {
-    [Header("¿⁄∆¯ º≥¡§")]
+    [Header("ÏûêÌè≠ ÏÑ§Ï†ï")]
     public float touchDistance = 1.5f;
     public float runSpeedMultiplier = 1.5f;
 
-    [Header("∆¯πﬂ º≥¡§")]
+    [Header("Ìè≠Î∞ú ÏÑ§Ï†ï")]
     public GameObject explosionIndicatorPrefab;
     public float explosionReadyTime = 1.5f;
     public float explosionRange = 4f;
     public int explosionDamage = 30;
+    [Header("Ìè≠Î∞ú Ïù¥ÌéôÌä∏")]
+    public GameObject explosionEffectPrefab;
+    public float explosionEffectScale = 1f;  
 
     private GameObject explosionIndicator;
     private bool isExploding = false;
@@ -123,26 +126,47 @@ public class SuicideBombEnemy : Enemy
 
     void DealExplosionDamage()
     {
+        SoundManager.Instance.PlaySound("WolfFireballExplosion");
+
+        if (explosionEffectPrefab != null)
+        {
+            GameObject effect = Instantiate(
+                explosionEffectPrefab,
+                transform.position + Vector3.up * 0.02f,
+                Quaternion.Euler(90f, 0f, 0f)
+            );
+
+            effect.transform.localScale = Vector3.one * explosionRange * explosionEffectScale;
+
+            ParticleSystem ps = effect.GetComponent<ParticleSystem>();
+            if (ps != null)
+            {
+                float duration = ps.main.duration + ps.main.startLifetime.constantMax;
+                Destroy(effect, duration);
+            }
+            else
+            {
+                Destroy(effect, 3f); 
+            }
+        }
+
         Collider[] hits = Physics.OverlapSphere(
             transform.position,
             explosionRange,
             targetLayer
         );
-
         foreach (var hit in hits)
         {
             Actor actor = hit.GetComponent<Actor>();
-
             if (actor == null || actor == this)
                 continue;
-
             actor.TakeDamage(explosionDamage, 1f);
         }
     }
 
     protected override void TryAttack()
     {
-        // ¿⁄∆¯∫¥¿∫ ¿œπ› ∞¯∞› æ» «‘
+        // ÏûêÌè≠Î≥ëÏùÄ ÏùºÎ∞ò Í≥µÍ≤© Ïïà Ìï®
     }
 
     private void OnDestroy()

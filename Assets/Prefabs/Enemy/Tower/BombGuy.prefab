@@ -26,17 +26,17 @@ PrefabInstance:
     - target: {fileID: -8679921383154817045, guid: e5cb5b62ac8da1948ad10136b2cb307b,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -38.125874
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e5cb5b62ac8da1948ad10136b2cb307b,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.5000023
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e5cb5b62ac8da1948ad10136b2cb307b,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 23.5
+      value: 9.150996
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: e5cb5b62ac8da1948ad10136b2cb307b,
         type: 3}
@@ -149,8 +149,9 @@ MonoBehaviour:
   currentTarget: {fileID: 0}
   surroundRadius: 2
   aggroLockDuration: 3
+  stunEffectPrefab: {fileID: 0}
+  stunEffectYOffset: 0.5
   stunMarkDuration: 2
-  stunText: {fileID: 0}
   tauntText: {fileID: 0}
   enemyLayer:
     serializedVersion: 2
@@ -163,13 +164,16 @@ MonoBehaviour:
   attackCooldown: 0
   attackDamage: 0
   attackTimer: 0
-  touchDistance: 1.5
+  touchDistance: 3.3
   runSpeedMultiplier: 1.5
   explosionIndicatorPrefab: {fileID: 5233309261182459226, guid: 11b3625b09d555c4fb3523eb5372cb89,
     type: 3}
   explosionReadyTime: 1.7
   explosionRange: 5
-  explosionDamage: 15
+  explosionDamage: 50
+  explosionEffectPrefab: {fileID: 4764377679742672062, guid: f4eac3924c077da46a2bb4d93bf5c19a,
+    type: 3}
+  explosionEffectScale: 0.5
 --- !u!195 &2280400007890950094
 NavMeshAgent:
   m_ObjectHideFlags: 0

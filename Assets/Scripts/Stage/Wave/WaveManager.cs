@@ -55,6 +55,8 @@ public class WaveManager : MonoBehaviour
 
     [Header("UI")]
     public TextMeshProUGUI countdownText;
+    public GameObject survivalTimerUI;
+    public TextMeshProUGUI survivalTimerText;
 
     [Header("Clear")]
     public StageClearManager stageClearManager;
@@ -117,26 +119,39 @@ public class WaveManager : MonoBehaviour
     {
         yield return StartCoroutine(ShowCountdown());
 
+        if (survivalTimerUI != null)
+            survivalTimerUI.SetActive(true);
+
+        float totalTime = currentFloorSetting.survivalTime;
         float timer = 0f;
         float spawnTimer = 0f;
 
-        while (timer < currentFloorSetting.survivalTime)
+        while (timer < totalTime)
         {
             timer += Time.deltaTime;
             spawnTimer += Time.deltaTime;
+
+            float remaining = totalTime - timer;
+            if (survivalTimerText != null)
+            {
+                int minutes = Mathf.FloorToInt(remaining / 60f);
+                int seconds = Mathf.FloorToInt(remaining % 60f);
+                survivalTimerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+            }
 
             if (spawnTimer >= currentFloorSetting.bombSpawnInterval)
             {
                 spawnTimer = 0f;
 
                 if (currentFloorSetting.suicideBombEnemy != null)
-                {
                     StartCoroutine(SpawnEnemyWithWarning(currentFloorSetting.suicideBombEnemy));
-                }
             }
 
             yield return null;
         }
+
+        if (survivalTimerUI != null)
+            survivalTimerUI.SetActive(false);
 
         ClearTower();
     }
@@ -247,6 +262,9 @@ public class WaveManager : MonoBehaviour
             return;
 
         isClear = true;
+
+        if (survivalTimerUI != null)
+            survivalTimerUI.SetActive(false);
 
         StopAllCoroutines();
 

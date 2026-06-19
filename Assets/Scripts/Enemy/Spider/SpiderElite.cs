@@ -92,6 +92,8 @@ public class SpiderElite : Enemy
         int randomAttackIndex = Random.Range(1, attackPatternCount + 1);
         animator.SetTrigger("Attack" + randomAttackIndex);
 
+        PlaySpiderAttackSound();
+
         yield return new WaitForSeconds(attackAnimTime);
 
         animator.SetBool("Walk", false);
@@ -254,4 +256,16 @@ public class SpiderElite : Enemy
     {
         DealDoubleStompDamage();
     }
+
+    public void PlaySpiderAttackSound()
+    {
+        SoundManager.Instance.PlaySound("MinionSpiderAttack");
+    }
+
+
+    public void PlayEliteSpiderStompSound()
+    {
+        SoundManager.Instance.PlaySound("EliteSpiderStomp");
+    }
+
 }

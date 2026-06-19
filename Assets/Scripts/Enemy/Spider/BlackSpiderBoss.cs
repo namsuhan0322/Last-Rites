@@ -130,6 +130,8 @@ public class BlackSpiderBoss : Enemy
         int randomAttackIndex = Random.Range(1, attackPatternCount + 1);
         animator.SetTrigger("Attack" + randomAttackIndex);
 
+        PlayBossSpiderAttackSound();
+
         yield return new WaitForSeconds(attackAnimTime);
 
         animator.SetBool("Walk", false);
@@ -214,6 +216,7 @@ public class BlackSpiderBoss : Enemy
         animator.SetBool("Run", false);
 
         animator.SetTrigger("PhaseRoar");
+        PlayBossSpiderRoarSound();
 
         yield return new WaitForSeconds(phaseRoarTime);
 
@@ -362,4 +365,30 @@ public class BlackSpiderBoss : Enemy
     {
         DealDoubleStompDamage();
     }
+
+    public void PlayBossSpiderAttackSound()
+    {
+        SoundManager.Instance.PlaySound("BossSpiderAttack");
+    }
+
+    public void PlayBossSpiderStompSound()
+    {
+        SoundManager.Instance.PlaySound("EliteSpiderStomp");
+    }
+
+    public void PlayBossSpiderDieSound()
+    {
+        SoundManager.Instance.PlaySound("BossSpiderDie");
+    }
+
+    public void PlayBossSpiderBombSound()
+    {
+        SoundManager.Instance.PlaySound("WolfFireballExplosion"); //Æø¹ßÀ½ °ø¿ë
+    }
+
+    public void PlayBossSpiderRoarSound()
+    {
+        SoundManager.Instance.PlaySound("BossBothSpiderRoar");
+    }
+
 }

@@ -138,6 +138,7 @@ public class DemonSpiderBoss : Enemy
 
         int randomAttackIndex = Random.Range(1, attackPatternCount + 1);
         animator.SetTrigger("Attack" + randomAttackIndex);
+        PlayBossBoneSpiderAttackSound();
 
         yield return new WaitForSeconds(attackAnimTime);
 
@@ -223,6 +224,7 @@ public class DemonSpiderBoss : Enemy
         animator.SetBool("Run", false);
 
         animator.SetTrigger("PhaseRoar");
+        PlayBossBoneRoarSound();
 
         yield return new WaitForSeconds(phaseRoarTime);
 
@@ -257,6 +259,7 @@ public class DemonSpiderBoss : Enemy
         Vector3 airPos = startPos + Vector3.up * jumpHeight;
 
         animator.SetTrigger("Jump");
+        PlayBossBoneSpiderJumpUpSound();
 
         float t = 0f;
         while (t < jumpUpTime)
@@ -310,6 +313,7 @@ public class DemonSpiderBoss : Enemy
             jumpIndicator.transform.position = lockedLandPos + Vector3.up * 0.02f;
 
         animator.SetTrigger("Fall");
+        PlayBossBoneSpiderJumpDownSound();
 
         Vector3 fallStartPos = transform.position;
         Vector3 fallEndPos = new Vector3(
@@ -460,6 +464,36 @@ public class DemonSpiderBoss : Enemy
     public void OnDoubleStompHit()
     {
         DealDoubleStompDamage();
+    }
+
+    public void PlayBossBoneSpiderAttackSound()
+    {
+        SoundManager.Instance.PlaySound("BossBoneSpiderAttack");
+    }
+
+    public void PlayBossBoneSpiderJumpDownSound()
+    {
+        SoundManager.Instance.PlaySound("BossBoneSpiderDown");
+    }
+
+    public void PlayBossBoneSpiderDieSound()
+    {
+        SoundManager.Instance.PlaySound("BossBoneSpiderDie");
+    }
+
+    public void PlayBossBoneSpiderJumpUpSound()
+    {
+        SoundManager.Instance.PlaySound("BossBoneSpiderUp"); 
+    }
+
+    public void PlayBossBoneRoarSound()
+    {
+        SoundManager.Instance.PlaySound("BossBothSpiderRoar");
+    }
+
+    public void PlayBossSpiderStompSound()
+    {
+        SoundManager.Instance.PlaySound("EliteSpiderStomp");
     }
 }
 

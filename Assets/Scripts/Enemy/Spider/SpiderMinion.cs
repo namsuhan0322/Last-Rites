@@ -49,6 +49,8 @@ public class SpiderMinion : Enemy
 
         animator.SetTrigger("Attack" + randomAttackIndex);
 
+        PlaySpiderAttackSound();
+
         yield return new WaitForSeconds(attackAnimTime);
 
         animator.SetBool("Walk", false);
@@ -78,6 +80,11 @@ public class SpiderMinion : Enemy
         }
 
         base.EndAttack();
+    }
+
+    public void PlaySpiderAttackSound()
+    {
+        SoundManager.Instance.PlaySound("MinionSpiderAttack");
     }
 }
 

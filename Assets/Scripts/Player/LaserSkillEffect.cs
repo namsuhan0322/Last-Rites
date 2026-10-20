@@ -1,13 +1,18 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(BoxCollider))] // ÀÌ ½ºÅ©¸³Æ®¸¦ ³ÖÀ¸¸é BoxCollider°¡ ÀÚµ¿À¸·Î Ãß°¡µË´Ï´Ù.
-public class LaserSkillEffect : MonoBehaviour
+/// <summary>
+/// [ì—­í• ] ìƒì„± í›„ damageDelay ë’¤ BoxCollider í¬ê¸°ì˜ ìƒì ì•ˆ ì ì—ê²Œ í•œ ë²ˆ ë°ë¯¸ì§€ (Leaser í”„ë¦¬íŒ¹).
+/// [ì´ìœ ] ìƒì„±í•˜ëŠ” ìª½ì´ ISkillDamageObjectë¡œ í•œ ë²ˆì— ì°¾ëŠ”ë‹¤.
+/// [ê·¼ê±°] ëª…ì„¸ 3.5, ê²°ì • R16
+/// </summary>
+[RequireComponent(typeof(BoxCollider))] // ì´ ìŠ¤í¬ë¦½íŠ¸ë¥¼ ë„£ìœ¼ë©´ BoxColliderê°€ ìë™ìœ¼ë¡œ ì¶”ê°€ë©ë‹ˆë‹¤.
+public class LaserSkillEffect : MonoBehaviour, ISkillDamageObject
 {
-    [Header("·¹ÀÌÀú ½ºÅ³ ¼³Á¤")]
-    [Tooltip("·¹ÀÌÀú°¡ ¹ß»çµÇ°í ¸î ÃÊ µÚ¿¡ µ¥¹ÌÁö°¡ µé¾î°¥ °ÍÀÎ°¡?")]
+    [Header("ë ˆì´ì € ìŠ¤í‚¬ ì„¤ì •")]
+    [Tooltip("ë ˆì´ì €ê°€ ë°œì‚¬ë˜ê³  ëª‡ ì´ˆ ë’¤ì— ë°ë¯¸ì§€ê°€ ë“¤ì–´ê°ˆ ê²ƒì¸ê°€?")]
     public float damageDelay = 0.1f;
-    [Tooltip("ÀÌÆåÆ® À¯Áö ½Ã°£")]
+    [Tooltip("ì´í™íŠ¸ ìœ ì§€ ì‹œê°„")]
     public float lifeTime = 1.5f;
 
     private int _damage;
@@ -17,7 +22,7 @@ public class LaserSkillEffect : MonoBehaviour
     private void Awake()
     {
         _boxCollider = GetComponent<BoxCollider>();
-        _boxCollider.isTrigger = true; // ¹°¸® Ãæµ¹ ¹æÁö¿ë Æ®¸®°Å ¼³Á¤
+        _boxCollider.isTrigger = true; // ë¬¼ë¦¬ ì¶©ëŒ ë°©ì§€ìš© íŠ¸ë¦¬ê±° ì„¤ì •
     }
 
     public void Initialize(int damage, LayerMask enemyLayer)
@@ -33,13 +38,13 @@ public class LaserSkillEffect : MonoBehaviour
     {
         yield return new WaitForSeconds(damageDelay);
 
-        // 1. BoxColliderÀÇ Áß½ÉÁ¡(¿ùµå ÁÂÇ¥) °è»ê
+        // 1. BoxColliderì˜ ì¤‘ì‹¬ì (ì›”ë“œ ì¢Œí‘œ) ê³„ì‚°
         Vector3 center = transform.TransformPoint(_boxCollider.center);
 
-        // 2. BoxColliderÀÇ Àı¹İ Å©±â(Half Extents) °è»ê + ¿ÀºêÁ§Æ® ½ºÄÉÀÏ ¹İ¿µ
+        // 2. BoxColliderì˜ ì ˆë°˜ í¬ê¸°(Half Extents) ê³„ì‚° + ì˜¤ë¸Œì íŠ¸ ìŠ¤ì¼€ì¼ ë°˜ì˜
         Vector3 halfExtents = Vector3.Scale(_boxCollider.size, transform.lossyScale) * 0.5f;
 
-        // 3. »ç°¢Çü(Box) ÇüÅÂÀÇ ±¤¿ª ÆÇÁ¤ ½ÇÇà!
+        // 3. ì‚¬ê°í˜•(Box) í˜•íƒœì˜ ê´‘ì—­ íŒì • ì‹¤í–‰!
         Collider[] hitEnemies = Physics.OverlapBox(center, halfExtents, transform.rotation, _enemyLayer);
 
         foreach (Collider enemyCollider in hitEnemies)
@@ -52,13 +57,13 @@ public class LaserSkillEffect : MonoBehaviour
         }
     }
 
-    // À¯´ÏÆ¼ ¿¡µğÅÍ¿¡¼­ ·¹ÀÌÀú ÆÇÁ¤ ¹üÀ§¸¦ »¡°£»ö ¹Ú½º·Î Á÷°üÀûÀ¸·Î º¼ ¼ö ÀÖ°Ô ÇØÁİ´Ï´Ù.
+    // ìœ ë‹ˆí‹° ì—ë””í„°ì—ì„œ ë ˆì´ì € íŒì • ë²”ìœ„ë¥¼ ë¹¨ê°„ìƒ‰ ë°•ìŠ¤ë¡œ ì§ê´€ì ìœ¼ë¡œ ë³¼ ìˆ˜ ìˆê²Œ í•´ì¤ë‹ˆë‹¤.
     private void OnDrawGizmosSelected()
     {
         if (_boxCollider == null) _boxCollider = GetComponent<BoxCollider>();
         if (_boxCollider == null) return;
 
-        Gizmos.color = new Color(1f, 0f, 0f, 0.5f); // ¹İÅõ¸íÇÑ »¡°£»ö
+        Gizmos.color = new Color(1f, 0f, 0f, 0.5f); // ë°˜íˆ¬ëª…í•œ ë¹¨ê°„ìƒ‰
         Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, transform.lossyScale);
         Gizmos.DrawCube(_boxCollider.center, _boxCollider.size);
     }

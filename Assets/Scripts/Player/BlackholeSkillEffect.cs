@@ -1,20 +1,26 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using System.Collections;
 
-public class BlackholeSkillEffect : MonoBehaviour
+/// <summary>
+/// [ì—­í• ] í­ë°œ ì „ê¹Œì§€ ì£¼ë³€ ì ì„ ì¤‘ì‹¬ìœ¼ë¡œ ëŒì–´ë‹¹ê¸°ê³ , explosionDelay ë’¤ ë°˜ê²½ ì•ˆ ì ì—ê²Œ ë°ë¯¸ì§€.
+/// [ì´ìœ ] ìƒì„±í•˜ëŠ” ìª½ì´ ISkillDamageObjectë¡œ í•œ ë²ˆì— ì°¾ëŠ”ë‹¤.
+///        ì§€ê¸ˆì€ ì–´ëŠ í”„ë¦¬íŒ¹ì—ë„ ë¶™ì–´ ìˆì§€ ì•Šë‹¤ (BlackHole í”„ë¦¬íŒ¹ì€ AoESkillEffectë¥¼ ì”€).
+/// [ê·¼ê±°] ëª…ì„¸ 3.5, ê²°ì • R16, R38, ë¯¸ë£¬ í•­ëª© D19
+/// </summary>
+public class BlackholeSkillEffect : MonoBehaviour, ISkillDamageObject
 {
-    [Header("ºí·¢È¦ ¼³Á¤")]
-    [Tooltip("ÅÍÁö±â Àü±îÁö °É¸®´Â ½Ã°£ (¸ğÀ¸´Â ½Ã°£)")]
+    [Header("ë¸”ë™í™€ ì„¤ì •")]
+    [Tooltip("í„°ì§€ê¸° ì „ê¹Œì§€ ê±¸ë¦¬ëŠ” ì‹œê°„ (ëª¨ìœ¼ëŠ” ì‹œê°„)")]
     public float explosionDelay = 2.0f;
-    [Tooltip("ÀûÀ» Áß¾ÓÀ¸·Î ²ø¾î´ç±â´Â ¹üÀ§")]
+    [Tooltip("ì ì„ ì¤‘ì•™ìœ¼ë¡œ ëŒì–´ë‹¹ê¸°ëŠ” ë²”ìœ„")]
     public float pullRadius = 6f;
-    [Tooltip("ÀûÀ» ²ø¾î´ç±â´Â Èû(¼Óµµ)")]
+    [Tooltip("ì ì„ ëŒì–´ë‹¹ê¸°ëŠ” í˜(ì†ë„)")]
     public float pullForce = 3f;
 
-    [Header("Æø¹ß(µ¥¹ÌÁö) ¼³Á¤")]
-    [Tooltip("Æø¹ß µ¥¹ÌÁö°¡ µé¾î°¡´Â ÃÖÁ¾ ¹üÀ§")]
+    [Header("í­ë°œ(ë°ë¯¸ì§€) ì„¤ì •")]
+    [Tooltip("í­ë°œ ë°ë¯¸ì§€ê°€ ë“¤ì–´ê°€ëŠ” ìµœì¢… ë²”ìœ„")]
     public float damageRadius = 4f;
-    [Tooltip("ÀÌÆåÆ® ÀüÃ¼ À¯Áö ½Ã°£")]
+    [Tooltip("ì´í™íŠ¸ ì „ì²´ ìœ ì§€ ì‹œê°„")]
     public float lifeTime = 4f;
 
     private int _damage;
@@ -32,7 +38,7 @@ public class BlackholeSkillEffect : MonoBehaviour
 
     private void Update()
     {
-        // ÅÍÁö±â Àü±îÁö ¸Å ÇÁ·¹ÀÓ ÁÖº¯ ÀûµéÀ» Áß¾ÓÀ¸·Î ²ø¾î´ç±è!
+        // í„°ì§€ê¸° ì „ê¹Œì§€ ë§¤ í”„ë ˆì„ ì£¼ë³€ ì ë“¤ì„ ì¤‘ì•™ìœ¼ë¡œ ëŒì–´ë‹¹ê¹€!
         if (!_isExploded)
         {
             Collider[] targets = Physics.OverlapSphere(transform.position, pullRadius, _enemyLayer);
@@ -41,12 +47,12 @@ public class BlackholeSkillEffect : MonoBehaviour
                 Actor enemy = col.GetComponentInParent<Actor>();
                 if (enemy != null && !enemy.IsDead)
                 {
-                    // ÀûÀ» ºí·¢È¦ Áß½É ¹æÇâÀ¸·Î ÀÌµ¿½ÃÅ´ (yÃàÀº 0À¸·Î °íÁ¤ÇØ ¶¥¿¡ ºÙ¾îÀÖ°Ô ÇÔ)
+                    // ì ì„ ë¸”ë™í™€ ì¤‘ì‹¬ ë°©í–¥ìœ¼ë¡œ ì´ë™ì‹œí‚´ (yì¶•ì€ 0ìœ¼ë¡œ ê³ ì •í•´ ë•…ì— ë¶™ì–´ìˆê²Œ í•¨)
                     Vector3 direction = (transform.position - enemy.transform.position).normalized;
                     direction.y = 0;
 
-                    // ÁÖÀÇ: ¸ó½ºÅÍ¿¡ NavMeshAgent°¡ ÄÑÁ® ÀÖÀ¸¸é Ãæµ¹ÇÒ ¼ö ÀÖÀ¸´Ï, 
-                    // ´ú´ú°Å¸®¸é ¸ó½ºÅÍÀÇ NavMeshAgent.velocity¸¦ °Çµå¸®´Â ¹æ½ÄÀ¸·Î ÀÀ¿ëÇÒ ¼ö ÀÖ½À´Ï´Ù.
+                    // ì£¼ì˜: ëª¬ìŠ¤í„°ì— NavMeshAgentê°€ ì¼œì ¸ ìˆìœ¼ë©´ ì¶©ëŒí•  ìˆ˜ ìˆìœ¼ë‹ˆ, 
+                    // ëœëœê±°ë¦¬ë©´ ëª¬ìŠ¤í„°ì˜ NavMeshAgent.velocityë¥¼ ê±´ë“œë¦¬ëŠ” ë°©ì‹ìœ¼ë¡œ ì‘ìš©í•  ìˆ˜ ìˆìŠµë‹ˆë‹¤.
                     enemy.transform.position += direction * pullForce * Time.deltaTime;
                 }
             }
@@ -55,12 +61,12 @@ public class BlackholeSkillEffect : MonoBehaviour
 
     private IEnumerator ExplosionCoroutine()
     {
-        // ÁöÁ¤µÈ ½Ã°£¸¸Å­ ¸ğÀ¸±â ¿¬Ãâ ´ë±â
+        // ì§€ì •ëœ ì‹œê°„ë§Œí¼ ëª¨ìœ¼ê¸° ì—°ì¶œ ëŒ€ê¸°
         yield return new WaitForSeconds(explosionDelay);
 
-        _isExploded = true; // ²ø¾î´ç±â±â Á¾·á
+        _isExploded = true; // ëŒì–´ë‹¹ê¸°ê¸° ì¢…ë£Œ
 
-        // Äç! Æø¹ß µ¥¹ÌÁö ÆÇÁ¤
+        // ì¾…! í­ë°œ ë°ë¯¸ì§€ íŒì •
         Collider[] hitEnemies = Physics.OverlapSphere(transform.position, damageRadius, _enemyLayer);
         foreach (Collider enemyCollider in hitEnemies)
         {
@@ -75,9 +81,9 @@ public class BlackholeSkillEffect : MonoBehaviour
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.blue;
-        Gizmos.DrawWireSphere(transform.position, pullRadius); // ÆÄ¶õ ¼±: ²ø¾î´ç±â´Â ¹üÀ§
+        Gizmos.DrawWireSphere(transform.position, pullRadius); // íŒŒë€ ì„ : ëŒì–´ë‹¹ê¸°ëŠ” ë²”ìœ„
 
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, damageRadius); // »¡°£ ¼±: ÅÍÁö´Â ¹üÀ§
+        Gizmos.DrawWireSphere(transform.position, damageRadius); // ë¹¨ê°„ ì„ : í„°ì§€ëŠ” ë²”ìœ„
     }
 }

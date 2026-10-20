@@ -1,31 +1,29 @@
-using UnityEngine;
-using System.Collections;
+ï»¿using UnityEngine;
 
+/// <summary>
+/// [ì—­í• ] ê²€ë°© R: duration(5)ì´ˆ ë™ì•ˆ HasShieldBuffë¥¼ ì¼ ë‹¤. ì´ í”Œë˜ê·¸ë¥¼ ì½ëŠ” ê³³ì€ ì•„ì§ ì—†ë‹¤(í”¼í•´ ê°ì†ŒÂ·ë°˜ê²© ë¯¸êµ¬í˜„).
+/// [ì´ìœ ] ëë‚´ê¸°ëŠ” ë¶€ëª¨ ê³µí†µ ì½”ë£¨í‹´ RunForDurationì„ ì“´ë‹¤.
+/// [ê·¼ê±°] ëª…ì„¸ 3.5 / ë¯¸êµ¬í˜„ D3 (ì§€ê¸ˆì€ ë§ˆë²•ì‚¬ ë¬´ê¸°ì˜ Rì— ì—°ê²°ë¨)
+/// </summary>
 [CreateAssetMenu(fileName = "SwordShield_Buff", menuName = "Weapon/R_Skills/SwordShield_Buff")]
 public class SwordShieldBuff_SO : BuffSkill_SO
 {
-    [Header("°Ë¹æ ¹öÇÁ ¼³Á¤")]
+    [Header("ê²€ë°© ë²„í”„ ì„¤ì •")]
     public float duration = 5f;
 
     public override void Execute(PlayerController player, float rVal)
     {
-        Debug.Log($"[{skillName}] ¹ßµ¿! {duration}ÃÊ°£ µ¥¹ÌÁö 70% °¨¼Ò ¹× ¹İ°İ È°¼ºÈ­!");
+        Debug.Log($"[{skillName}] ë°œë™! {duration}ì´ˆê°„ ë°ë¯¸ì§€ 70% ê°ì†Œ ë° ë°˜ê²© í™œì„±í™”!");
 
-        // µ¥¹ÌÁö °¨¼Ò ¹× ¹İ°İ ÇÃ·¡±× ÄÑ±â
+        // ë°ë¯¸ì§€ ê°ì†Œ ë° ë°˜ê²© í”Œë˜ê·¸ ì¼œê¸°
         player.HasShieldBuff = true;
 
-        player.StartCoroutine(BuffTimer(player));
-    }
-
-    private IEnumerator BuffTimer(PlayerController player)
-    {
-        yield return new WaitForSeconds(duration);
-        EndBuff(player);
+        player.StartCoroutine(RunForDuration(player, duration));   // ì§€ì† ì‹œê°„ ë’¤ EndBuff (ë¶€ëª¨ ê³µí†µ)
     }
 
     public override void EndBuff(PlayerController player)
     {
-        Debug.Log($"[{skillName}] Áö¼Ó ½Ã°£ Á¾·á. Ã¶º® ¹æ¾î ÇØÁ¦.");
+        Debug.Log($"[{skillName}] ì§€ì† ì‹œê°„ ì¢…ë£Œ. ì² ë²½ ë°©ì–´ í•´ì œ.");
 
         player.HasShieldBuff = false;
     }

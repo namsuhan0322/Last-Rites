@@ -1,6 +1,12 @@
 ﻿using UnityEngine;
 using System;
 
+/// <summary>
+/// [역할] 체력·강인도·무적·데미지 감소를 가진 모든 캐릭터(플레이어·적)의 부모. 맞으면 피격·스턴·사망 이벤트를 낸다.
+/// [이유] 플레이어 전용 처리(보호막, 데미지 숫자 끄기)를 여기서 GetComponent<PlayerController>()로 찾던 것을
+///        빈 확장 지점으로 바꿔, 부모가 특정 자식(플레이어)을 모르게 한다.
+/// [근거] 리팩토링 명세 3.5·결정 R15, 버그 수정 명세 B6
+/// </summary>
 public class Actor : MonoBehaviour
 {
     [SerializeField] protected int _currentHP;
@@ -84,6 +90,16 @@ public class Actor : MonoBehaviour
         OnHPChanged?.Invoke(_currentHP, _maxHP);
     }
 
+    /// 데미지를 받기 직전에 막을 기회 (기본: 막지 않음). 플레이어는 마법사 보호막으로 막는다 (PlayerStats가 덮어씀)
+    protected virtual bool TryBlockIncomingDamage() => false;
+
+    /// 맞았을 때 머리 위 데미지 숫자를 띄우는지 (기본: 띄움). 플레이어는 띄우지 않는다 (PlayerStats가 덮어씀)
+    protected virtual bool ShowsDamageText => true;
+
+    /// 죽을 때 애니메이터에 거는 트리거 이름 (기본: "Die"). null이면 걸지 않는다.
+    /// 플레이어는 사망 애니를 PlayerDeadState가 IsDead로 틀므로 걸지 않는다 (PlayerStats가 덮어씀, 버그 수정 B6)
+    protected virtual string DeathAnimTrigger => "Die";
+
     public virtual void TakeDamage(int damage, float severityOverride = -1f, bool isHeavyAttack = false, bool showDamageText = true)
     {
         if (_isDead) return;
@@ -93,8 +109,7 @@ public class Actor : MonoBehaviour
             return;
         }
 
-        PlayerController pc = GetComponent<PlayerController>();
-        if (pc != null && pc.TryBlockDamageWithShield()) return;
+        if (TryBlockIncomingDamage()) return;
 
         if (damage <= 0) return;
 
@@ -107,9 +122,7 @@ public class Actor : MonoBehaviour
         HitFlashEffect hitFlash = GetComponentInChildren<HitFlashEffect>();
         if (hitFlash != null) hitFlash.PlayFlash();
 
-        bool isPlayer = GetComponent<PlayerController>() != null;
-
-        if (!isPlayer && showDamageText && DamageEffectManager.Instance != null)
+        if (ShowsDamageText && showDamageText && DamageEffectManager.Instance != null)
         {
             Vector3 textSpawnPos;
             Collider col = GetComponent<Collider>();
@@ -165,8 +178,8 @@ public class Actor : MonoBehaviour
         _isDead = true;
         OnDeath?.Invoke();
 
-        if (animator != null)
-            animator.SetTrigger("Die");
+        if (animator != null && DeathAnimTrigger != null)
+            animator.SetTrigger(DeathAnimTrigger);
     }
 
     public void AddDamageReduction(int amount, float duration)

@@ -1,39 +1,37 @@
-using UnityEngine;
-using System.Collections;
+ï»¿using UnityEngine;
 
+/// <summary>
+/// [ì—­í• ] ìŒê²€ R: duration(10)ì´ˆ ë™ì•ˆ ì• ë‹ˆ ì†ë„ Ã—1.3, ì´ë™ ì†ë„ Ã—1.2, HasTwinBuff(ì½ëŠ” ê³³ ì—†ìŒ).
+/// [ì´ìœ ] ëë‚´ê¸°ëŠ” ë¶€ëª¨ ê³µí†µ ì½”ë£¨í‹´ RunForDurationì„ ì“´ë‹¤.
+/// [ê·¼ê±°] ëª…ì„¸ 3.5 / ë¯¸êµ¬í˜„ D2
+/// </summary>
 [CreateAssetMenu(fileName = "TwinSwords_Buff", menuName = "Weapon/R_Skills/TwinSwords_Buff")]
 public class TwinSwordsBuff_SO : BuffSkill_SO
 {
-    [Header("½Ö°Ë ¹öÇÁ ¼³Á¤")]
+    [Header("ìŒê²€ ë²„í”„ ì„¤ì •")]
     public float duration = 10f;
     public float atkSpeedMultiplier = 1.3f;
     public float moveSpeedMultiplier = 1.2f;
 
     public override void Execute(PlayerController player, float rVal)
     {
-        Debug.Log($"[{skillName}] ¹ßµ¿! {duration}ÃÊ°£ ÀÌ¼Ó/°ø¼Ó Áõ°¡, È¸ÇÇ ½ºÅÂ¹Ì³ª °¨¼Ò!");
+        Debug.Log($"[{skillName}] ë°œë™! {duration}ì´ˆê°„ ì´ì†/ê³µì† ì¦ê°€, íšŒí”¼ ìŠ¤íƒœë¯¸ë‚˜ ê°ì†Œ!");
 
-        // °ø¼Ó ¹× ÀÌ¼Ó Áõ°¡ Àû¿ë
+        // ê³µì† ë° ì´ì† ì¦ê°€ ì ìš©
         player.Anim.speed = atkSpeedMultiplier;
         player.Agent.speed = player.Stats.MoveSpeed * moveSpeedMultiplier;
 
-        // ÇÃ·¹ÀÌ¾î¿¡ ½Ö°Ë ¹öÇÁ »óÅÂ ÄÑ±â (½ºÅÂ¹Ì³ª °¨¼Ò¿ë ÇÃ·¡±×)
+        // í”Œë ˆì´ì–´ì— ìŒê²€ ë²„í”„ ìƒíƒœ ì¼œê¸° (ìŠ¤íƒœë¯¸ë‚˜ ê°ì†Œìš© í”Œë˜ê·¸)
         player.HasTwinBuff = true; 
 
-        player.StartCoroutine(BuffTimer(player));
-    }
-
-    private IEnumerator BuffTimer(PlayerController player)
-    {
-        yield return new WaitForSeconds(duration);
-        EndBuff(player);
+        player.StartCoroutine(RunForDuration(player, duration));   // ì§€ì† ì‹œê°„ ë’¤ EndBuff (ë¶€ëª¨ ê³µí†µ)
     }
 
     public override void EndBuff(PlayerController player)
     {
-        Debug.Log($"[{skillName}] Áö¼Ó ½Ã°£ Á¾·á. ½ºÅÈ ·Ñ¹é!");
+        Debug.Log($"[{skillName}] ì§€ì† ì‹œê°„ ì¢…ë£Œ. ìŠ¤íƒ¯ ë¡¤ë°±!");
 
-        // ½ºÅÈ ¿ø·¡´ë·Î º¹±¸
+        // ìŠ¤íƒ¯ ì›ë˜ëŒ€ë¡œ ë³µêµ¬
         player.Anim.speed = 1.0f;
         player.Agent.speed = player.Stats.MoveSpeed;
 

@@ -1,8 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.VFX;
 
+/// <summary>
+/// [역할] 마법사 마법탄(Wizard Atk Combo 프리팹): 앞으로 날아가 처음 닿은 적에게 데미지를 주고 터진다.
+///        최대 사거리에 닿아도 터진다.
+/// [이유] 생성하는 쪽(WizardCaster)이 ISkillDamageObject로 한 번에 찾는다.
+/// [근거] 명세 3.5, 결정 R16, R33
+/// </summary>
 [RequireComponent(typeof(Collider))]
-public class VFXProjectile : MonoBehaviour
+public class VFXProjectile : MonoBehaviour, ISkillDamageObject
 {
     [Header("VFX 설정")]
     public VisualEffect vfx;

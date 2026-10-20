@@ -2,7 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Serialization;
 
+/// <summary>
+/// [역할] 플레이어 허브: 인스펙터 설정·참조, 상태 머신, Unity 콜백, 애니메이션 이벤트 창구,
+///        바깥 공개 함수(Revive·ChangeWeapon·SetBossModeOutline·TryBlockDamageWithShield), 상태 프로퍼티.
+///        실제 일은 규칙(Player/Rules)과 부품(Player/Parts)에 맡긴다.
+/// [이유] 1,283줄에 모든 기능이 섞여 있던 것을 나눴다. 인스펙터 필드와 이벤트 함수는
+///        프리팹·씬·애니메이션이 이름으로 찾으므로 여기 그대로 둔다.
+/// [근거] 명세 3.1, 결정 R4, R9, R27, 조작감 명세 3.1
+/// </summary>
 public class PlayerController : MonoBehaviour
 {
     #region State Machine
@@ -16,6 +25,27 @@ public class PlayerController : MonoBehaviour
     public PlayerStunState StunState { get; private set; }
     public PlayerSkillState SkillState { get; private set; }
 
+    #endregion
+
+    #region 규칙 (Player/Rules — 엔진 없이 테스트됨, 명세 3.2)
+    private readonly SkillCooldowns _cooldowns = new SkillCooldowns();
+    private readonly CombatTimer _combat = new CombatTimer();
+    private readonly WizardShieldCounter _shield = new WizardShieldCounter();
+    private readonly PotionPouch _potion = new PotionPouch();
+    private readonly ActionInputBuffer _inputBuffer = new ActionInputBuffer();   // 선입력 한 칸 (조작감 C5·C7)
+    #endregion
+
+    #region 부품 (Player/Parts — 엔진 쪽 일반 클래스, 명세 3.3)
+    public PlayerMotor Motor { get; private set; }
+    private PlayerActionEffects _effects;
+    private WizardCaster _wizard;
+    private PlayerAttack _attack;
+    private PlayerWeaponLoadout _loadout;
+    private CombatSensor _sensor;
+    private TutorialGate _tutorial;
+    private PlayerSkillInput _skillInput;
+    private PlayerUpperBody _upperBody;
+    public ActionCancelPoints CancelPoints { get; private set; }   // 지금 클립의 타격 끝 시점 (조작감 C3·C5)
     #endregion
 
     #region Components & Settings
@@ -32,26 +62,27 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float RotateSpeed = 10f;
     [SerializeField] public float AnimationSmoothTime = 0.1f;
 
-    private float _gravity = -9.81f;
-    private float _verticalVelocity;
-
     public WeaponSO CurrentWeapon;
     public WeaponHitbox Hitbox;
-    [HideInInspector] public int CurrentComboStep = 0;
 
     public WeaponVisualManager VisualManager;
 
     [Header("Input")]
     public LayerMask GroundLayer;
 
+    [Header("조작감 (로스트아크식 선입력·후딜 캔슬)")]
+    [Tooltip("평타 콤보가 다음 타로 넘어가는 시점. 0 = 이번 타격이 끝나는 순간(가장 빠름), 1 = 예전처럼 공격 애니 95%")]
+    [Range(0f, 1f)] public float comboChainDelay = 0.4f;   // 조작감 결정 C5, C11(테스트 후 추가: 체크박스 → 슬라이더, 0.4는 사용자가 Play 중 맞춘 값)
+    public ActionInputBuffer InputBuffer => _inputBuffer;
+
     [Header("이동 및 회피")]
     [Tooltip("회피 후 다음 회피를 할 수 있을 때까지의 최소 지연 시간")]
     public float dashCooldown = 10f;
-    private float _dashTimer = 0f;
-    public float DashTimer => _dashTimer;
+    public float DashTimer => _cooldowns.Dash;
     [Tooltip("회피 후 평타 공격을 할 수 있을 때까지의 지연 시간")]
     public float postRollAttackDelay = 0.3f;
-    [HideInInspector] public float postRollAttackTimer = 0f;
+    // 이름은 바깥 코드 호환을 위해 그대로 (결정 R7). 지금 코드에서는 0 말고 넣는 곳이 없음 (Q3)
+    public float postRollAttackTimer { get => _cooldowns.PostRollAttack; set => _cooldowns.PostRollAttack = value; }
 
     [Header("전투 감지 센서")]
     public float DetectionRadius = 8.0f;   
@@ -70,9 +101,6 @@ public class PlayerController : MonoBehaviour
     [Header("무기별 특수(R) 이펙트 매핑")]
     public List<WeaponEffectMapping> weaponSpecialEffects = new List<WeaponEffectMapping>();
 
-    private GameObject currentRSkillInstance;         // 몸에 생성된 아우라 추적용
-    private GameObject currentScreenEffectInstance;   // 현재 켜진 화면 이펙트 추적용
-
     [Header("낙하형(AoE) 스킬")]
     public GameObject excaliburSkillPrefab;
     public float spawnDistance = 5f;
@@ -82,12 +110,10 @@ public class PlayerController : MonoBehaviour
 
     [Header("아이템 관리")]
     public ShopPotionSO currentPotionData;          // 장착된 포션 SO
-    public int currentPotionCount;                  // 현재 인벤토리에 남은 포션 개수
-    private GameObject currentHealInstance;
-    private Coroutine _healEffectCoroutine;
+    public int currentPotionCount => _potion.Count; // 현재 인벤토리에 남은 포션 개수
 
     public float potionCooldown = 5.0f;
-    public float Potion_Timer { get; private set; }
+    public float Potion_Timer => _potion.CooldownRemaining;
 
     public event Action<int> OnPotionCountChanged;
 
@@ -97,13 +123,10 @@ public class PlayerController : MonoBehaviour
 
     [Header("Action Effects (현재 무기의 액션 이펙트 모음)")]
     public List<ActionEffectMapping> weaponEffects = new List<ActionEffectMapping>();
-    private Dictionary<string, ParticleSystem[]> effectDictionary = new Dictionary<string, ParticleSystem[]>();
 
-    private float _combatTimer;
-    private bool _inCombat;
     public TutorialSystem tutorialSystem;
     SkillTutorial skillTutorial;
-    public bool InCombat => _inCombat;
+    public bool InCombat => _combat.InCombat;
 
     [Header("스킬 관리")]
     [HideInInspector] public float AtkSpeedModifier = 1.0f;
@@ -112,10 +135,11 @@ public class PlayerController : MonoBehaviour
     [HideInInspector] public float CurrentSkillVal;
     [Tooltip("스킬 종료 후 다음 스킬을 쓸 수 있을 때까지의 대기 시간")]
     public float globalSkillDelay = 0.5f;
-    [HideInInspector] public float globalSkillTimer = 0f;
+    public float globalSkillTimer { get => _cooldowns.GlobalSkill; set => _cooldowns.GlobalSkill = value; }
 
     [Header("무기 특수 버프 플래그")]
-    [HideInInspector] public bool HasRBuff = false;         // 대검 (결정타/슈퍼아머)
+    [FormerlySerializedAs("HasRBuff")]                      // 프리팹에 저장된 옛 이름과 연결 (값은 false, 결정 R17)
+    [HideInInspector] public bool HasGreatSwordBuff = false; // 대검 R (슈퍼아머 + 데미지 × R값)
     [HideInInspector] public bool HasTwinBuff = false;      // 쌍검 (스태미나 감소)
     [HideInInspector] public bool HasSpearBuff = false;     // 창 (방어력 관통)
     [HideInInspector] public bool HasShieldBuff = false;    // 검방 (피해 70% 감소/반격)
@@ -126,22 +150,28 @@ public class PlayerController : MonoBehaviour
     public GameObject wizardSkillEPrefab;
     public GameObject wizardSkillVPrefab;
 
+    public bool isWizardShieldActive => _shield.IsActive;
+    public int wizardShieldRemainingHits => _shield.RemainingHits;
     [Header("마법사 보호막 세팅")]
-    public bool isWizardShieldActive = false;
-    public int wizardShieldRemainingHits = 0;
     public int wizardShieldMaxHits = 3;
-    private GameObject activeWizardShieldInstance;
 
     [SerializeField] private Transform wizardQSpawnPoint;
     [SerializeField] private Transform wizardWSpawnPoint;
     [SerializeField] private Transform wizardESpawnPoint;
     [SerializeField] private Transform wizardVSpawnPoint;
 
-    public float Q_Timer { get; private set; }
-    public float W_Timer { get; private set; }
-    public float E_Timer { get; private set; }
-    public float R_Timer { get; private set; }
-    public float V_Timer { get; private set; }
+    // WizardCaster가 읽는 통로 (필드는 인스펙터·씬 덮어쓰기 유지를 위해 그대로 둔다, 결정 R27)
+    internal Transform WizardQSpawnPoint => wizardQSpawnPoint;
+    internal Transform WizardWSpawnPoint => wizardWSpawnPoint;
+    internal Transform WizardESpawnPoint => wizardESpawnPoint;
+    internal Transform WizardVSpawnPoint => wizardVSpawnPoint;
+
+    public float Q_Timer => _cooldowns.Get(SkillSlot.Q);
+    public float W_Timer => _cooldowns.Get(SkillSlot.W);
+    public float E_Timer => _cooldowns.Get(SkillSlot.E);
+    public float R_Timer => _cooldowns.Get(SkillSlot.R);
+    public float V_Timer => _cooldowns.Get(SkillSlot.V);
+    public float GetSkillTimer(SkillSlot slot) => _cooldowns.Get(slot);   // UICooldown 반복문용 (R31)
 
     #endregion
 
@@ -169,13 +199,16 @@ public class PlayerController : MonoBehaviour
         Stats.OnStun += HandleStun;
         Stats.OnHPChanged += CheckDangerState;
 
-        foreach (var mapping in weaponEffects)
-        {
-            if (!effectDictionary.ContainsKey(mapping.actionCode))
-            {
-                effectDictionary.Add(mapping.actionCode, mapping.particles);
-            }
-        }
+        _tutorial = new TutorialGate(this);
+        Motor = new PlayerMotor(this);
+        _effects = new PlayerActionEffects(this);
+        _wizard = new WizardCaster(this, _shield);
+        _attack = new PlayerAttack(this, _wizard);
+        _loadout = new PlayerWeaponLoadout(this);
+        _sensor = new CombatSensor(this, _combat, _tutorial);
+        _skillInput = new PlayerSkillInput(this, _tutorial, skillTutorial, _inputBuffer);
+        CancelPoints = new ActionCancelPoints(this);
+        _upperBody = new PlayerUpperBody(this);
     }
 
     private void Start()
@@ -184,60 +217,43 @@ public class PlayerController : MonoBehaviour
         Agent.updateRotation = false;
         Agent.speed = Stats.MoveSpeed;
 
-        LoadEquippedWeapon();
-
-        if (CurrentWeapon != null && Hitbox != null)
-        {
-            if (Hitbox != null) Hitbox.SetupColliders(CurrentWeapon.weaponType);
-            if (VisualManager != null) VisualManager.SetupVisuals(CurrentWeapon.weaponType);
-            if (CurrentWeapon.weaponAnimator != null) Anim.runtimeAnimatorController = CurrentWeapon.weaponAnimator;
-        }
+        _loadout.LoadEquipped();
 
         StateMachine.Initialize(IdleState);
 
         if (currentPotionData != null)
         {
-            currentPotionCount = currentPotionData.Max_Count;
+            _potion.Refill(currentPotionData.Max_Count);
             OnPotionCountChanged?.Invoke(currentPotionCount);
         }
     }
 
     private void Update()
     {
-        if (tutorialSystem != null && tutorialSystem.tutorialPlaying)
+        if (_tutorial.IsFrozen)
         {
             Agent.ResetPath();
-            Anim.SetFloat("Move", 0f);
+            Anim.SetFloat(PlayerAnimParams.Move, 0f);
             return;
         }
+
+        // 선입력 모으기: 상태 처리 전에 이번 프레임에 누른 키를 한 칸에 담는다. 피격·스턴·사망 중에는 모으지 않고 비운다 (C7⑤)
+        if (StateMachine.CurrentState.BlocksInputBuffer) _inputBuffer.Clear();
+        else _skillInput.Collect();
+
         StateMachine.CurrentState.HandleInput();
         StateMachine.CurrentState.LogicUpdate();
         StateMachine.CurrentState.PhysicsUpdate();
 
-        CheckEnemyInSight();
-        ManageUpperBodyWeight();
+        _sensor.Tick();
+        _upperBody.Tick();
         UpdateSkillCooldowns();
         CheckItemInput();
     }
 
     private void LateUpdate()
     {
-        if (Agent != null && Agent.enabled && Agent.isOnNavMesh)
-        {
-            Agent.nextPosition = transform.position;
-        }
-
-        if (transform.position.y < -2f)
-        {
-            _verticalVelocity = 0f;
-
-            if (NavMesh.SamplePosition(transform.position + (Vector3.up * 10f), out NavMeshHit hit, 20f, NavMesh.AllAreas))
-            {
-                if (CC != null) CC.enabled = false;
-                transform.position = hit.position;
-                if (CC != null) CC.enabled = true;
-            }
-        }
+        Motor.SyncAgentAndRecoverFall();
     }
 
     private void OnDestroy()
@@ -251,87 +267,22 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public void MoveWithNavMesh()
-    {
-        Vector3 worldDeltaPosition = Agent.desiredVelocity;
-
-        ApplyGravityAndMove(worldDeltaPosition);
-
-        Agent.nextPosition = transform.position;
-    }
-
-    public void StopAndApplyGravity()
-    {
-        Agent.velocity = Vector3.zero;
-        ApplyGravityAndMove(Vector3.zero);
-        Agent.nextPosition = transform.position;
-    }
-
-    private void ApplyGravityAndMove(Vector3 motionVelocity)
-    {
-        if (CC.isGrounded && _verticalVelocity < 0)
-        {
-            _verticalVelocity = -2f;
-        }
-        _verticalVelocity += _gravity * Time.deltaTime;
-
-        Vector3 finalMove = motionVelocity + Vector3.up * _verticalVelocity;
-
-        CC.Move(finalMove * Time.deltaTime);
-    }
-
-    public void RotateTowardsMovement()
-    {
-        if (Agent.desiredVelocity.sqrMagnitude > 0.1f)
-        {
-            Vector3 lookDirection = Agent.desiredVelocity;
-            lookDirection.y = 0;
-
-            if (lookDirection != Vector3.zero)
-            {
-                Quaternion targetRotation = Quaternion.LookRotation(lookDirection);
-                transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * RotateSpeed);
-            }
-        }
-    }
-
-    public void UpdateMoveAnimation()
-    {
-        if (Anim == null) return;
-
-        float speed = Agent.desiredVelocity.magnitude;
-
-        if (speed < 0.1f || (Agent.remainingDistance <= Agent.stoppingDistance + 0.1f))
-        {
-            speed = 0f;
-        }
-
-        Anim.SetFloat("Move", speed, AnimationSmoothTime, Time.deltaTime);
-    }
+    // 상태 성격 묻기. 상태가 아직 없으면(Start 전) '아니오' — 예전 CurrentState == … 비교와 같은 결과 (R29)
+    private bool StateCanDealDamage => StateMachine.CurrentState != null && StateMachine.CurrentState.CanDealDamage;
+    private bool StateIsIncapacitated => StateMachine.CurrentState != null && StateMachine.CurrentState.IsIncapacitated;
+    private bool StateUsesRootMotion => StateMachine.CurrentState != null && StateMachine.CurrentState.UsesRootMotion;
 
     private void OnAnimatorMove()
     {
-        if (StateMachine.CurrentState is PlayerRollState)
-        {
-            Vector3 velocity = Anim.deltaPosition;
-            velocity.y = _verticalVelocity * Time.deltaTime;
-
-            CC.Move(velocity);
-
-            transform.rotation = Anim.rootRotation;
-            Agent.nextPosition = transform.position;
-        }
+        if (StateUsesRootMotion) Motor.ApplyRollRootMotion();
     }
 
     private void HandleHit(float severity)
     {
-        if (screenBloodEffect != null)
-        {
-            screenBloodEffect.PlayHitEffect(1.5f); // 1.5초 동안 피 튀김
-        }
+        _effects.PlayHitScreen();   // 1.5초 동안 피 튀김
 
-        if (StateMachine.CurrentState == StunState || StateMachine.CurrentState == DeadState) return;
-        if (HasRBuff) return;
+        if (StateIsIncapacitated) return;   // 스턴·사망 중에는 경직 반응 없음
+        if (HasGreatSwordBuff) return;
 
         if (severity <= 0f) return;
 
@@ -339,16 +290,8 @@ public class PlayerController : MonoBehaviour
         StateMachine.ChangeState(HitState);
     }
 
-    private void CheckDangerState(int currentHP, int maxHP)
-    {
-        if (screenBloodEffect == null) return;
-
-        float hpPercent = (float)currentHP / maxHP;
-
-        // 체력이 20% 이하이고 살아있으면 Danger 모드 ON, 아니면 OFF
-        bool isDanger = (hpPercent <= 0.2f && currentHP > 0);
-        screenBloodEffect.SetDangerMode(isDanger);
-    }
+    // 체력이 20% 이하이고 살아있으면 Danger 모드 ON, 아니면 OFF
+    private void CheckDangerState(int currentHP, int maxHP) => _effects.UpdateDangerScreen(currentHP, maxHP);
 
     private void HandleDeath()
     {
@@ -362,422 +305,117 @@ public class PlayerController : MonoBehaviour
     private void HandleStun()
     {
         // 이미 죽었거나 이미 스턴 상태면 무시
-        if (StateMachine.CurrentState == DeadState || StateMachine.CurrentState == StunState) return;
-        if (HasRBuff) return;
+        if (StateIsIncapacitated) return;
+        if (HasGreatSwordBuff) return;
 
         Debug.Log("플레이어가 스턴에 걸림!");
         StateMachine.ChangeState(StunState);
     }
 
-    private void ManageUpperBodyWeight()
-    {
-        // 전신을 써야 하는 상태(공격, 회피 등)에서는 상체 레이어를 즉시 끕니다.
-        if (StateMachine.CurrentState == DeadState ||
-            StateMachine.CurrentState == StunState ||
-            StateMachine.CurrentState == HitState ||
-            StateMachine.CurrentState == AttackState ||
-            StateMachine.CurrentState == RollState ||
-            StateMachine.CurrentState == SkillState)
-        {
-            Anim.SetLayerWeight(1, 0f);
-            return;
-        }
-
-        AnimatorStateInfo upperState = Anim.GetCurrentAnimatorStateInfo(1);
-
-        bool isEmpty = upperState.IsName("Empty");
-        bool isDrawing = upperState.IsName("SheatheHips");
-        bool isStowing = upperState.IsName("UnsheatheHips");
-
-        // 이벤트 캔슬 대비용 안전장치
-        if (isEmpty && !_inCombat)
-        {
-            OnWeaponStowed();
-        }
-        else if (upperState.IsName("Combat (1)") && _inCombat)
-        {
-            OnWeaponDrawn();
-        }
-
-        // 전투 중이거나, 칼 뽑기/넣기 중이면 레이어 켜기
-        if (_inCombat || isDrawing || isStowing)
-        {
-            Anim.SetLayerWeight(1, Mathf.Lerp(Anim.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
-        }
-        else
-        {
-            Anim.SetLayerWeight(1, Mathf.Lerp(Anim.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
-        }
-    }
-
-    public void RotateToMouseImmediate()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        Plane groundPlane = new Plane(Vector3.up, new Vector3(0, transform.position.y, 0));
-        float rayDistance;
-
-        if (groundPlane.Raycast(ray, out rayDistance))
-        {
-            Vector3 targetPoint = ray.GetPoint(rayDistance);
-            if (Vector3.Distance(transform.position, targetPoint) > 0.5f)
-            {
-                Vector3 dir = (targetPoint - transform.position).normalized;
-                dir.y = 0;
-
-                if (dir != Vector3.zero)
-                {
-                    transform.rotation = Quaternion.LookRotation(dir);
-                }
-            }
-        }
-    }
-
-    public bool CheckSkillAndDashInput()
-    {
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            if (_dashTimer <= 0)
-            {
-                StateMachine.ChangeState(RollState);
-                return true;
-            }
-        }
-
-        //튜토리얼용 q막기 함수
-        if (tutorialSystem != null && !tutorialSystem.canUseSkills)
-        {
-            bool qMissionPlaying = skillTutorial != null && skillTutorial.IsQSkillMissionPlaying;
-
-            // Q 미션 중이면 SkillTutorial 쪽에서 Q를 처리하니까 여기서는 막음
-            if (Input.GetKeyDown(KeyCode.Q) ||
-                Input.GetKeyDown(KeyCode.W) ||
-                Input.GetKeyDown(KeyCode.E) ||
-                Input.GetKeyDown(KeyCode.R) ||
-                Input.GetKeyDown(KeyCode.V))
-            {
-                return false;
-            }
-        }
-
-        if (InCombat)
-        {
-            if (Input.GetKeyDown(KeyCode.Q))
-            {
-                if (TryUseSkill(KeyCode.Q, "Skill_Q", CurrentWeapon.Q_Dmg, CurrentWeapon.Q_Cool, CurrentWeapon.Q_Stamina))
-                {
-                    StateMachine.ChangeState(SkillState);
-
-                    skillTutorial?.OnPlayerUsedQSkill();  
-
-                    return true;
-                }
-            }
-            if (Input.GetKeyDown(KeyCode.W))
-            {
-                if (TryUseSkill(KeyCode.W, "Skill_W", CurrentWeapon.W_Dmg, CurrentWeapon.W_Cool, CurrentWeapon.W_Stamina))
-                { StateMachine.ChangeState(SkillState); return true; }
-            }
-            if (Input.GetKeyDown(KeyCode.E))
-            {
-                if (isWizardShieldActive)
-                {
-                    Debug.Log("보호막이 이미 유지되고 있어 스킬을 쓸 수 없습니다!");
-                }
-                else if (TryUseSkill(KeyCode.E, "Skill_E", CurrentWeapon.E_Dmg, CurrentWeapon.E_Cool, CurrentWeapon.E_Stamina))
-                {
-                    StateMachine.ChangeState(SkillState);
-                    return true;
-                }
-            }
-            if (Input.GetKeyDown(KeyCode.R))
-            {
-                if (TryUse_RSkill(KeyCode.R, "Skill_R", CurrentWeapon.R_Val, CurrentWeapon.R_Cool, CurrentWeapon.R_Stamina))
-                { StateMachine.ChangeState(SkillState); return true; }
-            }
-            if (Input.GetKeyDown(KeyCode.V))
-            {
-                if (TryUseSkill(KeyCode.V, "Skill_V", CurrentWeapon.V_Dmg, CurrentWeapon.V_Cool, CurrentWeapon.V_Stamina))
-                { StateMachine.ChangeState(SkillState); return true; }
-            }
-        }
-        else
-        {
-            if (Input.GetKeyDown(KeyCode.Q) || Input.GetKeyDown(KeyCode.W) ||
-                Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R) || Input.GetKeyDown(KeyCode.V))
-            {
-                Debug.Log("주변에 적이 없어 스킬을 사용할 수 없습니다!");
-            }
-        }
-
-        return false;
-    }
+    // 선입력의 회피·스킬 실행 → PlayerSkillInput (상태 4곳이 부름). 상태가 회피·스킬로 바뀌었으면 true (조작감 C7)
+    public bool TryRunBufferedSkillOrDodge() => _skillInput.TryRunBuffered();
 
     public void ResetDashTimer()
     {
-        _dashTimer = dashCooldown;
+        _cooldowns.StartDash(dashCooldown);
     }
 
     #region 공격 판정
-    public void EnableWeaponCollider()
+    // 애니메이션 이벤트 창구 → PlayerAttack. 공격·스킬 상태에서만 히트를 켠다
+    // AnimationEvent를 받는 이유: 넘어가는 도중에도 이 이벤트를 낸 애니의 상태로 공식을 고르려고 (Q11 고침, 버그 수정 B8)
+    public void EnableWeaponCollider(AnimationEvent evt)
     {
-        if (StateMachine.CurrentState != AttackState && StateMachine.CurrentState != SkillState) return;
-        if (Hitbox == null || CurrentWeapon == null) return;
+        if (!StateCanDealDamage) return;   // 공격·스킬 상태에서만
 
-        int baseAtk = Stats != null ? Stats.BaseAttackPower : 0;
-        int weaponAtk = CurrentDecoratedWeapon != null ? CurrentDecoratedWeapon.GetAttackPower() : CurrentWeapon.Combo_1;
-
-        float skillMultiplier = 1.0f;
-        int fixedBonus = 0;
-
-        AnimatorStateInfo stateInfo = Anim.GetCurrentAnimatorStateInfo(0);
-
-        // 평타일 경우 (계수 1.0배, 고정 데미지 콤보수치)
-        if (stateInfo.IsName("Attack1")) { skillMultiplier = 1.0f; fixedBonus = CurrentWeapon.Combo_1; }
-        else if (stateInfo.IsName("Attack2")) { skillMultiplier = 1.0f; fixedBonus = CurrentWeapon.Combo_2; }
-        else if (stateInfo.IsName("Attack3")) { skillMultiplier = 1.2f; fixedBonus = CurrentWeapon.Combo_3; } // 막타는 1.2배!
-
-        else if (stateInfo.IsTag("Skill"))
-        {
-            skillMultiplier = 2.0f;
-            fixedBonus = CurrentSkillDamage;
-        }
-
-        float finalDamageFloat = ((baseAtk + weaponAtk) * skillMultiplier) + fixedBonus;
-        int damageToDeal = Mathf.RoundToInt(finalDamageFloat);
-
-        // R 버프(증폭) 적용
-        if (HasRBuff)
-            damageToDeal = Mathf.RoundToInt(damageToDeal * CurrentSkillVal);
-
-        // 히트박스 켜기
-        if (CurrentWeapon.weaponType == WeaponType.Wizard)
-        {
-            FireWizardMagic(damageToDeal);
-        }
-        else
-        {
-            if (Hitbox != null) Hitbox.EnableHitbox(damageToDeal);
-        }
-
-        if (HasSpearBuff)
-        {
-            FireSpearBuffProjectile(Mathf.RoundToInt(damageToDeal * 0.5f)); // 창기는 데미지의 50%만
-        }
+        // Animator가 낸 이벤트면 그 이벤트의 상태, 아니면(안전장치) 예전처럼 지금 상태
+        AnimatorStateInfo hitState = evt != null && evt.isFiredByAnimator
+            ? evt.animatorStateInfo
+            : Anim.GetCurrentAnimatorStateInfo(PlayerAnimParams.BaseLayer);
+        _attack.EnableHit(hitState);
     }
 
     // 공격 종료 시 호출
-    public void DisableWeaponCollider()
-    {
-        if (Hitbox != null)
-        {
-            Hitbox.DisableHitbox();
-        }
-    }
-
-    private void FireSpearBuffProjectile(int damage)
-    {
-        if (spearBuffProjectilePrefab == null || bodyEffectPos == null) return;
-
-        GameObject projObj = Instantiate(spearBuffProjectilePrefab, bodyEffectPos.position, transform.rotation);
-
-        Projectile projectileScript = projObj.GetComponent<Projectile>();
-        if (projectileScript != null)
-        {
-            projectileScript.Initialize(damage, EnemyLayer);
-        }
-    }
-
-    private void FireWizardMagic(int damage)
-    {
-        if (wizardVfxProjectilePrefab == null) return;
-
-        GameObject projObj = Instantiate(wizardVfxProjectilePrefab, bodyEffectPos.position, transform.rotation);
-
-        VFXProjectile vfxProjectile = projObj.GetComponent<VFXProjectile>();
-        if (vfxProjectile != null)
-        {
-            vfxProjectile.Initialize(damage, EnemyLayer);
-        }
-    }
+    public void DisableWeaponCollider() => _attack.DisableHit();
 
     // 특정 공격 모션에서 이펙트 끄기 (애니메이션 이벤트용)
     public void DisableREffect()
     {
-        if (HasRBuff || HasSpearBuff) return;
-
-        if (currentRSkillInstance != null)
-        {
-            currentRSkillInstance.SetActive(false);
-            Destroy(currentRSkillInstance, 2f);
-            currentRSkillInstance = null;
-        }
-
-        if (currentScreenEffectInstance != null)
-        {
-            currentScreenEffectInstance.SetActive(false);
-            currentScreenEffectInstance = null;
-        }
+        if (HasGreatSwordBuff || HasSpearBuff) return;
+        _effects.DisableR();
     }
 
-    public void EnableREffect()
-    {
-        if (CurrentWeapon == null || bodyEffectPos == null) return;
+    public void EnableREffect() => _effects.EnableR();
 
-        WeaponEffectMapping mapping = weaponSpecialEffects.Find(x => x.weaponType == CurrentWeapon.weaponType);
-
-        if (mapping.auraPrefab != null)
-        {
-            if (currentRSkillInstance != null) Destroy(currentRSkillInstance);
-
-            currentRSkillInstance = Instantiate(mapping.auraPrefab, bodyEffectPos.position, Quaternion.identity, bodyEffectPos);
-            currentRSkillInstance.SetActive(true);
-        }
-        else
-        {
-            Debug.LogWarning($"[PlayerController] {CurrentWeapon.weaponType} 타입의 아우라 프리팹이 매핑되지 않았습니다!");
-        }
-
-        if (mapping.screenEffectObj != null)
-        {
-            currentScreenEffectInstance = mapping.screenEffectObj;
-            currentScreenEffectInstance.SetActive(true);
-        }
-    }
-
-    public void RefreshDecoratedWeapon()
-    {
-        if (CurrentWeapon == null || InventoryManager.Instance == null) return;
-
-        InventoryData invData = InventoryManager.Instance.GetCurrentData();
-
-        ISword sword = new BaseWeapon(CurrentWeapon);
-
-        if (invData.weaponEnhancementLevel > 0)
-        {
-            sword = new EnhancementDecorator(sword, invData.weaponEnhancementLevel, invData.weaponEnhancementLevel * 5);
-        }
-
-        CurrentDecoratedWeapon = sword;
-        Debug.Log($"무기 갱신 완료! 이름: {CurrentDecoratedWeapon.GetName()}, 최종 공격력: {CurrentDecoratedWeapon.GetAttackPower()}");
-    }
+    public void RefreshDecoratedWeapon() => _loadout.RefreshDecorated();
     #endregion
 
     #region 스킬 관련
     private void UpdateSkillCooldowns()
     {
-        if (_dashTimer > 0) _dashTimer -= Time.deltaTime;
-        if (globalSkillTimer > 0) globalSkillTimer -= Time.deltaTime;
-        if (postRollAttackTimer > 0) postRollAttackTimer -= Time.deltaTime;
-
-        if (Potion_Timer > 0)
-        {
-            Potion_Timer -= Time.deltaTime;
-            if (Potion_Timer <= 0) Debug.Log("포션 쿨타임이 끝났습니다!");
-        }
-
-        if (Q_Timer > 0)
-        {
-            Q_Timer -= Time.deltaTime;
-            if (Q_Timer <= 0) Debug.Log("Q 스킬 쿨타임이 끝났습니다!");
-        }
-
-        if (W_Timer > 0)
-        {
-            W_Timer -= Time.deltaTime;
-            if (W_Timer <= 0) Debug.Log("W 스킬 쿨타임이 끝났습니다!");
-        }
-
-        if (E_Timer > 0)
-        {
-            E_Timer -= Time.deltaTime;
-            if (E_Timer <= 0) Debug.Log("E 스킬 쿨타임이 끝났습니다!");
-        }
-
-        if (R_Timer > 0)
-        {
-            R_Timer -= Time.deltaTime;
-            if (R_Timer <= 0) Debug.Log("R 스킬 쿨타임이 끝났습니다!");
-        }
-
-        if (V_Timer > 0)
-        {
-            V_Timer -= Time.deltaTime;
-            if (V_Timer <= 0) Debug.Log("V 스킬 쿨타임이 끝났습니다!");
-        }
+        float dt = Time.deltaTime;
+        // 회피·공통·회피후 → 포션 → Q·W·E·R·V (예전 "쿨타임 끝" 로그 순서. 로그는 3단계에서 지움, R34)
+        _cooldowns.TickGeneral(dt);
+        _potion.Tick(dt);
+        _cooldowns.TickSkills(dt);
     }
 
     public bool TryUseSkill(KeyCode key, string animName, int damage, float maxCool, int staminaCost)
     {
-        if (globalSkillTimer > 0f) return false;
-        if (Stats.CurrentStamina < staminaCost) return false;
+        // 쿨타임 칸이 있는 키는 Q/W/E/V. 그 밖의 키(R 포함)는 실패 (기록도 안 함, B9)
+        bool hasSlot = TryGetSkillSlot(key, out SkillSlot slot) && slot != SkillSlot.R;
+        SkillUseResult result = SkillUseRule.Evaluate(true, globalSkillTimer, Stats.CurrentStamina, staminaCost,
+            hasSlot && _cooldowns.IsReady(slot));
 
-        CurrentSkillAnim = animName;
-        CurrentSkillDamage = damage;
-
-        // 쿨타임이 다 돌았다면(0 이하라면) 스킬 사용 승인 및 쿨타임 초기화
-        bool canUse = false;
-        switch (key)
+        if (SkillUseRule.RecordsSkillInfo(result))
         {
-            case KeyCode.Q: if (Q_Timer <= 0) { Q_Timer = maxCool; canUse = true; } break;
-            case KeyCode.W: if (W_Timer <= 0) { W_Timer = maxCool; canUse = true; } break;
-            case KeyCode.E: if (E_Timer <= 0) { E_Timer = maxCool; canUse = true; } break;
-            case KeyCode.V: if (V_Timer <= 0) { V_Timer = maxCool; canUse = true; } break;
+            CurrentSkillAnim = animName;
+            CurrentSkillDamage = damage;
         }
+        if (result != SkillUseResult.Ready) return false;
 
-        if (canUse)
-        {
-            Stats.UseStamina(staminaCost);
-            return true;
-        }
-
-        return false;
+        _cooldowns.Start(slot, maxCool);
+        Stats.UseStamina(staminaCost);
+        return true;
     }
 
     public bool TryUse_RSkill(KeyCode key, string animName, float val, float maxCool, int staminaCost)
     {
-        if (Stats.CurrentStamina < staminaCost) return false;
+        // R은 공통 딜레이를 보지 않는다 (지금 코드). R 키가 아니면 실패 (기록도 안 함, B9)
+        bool isR = key == KeyCode.R;
+        SkillUseResult result = SkillUseRule.Evaluate(false, 0f, Stats.CurrentStamina, staminaCost,
+            isR && _cooldowns.IsReady(SkillSlot.R));
 
-        CurrentSkillAnim = animName;
-        CurrentSkillVal = val;
+        if (SkillUseRule.RecordsSkillInfo(result))
+        {
+            CurrentSkillAnim = animName;
+            CurrentSkillVal = val;
+        }
+        if (result != SkillUseResult.Ready) return false;
 
+        _cooldowns.Start(SkillSlot.R, maxCool);
+        Stats.UseStamina(staminaCost);
+        if (CurrentWeapon != null && CurrentWeapon.R_Skill_Logic != null)
+        {
+            CurrentWeapon.R_Skill_Logic.Execute(this, val);
+        }
+        return true;
+    }
+
+    private static bool TryGetSkillSlot(KeyCode key, out SkillSlot slot)
+    {
         switch (key)
         {
-            case KeyCode.R:
-                if (R_Timer <= 0)
-                {
-                    R_Timer = maxCool;
-                    Stats.UseStamina(staminaCost);
-                    if (CurrentWeapon != null && CurrentWeapon.R_Skill_Logic != null)
-                    {
-                        CurrentWeapon.R_Skill_Logic.Execute(this, val);
-                    }
-                    return true;
-                }
-                break;
-        }
-        return false;
-    }
-
-    public void UseExcaliburSkill()
-    {
-        if (excaliburSkillPrefab == null) return;
-
-        Vector3 spawnPosition = transform.position + transform.forward * spawnDistance;
-
-        GameObject skillInstance = Instantiate(excaliburSkillPrefab, spawnPosition, transform.rotation);
-
-        AoESkillEffect aoeScript = skillInstance.GetComponent<AoESkillEffect>();
-        if (aoeScript != null)
-        {
-            int damageToDeal = CurrentSkillDamage;
-            if (HasRBuff)
-            {
-                damageToDeal = Mathf.RoundToInt(damageToDeal * CurrentSkillVal);
-            }
-
-            aoeScript.Initialize(damageToDeal, EnemyLayer);
+            case KeyCode.Q: slot = SkillSlot.Q; return true;
+            case KeyCode.W: slot = SkillSlot.W; return true;
+            case KeyCode.E: slot = SkillSlot.E; return true;
+            case KeyCode.R: slot = SkillSlot.R; return true;
+            case KeyCode.V: slot = SkillSlot.V; return true;
+            default: slot = SkillSlot.Q; return false;
         }
     }
+
+    // 창 V 애니메이션 이벤트 창구 → PlayerAttack
+    public void UseExcaliburSkill() => _attack.FireExcalibur();
     #endregion
 
     #region 무기 장착, 해제 이벤트 
@@ -800,81 +438,10 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region 적 탐지
-    private void CheckEnemyInSight()
-    {
-        if (tutorialSystem != null && !tutorialSystem.canPlayerCombat)
-        {
-            _inCombat = false;
-            _combatTimer = 0f;
-            Anim.SetBool("InCombat", false);
-
-            if (VisualManager != null)
-                VisualManager.StowWeapon();
-
-            return;
-        }
-
-        // 주변의 적(Collider)들을 모두 찾음
-        Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, DetectionRadius, EnemyLayer);
-
-        bool enemyFound = false;
-
-        for (int i = 0; i < targetsInViewRadius.Length; i++)
-        {
-            Transform target = targetsInViewRadius[i].transform;
-            Vector3 dirToTarget = (target.position - transform.position).normalized;
-
-            if (Vector3.Angle(transform.forward, dirToTarget) < ViewAngle / 2)
-            {
-                float dstToTarget = Vector3.Distance(transform.position, target.position);
-                if (!Physics.Raycast(transform.position, dirToTarget, dstToTarget, LayerMask.GetMask("Default")))
-                {
-                    enemyFound = true;
-                    break;
-                }
-            }
-        }
-
-        if (enemyFound)
-        {
-            _inCombat = true;
-            _combatTimer = CombatCooldown;
-        }
-        else
-        {
-            if (_combatTimer > 0)
-            {
-                _combatTimer -= Time.deltaTime;
-            }
-            else
-            {
-                _inCombat = false;
-            }
-        }
-
-        Anim.SetBool("InCombat", _inCombat);
-    }
-
+    // 감지는 CombatSensor.Tick (Update에서 부름). 기즈모는 플레이 전에도 그려야 해서 static 함수를 부른다
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, DetectionRadius);
-
-        Vector3 viewAngleA = DirFromAngle(-ViewAngle / 2, false);
-        Vector3 viewAngleB = DirFromAngle(ViewAngle / 2, false);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, transform.position + viewAngleA * DetectionRadius);
-        Gizmos.DrawLine(transform.position, transform.position + viewAngleB * DetectionRadius);
-    }
-
-    private Vector3 DirFromAngle(float angleInDegrees, bool angleIsGlobal)
-    {
-        if (!angleIsGlobal)
-        {
-            angleInDegrees += transform.eulerAngles.y;
-        }
-        return new Vector3(Mathf.Sin(angleInDegrees * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDegrees * Mathf.Deg2Rad));
+        CombatSensor.DrawGizmos(transform, DetectionRadius, ViewAngle);
     }
 
     #endregion
@@ -897,73 +464,22 @@ public class PlayerController : MonoBehaviour
     #region 액션 이펙트 제어 (Refactored)
     public void EnableActionEffect(string actionCode)
     {
-        if (StateMachine.CurrentState != AttackState && StateMachine.CurrentState != SkillState) return;
-
-        if (effectDictionary.TryGetValue(actionCode, out ParticleSystem[] particles))
-        {
-            foreach (var p in particles)
-            {
-                PlayParticle(p);
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"[Effect] '{actionCode}' 이펙트가 리스트에 등록되지 않았습니다!");
-        }
+        if (!StateCanDealDamage) return;   // 공격·스킬 상태에서만
+        _effects.Play(actionCode);
     }
 
-    public void DisableActionEffect(string actionCode)
-    {
-        if (effectDictionary.TryGetValue(actionCode, out ParticleSystem[] particles))
-        {
-            foreach (var p in particles)
-            {
-                StopParticle(p);
-            }
-        }
-    }
+    public void DisableActionEffect(string actionCode) => _effects.Stop(actionCode);
 
-    public void ForceDisableAllActionEffects()
-    {
-        foreach (var particles in effectDictionary.Values)
-        {
-            foreach (var p in particles)
-            {
-                if (p != null)
-                {
-                    p.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-                    p.gameObject.SetActive(false);
-                }
-            }
-        }
-    }
-
-    private void PlayParticle(ParticleSystem effect)
-    {
-        if (effect == null) return;
-        if (!effect.gameObject.activeSelf) effect.gameObject.SetActive(true);
-        effect.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-        var mainModule = effect.main;
-        mainModule.simulationSpeed = Anim.speed;
-        effect.Play(true);
-    }
-
-    private void StopParticle(ParticleSystem effect)
-    {
-        if (effect != null)
-        {
-            effect.Stop(true, ParticleSystemStopBehavior.StopEmitting);
-        }
-    }
+    public void ForceDisableAllActionEffects() => _effects.StopAll();
 
     #endregion
 
     #region 아이템 사용
     private void CheckItemInput()
     {
-        if (StateMachine.CurrentState == DeadState || StateMachine.CurrentState == StunState) return;
+        if (StateIsIncapacitated) return;   // 스턴·사망 중에는 포션 못 씀
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        if (PlayerInputReader.PotionPressed)
         {
             UsePotion();
         }
@@ -971,53 +487,17 @@ public class PlayerController : MonoBehaviour
 
     private void UsePotion()
     {
-        if (currentPotionData == null) return;
-        if (currentPotionCount <= 0) return;
-        if (Stats.IsFullHP) return;
-        if (Potion_Timer > 0) return;
+        // 조건 4가지와 회복량 공식은 PotionPouch (명세 3.2)
+        if (!_potion.CanUse(currentPotionData != null, Stats.IsFullHP)) return;
 
-        float percentRatio = currentPotionData.Heal_Percent / 100f;
-        int healAmount = Mathf.RoundToInt(Stats.MaxHP * percentRatio);
+        int healAmount = PotionPouch.HealAmount(Stats.MaxHP, currentPotionData.Heal_Percent);
 
         Stats.Heal(healAmount);
-        currentPotionCount--;
+        _potion.TakeOne();
         OnPotionCountChanged?.Invoke(currentPotionCount);
-        Potion_Timer = potionCooldown;
+        _potion.StartCooldown(potionCooldown);
 
-        PlayHealEffect();
-    }
-
-    private void PlayHealEffect()
-    {
-        if (HealEffect == null || bodyEffectPos == null) return;
-
-        if (currentHealInstance == null)
-            currentHealInstance = Instantiate(HealEffect, bodyEffectPos.position, Quaternion.identity, bodyEffectPos);
-
-        currentHealInstance.SetActive(false);
-        currentHealInstance.SetActive(true);
-
-        ParticleSystem[] particles = currentHealInstance.GetComponentsInChildren<ParticleSystem>();
-        foreach (var p in particles)
-        {
-            p.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
-            p.Play(true);
-        }
-
-        if (_healEffectCoroutine != null) StopCoroutine(_healEffectCoroutine);
-
-        _healEffectCoroutine = StartCoroutine(DisableHealEffectAfterDelay(2.0f));
-    }
-
-    private System.Collections.IEnumerator DisableHealEffectAfterDelay(float delay)
-    {
-        yield return new WaitForSeconds(delay);
-
-        if (currentHealInstance != null)
-        {
-            currentHealInstance.SetActive(false);
-            _healEffectCoroutine = null;
-        }
+        _effects.PlayHeal();
     }
 
     #endregion
@@ -1039,46 +519,37 @@ public class PlayerController : MonoBehaviour
         Stats.InitActor(Stats.MaxHP);
         if (currentPotionData != null)
         {
-            currentPotionCount = currentPotionData.Max_Count;
+            _potion.Refill(currentPotionData.Max_Count);
             OnPotionCountChanged?.Invoke(currentPotionCount);
         }
 
-        Q_Timer = 0f;
-        W_Timer = 0f;
-        E_Timer = 0f;
-        R_Timer = 0f;
-        V_Timer = 0f;
-        Potion_Timer = 0f;
-        globalSkillTimer = 0f;
-        _dashTimer = 0f;
-        postRollAttackTimer = 0f;
-        HasRBuff = false;
+        // 스킬 5칸·회피·공통 딜레이·회피 후 딜레이 + 포션 쿨 모두 0 (지금 코드와 같은 범위)
+        _cooldowns.ResetAll();
+        _potion.ResetCooldown();
+        _inputBuffer.Clear();   // 부활 때 선입력 비움 (조작감 C7⑤)
+        HasGreatSwordBuff = false;
 
         DisableREffect();
         DisableWeaponCollider();
         ForceDisableAllActionEffects();
 
-        Anim.ResetTrigger("IsDead");
-        Anim.ResetTrigger("IsHit");
-        Anim.ResetTrigger("IsStun");
-        Anim.ResetTrigger("Attack");
-        Anim.ResetTrigger("Roll");
-        Anim.ResetTrigger("Skill_Q");
-        Anim.ResetTrigger("Skill_W");
-        Anim.ResetTrigger("Skill_E");
-        Anim.ResetTrigger("Skill_R");
-        Anim.ResetTrigger("Skill_V");
+        Anim.ResetTrigger(PlayerAnimParams.IsDead);
+        Anim.ResetTrigger(PlayerAnimParams.IsHit);
+        Anim.ResetTrigger(PlayerAnimParams.IsStun);
+        Anim.ResetTrigger(PlayerAnimParams.Attack);
+        Anim.ResetTrigger(PlayerAnimParams.Roll);
+        foreach (string skillTrigger in PlayerAnimParams.SkillTriggers) Anim.ResetTrigger(skillTrigger);
 
-        Anim.SetBool("InCombat", false);
-        _inCombat = false;
-        Anim.SetFloat("Move", 0f);
-        Anim.SetFloat("HitPower", 0f);
+        Anim.SetBool(PlayerAnimParams.InCombat, false);
+        _combat.TurnOffKeepTimer();
+        Anim.SetFloat(PlayerAnimParams.Move, 0f);
+        Anim.SetFloat(PlayerAnimParams.HitPower, 0f);
 
         Anim.Rebind();
         Anim.Update(0f);
 
-        Anim.SetLayerWeight(1, 0f);
-        Anim.Play("Idle", 0, 0f);
+        Anim.SetLayerWeight(PlayerAnimParams.UpperBodyLayer, 0f);
+        Anim.Play(PlayerAnimParams.StateIdleMove, PlayerAnimParams.BaseLayer, 0f);   // 기본 상태 처음부터 (예전 "Idle"은 없는 이름이라 경고, Q13 고침)
 
         StateMachine.ChangeState(IdleState);
     }
@@ -1086,193 +557,30 @@ public class PlayerController : MonoBehaviour
     #endregion
 
     #region 무기 교체 저장
-    private void LoadEquippedWeapon()
-    {
-        if (InventoryManager.Instance == null || InventoryManager.Instance.GetCurrentData() == null || weaponDatabase == null)
-        {
-            if (CurrentWeapon != null) ApplyWeaponSetup(CurrentWeapon);
-            return;
-        }
-
-        int savedWeaponID = InventoryManager.Instance.GetCurrentData().equippedWeaponID;
-
-        WeaponSO savedWeapon = weaponDatabase.GetItemById(savedWeaponID);
-
-        if (savedWeapon != null)
-        {
-            ApplyWeaponSetup(savedWeapon);
-        }
-        else if (CurrentWeapon != null)
-        {
-            ApplyWeaponSetup(CurrentWeapon);
-        }
-    }
-
     public void ChangeWeapon(WeaponSO newWeapon)
     {
         if (newWeapon == null || CurrentWeapon == newWeapon) return;
 
-        ApplyWeaponSetup(newWeapon);
-        Q_Timer = 0f; W_Timer = 0f; E_Timer = 0f; R_Timer = 0f; V_Timer = 0f;
-
-        if (InventoryManager.Instance != null)
-        {
-            InventoryManager.Instance.SaveEquippedWeapon(newWeapon.WeaponID);
-        }
-    }
-
-    private void ApplyWeaponSetup(WeaponSO weapon)
-    {
-        CurrentWeapon = weapon;
-
-        if (Hitbox != null) Hitbox.SetupColliders(CurrentWeapon.weaponType);
-        if (VisualManager != null) VisualManager.SetupVisuals(CurrentWeapon.weaponType);
-
-        if (CurrentWeapon.weaponAnimator != null)
-        {
-            Anim.runtimeAnimatorController = CurrentWeapon.weaponAnimator;
-            Anim.Rebind();
-            Anim.Update(0f);
-        }
-
-        RefreshDecoratedWeapon();
+        _loadout.Apply(newWeapon);
+        _cooldowns.ResetSkills();
+        _loadout.SaveEquipped(newWeapon);
     }
 
     #endregion
 
-    #region 공격 속도 계산 로직
-    public float GetEffectiveAttackSpeed(bool isSkill)
-    {
-        if (AtkSpeedModifier <= 1.0f) return AtkSpeedModifier;
-
-        if (CurrentWeapon != null && CurrentWeapon.weaponType == WeaponType.Wizard && isSkill)
-        {
-            float bonusSpeed = AtkSpeedModifier - 1.0f;
-            return 1.0f + (bonusSpeed * 0.0f);
-        }
-
-        return AtkSpeedModifier;
-    }
-
+    #region 마법사 스킬 (애니메이션 이벤트 창구 → WizardCaster)
+    public void FireWizardSkill_Q() => _wizard.FireQ();
+    public void FireWizardSkill_W() => _wizard.FireW();
+    public void FireWizardSkill_E() => _wizard.FireE();
+    public void FireWizardSkill_V() => _wizard.FireV();
     #endregion
 
-    #region 마법사 스킬 파티클 생성 (애니메이션 이벤트용)
-    private float _lastMagicFireTime = 0f;
-
-    public void FireWizardSkill_Q()
-    {
-        SpawnMagicSkill(wizardSkillQPrefab, wizardQSpawnPoint, false);
-        SFXManager.Instance?.PlaySFX("Wz_002", wizardQSpawnPoint.position);
-    }
-
-    public void FireWizardSkill_W()
-    {
-        SpawnMagicSkill(wizardSkillWPrefab, wizardWSpawnPoint, false);
-        SFXManager.Instance?.PlaySFX("Wz_003", wizardWSpawnPoint.position);
-    }
-    public void FireWizardSkill_E()
-    {
-        GameObject shieldObj = SpawnMagicSkill(wizardSkillEPrefab, wizardESpawnPoint, true);
-
-        if (shieldObj != null)
-        {
-            isWizardShieldActive = true;
-            wizardShieldRemainingHits = wizardShieldMaxHits;
-            activeWizardShieldInstance = shieldObj;
-            Debug.Log($"보호막 전개! 방어 가능 횟수: {wizardShieldMaxHits}");
-            SFXManager.Instance?.PlaySFX("Wz_004", transform.position);
-        }
-    }
-    public void FireWizardSkill_V()
-    {
-        SpawnMagicSkill(wizardSkillVPrefab, wizardVSpawnPoint, false);
-        SFXManager.Instance?.PlaySFX("Wz_005", wizardVSpawnPoint.position);
-    }
-
-    private GameObject SpawnMagicSkill(GameObject skillPrefab, Transform spawnPoint, bool isAttached)
-    {
-        if (skillPrefab == null || spawnPoint == null) return null;
-
-        if (Time.time - _lastMagicFireTime < 0.1f) return null;
-        _lastMagicFireTime = Time.time;
-
-        GameObject skillInstance;
-
-        if (isAttached) skillInstance = Instantiate(skillPrefab, spawnPoint.position, spawnPoint.rotation, spawnPoint);
-        else skillInstance = Instantiate(skillPrefab, spawnPoint.position, spawnPoint.rotation);
-
-        skillInstance.SetActive(true);
-
-        int damageToDeal = CurrentSkillDamage;
-        if (HasRBuff) damageToDeal = Mathf.RoundToInt(damageToDeal * CurrentSkillVal);
-
-        AoESkillEffect aoeScript = skillInstance.GetComponent<AoESkillEffect>();
-        if (aoeScript != null) { aoeScript.Initialize(damageToDeal, EnemyLayer); return skillInstance; }
-
-        LaserSkillEffect laserScript = skillInstance.GetComponent<LaserSkillEffect>();
-        if (laserScript != null) { laserScript.Initialize(damageToDeal, EnemyLayer); return skillInstance; }
-
-        BlackholeSkillEffect blackHoleScript = skillInstance.GetComponent<BlackholeSkillEffect>();
-        if (blackHoleScript != null) { blackHoleScript.Initialize(damageToDeal, EnemyLayer); return skillInstance; }
-
-        return skillInstance;
-    }
-
+    #region 마법사 보호막(E) 방어 (Actor가 부름 → WizardCaster)
+    public bool TryBlockDamageWithShield() => _wizard.TryBlockDamage();
+    public void BreakWizardShield() => _wizard.BreakShield();
     #endregion
 
-    #region 마법사 보호막(E) 방어 로직
-    public bool TryBlockDamageWithShield()
-    {
-        if (!isWizardShieldActive) return false;
-        wizardShieldRemainingHits--;
-        Debug.Log($"[보호막 방어] 데미지 무시! (남은 방어 횟수: {wizardShieldRemainingHits})");
-
-        if (wizardShieldRemainingHits <= 0)
-        {
-            BreakWizardShield();
-        }
-
-        return true;
-    }
-
-    public void BreakWizardShield()
-    {
-        isWizardShieldActive = false;
-        if (activeWizardShieldInstance != null)
-        {
-            Destroy(activeWizardShieldInstance);
-            activeWizardShieldInstance = null;
-        }
-        Debug.Log("보호막이 깨졌습니다! 이제부터 데미지를 입습니다.");
-    }
-    #endregion
-
-    // 게임 특성상 발사운드 필요하지 않을거 같긴한데 일단 추가
     #region 사운드
-    public void PlayFootstep()
-    {
-        Vector3 origin = transform.position + Vector3.up * 0.1f;
-
-        if (Physics.Raycast(origin, Vector3.down, out RaycastHit hit, 0.5f, GroundLayer))
-        {
-            string groundTag = hit.collider.gameObject.tag;
-
-            switch (groundTag)
-            {
-                case "Thema2Ground":
-                    SFXManager.Instance.PlaySFX("Walk_002", transform.position);
-                    break;
-                default:
-                    SFXManager.Instance.PlaySFX("Walk_001", transform.position);
-                    break;
-            }
-        }
-        else
-        {
-            SFXManager.Instance.PlaySFX("Walk_001", transform.position);
-        }
-    }
-
     public void PlayWeaponSwingSound(string soundID)
     {
         if (SFXManager.Instance != null)

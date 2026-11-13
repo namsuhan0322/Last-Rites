@@ -12,6 +12,12 @@ public struct SceneLoadingData
     public string loadingDescription;   // 보여줄 설명/팁
 }
 
+/// <summary>
+/// [역할] 씬 이동 담당(싱글턴): 로딩 화면을 거치는 이동(페이드 → 로딩 씬 → 비동기 로딩·게이지 → 100% → 씬 켜기 → 데이터 준비 대기 → 페이드),
+///        로딩 화면 없이 바로 이동, 씬별 BGM.
+/// [이유] 모든 씬 이동을 한 곳에서 처리해 페이드·로딩 화면·BGM을 맞춘다. 게이지 계산은 LoadingGaugeRule에 맡긴다.
+/// [근거] 로딩 게이지 명세 2.1·3.2, 결정 L1~L4 (머리 주석은 로딩 게이지 단계에서 추가)
+/// </summary>
 public class ScenesManager : SingletonMono<ScenesManager>
 {
     [Header("Scene Settings")]
@@ -104,39 +110,25 @@ public class ScenesManager : SingletonMono<ScenesManager>
         AsyncOperation op = SceneManager.LoadSceneAsync(targetScene);
         op.allowSceneActivation = false;
 
-        bool hasActivated = false;
-
-        while (!op.isDone)
+        // 1) 실제 로딩: 진행도 0~0.9 → 게이지 0~90% (씬 켜기를 막아 두면 진행도는 0.9에서 멈춤)
+        while (op.progress < LoadingGaugeRule.LoadEnd)
         {
-            if (!hasActivated)
-            {
-                LoadingProgress = Mathf.Clamp01((op.progress / 0.9f) * 0.99f);
-            }
-
-            if (op.progress >= 0.9f && !hasActivated)
-            {
-                hasActivated = true;
-
-                float fakeProgress = 0.9f;
-                float creepSpeed = 0.05f;
-
-                while (fakeProgress < 0.99f)
-                {
-                    fakeProgress += Time.unscaledDeltaTime * creepSpeed;
-
-                    if (fakeProgress > 0.99f) fakeProgress = 0.99f;
-
-                    LoadingProgress = fakeProgress;
-
-                    yield return null;
-                }
-
-                LoadingProgress = 0.99f;
-                yield return new WaitForSeconds(0.1f);
-                op.allowSceneActivation = true;
-            }
+            LoadingProgress = LoadingGaugeRule.FromLoad(op.progress, LoadingProgress);
             yield return null;
         }
+        LoadingProgress = LoadingGaugeRule.FromLoad(op.progress, LoadingProgress);
+
+        // 2) 연출: 지금 위치에서 100%까지 (예전에는 90%에서 다시 시작해 게이지가 내려갔다, 로딩 게이지 L1)
+        while (!LoadingGaugeRule.IsFull(LoadingProgress))
+        {
+            LoadingProgress = LoadingGaugeRule.Creep(LoadingProgress, Time.unscaledDeltaTime);
+            yield return null;
+        }
+
+        // 3) 100%를 화면에 보여 준 뒤 씬을 켠다 (실제 시간 — 게임이 멈춰 있어도 진행)
+        yield return new WaitForSecondsRealtime(LoadingGaugeRule.FullHoldSeconds);
+        op.allowSceneActivation = true;
+        while (!op.isDone) yield return null;
 
         if (useFadeEffect && fadeCanvasGroup != null) fadeCanvasGroup.alpha = 1f;
 

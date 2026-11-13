@@ -4,6 +4,12 @@ using TMPro;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
+/// <summary>
+/// [역할] 맵 이동 탭: 보스 스테이지 슬롯 목록, 오른쪽 상세, 이동 확인 팝업(확인 → 저장 후 그 씬으로 이동).
+/// [이유] 확인 팝업(Popup Panel)과 확인 버튼을 무기 교체·AI 해금과 같이 써서, 확인을 누르면 세 처리가 모두 불린다.
+///        고른 슬롯은 창을 닫아도 남으므로, 확인 처리는 내 목록이 화면에 보일 때만 한다(엔터 키 처리와 같은 기준).
+/// [근거] 로비 UI 팝업 명세 2.5·3.4, 결정 P10
+/// </summary>
 public class MapTeleportManager : MonoBehaviour
 {
     [Header("데이터 및 프리팹")]
@@ -133,6 +139,8 @@ public class MapTeleportManager : MonoBehaviour
 
     private void OnConfirmTeleport()
     {
+        // 같이 쓰는 확인 버튼 — 내 목록이 화면에 보일 때만 (결정 P10)
+        if (slotContainer == null || !slotContainer.gameObject.activeInHierarchy) return;
         if (_currentSelectedSlot == null) return;
 
         string targetScene = _currentSelectedSlot.myData.sceneName;

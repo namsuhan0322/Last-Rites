@@ -141,44 +141,54 @@ namespace LineworkLite.FreeOutline
             {
                 internal List<RendererListHandle> MaskRendererListHandles = new();
                 internal readonly List<RendererListHandle> OutlineRendererListHandles = new();
+                // [Last-Rites 수정] 아웃라인마다 테두리를 그리는지 (MaskRendererListHandles와 같은 순서) — BossOutline.md 결정 O2
+                internal readonly List<bool> DrawsOutline = new();
+            }
+
+            // [Last-Rites 수정] 그리는 순서 — BossOutline.md 결정 O6 (테스트 후 추가)
+            // 가려져도 보이는 테두리(Always·WhenOccluded)를 먼저, 보일 때만 그리는 테두리(WhenNotOccluded)를 뒤에 그린다. 같은 종류끼리는 목록 순서.
+            // 앞에서 그린 테두리는 뒤 아웃라인의 마스크에 지워지지 않으므로, 커서를 올린 보스(WhenNotOccluded)가 그 뒤에 가려진 플레이어 테두리를 지우지 못한다.
+            // 목록 순서에 맡기지 않는 이유: 인스펙터에서 끌어 옮길 수 없고 항목 이름이 모두 "Outline"이라 순서를 맞추기 어렵다.
+            private readonly List<Outline> drawOrder = new();
+
+            private void FillDrawOrder()
+            {
+                drawOrder.Clear();
+                foreach (var outline in settings.Outlines)
+                {
+                    if (outline.occlusion != Occlusion.WhenNotOccluded) drawOrder.Add(outline);
+                }
+                foreach (var outline in settings.Outlines)
+                {
+                    if (outline.occlusion == Occlusion.WhenNotOccluded) drawOrder.Add(outline);
+                }
             }
             
             public override void RecordRenderGraph(RenderGraph renderGraph, ContextContainer frameData)
             {
                 var resourceData = frameData.Get<UniversalResourceData>();
 
-                // 1. Mask.
-                // -> Render a mask to the stencil buffer.
-                using (var builder = renderGraph.AddRasterRenderPass<PassData>(ShaderPassName.Mask, out var passData))
-                {
-                    builder.SetRenderAttachment(resourceData.activeColorTexture, 0);
-                    builder.SetRenderAttachmentDepth(resourceData.activeDepthTexture);
-                
-                    InitMaskRendererList(renderGraph, frameData, ref passData);
-                    foreach (var rendererListHandle in passData.MaskRendererListHandles)
-                    {
-                        builder.UseRendererList(rendererListHandle);
-                    }
-                    
-                    builder.AllowPassCulling(false);
-                    
-                    builder.SetRenderFunc((PassData data, RasterGraphContext context) =>
-                    {
-                        foreach (var handle in data.MaskRendererListHandles)
-                        {
-                            context.cmd.DrawRendererList(handle);
-                        }
-                    });
-                }
-
-                // 2. Outline.
-                // -> Render an outline.
+                // [Last-Rites 수정] 1. Mask + Outline, per outline in draw order — BossOutline.md 결정 O1·O2·O6
+                // 원래는 모든 아웃라인의 마스크를 먼저 칠한 뒤 모든 테두리를 그려서, 커서를 올린 보스의 마스크가
+                // 그 뒤에 가려진 플레이어 테두리를 지웠다. 이제 아웃라인 i의 테두리는 그리는 순서에서 0..i 아웃라인의 마스크에만 가려진다.
+                FillDrawOrder();
                 using (var builder = renderGraph.AddRasterRenderPass<PassData>(ShaderPassName.Outline, out var passData))
                 {
                     builder.SetRenderAttachment(resourceData.activeColorTexture, 0);
                     builder.SetRenderAttachmentDepth(resourceData.activeDepthTexture);
 
+                    InitMaskRendererList(renderGraph, frameData, ref passData);
                     InitOutlineRendererLists(renderGraph, frameData, ref passData);
+                    passData.DrawsOutline.Clear();
+                    foreach (var outline in drawOrder)
+                    {
+                        passData.DrawsOutline.Add(ShouldRenderOutline(outline));
+                    }
+
+                    foreach (var rendererListHandle in passData.MaskRendererListHandles)
+                    {
+                        builder.UseRendererList(rendererListHandle);
+                    }
                     foreach (var rendererListHandle in passData.OutlineRendererListHandles)
                     {
                         builder.UseRendererList(rendererListHandle);
@@ -188,14 +198,19 @@ namespace LineworkLite.FreeOutline
 
                     builder.SetRenderFunc((PassData data, RasterGraphContext context) =>
                     {
-                        foreach (var handle in data.OutlineRendererListHandles)
+                        var outlineIndex = 0;
+                        for (var i = 0; i < data.MaskRendererListHandles.Count; i++)
                         {
-                            context.cmd.DrawRendererList(handle);
+                            context.cmd.DrawRendererList(data.MaskRendererListHandles[i]);
+                            if (data.DrawsOutline[i])
+                            {
+                                context.cmd.DrawRendererList(data.OutlineRendererListHandles[outlineIndex++]);
+                            }
                         }
                     });
                 }
-                
-                // 3. Clear stencil.
+
+                // 2. Clear stencil.
                 // -> Clear the stencil buffer.
                 RenderUtils.ClearStencil(renderGraph, resourceData, clear);
             }
@@ -210,7 +225,8 @@ namespace LineworkLite.FreeOutline
                 
                 var sortingCriteria = cameraData.defaultOpaqueSortFlags;
 
-                foreach (var outline in settings.Outlines)
+                // [Last-Rites 수정] 목록 대신 그리는 순서 — 결정 O6
+                foreach (var outline in drawOrder)
                 {
                     var drawingSettings = RenderingUtils.CreateDrawingSettings(RenderUtils.DefaultShaderTagIds, renderingData, cameraData, lightData, sortingCriteria);
                     drawingSettings.overrideMaterial = mask;
@@ -258,7 +274,8 @@ namespace LineworkLite.FreeOutline
 
                 var sortingCriteria = cameraData.defaultOpaqueSortFlags;
 
-                foreach (var outline in settings.Outlines)
+                // [Last-Rites 수정] 목록 대신 그리는 순서 — 결정 O6
+                foreach (var outline in drawOrder)
                 {
                     if (!ShouldRenderOutline(outline))
                     {

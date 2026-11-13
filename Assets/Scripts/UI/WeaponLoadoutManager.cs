@@ -3,6 +3,12 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 
+/// <summary>
+/// [역할] 정비대 무기 교체 탭: 무기 슬롯 목록, 오른쪽 상세, 교체 확인 팝업(엔터 → 확인으로 장착).
+/// [이유] 확인 팝업(Popup Panel)과 확인 버튼을 AI 해금·맵 이동과 같이 써서, 확인을 누르면 세 처리가 모두 불린다.
+///        확인 처리는 내 목록이 화면에 보일 때만 한다(엔터 키 처리와 같은 기준).
+/// [근거] 로비 UI 팝업 명세 2.5·3.4, 결정 P10
+/// </summary>
 public class WeaponLoadoutManager : MonoBehaviour
 {
     [Header("데이터베이스 & 프리팹")]
@@ -144,6 +150,8 @@ public class WeaponLoadoutManager : MonoBehaviour
 
     private void OnConfirmEquip()
     {
+        // 같이 쓰는 확인 버튼 — 내 목록이 화면에 보일 때만 (결정 P10)
+        if (contentContainer == null || !contentContainer.gameObject.activeInHierarchy) return;
         if (_currentSelectedSlot == null || _player == null) return;
 
         WeaponSO weaponData = _currentSelectedSlot.myData as WeaponSO;

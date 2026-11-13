@@ -2789,6 +2789,8 @@ MonoBehaviour:
   interactionPrompt: {fileID: 2027863553}
   popupsToBlockClose:
   - {fileID: 1901344419}
+  - {fileID: 53355553}
+  - {fileID: 1456709061}
   targetOutlineObject: {fileID: 1920502732}
   outlineLayerName: Outline_Interactable
 --- !u!4 &476154996
@@ -6947,6 +6949,11 @@ PrefabInstance:
       propertyPath: tabs.Array.data[10].targetPanel
       value: 
       objectReference: {fileID: 905814354}
+    - target: {fileID: 3732504752516098346, guid: 010365170b6c67d43b4b82f0d185b1be,
+        type: 3}
+      propertyPath: tabs.Array.data[0].isImplemented
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

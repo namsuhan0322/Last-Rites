@@ -1,8 +1,14 @@
-using UnityEngine;
+ï»¿using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 
+/// <summary>
+/// [ì—­í• ] ìƒì  AI í•´ê¸ˆ íƒ­: í•´ê¸ˆ ìŠ¬ë¡¯ ëª©ë¡, ê°€ìš´ë°Â·ì˜¤ë¥¸ìª½ ìƒì„¸, í•´ê¸ˆ í™•ì¸ íŒì—…(ì¬ë£Œê°€ ìˆìœ¼ë©´ í•´ê¸ˆ).
+/// [ì´ìœ ] í™•ì¸ íŒì—…(Popup Panel)ê³¼ í™•ì¸ ë²„íŠ¼ì„ ë¬´ê¸° êµì²´Â·ë§µ ì´ë™ê³¼ ê°™ì´ ì¨ì„œ, í™•ì¸ì„ ëˆ„ë¥´ë©´ ì„¸ ì²˜ë¦¬ê°€ ëª¨ë‘ ë¶ˆë¦°ë‹¤.
+///        í™•ì¸ ì²˜ë¦¬ëŠ” ë‚´ ëª©ë¡ì´ í™”ë©´ì— ë³´ì¼ ë•Œë§Œ í•œë‹¤(ì—”í„° í‚¤ ì²˜ë¦¬ì™€ ê°™ì€ ê¸°ì¤€). íƒ­ì€ ì§€ê¸ˆ ì¤€ë¹„ ì¤‘(ê²°ì • P3)ì´ì§€ë§Œ ì—´ ë•Œë¥¼ ëŒ€ë¹„í•´ í•¨ê»˜ ë„£ëŠ”ë‹¤.
+/// [ê·¼ê±°] ë¡œë¹„ UI íŒì—… ëª…ì„¸ 2.5Â·3.4, ê²°ì • P3Â·P10
+/// </summary>
 public class ShopAIUnlockManager : MonoBehaviour
 {
     [Header("Database & Prefabs")]
@@ -84,7 +90,7 @@ public class ShopAIUnlockManager : MonoBehaviour
 
         if (aiUnlockDatabase == null || aiUnlockDatabase.aiUnlockSOs.Count == 0)
         {
-            Debug.LogError("<color=red>[¿À·ù] ÇØ±İ DB(ShopAIUnlockDatabase)°¡ ºñ¾îÀÖ°Å³ª ¿¬°áµÇÁö ¾Ê¾Ò½À´Ï´Ù!</color>");
+            Debug.LogError("<color=red>[ì˜¤ë¥˜] í•´ê¸ˆ DB(ShopAIUnlockDatabase)ê°€ ë¹„ì–´ìˆê±°ë‚˜ ì—°ê²°ë˜ì§€ ì•Šì•˜ìŠµë‹ˆë‹¤!</color>");
             return;
         }
 
@@ -98,7 +104,7 @@ public class ShopAIUnlockManager : MonoBehaviour
 
             if (aiData == null)
             {
-                Debug.LogWarning($"<color=orange>[½ºÅµµÊ]</color> »óÁ¡ µ¥ÀÌÅÍ '{unlockData.name}'°¡ ¿ä±¸ÇÏ´Â <color=yellow>AI_Id : [{unlockData.AI_Id}]</color>¸¦ AIDatabase¿¡¼­ Ã£À» ¼ö ¾ø½À´Ï´Ù!");
+                Debug.LogWarning($"<color=orange>[ìŠ¤í‚µë¨]</color> ìƒì  ë°ì´í„° '{unlockData.name}'ê°€ ìš”êµ¬í•˜ëŠ” <color=yellow>AI_Id : [{unlockData.AI_Id}]</color>ë¥¼ AIDatabaseì—ì„œ ì°¾ì„ ìˆ˜ ì—†ìŠµë‹ˆë‹¤!");
                 continue;
             }
 
@@ -114,7 +120,7 @@ public class ShopAIUnlockManager : MonoBehaviour
             createdSlots.Add(newSlot);
         }
 
-        Debug.Log($"<color=cyan>[¿Ï·á] ÃÑ {createdSlots.Count}°³ÀÇ AI ½½·ÔÀÌ »ı¼ºµÇ¾ú½À´Ï´Ù.</color>");
+        Debug.Log($"<color=cyan>[ì™„ë£Œ] ì´ {createdSlots.Count}ê°œì˜ AI ìŠ¬ë¡¯ì´ ìƒì„±ë˜ì—ˆìŠµë‹ˆë‹¤.</color>");
     }
 
     public void OnSlotSelected(ShopItemSlot clickedSlot)
@@ -155,10 +161,10 @@ public class ShopAIUnlockManager : MonoBehaviour
 
             if (!string.IsNullOrEmpty(unlockData.Unlock_Conditon))
             {
-                reqStr += $"<color=orange>[ÇØ±İ Á¶°Ç]</color>\n- {unlockData.Unlock_Conditon}\n\n";
+                reqStr += $"<color=orange>[í•´ê¸ˆ ì¡°ê±´]</color>\n- {unlockData.Unlock_Conditon}\n\n";
             }
 
-            reqStr += "<color=yellow>[ÇØ±İ ÇÊ¿ä Àç·á]</color>\n";
+            reqStr += "<color=yellow>[í•´ê¸ˆ í•„ìš” ì¬ë£Œ]</color>\n";
 
             if (unlockData.Req_Mat_1 != null && unlockData.Req_Mat_Amt_1 > 0)
             {
@@ -177,7 +183,7 @@ public class ShopAIUnlockManager : MonoBehaviour
             requirementText.text = reqStr;
         }
 
-        // [ÇÙ½É 2] Áß¾Ó ÀÌ¹ÌÁö ½Ç·ç¿§ Ã³¸®
+        // [í•µì‹¬ 2] ì¤‘ì•™ ì´ë¯¸ì§€ ì‹¤ë£¨ì—£ ì²˜ë¦¬
         if (middleAiImage != null)
         {
             if (aiData.aiIllustration != null)
@@ -195,7 +201,7 @@ public class ShopAIUnlockManager : MonoBehaviour
 
     private void ClearDetailPanel()
     {
-        if (rightAiName != null) rightAiName.text = "µ¿·á¸¦ ¼±ÅÃÇÏ¼¼¿ä";
+        if (rightAiName != null) rightAiName.text = "ë™ë£Œë¥¼ ì„ íƒí•˜ì„¸ìš”";
         if (rightAiDesc != null) rightAiDesc.text = "";
         if (rightAiStats != null) rightAiStats.text = "";
         if (requirementText != null) requirementText.text = "";
@@ -210,8 +216,8 @@ public class ShopAIUnlockManager : MonoBehaviour
         AISO aiData = GetAISOById(unlockData.AI_Id);
         if (aiData == null) return;
 
-        if (popupAiName != null) popupAiName.text = $"{aiData.name} ÇØ±İ";
-        if (popupAiDesc != null) popupAiDesc.text = "ÇØ´ç µ¿·á¸¦ Á¤¸»·Î ÇØ±İÇÏ½Ã°Ú½À´Ï±î?";
+        if (popupAiName != null) popupAiName.text = $"{aiData.name} í•´ê¸ˆ";
+        if (popupAiDesc != null) popupAiDesc.text = "í•´ë‹¹ ë™ë£Œë¥¼ ì •ë§ë¡œ í•´ê¸ˆí•˜ì‹œê² ìŠµë‹ˆê¹Œ?";
         if (popupAiImage != null) popupAiImage.sprite = aiData.aiIcon;
 
         popupPanel.SetActive(true);
@@ -224,6 +230,8 @@ public class ShopAIUnlockManager : MonoBehaviour
 
     private void OnConfirmUnlock()
     {
+        // ê°™ì´ ì“°ëŠ” í™•ì¸ ë²„íŠ¼ â€” ë‚´ ëª©ë¡ì´ í™”ë©´ì— ë³´ì¼ ë•Œë§Œ (ê²°ì • P10)
+        if (slotContainer == null || !slotContainer.gameObject.activeInHierarchy) return;
         if (currentSelectedSlot == null) return;
 
         ShopAIUnlockSO unlockData = currentSelectedSlot.myData as ShopAIUnlockSO;
@@ -243,15 +251,15 @@ public class ShopAIUnlockManager : MonoBehaviour
             InventoryManager.Instance.AddItem(unlockData.AI_Id, 1);
 
             DataManager.Instance.SaveAllData();
-            Debug.Log($"<color=cyan>[ÇØ±İ ¼º°ø] µ¿·á '{unlockData.AI_Id}'°¡ ÇÕ·ùÇß½À´Ï´Ù!</color>");
+            Debug.Log($"<color=cyan>[í•´ê¸ˆ ì„±ê³µ] ë™ë£Œ '{unlockData.AI_Id}'ê°€ í•©ë¥˜í–ˆìŠµë‹ˆë‹¤!</color>");
 
-            GenerateShopSlots(); // UI ½Ç·ç¿§ »óÅÂ °»½ÅÀ» À§ÇØ ½½·Ô ´Ù½Ã »ı¼º
+            GenerateShopSlots(); // UI ì‹¤ë£¨ì—£ ìƒíƒœ ê°±ì‹ ì„ ìœ„í•´ ìŠ¬ë¡¯ ë‹¤ì‹œ ìƒì„±
             UpdateDetailPanel(currentSelectedSlot);
             ClosePopup();
         }
         else
         {
-            Debug.Log("<color=red>[ÇØ±İ ½ÇÆĞ] Àç·á°¡ ºÎÁ·ÇÕ´Ï´Ù.</color>");
+            Debug.Log("<color=red>[í•´ê¸ˆ ì‹¤íŒ¨] ì¬ë£Œê°€ ë¶€ì¡±í•©ë‹ˆë‹¤.</color>");
         }
     }
 
